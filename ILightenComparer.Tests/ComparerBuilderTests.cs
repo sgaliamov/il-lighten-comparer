@@ -11,7 +11,7 @@ namespace ILightenComparer.Tests
         [Fact]
         public void Create_Generic_Comparer()
         {
-            var comparer = _builder.CreateComparer<HaveNestedClass>();
+            var comparer = _builder.CreateComparer<HierarchicalObject>();
 
             comparer.Should().NotBeNull();
         }
@@ -19,7 +19,7 @@ namespace ILightenComparer.Tests
         [Fact]
         public void Create_Generic_EqualityComparer()
         {
-            var comparer = _builder.CreateEqualityComparer<Simple>();
+            var comparer = _builder.CreateEqualityComparer<FlatObject>();
 
             comparer.Should().NotBeNull();
         }
@@ -27,7 +27,7 @@ namespace ILightenComparer.Tests
         [Fact]
         public void Create_Not_Generic_Comparer()
         {
-            var comparer = _builder.CreateComparer(typeof(Simple));
+            var comparer = _builder.CreateComparer(typeof(FlatObject));
 
             comparer.Should().NotBeNull();
         }
@@ -35,7 +35,7 @@ namespace ILightenComparer.Tests
         [Fact]
         public void Create_Not_Generic_EqualityComparer()
         {
-            var comparer = _builder.CreateEqualityComparer(typeof(HaveNestedClass));
+            var comparer = _builder.CreateEqualityComparer(typeof(HierarchicalObject));
 
             comparer.Should().NotBeNull();
         }
