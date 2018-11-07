@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LightComparer.Tests.Samples
+namespace ILightenComparer.Tests.Samples
 {
     internal class Simple
     {

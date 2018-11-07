@@ -1,4 +1,4 @@
-﻿namespace LightComparer.Tests.Samples
+﻿namespace ILightenComparer.Tests.Samples
 {
     internal sealed class HaveNestedClass
     {

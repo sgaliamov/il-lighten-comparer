@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace LightComparer
+namespace ILightenComparer
 {
     public sealed class ComparerBuilder
     {
-        private readonly Configuration _configuration;
+        private readonly CompareConfiguration _configuration;
 
-        public ComparerBuilder(Configuration configuration) => _configuration = configuration;
+        public ComparerBuilder(CompareConfiguration configuration) => _configuration = configuration;
 
         public IComparer<T> CreateComparer<T>() => throw new NotImplementedException();
         public IComparer CreateComparer(Type type) => throw new NotImplementedException();
