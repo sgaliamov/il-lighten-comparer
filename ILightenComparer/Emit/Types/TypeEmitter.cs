@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILightenComparer.Emit.Extensions;
@@ -32,6 +33,21 @@ namespace ILightenComparer.Emit.Types
             il.Emit(OpCodes.Ret);
 
             return method.CreateDelegate<Func<TReturnType>>();
+        }
+
+        public MethodBuilder DefineInterfaceMethod(TypeBuilder type, MethodInfo interfaceMethod)
+        {
+            var method = type.DefineMethod(
+                interfaceMethod.Name,
+                MethodAttributes.Public | MethodAttributes.Virtual,
+                CallingConventions.HasThis,
+                interfaceMethod.ReturnType,
+                interfaceMethod.GetParameters().Select(x => x.ParameterType).ToArray()
+            );
+
+            type.DefineMethodOverride(method, interfaceMethod);
+
+            return method;
         }
 
         public TypeBuilder DefineType(string name)
