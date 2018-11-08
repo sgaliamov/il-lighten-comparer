@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using ILightenComparer.Emit;
-using ILightenComparer.Emit.Types;
+using ILLightenComparer.Emit;
+using ILLightenComparer.Emit.Types;
 
-namespace ILightenComparer
+namespace ILLightenComparer
 {
     public sealed class ComparerBuilder : IComparerBuilder
     {

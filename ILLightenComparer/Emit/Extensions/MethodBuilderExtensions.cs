@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection.Emit;
 
-namespace ILightenComparer.Emit.Extensions
+namespace ILLightenComparer.Emit.Extensions
 {
     internal static class MethodBuilderExtensions
     {

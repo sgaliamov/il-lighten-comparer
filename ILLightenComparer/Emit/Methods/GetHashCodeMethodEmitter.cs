@@ -1,4 +1,4 @@
-﻿namespace ILightenComparer.Emit.Methods
+﻿namespace ILLightenComparer.Emit.Methods
 {
     internal sealed class GetHashCodeMethodEmitter { }
 }

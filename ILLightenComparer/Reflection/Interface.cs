@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ILightenComparer.Reflection
+namespace ILLightenComparer.Reflection
 {
     internal static class Interface
     {

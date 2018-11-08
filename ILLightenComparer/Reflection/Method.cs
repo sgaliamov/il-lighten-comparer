@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
 
-namespace ILightenComparer.Reflection
+namespace ILLightenComparer.Reflection
 {
     internal static class Method
     {

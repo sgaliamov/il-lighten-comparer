@@ -1,4 +1,4 @@
-﻿namespace ILightenComparer.Tests.Samples
+﻿namespace ILLightenComparer.Tests.Samples
 {
     internal class ChildObject : FlatObject
     {

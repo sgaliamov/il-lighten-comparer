@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ILightenComparer.Tests.Samples
+namespace ILLightenComparer.Tests.Samples
 {
     internal class FlatObject : IFlatObject
     {

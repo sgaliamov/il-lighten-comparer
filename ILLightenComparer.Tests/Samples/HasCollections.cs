@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ILightenComparer.Tests.Samples
+namespace ILLightenComparer.Tests.Samples
 {
     internal class HasCollections
     {

@@ -1,8 +1,8 @@
 using FluentAssertions;
-using ILightenComparer.Tests.Samples;
+using ILLightenComparer.Tests.Samples;
 using Xunit;
 
-namespace ILightenComparer.Tests
+namespace ILLightenComparer.Tests
 {
     public class ComparerBuilderTests
     {

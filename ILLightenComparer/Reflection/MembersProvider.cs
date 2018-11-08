@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace ILightenComparer.Reflection
+namespace ILLightenComparer.Reflection
 {
     internal sealed class MembersProvider
     {

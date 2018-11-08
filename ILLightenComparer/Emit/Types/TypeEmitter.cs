@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILightenComparer.Emit.Extensions;
-using ILightenComparer.Reflection;
+using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Reflection;
 
-namespace ILightenComparer.Emit.Types
+namespace ILLightenComparer.Emit.Types
 {
     internal sealed class TypeEmitter
     {

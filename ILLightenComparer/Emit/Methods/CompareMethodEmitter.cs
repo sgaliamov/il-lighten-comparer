@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection.Emit;
-using ILightenComparer.Reflection;
+using ILLightenComparer.Reflection;
 
-namespace ILightenComparer.Emit.Methods
+namespace ILLightenComparer.Emit.Methods
 {
     internal sealed class CompareMethodEmitter
     {
@@ -14,10 +14,7 @@ namespace ILightenComparer.Emit.Methods
 
             var il = method.GetILGenerator();
 
-            foreach (var member in members)
-            {
-                
-            }
+            foreach (var member in members) { }
         }
     }
 }

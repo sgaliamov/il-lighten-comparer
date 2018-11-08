@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using ILightenComparer.Emit.Types;
+using ILLightenComparer.Emit.Types;
 
-namespace ILightenComparer.Emit
+namespace ILLightenComparer.Emit
 {
     internal sealed class EqualityComparerEmitter
     {

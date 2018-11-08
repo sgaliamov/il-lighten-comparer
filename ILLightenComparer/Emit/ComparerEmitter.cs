@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using ILightenComparer.Emit.Methods;
-using ILightenComparer.Emit.Types;
-using ILightenComparer.Reflection;
+using ILLightenComparer.Emit.Methods;
+using ILLightenComparer.Emit.Types;
+using ILLightenComparer.Reflection;
 
-namespace ILightenComparer.Emit
+namespace ILLightenComparer.Emit
 {
     internal sealed class ComparerEmitter
     {
