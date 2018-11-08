@@ -41,6 +41,6 @@ namespace ILightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        private readonly ComparerBuilder _builder;
+        private readonly IComparerBuilder _builder;
     }
 }

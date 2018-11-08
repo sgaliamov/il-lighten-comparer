@@ -2,14 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using ILightenComparer.Emit;
+using ILightenComparer.Emit.Types;
 
 namespace ILightenComparer
 {
     public sealed class ComparerBuilder : IComparerBuilder
     {
-        private readonly ComparerEmitter _comparerEmitter = new ComparerEmitter();
-        private readonly EqualityComparerEmitter _equalityComparerEmitter = new EqualityComparerEmitter();
+        private readonly ComparerEmitter _comparerEmitter;
+        private readonly EqualityComparerEmitter _equalityComparerEmitter;
+        private readonly TypeEmitter _typeEmitter = new TypeEmitter();
+
         private CompareConfiguration _configuration;
+
+        public ComparerBuilder()
+        {
+            _equalityComparerEmitter = new EqualityComparerEmitter(_typeEmitter);
+            _comparerEmitter = new ComparerEmitter(_typeEmitter);
+        }
 
         public IComparer<T> CreateComparer<T>() =>
             _comparerEmitter.Emit<T>(_configuration);

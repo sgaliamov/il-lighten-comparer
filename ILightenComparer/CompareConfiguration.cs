@@ -1,7 +1,4 @@
 ﻿namespace ILightenComparer
 {
-    public sealed class CompareConfiguration
-    {
-
-    }
+    public sealed class CompareConfiguration { }
 }
