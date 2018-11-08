@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using ILLightenComparer.Benchmark.Models;
+using ILLightenComparer.Benchmarks.Models;
 
-namespace ILLightenComparer.Benchmark.Comparers
+namespace ILLightenComparer.Benchmarks.Comparers
 {
     public sealed class FlatObjectRelationalComparer : IComparer<FlatObject>
     {

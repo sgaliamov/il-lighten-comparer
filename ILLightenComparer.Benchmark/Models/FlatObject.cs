@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ILLightenComparer.Benchmark.Models
+namespace ILLightenComparer.Benchmarks.Models
 {
     public sealed class FlatObject
     {

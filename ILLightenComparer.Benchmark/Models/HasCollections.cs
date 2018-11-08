@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ILLightenComparer.Benchmark.Models
+namespace ILLightenComparer.Benchmarks.Models
 {
     internal class HasCollections
     {

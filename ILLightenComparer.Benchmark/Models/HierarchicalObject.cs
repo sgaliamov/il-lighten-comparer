@@ -1,4 +1,4 @@
-﻿namespace ILLightenComparer.Benchmark.Models
+﻿namespace ILLightenComparer.Benchmarks.Models
 {
     internal sealed class HierarchicalObject
     {
