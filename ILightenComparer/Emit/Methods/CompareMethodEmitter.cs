@@ -10,7 +10,14 @@ namespace ILightenComparer.Emit.Methods
 
         public void Emit(Type objectType, CompareConfiguration configuration, MethodBuilder method)
         {
-            throw new NotImplementedException();
+            var members = _membersProvider.GetMembers(objectType);
+
+            var il = method.GetILGenerator();
+
+            foreach (var member in members)
+            {
+                
+            }
         }
     }
 }
