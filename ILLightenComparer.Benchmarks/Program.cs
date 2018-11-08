@@ -1,5 +1,4 @@
-﻿using System;
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
 using ILLightenComparer.Benchmarks.Benchmark;
 
 namespace ILLightenComparer.Benchmarks
@@ -8,9 +7,7 @@ namespace ILLightenComparer.Benchmarks
     {
         public static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<CompareIntegral>();
-
-            Console.WriteLine(summary);
+            BenchmarkRunner.Run<CompareIntegral>();
         }
     }
 }

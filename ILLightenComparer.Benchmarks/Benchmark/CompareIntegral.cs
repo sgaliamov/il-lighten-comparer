@@ -10,19 +10,13 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         private readonly int[] _one = new int[N];
         private readonly int[] _other = new int[N];
 
+        // ReSharper disable once NotAccessedField.Local
         private int _out;
         private const int N = 10000;
 
         [GlobalSetup]
         public void Setup()
         {
-            if (b)
-            {
-                throw new Exception();
-            }
-
-            b = true;
-
             var random = new Random();
 
             for (var i = 0; i < N; i++)
@@ -33,7 +27,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         }
 
         [Benchmark(Baseline = true)]
-        public void Sub() // faster 6 times
+        public void Sub() // fastest
         {
             for (var i = 0; i < N; i++)
             {
@@ -71,7 +65,5 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                 _out = -1;
             }
         }
-
-        private static bool b;
     }
 }
