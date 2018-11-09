@@ -5,7 +5,7 @@
 - [ ] basic implementation
 - [ ] benchmarks
 - [ ] customize comparer with specific implementation
-- [ ] use implementations of IComparable 
+- [ ] use implementations of IComparable
 - [ ] detect cycles (check graph theory)
 - [ ] string options (case, culture)
 - [ ] compare nullable

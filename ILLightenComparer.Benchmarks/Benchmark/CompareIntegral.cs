@@ -52,17 +52,16 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                 var one = _one[i];
                 var other = _other[i];
 
-                if (one == other)
-                {
-                    _out = 0;
-                }
+                _out = 0;
 
-                if (one > other)
+                if (one < other)
+                {
+                    _out = -1;
+                }
+                else if (one > other)
                 {
                     _out = 1;
                 }
-
-                _out = -1;
             }
         }
     }
