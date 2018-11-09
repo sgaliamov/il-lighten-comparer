@@ -6,8 +6,15 @@ namespace ILLightenComparer.Tests
 {
     public class ComparerBuilderTests
     {
-        public ComparerBuilderTests() =>
-            _builder = new ComparerBuilder().SetConfiguration(new CompareConfiguration());
+        public ComparerBuilderTests()
+        {
+            var configuration = new CompareConfiguration
+            {
+                IncludeFields = false
+            };
+
+            _builder = new ComparerBuilder().SetConfiguration(configuration);
+        }
 
         [Fact]
         public void Create_Generic_Comparer()
