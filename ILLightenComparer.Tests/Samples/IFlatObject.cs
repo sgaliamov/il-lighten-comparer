@@ -2,7 +2,7 @@
 {
     internal interface IFlatObject
     {
-        int Integer { get; set; }
-        string String { get; set; }
+        int IntegerProperty { get; set; }
+        string StringProperty { get; set; }
     }
 }
