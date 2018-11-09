@@ -20,24 +20,22 @@ namespace ILLightenComparer.Emit.Types
             _module = assembly.DefineDynamicModule("ILLightenComparer.Module");
         }
 
-        public Func<TReturnType> EmitFactoryMethod<TReturnType>(TypeBuilder type)
+        public Func<TReturnType> EmitFactoryMethod<TReturnType>(TypeInfo type)
         {
-            var method = type.DefineMethod(
-                "GetInstance",
-                MethodAttributes.Static,
-                type,
-                null);
+            var method = _module.DefineGlobalMethod(
+                $"InstanceOf_{type.FullName}",
+                MethodAttributes.Private | MethodAttributes.Static,
+                typeof(TReturnType),
+                Type.EmptyTypes);
 
-            var il = method.GetILGenerator();
-            il.Emit(OpCodes.Newobj, type.GetConstructor(null));
-            il.Emit(OpCodes.Ret);
+            EmitCallCtor(method.GetILGenerator(), type.GetConstructor(Type.EmptyTypes));
 
             return method.CreateDelegate<Func<TReturnType>>();
         }
 
-        public MethodBuilder DefineInterfaceMethod(TypeBuilder type, MethodInfo interfaceMethod)
+        public MethodBuilder DefineInterfaceMethod(TypeBuilder typeBuilder, MethodInfo interfaceMethod)
         {
-            var method = type.DefineMethod(
+            var method = typeBuilder.DefineMethod(
                 interfaceMethod.Name,
                 MethodAttributes.Public | MethodAttributes.Virtual,
                 CallingConventions.HasThis,
@@ -45,7 +43,7 @@ namespace ILLightenComparer.Emit.Types
                 interfaceMethod.GetParameters().Select(x => x.ParameterType).ToArray()
             );
 
-            type.DefineMethodOverride(method, interfaceMethod);
+            typeBuilder.DefineMethodOverride(method, interfaceMethod);
 
             return method;
         }
@@ -54,9 +52,15 @@ namespace ILLightenComparer.Emit.Types
         {
             var type = _module.DefineType(name);
             type.AddInterfaceImplementation(Interface.Comparer);
-            type.AddInterfaceImplementation(Interface.GenericComparer);
+            //type.AddInterfaceImplementation(Interface.GenericComparer);
 
             return type;
+        }
+
+        private static void EmitCallCtor(ILGenerator ilGenerator, ConstructorInfo constructor)
+        {
+            ilGenerator.Emit(OpCodes.Newobj, constructor);
+            ilGenerator.Emit(OpCodes.Ret);
         }
     }
 }

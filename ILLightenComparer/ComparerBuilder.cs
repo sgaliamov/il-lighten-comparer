@@ -12,7 +12,7 @@ namespace ILLightenComparer
         private readonly EqualityComparerEmitter _equalityComparerEmitter;
         private readonly TypeEmitter _typeEmitter = new TypeEmitter();
 
-        private CompareConfiguration _configuration;
+        private CompareConfiguration _configuration = new CompareConfiguration();
 
         public ComparerBuilder()
         {

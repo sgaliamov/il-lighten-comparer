@@ -21,27 +21,22 @@ namespace ILLightenComparer.Emit
 
             var method = _emitter.DefineInterfaceMethod(type, Method.Compare);
 
-            
-
-            //_methodEmitter.Emit(objectType, configuration, method);
+            _methodEmitter.Emit(objectType, configuration, method);
 
             return Create<IComparer>(type);
         }
 
-        public IComparer<T> Emit<T>(CompareConfiguration configuration)
+        public IComparer<T> Emit<T>(CompareConfiguration configuration) => throw new NotImplementedException();
+
+        private T Create<T>(TypeBuilder typeBuilder)
         {
-            throw new NotImplementedException();
-            //var objectType = typeof(T);
+            var typeInfo = typeBuilder.CreateTypeInfo();
 
-            //var type = _emitter.DefineType($"{objectType.FullName}.Comparer");
+            var instance = Activator.CreateInstance(typeInfo);
 
-            //var method = _emitter.DefineInterfaceMethod(type, Method.GenericCompare);
+            return (T)instance;
 
-            //_methodEmitter.Emit(objectType, configuration, method);
-
-            //return Create<IComparer<T>>(type);
+            //return _emitter.EmitFactoryMethod<T>(typeInfo)();
         }
-
-        private T Create<T>(TypeBuilder type) => _emitter.EmitFactoryMethod<T>(type)();
     }
 }

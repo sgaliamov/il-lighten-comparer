@@ -12,9 +12,8 @@ namespace ILLightenComparer.Emit.Methods
         public void Emit(Type objectType, CompareConfiguration configuration, MethodBuilder method)
         {
             var il = method.GetILGenerator();
-            
+
             EmitReferenceEquals(il);
-            return;
 
             var members = _membersProvider.GetMembers(objectType, configuration);
             foreach (var member in members)
@@ -22,33 +21,30 @@ namespace ILLightenComparer.Emit.Methods
                 if (IsIntegralType(member))
                 {
                     EmitIntegralTypeComparison(member, il);
+                    continue;
                 }
-                else if (IsComparableType(member))
+
+                if (IsComparableType(member))
                 {
                     EmitComparableTypeComparison(member, il);
+                    continue;
                 }
 
                 throw new NotSupportedException(
                     $"Can't emit comparison for {member.DeclaringType}.{member.Name}");
             }
+
+            il.Emit(OpCodes.Ldc_I4_0); // return 0
+            il.Emit(OpCodes.Ret);
         }
 
-        private void EmitComparableTypeComparison(MemberInfo member, ILGenerator il)
-        {
-            throw new NotImplementedException();
-        }
+        private void EmitComparableTypeComparison(MemberInfo member, ILGenerator il) { }
 
-        private void EmitIntegralTypeComparison(MemberInfo member, ILGenerator il)
-        {
-            throw new NotImplementedException();
-        }
+        private void EmitIntegralTypeComparison(MemberInfo member, ILGenerator il) { }
 
-        private bool IsComparableType(MemberInfo member) => throw new NotImplementedException();
+        private bool IsComparableType(MemberInfo member) => true;
 
-        private bool IsIntegralType(MemberInfo member)
-        {
-            return true;
-        }
+        private bool IsIntegralType(MemberInfo member) => true;
 
         private static void EmitReferenceEquals(ILGenerator il)
         {
