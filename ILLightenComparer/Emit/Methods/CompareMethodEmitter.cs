@@ -49,30 +49,29 @@ namespace ILLightenComparer.Emit.Methods
         private static void EmitReferenceEquals(ILGenerator il)
         {
             // x == y
+            var else0 = il.DefineLabel();
             il.Emit(OpCodes.Ldarg_1);
             il.Emit(OpCodes.Ldarg_2);
-            var checkY = il.DefineLabel();
-            il.Emit(OpCodes.Bne_Un_S, checkY);
+            il.Emit(OpCodes.Bne_Un_S, else0);
             il.Emit(OpCodes.Ldc_I4_0); // return 0
             il.Emit(OpCodes.Ret);
+            il.MarkLabel(else0);
 
             // y != null
-            il.MarkLabel(checkY);
+            var else1 = il.DefineLabel();
             il.Emit(OpCodes.Ldarg_2);
-            var checkX = il.DefineLabel();
-            il.Emit(OpCodes.Brtrue_S, checkX);
+            il.Emit(OpCodes.Brtrue_S, else1);
             il.Emit(OpCodes.Ldc_I4_1); // return 1
             il.Emit(OpCodes.Ret);
+            il.MarkLabel(else1);
 
             // x != null
-            il.MarkLabel(checkX);
+            var else2 = il.DefineLabel();
             il.Emit(OpCodes.Ldarg_1);
-            var rest = il.DefineLabel();
-            il.Emit(OpCodes.Brtrue_S, rest);
+            il.Emit(OpCodes.Brtrue_S, else2);
             il.Emit(OpCodes.Ldc_I4_M1); // return -1
             il.Emit(OpCodes.Ret);
-
-            il.MarkLabel(rest);
+            il.MarkLabel(else2);
         }
     }
 }

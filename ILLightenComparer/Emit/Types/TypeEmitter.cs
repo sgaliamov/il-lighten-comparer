@@ -22,11 +22,11 @@ namespace ILLightenComparer.Emit.Types
 
         public Func<TReturnType> EmitFactoryMethod<TReturnType>(TypeInfo type)
         {
-            var method = _module.DefineGlobalMethod(
+            var method = new DynamicMethod(
                 $"InstanceOf_{type.FullName}",
-                MethodAttributes.Private | MethodAttributes.Static,
                 typeof(TReturnType),
-                Type.EmptyTypes);
+                null,
+                _module);
 
             EmitCallCtor(method.GetILGenerator(), type.GetConstructor(Type.EmptyTypes));
 

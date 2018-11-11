@@ -13,7 +13,7 @@
 - [ ] compare collection, do not iterate IEnumerable
 - [ ] IgnoreCollectionOrder
 - [ ] CompareFields
-- [ ] Caching
+- [ ] Caching for assembly
 - [ ] ignored properties
 - [ ] compared dynamic?
 - [ ] setup CI/CD

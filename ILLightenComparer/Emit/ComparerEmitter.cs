@@ -32,11 +32,11 @@ namespace ILLightenComparer.Emit
         {
             var typeInfo = typeBuilder.CreateTypeInfo();
 
-            var instance = Activator.CreateInstance(typeInfo);
+            //var instance = Activator.CreateInstance(typeInfo);
 
-            return (T)instance;
+            //return (T)instance;
 
-            //return _emitter.EmitFactoryMethod<T>(typeInfo)();
+            return _emitter.EmitFactoryMethod<T>(typeInfo)();
         }
     }
 }
