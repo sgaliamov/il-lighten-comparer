@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using ILLightenComparer.Emit.Types;
 
 namespace ILLightenComparer.Emit
 {
     internal sealed class EqualityComparerEmitter
     {
-        private readonly TypeEmitter _emitter;
+        private readonly EmitterContext _emitterContext;
 
-        public EqualityComparerEmitter(TypeEmitter emitter) => _emitter = emitter;
+        public EqualityComparerEmitter(EmitterContext emitterContext) => _emitterContext = emitterContext;
 
         public IEqualityComparer<T> Emit<T>(CompareConfiguration configuration) =>
             throw new NotImplementedException();

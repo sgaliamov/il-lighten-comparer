@@ -5,13 +5,13 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Reflection;
 
-namespace ILLightenComparer.Emit.Types
+namespace ILLightenComparer.Emit
 {
-    internal sealed class TypeEmitter
+    internal sealed class EmitterContext
     {
         private readonly ModuleBuilder _module;
 
-        public TypeEmitter()
+        public EmitterContext()
         {
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("ILLightenComparer.DynamicAssembly"),

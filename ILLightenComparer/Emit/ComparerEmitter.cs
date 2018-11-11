@@ -3,23 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Methods;
-using ILLightenComparer.Emit.Types;
 using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer.Emit
 {
     internal sealed class ComparerEmitter
     {
-        private readonly TypeEmitter _emitter;
+        private readonly EmitterContext _emitterContext;
         private readonly CompareMethodEmitter _methodEmitter = new CompareMethodEmitter();
 
-        public ComparerEmitter(TypeEmitter emitter) => _emitter = emitter;
+        public ComparerEmitter(EmitterContext emitterContext) => _emitterContext = emitterContext;
 
         public IComparer Emit(Type objectType, CompareConfiguration configuration)
         {
-            var type = _emitter.DefineType($"{objectType.FullName}.Comparer");
+            var type = _emitterContext.DefineType($"{objectType.FullName}.Comparer");
 
-            var method = _emitter.DefineInterfaceMethod(type, Method.Compare);
+            var method = _emitterContext.DefineInterfaceMethod(type, Method.Compare);
 
             _methodEmitter.Emit(objectType, configuration, method);
 
@@ -36,7 +35,7 @@ namespace ILLightenComparer.Emit
 
             //return (T)instance;
 
-            return _emitter.EmitFactoryMethod<T>(typeInfo)();
+            return _emitterContext.EmitFactoryMethod<T>(typeInfo)();
         }
     }
 }

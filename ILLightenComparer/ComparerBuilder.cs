@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Emit;
-using ILLightenComparer.Emit.Types;
 
 namespace ILLightenComparer
 {
@@ -10,14 +9,14 @@ namespace ILLightenComparer
     {
         private readonly ComparerEmitter _comparerEmitter;
         private readonly EqualityComparerEmitter _equalityComparerEmitter;
-        private readonly TypeEmitter _typeEmitter = new TypeEmitter();
+        private readonly EmitterContext _emitterContext = new EmitterContext();
 
         private CompareConfiguration _configuration = new CompareConfiguration();
 
         public ComparerBuilder()
         {
-            _equalityComparerEmitter = new EqualityComparerEmitter(_typeEmitter);
-            _comparerEmitter = new ComparerEmitter(_typeEmitter);
+            _equalityComparerEmitter = new EqualityComparerEmitter(_emitterContext);
+            _comparerEmitter = new ComparerEmitter(_emitterContext);
         }
 
         public IComparer<T> CreateComparer<T>() =>
