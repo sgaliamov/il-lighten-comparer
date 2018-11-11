@@ -12,10 +12,8 @@ namespace ILLightenComparer.Emit.Methods
 
         public CompareMethodEmitter(Context context) => _context = context;
 
-        public void Emit(Type objectType, MethodBuilder method)
+        public void Emit(Type objectType, ILGenerator il)
         {
-            var il = method.GetILGenerator();
-
             EmitReferenceEquals(il);
 
             var members = _membersProvider.GetMembers(objectType, _context.Configuration);

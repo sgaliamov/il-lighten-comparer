@@ -24,7 +24,7 @@ namespace ILLightenComparer.Emit
 
             var method = _context.DefineInterfaceMethod(type, Method.Compare);
 
-            _methodEmitter.Emit(objectType, method);
+            _methodEmitter.Emit(objectType, method.GetILGenerator());
 
             return Create<IComparer>(type);
         }
@@ -34,10 +34,6 @@ namespace ILLightenComparer.Emit
         private T Create<T>(TypeBuilder typeBuilder)
         {
             var typeInfo = typeBuilder.CreateTypeInfo();
-
-            //var instance = Activator.CreateInstance(typeInfo);
-
-            //return (T)instance;
 
             return _context.EmitFactoryMethod<T>(typeInfo)();
         }
