@@ -16,4 +16,5 @@
 - [ ] Caching for assembly
 - [ ] ignored properties
 - [ ] compared dynamic?
+- [ ] try DefineGlobalMethod instead DynamicMethod
 - [ ] setup CI/CD

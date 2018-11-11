@@ -26,7 +26,8 @@ namespace ILLightenComparer.Emit.Types
                 $"InstanceOf_{type.FullName}",
                 typeof(TReturnType),
                 null,
-                _module);
+                _module,
+                true);
 
             EmitCallCtor(method.GetILGenerator(), type.GetConstructor(Type.EmptyTypes));
 
