@@ -7,11 +7,11 @@ using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    internal sealed class EmitterContext
+    internal sealed class Context
     {
         private readonly ModuleBuilder _module;
 
-        public EmitterContext()
+        public Context()
         {
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("ILLightenComparer.DynamicAssembly"),
@@ -19,6 +19,8 @@ namespace ILLightenComparer.Emit
 
             _module = assembly.DefineDynamicModule("ILLightenComparer.Module");
         }
+
+        public CompareConfiguration Configuration { get; set; } = new CompareConfiguration();
 
         public Func<TReturnType> EmitFactoryMethod<TReturnType>(TypeInfo type)
         {

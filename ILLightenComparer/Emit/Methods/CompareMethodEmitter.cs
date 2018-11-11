@@ -7,15 +7,18 @@ namespace ILLightenComparer.Emit.Methods
 {
     internal sealed class CompareMethodEmitter
     {
+        private readonly Context _context;
         private readonly MembersProvider _membersProvider = new MembersProvider();
 
-        public void Emit(Type objectType, CompareConfiguration configuration, MethodBuilder method)
+        public CompareMethodEmitter(Context context) => _context = context;
+
+        public void Emit(Type objectType, MethodBuilder method)
         {
             var il = method.GetILGenerator();
 
             EmitReferenceEquals(il);
 
-            var members = _membersProvider.GetMembers(objectType, configuration);
+            var members = _membersProvider.GetMembers(objectType, _context.Configuration);
             foreach (var member in members)
             {
                 if (IsIntegralType(member))

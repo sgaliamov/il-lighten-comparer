@@ -6,14 +6,14 @@ namespace ILLightenComparer.Emit
 {
     internal sealed class EqualityComparerEmitter
     {
-        private readonly EmitterContext _emitterContext;
+        private readonly Context _context;
 
-        public EqualityComparerEmitter(EmitterContext emitterContext) => _emitterContext = emitterContext;
+        public EqualityComparerEmitter(Context context) => _context = context;
 
-        public IEqualityComparer<T> Emit<T>(CompareConfiguration configuration) =>
+        public IEqualityComparer<T> Emit<T>() =>
             throw new NotImplementedException();
 
-        internal IEqualityComparer Emit(Type type, CompareConfiguration configuration) =>
+        internal IEqualityComparer Emit(Type type) =>
             throw new NotImplementedException();
     }
 }

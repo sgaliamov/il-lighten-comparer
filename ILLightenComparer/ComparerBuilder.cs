@@ -8,32 +8,30 @@ namespace ILLightenComparer
     public sealed class ComparerBuilder : IComparerBuilder
     {
         private readonly ComparerEmitter _comparerEmitter;
+        private readonly Context _context = new Context();
         private readonly EqualityComparerEmitter _equalityComparerEmitter;
-        private readonly EmitterContext _emitterContext = new EmitterContext();
-
-        private CompareConfiguration _configuration = new CompareConfiguration();
 
         public ComparerBuilder()
         {
-            _equalityComparerEmitter = new EqualityComparerEmitter(_emitterContext);
-            _comparerEmitter = new ComparerEmitter(_emitterContext);
+            _equalityComparerEmitter = new EqualityComparerEmitter(_context);
+            _comparerEmitter = new ComparerEmitter(_context);
         }
 
         public IComparer<T> CreateComparer<T>() =>
-            _comparerEmitter.Emit<T>(_configuration);
+            _comparerEmitter.Emit<T>();
 
         public IComparer CreateComparer(Type type) =>
-            _comparerEmitter.Emit(type, _configuration);
+            _comparerEmitter.Emit(type);
 
         public IEqualityComparer<T> CreateEqualityComparer<T>() =>
-            _equalityComparerEmitter.Emit<T>(_configuration);
+            _equalityComparerEmitter.Emit<T>();
 
         public IEqualityComparer CreateEqualityComparer(Type type) =>
-            _equalityComparerEmitter.Emit(type, _configuration);
+            _equalityComparerEmitter.Emit(type);
 
         public ComparerBuilder SetConfiguration(CompareConfiguration configuration)
         {
-            _configuration = configuration;
+            _context.Configuration = configuration;
             return this;
         }
     }

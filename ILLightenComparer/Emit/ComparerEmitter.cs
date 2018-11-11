@@ -9,23 +9,27 @@ namespace ILLightenComparer.Emit
 {
     internal sealed class ComparerEmitter
     {
-        private readonly EmitterContext _emitterContext;
-        private readonly CompareMethodEmitter _methodEmitter = new CompareMethodEmitter();
+        private readonly Context _context;
+        private readonly CompareMethodEmitter _methodEmitter;
 
-        public ComparerEmitter(EmitterContext emitterContext) => _emitterContext = emitterContext;
-
-        public IComparer Emit(Type objectType, CompareConfiguration configuration)
+        public ComparerEmitter(Context context)
         {
-            var type = _emitterContext.DefineType($"{objectType.FullName}.Comparer");
+            _context = context;
+            _methodEmitter = new CompareMethodEmitter(_context);
+        }
 
-            var method = _emitterContext.DefineInterfaceMethod(type, Method.Compare);
+        public IComparer Emit(Type objectType)
+        {
+            var type = _context.DefineType($"{objectType.FullName}.Comparer");
 
-            _methodEmitter.Emit(objectType, configuration, method);
+            var method = _context.DefineInterfaceMethod(type, Method.Compare);
+
+            _methodEmitter.Emit(objectType, method);
 
             return Create<IComparer>(type);
         }
 
-        public IComparer<T> Emit<T>(CompareConfiguration configuration) => throw new NotImplementedException();
+        public IComparer<T> Emit<T>() => throw new NotImplementedException();
 
         private T Create<T>(TypeBuilder typeBuilder)
         {
@@ -35,7 +39,7 @@ namespace ILLightenComparer.Emit
 
             //return (T)instance;
 
-            return _emitterContext.EmitFactoryMethod<T>(typeInfo)();
+            return _context.EmitFactoryMethod<T>(typeInfo)();
         }
     }
 }
