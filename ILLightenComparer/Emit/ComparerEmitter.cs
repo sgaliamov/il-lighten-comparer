@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -10,6 +11,7 @@ namespace ILLightenComparer.Emit
 {
     internal sealed class ComparerEmitter
     {
+        private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly Context _context;
         private readonly CompareMethodEmitter _methodEmitter;
 
@@ -19,20 +21,22 @@ namespace ILLightenComparer.Emit
             _methodEmitter = new CompareMethodEmitter(_context);
         }
 
-        public IComparer Emit(Type objectType)
-        {
-            var type = _context.DefineType($"{objectType.FullName}.Comparer");
+        public IComparer Emit(Type objectType) => _comparers.GetOrAdd(objectType, Create);
 
-            var method = _context.DefineInterfaceMethod(type, Method.Compare);
+        public IComparer<T> Emit<T>() => (IComparer<T>)_comparers.GetOrAdd(typeof(T), Create);
+
+        private IComparer Create(Type objectType)
+        {
+            var typeBuilder = _context.DefineType($"{objectType.FullName}.Comparer");
+
+            var methodBuilder = _context.DefineInterfaceMethod(typeBuilder, Method.Compare);
 
             EmitCall(
                 _methodEmitter.Emit(objectType),
-                method.GetILGenerator());
+                methodBuilder.GetILGenerator());
 
-            return Create<IComparer>(type);
+            return Create<IComparer>(typeBuilder);
         }
-
-        public IComparer<T> Emit<T>() => throw new NotImplementedException();
 
         private static void EmitCall(MethodInfo methodInfo, ILGenerator il)
         {
