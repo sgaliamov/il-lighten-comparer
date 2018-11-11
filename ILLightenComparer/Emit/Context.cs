@@ -24,12 +24,10 @@ namespace ILLightenComparer.Emit
 
         public Func<TReturnType> EmitFactoryMethod<TReturnType>(TypeInfo type)
         {
-            var method = new DynamicMethod(
+            var method = DefineStaticMethod(
                 $"InstanceOf_{type.FullName}",
                 typeof(TReturnType),
-                null,
-                _module,
-                true);
+                null);
 
             EmitCallCtor(method.GetILGenerator(), type.GetConstructor(Type.EmptyTypes));
 
@@ -59,6 +57,14 @@ namespace ILLightenComparer.Emit
 
             return type;
         }
+
+        public DynamicMethod DefineStaticMethod(string name, Type returnType, Type[] parameterTypes) =>
+            new DynamicMethod(
+                name,
+                returnType,
+                parameterTypes,
+                _module,
+                true);
 
         private static void EmitCallCtor(ILGenerator ilGenerator, ConstructorInfo constructor)
         {

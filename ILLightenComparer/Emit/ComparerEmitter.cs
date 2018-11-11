@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Methods;
 using ILLightenComparer.Reflection;
@@ -24,12 +25,22 @@ namespace ILLightenComparer.Emit
 
             var method = _context.DefineInterfaceMethod(type, Method.Compare);
 
-            _methodEmitter.Emit(objectType, method.GetILGenerator());
+            EmitCall(
+                _methodEmitter.Emit(objectType),
+                method.GetILGenerator());
 
             return Create<IComparer>(type);
         }
 
         public IComparer<T> Emit<T>() => throw new NotImplementedException();
+
+        private static void EmitCall(MethodInfo methodInfo, ILGenerator il)
+        {
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Ldarg_2);
+            il.Emit(OpCodes.Call, methodInfo);
+            il.Emit(OpCodes.Ret);
+        }
 
         private T Create<T>(TypeBuilder typeBuilder)
         {

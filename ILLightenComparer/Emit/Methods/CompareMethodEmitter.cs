@@ -12,8 +12,15 @@ namespace ILLightenComparer.Emit.Methods
 
         public CompareMethodEmitter(Context context) => _context = context;
 
-        public void Emit(Type objectType, ILGenerator il)
+        public MethodInfo Emit(Type objectType)
         {
+            var method = _context.DefineStaticMethod(
+                $"{objectType.FullName}.Compare",
+                typeof(int),
+                new[] { objectType, objectType });
+
+            var il = method.GetILGenerator();
+
             EmitReferenceEquals(il);
 
             var members = _membersProvider.GetMembers(objectType, _context.Configuration);
@@ -37,6 +44,8 @@ namespace ILLightenComparer.Emit.Methods
 
             il.Emit(OpCodes.Ldc_I4_0); // return 0
             il.Emit(OpCodes.Ret);
+
+            return method;
         }
 
         private void EmitComparableTypeComparison(MemberInfo member, ILGenerator il) { }
