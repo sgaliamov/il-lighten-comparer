@@ -9,25 +9,25 @@ using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    internal sealed class ComparerEmitter
+    internal sealed class ComparerBuilder
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly Context _context;
         private readonly CompareMethodEmitter _methodEmitter;
 
-        public ComparerEmitter(Context context)
+        public ComparerBuilder(Context context)
         {
             _context = context;
             _methodEmitter = new CompareMethodEmitter(_context);
         }
 
-        public IComparer Emit(Type objectType) => _comparers.GetOrAdd(objectType, Create);
+        public IComparer Build(Type objectType) => _comparers.GetOrAdd(objectType, Create);
 
-        public IComparer<T> Emit<T>() => (IComparer<T>)_comparers.GetOrAdd(typeof(T), Create);
+        public IComparer<T> Build<T>() => (IComparer<T>)_comparers.GetOrAdd(typeof(T), Create);
 
         private IComparer Create(Type objectType)
         {
-            var typeBuilder = _context.DefineType($"{objectType.FullName}.Comparer");
+            var typeBuilder = _context.DefineType($"{objectType.FullName}.Comparer", typeof(IComparer));
 
             var methodBuilder = _context.DefineInterfaceMethod(typeBuilder, Method.Compare);
 

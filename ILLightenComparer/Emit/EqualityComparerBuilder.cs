@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Emit
 {
-    internal sealed class EqualityComparerEmitter
+    internal sealed class EqualityComparerBuilder
     {
         private readonly Context _context;
 
-        public EqualityComparerEmitter(Context context) => _context = context;
+        public EqualityComparerBuilder(Context context) => _context = context;
 
-        public IEqualityComparer<T> Emit<T>() =>
+        public IEqualityComparer<T> Build<T>() =>
             throw new NotImplementedException();
 
-        internal IEqualityComparer Emit(Type type) =>
+        internal IEqualityComparer Build(Type type) =>
             throw new NotImplementedException();
     }
 }

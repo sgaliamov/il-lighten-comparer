@@ -38,7 +38,7 @@ namespace ILLightenComparer.Tests.Comparers
             actual.Should().BeGreaterThan(0);
         }
 
-        private readonly IComparer _target = new ComparerBuilder().CreateComparer(typeof(FlatObject));
+        private readonly IComparer _target = new ComparersBuilder().CreateComparer(typeof(FlatObject));
         private readonly Fixture _fixture = new Fixture();
     }
 }

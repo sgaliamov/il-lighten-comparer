@@ -4,16 +4,16 @@ using Xunit;
 
 namespace ILLightenComparer.Tests
 {
-    public class ComparerBuilderTests
+    public class ComparersBuilderTests
     {
-        public ComparerBuilderTests()
+        public ComparersBuilderTests()
         {
             var configuration = new CompareConfiguration
             {
                 IncludeFields = false
             };
 
-            _builder = new ComparerBuilder().SetConfiguration(configuration);
+            _builder = new ComparersBuilder().SetConfiguration(configuration);
         }
 
         [Fact]
@@ -48,6 +48,6 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        private readonly IComparerBuilder _builder;
+        private readonly IComparersBuilder _builder;
     }
 }
