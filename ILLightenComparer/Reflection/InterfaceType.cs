@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Reflection
 {
-    internal static class Interface
+    internal static class InterfaceType
     {
         public static readonly Type Comparer = typeof(IComparer);
         public static readonly Type EqualityComparer = typeof(IEqualityComparer);

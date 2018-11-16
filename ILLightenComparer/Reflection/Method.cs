@@ -5,27 +5,27 @@ namespace ILLightenComparer.Reflection
 {
     internal static class Method
     {
-        public static MethodInfo Compare = Interface
+        public static MethodInfo Compare = InterfaceType
                                            .Comparer
                                            .GetMethod(nameof(IComparer.Compare));
 
-        public static MethodInfo GenericCompare = Interface
+        public static MethodInfo GenericCompare = InterfaceType
                                                   .GenericComparer
                                                   .GetMethod(nameof(IComparer.Compare));
 
-        public static MethodInfo EqualsMethod = Interface
+        public static MethodInfo EqualsMethod = InterfaceType
                                                 .EqualityComparer
                                                 .GetMethod(nameof(IEqualityComparer.Equals));
 
-        public static MethodInfo GenericEquals = Interface
+        public static MethodInfo GenericEquals = InterfaceType
                                                  .GenericEqualityComparer
                                                  .GetMethod(nameof(IEqualityComparer.Equals));
 
-        public static MethodInfo GetHashCodeMethod = Interface
+        public static MethodInfo GetHashCodeMethod = InterfaceType
                                                      .EqualityComparer
                                                      .GetMethod(nameof(IEqualityComparer.GetHashCode));
 
-        public static MethodInfo GenericGetHashCode = Interface
+        public static MethodInfo GenericGetHashCode = InterfaceType
                                                       .GenericEqualityComparer
                                                       .GetMethod(nameof(IEqualityComparer.GetHashCode));
     }
