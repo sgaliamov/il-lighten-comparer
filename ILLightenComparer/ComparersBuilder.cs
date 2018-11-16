@@ -19,7 +19,7 @@ namespace ILLightenComparer
         }
 
         public IComparer<T> CreateComparer<T>() =>
-            _comparerBuilder.Build<T>();
+            throw new NotImplementedException();
 
         public IComparer CreateComparer(Type type) =>
             _comparerBuilder.Build(type);
