@@ -3,6 +3,7 @@ using System.Linq;
 using AutoFixture;
 using AutoFixture.Kernel;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
 
@@ -46,24 +47,25 @@ namespace ILLightenComparer.Tests.Comparers
                               });
 
             // act
-            var results = changes.Select(
-                                     x => new
-                                     {
-                                         ObjectsAreEquals = comparer.Equals(x.One, x.Other),
-                                         HashCodesAreEqual =
-                                             comparer.GetHashCode(x.One) == comparer.GetHashCode(x.Other),
-                                         ErrorMessage =
-                                             $"Property [{x.PropertyName}] is wrongly compared. Old value: {x.OldValue}, new value: {x.NewValue}."
-                                     })
-                                 .ToList();
+            var results = changes
+                          .Select(x => new
+                          {
+                              ObjectsAreEquals = comparer.Equals(x.One, x.Other),
+                              HashCodesAreEqual = comparer.GetHashCode(x.One) == comparer.GetHashCode(x.Other),
+                              ErrorMessage = $"Property [{x.PropertyName}] is wrongly compared. "
+                                             + $"Old value: {x.OldValue}, new value: {x.NewValue}."
+                          })
+                          .ToArray();
 
             // assert
-            results.ForEach(
-                x =>
+            using (new AssertionScope())
+            {
+                foreach (var item in results)
                 {
-                    x.ObjectsAreEquals.Should().BeFalse(x.ErrorMessage);
-                    x.HashCodesAreEqual.Should().BeFalse(x.ErrorMessage);
-                });
+                    item.ObjectsAreEquals.Should().BeFalse(item.ErrorMessage);
+                    item.HashCodesAreEqual.Should().BeFalse(item.ErrorMessage);
+                }
+            }
         }
 
         public static void PositiveTest<T>(IEqualityComparer<T> comparer)
@@ -74,24 +76,11 @@ namespace ILLightenComparer.Tests.Comparers
         public static void PositiveTest<T>(IEqualityComparer<T> comparer, string[] propertiesToIgnore)
         {
             var fixture = FixtureBuilder.GetInstance();
-            var context = new SpecimenContext(fixture);
 
             var one = fixture.Create<T>();
             var other = one.DeepClone();
 
-            typeof(T)
-                .GetProperties()
-                .Where(x => propertiesToIgnore.Contains(x.Name))
-                .ToList()
-                .ForEach(
-                    property =>
-                    {
-                        var newValue = property.PropertyType == typeof(bool)
-                            ? !(bool)property.GetValue(other)
-                            : context.Resolve(property.PropertyType);
-
-                        property.SetValue(other, newValue);
-                    });
+            MutateProperties(propertiesToIgnore, other);
 
             // act
             var result = comparer.Equals(one, other);
@@ -101,6 +90,25 @@ namespace ILLightenComparer.Tests.Comparers
             // assert
             result.Should().BeTrue();
             oneHashCode.Should().Be(otherHashCode);
+        }
+
+        private static void MutateProperties<T>(string[] propertiesToIgnore, T other)
+        {
+            var fixture = FixtureBuilder.GetInstance();
+            var context = new SpecimenContext(fixture);
+
+            typeof(T)
+                .GetProperties()
+                .Where(x => propertiesToIgnore.Contains(x.Name))
+                .ToList()
+                .ForEach(property =>
+                {
+                    var newValue = property.PropertyType == typeof(bool)
+                        ? !(bool)property.GetValue(other)
+                        : context.Resolve(property.PropertyType);
+
+                    property.SetValue(other, newValue);
+                });
         }
     }
 }
