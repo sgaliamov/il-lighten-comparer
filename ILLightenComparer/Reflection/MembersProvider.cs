@@ -12,21 +12,6 @@ namespace ILLightenComparer.Reflection
                     //| BindingFlags.FlattenHierarchy
                     | BindingFlags.Public)
                 .Where(memberInfo => Filter(memberInfo, configuration))
-                //.Select(memberInfo =>
-                //{
-                //    switch (memberInfo)
-                //    {
-                //        case FieldInfo field:
-                //            return field.FieldType;
-
-                //        case PropertyInfo property:
-                //            return property.PropertyType;
-
-                //        default:
-                //            throw new NotSupportedException(
-                //                $"Only fields and properties are supported. {memberInfo.MemberType}: {memberInfo.DeclaringType}.{memberInfo.Name}");
-                //    }
-                //})
                 .ToArray();
 
         private static bool Filter(MemberInfo memberInfo, CompareConfiguration configuration) =>
