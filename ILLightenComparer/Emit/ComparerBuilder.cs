@@ -51,6 +51,9 @@ namespace ILLightenComparer.Emit
 
             EmitMembersComparision(objectType, il);
 
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Ret);
+
             typeBuilder.BuildFactoryMethod<IComparer>();
 
             return staticMethodBuilder;
@@ -105,10 +108,7 @@ namespace ILLightenComparer.Emit
             il.Emit(OpCodes.Brtrue_S, else2);
             il.Emit(OpCodes.Ldc_I4_M1); // return -1
             il.Emit(OpCodes.Ret);
-            il.MarkLabel(else2);
-
-            il.Emit(OpCodes.Ldc_I4_8);
-            il.Emit(OpCodes.Ret);
+            il.MarkLabel(else2);            
         }
 
         private static void BuildInstanceCompareMethod(TypeBuilder typeBuilder, MethodInfo staticCompareMethod)
