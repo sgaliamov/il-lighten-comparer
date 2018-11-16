@@ -31,7 +31,7 @@ namespace ILLightenComparer
 
         public ComparerBuilder SetConfiguration(CompareConfiguration configuration)
         {
-            _context.Configuration = configuration;
+            _context.SetConfiguration(configuration);
             return this;
         }
     }
