@@ -10,7 +10,7 @@ namespace ILLightenComparer.Tests.Samples
 
         public DateTime DateTimeProperty { get; set; }
         public double DoubleProperty { get; set; }
-        public object ObjectProperty { get; set; }
+        //public object ObjectProperty { get; set; }
         public float FloatProperty { get; set; }
         public SampleEnum EnumProperty { get; set; }
         public int IntegerProperty { get; set; }

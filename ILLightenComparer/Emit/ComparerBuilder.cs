@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Visitors;
 using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer.Emit
@@ -10,6 +12,7 @@ namespace ILLightenComparer.Emit
     internal sealed class ComparerBuilder
     {
         private readonly Context _context;
+        private readonly CompareEmitVisitor _emitVisitor = new CompareEmitVisitor();
         private readonly MembersProvider _membersProvider;
 
         public ComparerBuilder(Context context, MembersProvider membersProvider)
@@ -22,35 +25,62 @@ namespace ILLightenComparer.Emit
         {
             var typeBuilder = _context.DefineType($"{objectType.FullName}.Comparer", InterfaceType.Comparer);
 
-            var staticCompare = BuildStaticMethods(typeBuilder);
+            var staticCompare = BuildStaticMethods(typeBuilder, objectType);
 
-            BuildCompareMethod(typeBuilder, staticCompare);
+            BuildInstanceCompareMethod(typeBuilder, staticCompare);
 
             var typeInfo = typeBuilder.CreateTypeInfo();
 
             return _context.CreateInstance<IComparer>(typeInfo);
         }
 
-        private MethodBuilder BuildStaticMethods(TypeBuilder typeBuilder)
+        private MethodBuilder BuildStaticMethods(TypeBuilder typeBuilder, Type objectType)
         {
             var staticMethodBuilder = typeBuilder.DefineStaticMethod(
                 Constants.CompareMethodName,
                 typeof(int),
-                new[] { typeof(object), typeof(object), typeof(object) });
-            EmitReferenceEquals(staticMethodBuilder.GetILGenerator());
+                new[]
+                {
+                    typeof(HashSet<object>),
+                    typeof(object), // x
+                    typeof(object) // y
+                });
+            var il = staticMethodBuilder.GetILGenerator();
 
-            var members = _membersProvider.GetMembers(typeBuilder, _context.Configuration);
-            foreach (var member in members)
-            {
-                
-            }
+            EmitReferenceComparision(il);
+
+            EmitMembersComparision(objectType, il);
 
             typeBuilder.BuildFactoryMethod<IComparer>();
 
             return staticMethodBuilder;
         }
 
-        private static void EmitReferenceEquals(ILGenerator il)
+        private void EmitMembersComparision(Type objectType, ILGenerator il)
+        {
+            var members = _membersProvider.GetMembers(objectType, _context.Configuration);
+
+            foreach (var memberInfo in members)
+            {
+                switch (memberInfo)
+                {
+                    case FieldInfo field:
+                        _emitVisitor.Visit(il, field);
+                        break;
+
+                    case PropertyInfo property:
+                        _emitVisitor.Visit(il, property);
+                        break;
+
+                    default:
+                        throw new NotSupportedException(
+                            "Only fields and properties are supported. "
+                            + $"{memberInfo.MemberType}: {memberInfo.DeclaringType}.{memberInfo.Name}");
+                }
+            }
+        }
+
+        private static void EmitReferenceComparision(ILGenerator il)
         {
             // x == y
             var else0 = il.DefineLabel();
@@ -81,14 +111,14 @@ namespace ILLightenComparer.Emit
             il.Emit(OpCodes.Ret);
         }
 
-        private static void BuildCompareMethod(TypeBuilder typeBuilder, MethodInfo staticCompareMethod)
+        private static void BuildInstanceCompareMethod(TypeBuilder typeBuilder, MethodInfo staticCompareMethod)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(Method.Compare);
 
             var il = methodBuilder.GetILGenerator();
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Ldarg_2);
+            il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
+            il.Emit(OpCodes.Ldarg_1); // x
+            il.Emit(OpCodes.Ldarg_2); // y
             il.Emit(OpCodes.Call, staticCompareMethod);
             il.Emit(OpCodes.Ret);
         }

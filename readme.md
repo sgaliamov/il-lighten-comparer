@@ -4,8 +4,10 @@
 
 - [ ] basic implementation
 - [ ] benchmarks
-- [ ] customize comparer with specific implementation
-- [ ] use implementations of IComparable
+- [ ] optimization for integral types
+- [ ] implementation for generics
+- [ ] test when abstract class is replaced after a comparer is created
+- [ ] customization setting to override comparer with specific implementation
 - [ ] detect cycles (check graph theory)
 - [ ] string options (case, culture)
 - [ ] compare nullable
