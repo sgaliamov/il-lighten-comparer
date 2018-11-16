@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Emit;
+using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer
 {
@@ -11,11 +12,12 @@ namespace ILLightenComparer
         private readonly ComparerBuilder _comparerBuilder;
         private readonly Context _context = new Context();
         private readonly EqualityComparerBuilder _equalityComparerBuilder;
+        private readonly MembersProvider _membersProvider = new MembersProvider();
 
         public ComparersBuilder()
         {
             _equalityComparerBuilder = new EqualityComparerBuilder(_context);
-            _comparerBuilder = new ComparerBuilder(_context);
+            _comparerBuilder = new ComparerBuilder(_context, _membersProvider);
         }
 
         public IComparer<T> CreateComparer<T>() =>
