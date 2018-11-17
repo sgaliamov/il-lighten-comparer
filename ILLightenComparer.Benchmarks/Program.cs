@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Diagnostics;
 using ILLightenComparer.Benchmarks.Models;
 
 namespace ILLightenComparer.Benchmarks
@@ -11,28 +9,21 @@ namespace ILLightenComparer.Benchmarks
         {
             //BenchmarkRunner.Run<CompareIntegral>();
 
-            Console.WriteLine("build");
-            //Console.ReadLine();
-
             var target = new ComparersBuilder().CreateComparer(typeof(SimpleObject));
 
-            var flatObject = new SimpleObject();
+            var one = new SimpleObject
+            {
+                Integer = 1
+            };
 
-            Console.WriteLine("compare");
+            var other = new SimpleObject
+            {
+                Integer = -1
+            };
 
-            var result = Result(target, flatObject);
+            var result = target.Compare(one, other);
 
-            Console.WriteLine("done");
             Console.WriteLine(result);
-        }
-
-        private static int Result(IComparer target, SimpleObject flatObject)
-        {
-            GC.WaitForFullGCComplete(10000);
-
-            //Console.ReadLine();
-
-            return target.Compare(flatObject, flatObject);
         }
     }
 }

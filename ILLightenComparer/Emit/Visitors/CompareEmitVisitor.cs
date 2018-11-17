@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -9,29 +8,30 @@ namespace ILLightenComparer.Emit.Visitors
     {
         public void Visit(ILGenerator il, PropertyInfo info)
         {
-            var comparable = info
-                             .PropertyType
-                             .GetInterfaces()
-                             .FirstOrDefault(type => type.FullName == typeof(IComparable).FullName)
-                             ?? throw new NotSupportedException(
-                                 $"Property {info.DeclaringType}.{info.Name} must implement {nameof(IComparable)}");
+            var compareToMethod = info
+                                  .PropertyType
+                                  .GetMethod(nameof(IComparable.CompareTo), new[] { info.PropertyType });
 
-            var compareToMethod = comparable.GetMethod(nameof(IComparable.CompareTo));
             var getMethod = info.GetGetMethod();
 
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Callvirt, getMethod);
+            var local = il.DeclareLocal(info.PropertyType); // todo: maybe cache locals to reuse them for same types
+            il.Emit(OpCodes.Ldarg_1); // x = arg1
+            il.Emit(OpCodes.Callvirt, getMethod); // a = x.Prop
+            il.Emit(OpCodes.Stloc_S, local);
+            il.Emit(OpCodes.Ldloca_S, local); // pa = *a
 
-            il.Emit(OpCodes.Ldarg_2);
-            il.Emit(OpCodes.Callvirt, getMethod);
+            il.Emit(OpCodes.Ldarg_2); // y = arg2
+            il.Emit(OpCodes.Callvirt, getMethod); // b = y.Prop
+
+            il.Emit(OpCodes.Callvirt, compareToMethod); // r = pa->CompareTo(b)
+            il.Emit(OpCodes.Stloc_S, local); // pop r
+            il.Emit(OpCodes.Ldloc_S, local); // push r
 
             var gotoNext = il.DefineLabel();
-            il.Emit(OpCodes.Callvirt, compareToMethod);
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Brfalse_S, gotoNext);
-            il.Emit(OpCodes.Ret);
-            il.MarkLabel(gotoNext);
-            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Brfalse_S, gotoNext); // if(r == 0) continue
+            il.Emit(OpCodes.Ldloc_S, local); // pop r
+            il.Emit(OpCodes.Ret); // return r
+            il.MarkLabel(gotoNext); // else
         }
 
         public void Visit(ILGenerator il, FieldInfo info) { }
