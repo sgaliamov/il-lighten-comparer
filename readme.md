@@ -8,7 +8,8 @@
 - [x] Flat object properties comparison
 - [x] Compare structures
 - [x] Generic comparer
-- [ ] Refactor generic builder
+- [x] Refactor generic builder
+- [ ] Refactor tests
 - [ ] Benchmarks
 
 ### Phase 1 Core features
