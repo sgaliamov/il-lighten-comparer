@@ -34,7 +34,7 @@ namespace ILLightenComparer.Tests.Samples
             }
         }
 
-        public override string ToString() => $"{nameof(Key)}: {Key}, {nameof(Value)}: {Value}";
+        public override string ToString() => $"{nameof(Key)}: {Key:+00;-00}, {nameof(Value)}: {Value:+00;-00}";
 
         public static IComparer Comparer { get; } = new SampleStructRelationalComparer();
     }
