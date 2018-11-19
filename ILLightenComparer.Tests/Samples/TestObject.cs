@@ -30,11 +30,9 @@ namespace ILLightenComparer.Tests.Samples
             IComparer<TestObject>,
             IComparer
         {
-            public int Compare(object x, object y) => CompareS((TestObject)x, (TestObject)y);
+            public int Compare(object x, object y) => Compare((TestObject)x, (TestObject)y);
 
-            public int Compare(TestObject x, TestObject y) => CompareS(x, y);
-
-            private static int CompareS(TestObject x, TestObject y)
+            public int Compare(TestObject x, TestObject y)
             {
                 if (ReferenceEquals(x, y))
                 {
