@@ -42,17 +42,14 @@ namespace ILLightenComparer.Emit
                 new[]
                 {
                     typeof(HashSet<object>),
-                    typeof(object), // x
-                    typeof(object) // y
+                    objectType, // x
+                    objectType // y
                 });
+
             var il = staticMethodBuilder.GetILGenerator();
-
             EmitReferenceComparision(il);
-
             EmitMembersComparision(objectType, il);
-
-            il.Emit(OpCodes.Ldc_I4_0);
-            il.Emit(OpCodes.Ret);
+            EmitDefaultResult(il);
 
             typeBuilder.BuildFactoryMethod<IComparer>();
 
@@ -78,9 +75,15 @@ namespace ILLightenComparer.Emit
                     default:
                         throw new NotSupportedException(
                             "Only fields and properties are supported. "
-                            + $"{memberInfo.MemberType}: {memberInfo.DeclaringType}.{memberInfo.Name}");
+                            + $"{memberInfo.MemberType}: {memberInfo.DisplayName()}");
                 }
             }
+        }
+
+        private static void EmitDefaultResult(ILGenerator il)
+        {
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Ret);
         }
 
         private static void EmitReferenceComparision(ILGenerator il)
@@ -108,7 +111,7 @@ namespace ILLightenComparer.Emit
             il.Emit(OpCodes.Brtrue_S, else2);
             il.Emit(OpCodes.Ldc_I4_M1); // return -1
             il.Emit(OpCodes.Ret);
-            il.MarkLabel(else2);            
+            il.MarkLabel(else2);
         }
 
         private static void BuildInstanceCompareMethod(TypeBuilder typeBuilder, MethodInfo staticCompareMethod)

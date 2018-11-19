@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Visitors
 {
@@ -10,7 +11,9 @@ namespace ILLightenComparer.Emit.Visitors
         {
             var compareToMethod = info
                                   .PropertyType
-                                  .GetMethod(nameof(IComparable.CompareTo), new[] { info.PropertyType });
+                                  .GetMethod(nameof(IComparable.CompareTo), new[] { info.PropertyType })
+                                  ?? throw new NotSupportedException(
+                                      $"Property {info.DisplayName()} does not implement IComparable.");
 
             var getMethod = info.GetGetMethod();
 
@@ -23,7 +26,7 @@ namespace ILLightenComparer.Emit.Visitors
             il.Emit(OpCodes.Ldarg_2); // y = arg2
             il.Emit(OpCodes.Callvirt, getMethod); // b = y.Prop
 
-            il.Emit(OpCodes.Callvirt, compareToMethod); // r = pa->CompareTo(b)
+            il.Emit(OpCodes.Call, compareToMethod); // r = pa->CompareTo(b)
             il.Emit(OpCodes.Stloc_S, local); // pop r
             il.Emit(OpCodes.Ldloc_S, local); // push r
 
