@@ -52,7 +52,10 @@ namespace ILLightenComparer.Emit
                 });
 
             var il = staticMethodBuilder.GetILGenerator();
-            EmitReferenceComparision(il);
+            if (objectType.IsClass)
+            {
+                EmitReferenceComparision(il);
+            }
             EmitMembersComparision(objectType, il);
             EmitDefaultResult(il);
 
@@ -124,14 +127,16 @@ namespace ILLightenComparer.Emit
             MethodInfo staticCompareMethod,
             Type objectType)
         {
+            var cast = objectType.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass;
+
             var methodBuilder = typeBuilder.DefineInterfaceMethod(Method.Compare);
 
             var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
             il.Emit(OpCodes.Ldarg_1); // x
-            il.Emit(OpCodes.Castclass, objectType);
+            il.Emit(cast, objectType);
             il.Emit(OpCodes.Ldarg_2); // y
-            il.Emit(OpCodes.Castclass, objectType);
+            il.Emit(cast, objectType);
             il.Emit(OpCodes.Call, staticCompareMethod);
             il.Emit(OpCodes.Ret);
 

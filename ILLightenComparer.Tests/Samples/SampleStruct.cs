@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
@@ -7,7 +6,7 @@ namespace ILLightenComparer.Tests.Samples
     public struct SampleStruct
     {
         public int Key { get; set; }
-        public string Value { get; set; }
+        public decimal Value { get; set; } // todo: change type to string
 
         private sealed class SampleStructRelationalComparer :
             IComparer<SampleStruct>,
@@ -25,12 +24,18 @@ namespace ILLightenComparer.Tests.Samples
                     return keyComparison;
                 }
 
-                return string.Compare(x.Value, y.Value, StringComparison.Ordinal);
+                var valueComparison = x.Value.CompareTo(y.Value);
+                if (valueComparison != 0)
+                {
+                    return valueComparison;
+                }
+
+                return valueComparison;
             }
         }
 
         public override string ToString() => $"{nameof(Key)}: {Key}, {nameof(Value)}: {Value}";
 
-        public static IComparer<SampleStruct> Comparer { get; } = new SampleStructRelationalComparer();
+        public static IComparer Comparer { get; } = new SampleStructRelationalComparer();
     }
 }

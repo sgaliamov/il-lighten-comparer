@@ -86,6 +86,7 @@ namespace ILLightenComparer.Tests.Comparers
                 {
                     var oneCurrent = enumeratorOne.Current;
                     var otherCurrent = enumeratorOther.Current;
+
                     oneCurrent
                         .Should()
                         .BeEquivalentTo(

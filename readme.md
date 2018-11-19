@@ -6,13 +6,13 @@
 
 - [x] Comparer test
 - [x] Flat object properties comparison
-- [x] Compare strings
 - [ ] Compare structures
 - [ ] Generic comparer
 - [ ] Benchmarks
 
 ### Phase 1 Core features
 
+- [ ] Compare strings
 - [ ] Compare fields
 - [ ] Fixture generates nulls
 - [ ] Compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
