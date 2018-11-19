@@ -1,7 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
+using Force.DeepCloner;
 using ILLightenComparer.Tests.Samples;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.Comparers
@@ -9,13 +13,23 @@ namespace ILLightenComparer.Tests.Comparers
     public sealed class ComparerTests
     {
         [Fact]
-        public void Comparison_Null_With_Object_Produces_Negative_Value()
+        public void Comparison_Of_Null_With_Object_Produces_Negative_Value()
         {
             var obj = _fixture.Create<TestObject>();
 
             var actual = _target.Compare(null, obj);
 
             actual.Should().BeLessThan(0);
+        }
+
+        [Fact]
+        public void Comparison_Of_Object_With_Null_Produces_Positive_Value()
+        {
+            var obj = _fixture.Create<TestObject>();
+
+            var actual = _target.Compare(obj, null);
+
+            actual.Should().BeGreaterThan(0);
         }
 
         [Fact]
@@ -29,16 +43,22 @@ namespace ILLightenComparer.Tests.Comparers
         }
 
         [Fact]
-        public void Comparison_With_Null_Produces_Positive_Value()
+        public void Sorting_Must_Work_The_Same_As_For_Reference_Comparer()
         {
-            var obj = _fixture.Create<TestObject>();
+            const int count = 100;
+            var original = _fixture.CreateMany<TestObject>(count).ToArray();
+            var copy = original.DeepClone();
 
-            var actual = _target.Compare(obj, null);
+            Array.Sort(original, _target);
+            Array.Sort(copy, TestObject.Comparer);
 
-            actual.Should().BeGreaterThan(0);
+            for (var i = 0; i < count; i++)
+            {
+                original[i].Should().BeEquivalentTo(copy[i]);
+            }
         }
 
         private readonly IComparer _target = new ComparersBuilder().CreateComparer(typeof(TestObject));
-        private readonly Fixture _fixture = new Fixture();
+        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
     }
 }

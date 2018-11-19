@@ -4,7 +4,7 @@
 
 ### Phase 0 PoC
 
-- [ ] Comparer test
+- [x] Comparer test
 - [ ] Flat object properties comparison
 - [ ] Generic comparer
 - [ ] Benchmarks
@@ -29,6 +29,7 @@
 - [ ] Caching for assembly
 - [ ] Ignored properties
 - [ ] String options (case, culture)
+- [ ] Support internal classes to compare
 
 ### Phase 4 Settings
 
