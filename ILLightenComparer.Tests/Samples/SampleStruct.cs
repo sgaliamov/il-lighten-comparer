@@ -13,9 +13,11 @@ namespace ILLightenComparer.Tests.Samples
             IComparer<SampleStruct>,
             IComparer
         {
-            public int Compare(object x, object y) => Compare((SampleStruct)x, (SampleStruct)y);
+            public int Compare(object x, object y) => CompareS((SampleStruct)x, (SampleStruct)y);
 
-            public int Compare(SampleStruct x, SampleStruct y)
+            public int Compare(SampleStruct x, SampleStruct y) => CompareS(x, y);
+
+            private static int CompareS(SampleStruct x, SampleStruct y)
             {
                 var keyComparison = x.Key.CompareTo(y.Key);
                 if (keyComparison != 0)

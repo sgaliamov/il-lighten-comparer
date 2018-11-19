@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace ILLightenComparer.Tests.Samples
 {
@@ -26,13 +27,15 @@ namespace ILLightenComparer.Tests.Samples
         public override string ToString() =>
             $"{nameof(BooleanProperty)}: {BooleanProperty}, {nameof(ByteProperty)}: {ByteProperty}, {nameof(SByteProperty)}: {SByteProperty}, {nameof(CharProperty)}: {CharProperty}, {nameof(DecimalProperty)}: {DecimalProperty}, {nameof(DoubleProperty)}: {DoubleProperty}, {nameof(SingleProperty)}: {SingleProperty}, {nameof(Int32Property)}: {Int32Property}, {nameof(UInt32Property)}: {UInt32Property}, {nameof(Int64Property)}: {Int64Property}, {nameof(UInt64Property)}: {UInt64Property}, {nameof(Int16Property)}: {Int16Property}, {nameof(UInt16Property)}: {UInt16Property}, {nameof(StringProperty)}: {StringProperty}";
 
-        private sealed class TestObjectRelationalComparer : 
-            IComparer<TestObject>, 
+        private sealed class TestObjectRelationalComparer :
+            IComparer<TestObject>,
             IComparer
         {
-            public int Compare(object x, object y) => Compare((TestObject)x, (TestObject)y);
+            public int Compare(object x, object y) => CompareS((TestObject)x, (TestObject)y);
 
-            public int Compare(TestObject x, TestObject y)
+            public int Compare(TestObject x, TestObject y) => CompareS(x, y);
+
+            private static int CompareS(TestObject x, TestObject y)
             {
                 if (ReferenceEquals(x, y))
                 {
