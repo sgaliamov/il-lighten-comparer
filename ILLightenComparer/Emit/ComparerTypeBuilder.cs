@@ -140,7 +140,7 @@ namespace ILLightenComparer.Emit
             MethodInfo interfaceMethod,
             Type objectType)
         {
-            var castOp = objectType.IsValueType ? OpCodes.Unbox : OpCodes.Castclass;
+            var castOp = objectType.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass;
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
             var il = methodBuilder.GetILGenerator();
