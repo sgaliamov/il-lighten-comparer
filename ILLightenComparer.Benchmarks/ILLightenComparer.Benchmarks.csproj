@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.5.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.2" />
+    <PackageReference Include="Nito.Comparers" Version="5.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ILLightenComparer.Tests\ILLightenComparer.Tests.csproj" />
+  </ItemGroup>
+
+</Project>
