@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
 using Xunit;

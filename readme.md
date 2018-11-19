@@ -9,7 +9,7 @@
 - [x] Compare structures
 - [x] Generic comparer
 - [x] Refactor generic builder
-- [ ] Refactor tests
+- [x] Refactor tests
 - [ ] Benchmarks
 
 ### Phase 1 Core features
@@ -33,6 +33,7 @@
 - [ ] Support internal classes to compare
 - [ ] use short versions of opt codes when possible
 - [ ] reuse local variables for same types
+- [ ] test class with more than 256 properties
 
 ### Phase 4 Settings
 

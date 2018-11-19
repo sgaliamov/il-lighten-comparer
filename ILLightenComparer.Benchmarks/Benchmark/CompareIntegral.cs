@@ -7,12 +7,12 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     [RankColumn]
     public class CompareIntegral
     {
+        private const int N = 10000;
         private readonly int[] _one = new int[N];
         private readonly int[] _other = new int[N];
 
         // ReSharper disable once NotAccessedField.Local
         private int _out;
-        private const int N = 10000;
 
         [GlobalSetup]
         public void Setup()
