@@ -8,6 +8,12 @@ using Nito.Comparers;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
+//           Method |      Mean |     Error |    StdDev |    Median | Ratio | RatioSD | Rank |
+// ---------------- |----------:|----------:|----------:|----------:|------:|--------:|-----:|
+//    Nito_Comparer | 12.456 us | 0.2484 us | 0.5855 us | 12.356 us |  7.89 |    0.43 |    3 |
+//      IL_Comparer |  1.851 us | 0.0483 us | 0.0708 us |  1.840 us |  1.15 |    0.07 |    2 |
+//  Native_Comparer |  1.597 us | 0.0404 us | 0.0779 us |  1.571 us |  1.00 |    0.00 |    1 |
+
     [MedianColumn]
     [RankColumn]
     public class ComparersBenchmark

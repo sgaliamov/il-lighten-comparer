@@ -10,7 +10,7 @@
 - [x] Generic comparer
 - [x] Refactor generic builder
 - [x] Refactor tests
-- [ ] Benchmarks
+- [x] Benchmarks
 
 ### Phase 1 Core features
 
