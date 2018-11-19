@@ -27,7 +27,7 @@ namespace ILLightenComparer.Tests
         [Fact]
         public void Create_Generic_EqualityComparer()
         {
-            var comparer = _builder.CreateEqualityComparer<FlatObject>();
+            var comparer = _builder.CreateEqualityComparer<TestObject>();
 
             comparer.Should().NotBeNull();
         }
@@ -35,7 +35,7 @@ namespace ILLightenComparer.Tests
         [Fact]
         public void Create_Not_Generic_Comparer()
         {
-            var comparer = _builder.CreateComparer(typeof(FlatObject));
+            var comparer = _builder.CreateComparer(typeof(TestObject));
 
             comparer.Should().NotBeNull();
         }

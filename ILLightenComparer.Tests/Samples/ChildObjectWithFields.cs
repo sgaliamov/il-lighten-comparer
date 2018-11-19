@@ -1,6 +1,6 @@
 ﻿namespace ILLightenComparer.Tests.Samples
 {
-    internal class ChildObject : FlatObject
+    internal class ChildObject : TestObject
     {
         public string StringField;
 

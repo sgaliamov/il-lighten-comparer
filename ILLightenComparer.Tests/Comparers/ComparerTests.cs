@@ -11,7 +11,7 @@ namespace ILLightenComparer.Tests.Comparers
         [Fact]
         public void Comparison_Null_With_Object_Produces_Negative_Value()
         {
-            var obj = _fixture.Create<FlatObject>();
+            var obj = _fixture.Create<TestObject>();
 
             var actual = _target.Compare(null, obj);
 
@@ -21,7 +21,7 @@ namespace ILLightenComparer.Tests.Comparers
         [Fact]
         public void Comparison_With_Itself_Produces_0()
         {
-            var obj = _fixture.Create<FlatObject>();
+            var obj = _fixture.Create<TestObject>();
 
             var actual = _target.Compare(obj, obj);
 
@@ -31,14 +31,14 @@ namespace ILLightenComparer.Tests.Comparers
         [Fact]
         public void Comparison_With_Null_Produces_Positive_Value()
         {
-            var obj = _fixture.Create<FlatObject>();
+            var obj = _fixture.Create<TestObject>();
 
             var actual = _target.Compare(obj, null);
 
             actual.Should().BeGreaterThan(0);
         }
 
-        private readonly IComparer _target = new ComparersBuilder().CreateComparer(typeof(FlatObject));
+        private readonly IComparer _target = new ComparersBuilder().CreateComparer(typeof(TestObject));
         private readonly Fixture _fixture = new Fixture();
     }
 }

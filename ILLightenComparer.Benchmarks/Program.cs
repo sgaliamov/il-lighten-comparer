@@ -9,16 +9,18 @@ namespace ILLightenComparer.Benchmarks
         {
             //BenchmarkRunner.Run<CompareIntegral>();
 
-            var target = new ComparersBuilder().CreateComparer(typeof(SimpleObject));
+            var target = new ComparersBuilder().CreateComparer(typeof(FlatObject));
 
-            var one = new SimpleObject
+            var one = new FlatObject
             {
-                Integer = 1
+                IntegerProperty = 1,
+                Double = 2
             };
 
-            var other = new SimpleObject
+            var other = new FlatObject
             {
-                Integer = -1
+                //IntegerProperty = 2,
+                Double = 2
             };
 
             var result = target.Compare(one, other);
