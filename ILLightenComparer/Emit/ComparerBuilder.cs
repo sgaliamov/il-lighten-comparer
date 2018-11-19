@@ -23,18 +23,23 @@ namespace ILLightenComparer.Emit
 
         public IComparer Build(Type objectType)
         {
-            var typeBuilder = _context.DefineType($"{objectType.FullName}.Comparer", InterfaceType.Comparer);
+            var typeBuilder = _context.DefineType(
+                $"{objectType.FullName}.Comparer",
+                InterfaceType.Comparer
+                //InterfaceType.GenericComparer
+            );
 
-            var staticCompare = BuildStaticMethods(typeBuilder, objectType);
+            var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
 
             BuildInstanceCompareMethod(typeBuilder, staticCompare);
 
+            typeBuilder.BuildFactoryMethod<IComparer>();
             var typeInfo = typeBuilder.CreateTypeInfo();
 
             return _context.CreateInstance<IComparer>(typeInfo);
         }
 
-        private MethodBuilder BuildStaticMethods(TypeBuilder typeBuilder, Type objectType)
+        private MethodBuilder BuildStaticCompareMethod(TypeBuilder typeBuilder, Type objectType)
         {
             var staticMethodBuilder = typeBuilder.DefineStaticMethod(
                 Constants.CompareMethodName,
@@ -51,15 +56,13 @@ namespace ILLightenComparer.Emit
             EmitMembersComparision(objectType, il);
             EmitDefaultResult(il);
 
-            typeBuilder.BuildFactoryMethod<IComparer>();
-
             return staticMethodBuilder;
         }
 
         private void EmitMembersComparision(Type objectType, ILGenerator il)
         {
             var members = _membersProvider.GetMembers(objectType, _context.Configuration);
-            
+
             il.DeclareLocal(typeof(int)); // to store comparison result. todo: reuse locals.
 
             foreach (var memberInfo in members)

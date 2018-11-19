@@ -13,6 +13,16 @@ namespace ILLightenComparer.Tests.Comparers
     public sealed class ComparerTests
     {
         [Fact]
+        public void Compare_Structs_By_NotGeneric_Comparer()
+        {
+            var comparer = new ComparersBuilder().CreateComparer(typeof(SampleStruct));
+
+            var actual = comparer.Compare(new SampleStruct(), new SampleStruct());
+
+            actual.Should().Be(0);
+        }
+
+        [Fact]
         public void Comparison_Of_Null_With_Object_Produces_Negative_Value()
         {
             var obj = _fixture.Create<TestObject>();

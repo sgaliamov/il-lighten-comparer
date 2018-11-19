@@ -48,6 +48,16 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
+        
+        [Fact]
+        public void Generic_And_NotTyped_Builders_Create_The_Same_Comparer()
+        {
+            var notTyped = _builder.CreateComparer(typeof(TestObject));
+            var generic = _builder.CreateComparer<TestObject>();
+
+            generic.Should().BeSameAs(notTyped);
+        }
+
         private readonly IComparersBuilder _builder;
     }
 }

@@ -7,6 +7,7 @@
 - [x] Comparer test
 - [x] Flat object properties comparison
 - [x] Compare strings
+- [ ] Compare structures
 - [ ] Generic comparer
 - [ ] Benchmarks
 
@@ -20,7 +21,6 @@
 ### Phase 2 Hierarchical objects
 
 - [ ] Detect cycles (check graph theory)
-- [ ] Compare structures
 - [ ] Test when abstract class is replaced after a comparer is created
 
 ### Phase 3 Optimizations

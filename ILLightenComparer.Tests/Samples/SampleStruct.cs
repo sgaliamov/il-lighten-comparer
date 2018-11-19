@@ -1,8 +1,8 @@
 ﻿namespace ILLightenComparer.Tests.Samples
 {
-    internal struct SampleStruct
+    public struct SampleStruct
     {
-        public int Key;
-        public string Value;
+        public int Key { get; set; }
+        public string Value { get; set; }
     }
 }
