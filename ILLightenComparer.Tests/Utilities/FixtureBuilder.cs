@@ -4,7 +4,7 @@ using AutoFixture;
 
 namespace ILLightenComparer.Tests.Utilities
 {
-    internal static class FixtureBuilder
+    public static class FixtureBuilder
     {
         private static readonly Lazy<Fixture> Fixture = new Lazy<Fixture>(
             () =>
