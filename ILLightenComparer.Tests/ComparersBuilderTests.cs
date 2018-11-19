@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
 using Xunit;
@@ -49,13 +51,16 @@ namespace ILLightenComparer.Tests
         }
 
         [Fact]
-        public void Generic_And_NotGeneric_Builders_Create_The_Same_Comparer()
+        public void Generic_And_NotGeneric_Builders_Produce_The_Same_Comparer()
         {
-            var notGeneric = _builder.CreateComparer(typeof(TestObject));
-            var generic = _builder.CreateComparer<TestObject>();
+            void Test(object one, object other)
+            {
+                one.GetType().Should().BeSameAs(other.GetType());
+                other.Should().BeSameAs(one);
+            }
 
-            notGeneric.GetType().Should().BeSameAs(generic.GetType());
-            generic.Should().BeSameAs(notGeneric);
+            Test(_builder.CreateComparer(typeof(TestObject)), _builder.CreateComparer<TestObject>());
+            Test(_builder.CreateComparer<SampleStruct>(), _builder.CreateComparer(typeof(SampleStruct)));
         }
 
         private readonly IComparersBuilder _builder;
