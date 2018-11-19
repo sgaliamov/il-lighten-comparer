@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoCompare.Core" Version="1.0.0" />
+    <PackageReference Include="AutoFixture" Version="4.5.0" />
     <PackageReference Include="BenchmarkDotNet" Version="0.11.2" />
+    <PackageReference Include="Nito.Comparers" Version="5.0.5" />
   </ItemGroup>
 
   <ItemGroup>
