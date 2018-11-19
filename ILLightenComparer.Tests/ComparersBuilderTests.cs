@@ -19,7 +19,7 @@ namespace ILLightenComparer.Tests
         [Fact]
         public void Create_Generic_Comparer()
         {
-            var comparer = _builder.CreateComparer<HierarchicalObject>();
+            var comparer = _builder.CreateComparer<TestObject>();
 
             comparer.Should().NotBeNull();
         }
@@ -43,19 +43,19 @@ namespace ILLightenComparer.Tests
         [Fact]
         public void Create_Not_Generic_EqualityComparer()
         {
-            var comparer = _builder.CreateEqualityComparer(typeof(HierarchicalObject));
+            var comparer = _builder.CreateEqualityComparer(typeof(TestObject));
 
             comparer.Should().NotBeNull();
         }
 
-        
         [Fact]
-        public void Generic_And_NotTyped_Builders_Create_The_Same_Comparer()
+        public void Generic_And_NotGeneric_Builders_Create_The_Same_Comparer()
         {
-            var notTyped = _builder.CreateComparer(typeof(TestObject));
+            var notGeneric = _builder.CreateComparer(typeof(TestObject));
             var generic = _builder.CreateComparer<TestObject>();
 
-            generic.Should().BeSameAs(notTyped);
+            notGeneric.GetType().Should().BeSameAs(generic.GetType());
+            generic.Should().BeSameAs(notGeneric);
         }
 
         private readonly IComparersBuilder _builder;

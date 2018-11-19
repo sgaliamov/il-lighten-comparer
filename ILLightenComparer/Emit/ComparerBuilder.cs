@@ -23,15 +23,17 @@ namespace ILLightenComparer.Emit
 
         public IComparer Build(Type objectType)
         {
+            var genericInterfaceType = InterfaceType.GenericComparer.MakeGenericType(objectType);
+
             var typeBuilder = _context.DefineType(
                 $"{objectType.FullName}.Comparer",
-                InterfaceType.Comparer
-                //InterfaceType.GenericComparer
+                InterfaceType.Comparer,
+                genericInterfaceType
             );
 
             var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
 
-            BuildInstanceCompareMethod(typeBuilder, staticCompare, objectType);
+            BuildInstanceCompareMethod(typeBuilder, staticCompare, objectType, genericInterfaceType);
 
             typeBuilder.BuildFactoryMethod<IComparer>();
             var typeInfo = typeBuilder.CreateTypeInfo();
@@ -125,7 +127,8 @@ namespace ILLightenComparer.Emit
         private static void BuildInstanceCompareMethod(
             TypeBuilder typeBuilder,
             MethodInfo staticCompareMethod,
-            Type objectType)
+            Type objectType,
+            Type genericInterfaceType)
         {
             var cast = objectType.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass;
 
@@ -140,14 +143,14 @@ namespace ILLightenComparer.Emit
             il.Emit(OpCodes.Call, staticCompareMethod);
             il.Emit(OpCodes.Ret);
 
-            //methodBuilder = typeBuilder.DefineInterfaceMethod(Method.GenericCompare);
+            methodBuilder = typeBuilder.DefineInterfaceMethod(genericInterfaceType.GetMethod(Constants.CompareMethodName));
 
-            //il = methodBuilder.GetILGenerator();
-            //il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
-            //il.Emit(OpCodes.Ldarg_1); // x
-            //il.Emit(OpCodes.Ldarg_2); // y
-            //il.Emit(OpCodes.Call, staticCompareMethod);
-            //il.Emit(OpCodes.Ret);
+            il = methodBuilder.GetILGenerator();
+            il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
+            il.Emit(OpCodes.Ldarg_1); // x
+            il.Emit(OpCodes.Ldarg_2); // y
+            il.Emit(OpCodes.Call, staticCompareMethod);
+            il.Emit(OpCodes.Ret);
         }
     }
 }

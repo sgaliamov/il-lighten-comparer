@@ -6,7 +6,7 @@
 
 - [x] Comparer test
 - [x] Flat object properties comparison
-- [ ] Compare structures
+- [x] Compare structures
 - [ ] Generic comparer
 - [ ] Benchmarks
 
