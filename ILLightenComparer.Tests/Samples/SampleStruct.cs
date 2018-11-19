@@ -29,6 +29,8 @@ namespace ILLightenComparer.Tests.Samples
             }
         }
 
+        public override string ToString() => $"{nameof(Key)}: {Key}, {nameof(Value)}: {Value}";
+
         public static IComparer<SampleStruct> Comparer { get; } = new SampleStructRelationalComparer();
     }
 }
