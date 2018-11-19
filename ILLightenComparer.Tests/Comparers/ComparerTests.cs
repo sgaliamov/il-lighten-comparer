@@ -69,6 +69,12 @@ namespace ILLightenComparer.Tests.Comparers
             Compare(original, copy);
         }
 
+        [Fact]
+        public void Comparison_Wrong_Type_Throw_Exception()
+        {
+            Assert.Throws<InvalidCastException>(() => _target.Compare(new SampleObject(), new SampleObject()));
+        }
+
         private const int Count = 100;
 
         private static void Compare<T>(IEnumerable<T> one, IEnumerable<T> other)

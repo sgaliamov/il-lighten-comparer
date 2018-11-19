@@ -31,7 +31,7 @@ namespace ILLightenComparer.Emit
 
             var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
 
-            BuildInstanceCompareMethod(typeBuilder, staticCompare);
+            BuildInstanceCompareMethod(typeBuilder, staticCompare, objectType);
 
             typeBuilder.BuildFactoryMethod<IComparer>();
             var typeInfo = typeBuilder.CreateTypeInfo();
@@ -119,16 +119,30 @@ namespace ILLightenComparer.Emit
             il.MarkLabel(else2);
         }
 
-        private static void BuildInstanceCompareMethod(TypeBuilder typeBuilder, MethodInfo staticCompareMethod)
+        private static void BuildInstanceCompareMethod(
+            TypeBuilder typeBuilder,
+            MethodInfo staticCompareMethod,
+            Type objectType)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(Method.Compare);
 
             var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
             il.Emit(OpCodes.Ldarg_1); // x
+            il.Emit(OpCodes.Castclass, objectType);
             il.Emit(OpCodes.Ldarg_2); // y
+            il.Emit(OpCodes.Castclass, objectType);
             il.Emit(OpCodes.Call, staticCompareMethod);
             il.Emit(OpCodes.Ret);
+
+            //methodBuilder = typeBuilder.DefineInterfaceMethod(Method.GenericCompare);
+
+            //il = methodBuilder.GetILGenerator();
+            //il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
+            //il.Emit(OpCodes.Ldarg_1); // x
+            //il.Emit(OpCodes.Ldarg_2); // y
+            //il.Emit(OpCodes.Call, staticCompareMethod);
+            //il.Emit(OpCodes.Ret);
         }
     }
 }
