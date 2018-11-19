@@ -54,7 +54,11 @@ namespace ILLightenComparer.Tests.Comparers
 
             for (var i = 0; i < count; i++)
             {
-                original[i].Should().BeEquivalentTo(copy[i]);
+                original[i]
+                    .Should()
+                    .BeEquivalentTo(
+                        copy[i],
+                        $"object \n{{\n\t{original[i]}\n}} must be equal to\n{{\n\t{copy[i]}\n}}");
             }
         }
 

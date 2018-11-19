@@ -8,9 +8,12 @@ namespace ILLightenComparer.Tests.Samples
         public int IntegerProperty { get; set; }
 
         public static IComparer<TestObject> Comparer { get; } =
-            new DoublePropertyIntegerPropertyRelationalComparer();
+            new RelationalComparer();
 
-        private sealed class DoublePropertyIntegerPropertyRelationalComparer : IComparer<TestObject>
+        public override string ToString() =>
+            $"{nameof(DoubleProperty)} = {DoubleProperty}, {nameof(IntegerProperty)} = {IntegerProperty}";
+
+        private sealed class RelationalComparer : IComparer<TestObject>
         {
             public int Compare(TestObject x, TestObject y)
             {

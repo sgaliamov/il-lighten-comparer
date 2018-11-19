@@ -20,19 +20,19 @@ namespace ILLightenComparer.Emit.Visitors
             var local = il.DeclareLocal(info.PropertyType); // todo: maybe cache locals to reuse them for same types
             il.Emit(OpCodes.Ldarg_1); // x = arg1
             il.Emit(OpCodes.Callvirt, getMethod); // a = x.Prop
-            il.Emit(OpCodes.Stloc_S, local);
-            il.Emit(OpCodes.Ldloca_S, local); // pa = *a
+            il.Emit(OpCodes.Stloc, local);
+            il.Emit(OpCodes.Ldloca, local); // pa = *a
 
             il.Emit(OpCodes.Ldarg_2); // y = arg2
             il.Emit(OpCodes.Callvirt, getMethod); // b = y.Prop
 
             il.Emit(OpCodes.Call, compareToMethod); // r = pa->CompareTo(b)
-            il.Emit(OpCodes.Stloc_S, local); // pop r
-            il.Emit(OpCodes.Ldloc_S, local); // push r
+            il.Emit(OpCodes.Stloc, local); // pop r
+            il.Emit(OpCodes.Ldloc, local); // push r
 
             var gotoNext = il.DefineLabel();
             il.Emit(OpCodes.Brfalse_S, gotoNext); // if(r == 0) continue
-            il.Emit(OpCodes.Ldloc_S, local); // pop r
+            il.Emit(OpCodes.Ldloc, local); // pop r
             il.Emit(OpCodes.Ret); // return r
             il.MarkLabel(gotoNext); // else
         }
