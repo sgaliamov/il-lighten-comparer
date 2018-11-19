@@ -30,6 +30,8 @@
 - [ ] Ignored properties
 - [ ] String options (case, culture)
 - [ ] Support internal classes to compare
+- [ ] use short versions of opt codes when possible
+- [ ] reuse local variables for same types
 
 ### Phase 4 Settings
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -11,11 +12,15 @@ namespace ILLightenComparer.Reflection
                     BindingFlags.Instance
                     //| BindingFlags.FlattenHierarchy
                     | BindingFlags.Public)
-                .Where(memberInfo => Filter(memberInfo, configuration))
+                .Where(memberInfo => IgnoredMembers(memberInfo, configuration.IgnoredMembers))
+                .Where(memberInfo => IncludeFields(memberInfo, configuration.IncludeFields))
                 .ToArray();
 
-        private static bool Filter(MemberInfo memberInfo, CompareConfiguration configuration) =>
+        private static bool IgnoredMembers(MemberInfo memberInfo, ICollection<string> ignoredMembers) =>
+            !ignoredMembers.Contains(memberInfo.Name);
+
+        private static bool IncludeFields(MemberInfo memberInfo, bool includeFields) =>
             memberInfo.MemberType == MemberTypes.Property
-            || configuration.IncludeFields && memberInfo.MemberType == MemberTypes.Field;
+            || includeFields && memberInfo.MemberType == MemberTypes.Field;
     }
 }
