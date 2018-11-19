@@ -8,7 +8,9 @@ namespace ILLightenComparer.Emit.Extensions
 {
     internal static class TypeBuilderExtensions
     {
-        public static MethodBuilder DefineInterfaceMethod(this TypeBuilder typeBuilder, MethodInfo interfaceMethod)
+        public static MethodBuilder DefineInterfaceMethod(
+            this TypeBuilder typeBuilder,
+            MethodInfo interfaceMethod)
         {
             var method = typeBuilder.DefineMethod(
                 interfaceMethod.Name,

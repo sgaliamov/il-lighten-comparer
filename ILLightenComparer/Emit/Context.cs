@@ -41,8 +41,9 @@ namespace ILLightenComparer.Emit
 
         public TReturnType CreateInstance<TReturnType>(TypeInfo typeInfo)
         {
-            // todo: get delegate from cache
-            var factoryMethod = typeInfo.GetMethod(Constants.FactoryMethodName).CreateDelegate<Func<TReturnType>>();
+            var factoryMethod = typeInfo
+                                .GetMethod(Constants.FactoryMethodName)
+                                .CreateDelegate<Func<TReturnType>>();
 
             return factoryMethod();
         }
