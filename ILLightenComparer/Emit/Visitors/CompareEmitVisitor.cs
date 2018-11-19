@@ -27,12 +27,12 @@ namespace ILLightenComparer.Emit.Visitors
             il.Emit(OpCodes.Callvirt, getMethod); // b = y.Prop
 
             il.Emit(OpCodes.Call, compareToMethod); // r = pa->CompareTo(b)
-            il.Emit(OpCodes.Stloc, local); // pop r
-            il.Emit(OpCodes.Ldloc, local); // push r
+            il.Emit(OpCodes.Stloc_0); // pop r
+            il.Emit(OpCodes.Ldloc_0); // push r
 
             var gotoNext = il.DefineLabel();
             il.Emit(OpCodes.Brfalse_S, gotoNext); // if(r == 0) continue
-            il.Emit(OpCodes.Ldloc, local); // pop r
+            il.Emit(OpCodes.Ldloc_0); // pop r
             il.Emit(OpCodes.Ret); // return r
             il.MarkLabel(gotoNext); // else
         }

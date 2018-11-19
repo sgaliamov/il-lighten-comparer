@@ -59,6 +59,8 @@ namespace ILLightenComparer.Emit
         private void EmitMembersComparision(Type objectType, ILGenerator il)
         {
             var members = _membersProvider.GetMembers(objectType, _context.Configuration);
+            
+            il.DeclareLocal(typeof(int)); // to store comparison result. todo: reuse locals.
 
             foreach (var memberInfo in members)
             {
