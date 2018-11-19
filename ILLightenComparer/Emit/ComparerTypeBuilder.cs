@@ -23,21 +23,21 @@ namespace ILLightenComparer.Emit
 
         public TypeInfo Build(Type objectType)
         {
+            var basicInterface = typeof(IComparer);
             var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
-            var regularInterface = typeof(IComparer);
 
             var typeBuilder = _context.DefineType(
                 $"{objectType.FullName}.Comparer",
-                regularInterface,
+                basicInterface,
                 genericInterface
             );
 
             var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
 
-            BuildRegularCompareMethod(
+            BuildBasicCompareMethod(
                 typeBuilder,
                 staticCompare,
-                regularInterface.GetMethod(Constants.CompareMethodName),
+                basicInterface.GetMethod(Constants.CompareMethodName),
                 objectType);
 
             BuildTypedCompareMethod(
@@ -134,16 +134,22 @@ namespace ILLightenComparer.Emit
             il.MarkLabel(else2);
         }
 
-        private static void BuildRegularCompareMethod(
+        private static void BuildBasicCompareMethod(
             TypeBuilder typeBuilder,
             MethodInfo staticCompareMethod,
             MethodInfo interfaceMethod,
             Type objectType)
         {
-            var castOp = objectType.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass;
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
-
             var il = methodBuilder.GetILGenerator();
+
+            if (objectType.IsValueType)
+            {
+                EmitReferenceComparision(il);
+            }
+
+            var castOp = objectType.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass;
+
             il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
             il.Emit(OpCodes.Ldarg_1); // x
             il.Emit(castOp, objectType);
