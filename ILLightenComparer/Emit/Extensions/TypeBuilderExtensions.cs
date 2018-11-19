@@ -35,17 +35,19 @@ namespace ILLightenComparer.Emit.Extensions
                 returnType,
                 parameterTypes);
 
-        public static void BuildFactoryMethod<TReturnType>(this TypeBuilder typeBuilder)
+        public static TypeBuilder BuildFactoryMethod(this TypeBuilder typeBuilder)
         {
             var constructorInfo = typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
 
             var method = DefineStaticMethod(
                 typeBuilder,
                 Constants.FactoryMethodName,
-                typeof(TReturnType),
+                typeBuilder,
                 null);
 
             EmitCallCtor(method.GetILGenerator(), constructorInfo);
+
+            return typeBuilder;
         }
 
         private static void EmitCallCtor(ILGenerator ilGenerator, ConstructorInfo constructor)

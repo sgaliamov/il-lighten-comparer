@@ -21,9 +21,23 @@ namespace ILLightenComparer.Emit
             _membersProvider = membersProvider;
         }
 
+        public IComparer<T> Build<T>()
+        {
+            var typeInfo = BuildType(typeof(T));
+
+            return _context.CreateInstance<IComparer<T>>(typeInfo);
+        }
+
         public IComparer Build(Type objectType)
         {
-            var genericInterfaceType = InterfaceType.GenericComparer.MakeGenericType(objectType);
+            var typeInfo = BuildType(objectType);
+
+            return _context.CreateInstance<IComparer>(typeInfo);
+        }
+
+        private TypeInfo BuildType(Type objectType)
+        {
+            var genericInterfaceType = typeof(IComparer<>).MakeGenericType(objectType);
 
             var typeBuilder = _context.DefineType(
                 $"{objectType.FullName}.Comparer",
@@ -33,12 +47,12 @@ namespace ILLightenComparer.Emit
 
             var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
 
-            BuildInstanceCompareMethod(typeBuilder, staticCompare, objectType, genericInterfaceType);
+            BuildInstanceCompareMethod(typeBuilder, staticCompare, objectType);
+            BuildTypedInstanceCompareMethod(typeBuilder, staticCompare, genericInterfaceType);
 
-            typeBuilder.BuildFactoryMethod<IComparer>();
-            var typeInfo = typeBuilder.CreateTypeInfo();
-
-            return _context.CreateInstance<IComparer>(typeInfo);
+            return typeBuilder
+                   .BuildFactoryMethod()
+                   .CreateTypeInfo();
         }
 
         private MethodBuilder BuildStaticCompareMethod(TypeBuilder typeBuilder, Type objectType)
@@ -58,13 +72,14 @@ namespace ILLightenComparer.Emit
             {
                 EmitReferenceComparision(il);
             }
-            EmitMembersComparision(objectType, il);
+
+            EmitMembersComparision(il, objectType);
             EmitDefaultResult(il);
 
             return staticMethodBuilder;
         }
 
-        private void EmitMembersComparision(Type objectType, ILGenerator il)
+        private void EmitMembersComparision(ILGenerator il, Type objectType)
         {
             var members = _membersProvider.GetMembers(objectType, _context.Configuration);
 
@@ -127,25 +142,30 @@ namespace ILLightenComparer.Emit
         private static void BuildInstanceCompareMethod(
             TypeBuilder typeBuilder,
             MethodInfo staticCompareMethod,
-            Type objectType,
-            Type genericInterfaceType)
+            Type objectType)
         {
-            var cast = objectType.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass;
-
+            var castOp = objectType.IsValueType ? OpCodes.Unbox : OpCodes.Castclass;
             var methodBuilder = typeBuilder.DefineInterfaceMethod(Method.Compare);
 
             var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
             il.Emit(OpCodes.Ldarg_1); // x
-            il.Emit(cast, objectType);
+            il.Emit(castOp, objectType);
             il.Emit(OpCodes.Ldarg_2); // y
-            il.Emit(cast, objectType);
+            il.Emit(castOp, objectType);
             il.Emit(OpCodes.Call, staticCompareMethod);
             il.Emit(OpCodes.Ret);
+        }
 
-            methodBuilder = typeBuilder.DefineInterfaceMethod(genericInterfaceType.GetMethod(Constants.CompareMethodName));
+        private static void BuildTypedInstanceCompareMethod(
+            TypeBuilder typeBuilder,
+            MethodInfo staticCompareMethod,
+            Type genericInterfaceType)
+        {
+            var methodBuilder = typeBuilder.DefineInterfaceMethod(
+                genericInterfaceType.GetMethod(Constants.CompareMethodName));
 
-            il = methodBuilder.GetILGenerator();
+            var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldc_I4_0); // todo: hash set to detect cycles
             il.Emit(OpCodes.Ldarg_1); // x
             il.Emit(OpCodes.Ldarg_2); // y
