@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
@@ -17,9 +18,13 @@ namespace ILLightenComparer.Tests.Comparers
         {
             var comparer = new ComparersBuilder().CreateComparer(typeof(SampleStruct));
 
-            var actual = comparer.Compare(new SampleStruct(), new SampleStruct());
+            var original = _fixture.CreateMany<SampleStruct>(Count).ToArray();
+            var copy = original.DeepClone();
 
-            actual.Should().Be(0);
+            Array.Sort(copy, SampleStruct.Comparer);
+            Array.Sort(original, comparer);
+
+            Compare(original, copy);
         }
 
         [Fact]
@@ -55,20 +60,35 @@ namespace ILLightenComparer.Tests.Comparers
         [Fact]
         public void Sorting_Must_Work_The_Same_As_For_Reference_Comparer()
         {
-            const int count = 100;
-            var original = _fixture.CreateMany<TestObject>(count).ToArray();
+            var original = _fixture.CreateMany<TestObject>(Count).ToArray();
             var copy = original.DeepClone();
 
             Array.Sort(copy, TestObject.TestObjectComparer);
             Array.Sort(original, _target);
 
-            for (var i = 0; i < count; i++)
+            Compare(original, copy);
+        }
+
+        private const int Count = 100;
+
+        private static void Compare<T>(IEnumerable<T> one, IEnumerable<T> other)
+        {
+            using (var enumeratorOne = one.GetEnumerator())
+            using (var enumeratorOther = other.GetEnumerator())
             {
-                original[i]
-                    .Should()
-                    .BeEquivalentTo(
-                        copy[i],
-                        $"object \n{{\n\t{original[i]}\n}} must be equal to\n{{\n\t{copy[i]}\n}}");
+                while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext())
+                {
+                    var oneCurrent = enumeratorOne.Current;
+                    var otherCurrent = enumeratorOther.Current;
+                    oneCurrent
+                        .Should()
+                        .BeEquivalentTo(
+                            otherCurrent,
+                            $"object \n{{\n\t{oneCurrent}\n}} must be equal to\n{{\n\t{otherCurrent}\n}}");
+                }
+
+                enumeratorOne.MoveNext().Should().BeFalse();
+                enumeratorOther.MoveNext().Should().BeFalse();
             }
         }
 

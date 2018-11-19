@@ -37,6 +37,7 @@
 - [ ] String options (case, culture)
 - [ ] Float, double, date time precision
 - [ ] Customization setting to override comparer with specific implementation
+- [ ] Compare references and the end
 
 ### Phase 5 Collections
 

@@ -7,6 +7,8 @@ namespace ILLightenComparer.Tests.Utilities
         public void Customize(IFixture fixture)
         {
             fixture.Customizations.Add(new RandomNumericSequenceGenerator(-10, 10));
+            fixture.Customize(new SupportMutableValueTypesCustomization());
+
         }
     }
 }
