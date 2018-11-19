@@ -49,8 +49,8 @@ namespace ILLightenComparer.Tests.Comparers
             var original = _fixture.CreateMany<TestObject>(count).ToArray();
             var copy = original.DeepClone();
 
+            Array.Sort(copy, TestObject.TestObjectComparer);
             Array.Sort(original, _target);
-            Array.Sort(copy, TestObject.Comparer);
 
             for (var i = 0; i < count; i++)
             {

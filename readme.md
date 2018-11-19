@@ -5,13 +5,13 @@
 ### Phase 0 PoC
 
 - [x] Comparer test
-- [ ] Flat object properties comparison
+- [x] Flat object properties comparison
+- [x] Compare strings
 - [ ] Generic comparer
 - [ ] Benchmarks
 
 ### Phase 1 Core features
 
-- [ ] Compare strings
 - [ ] Compare fields
 - [ ] Fixture generates nulls
 - [ ] Compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
@@ -28,13 +28,13 @@
 - [ ] Optimization for integral types
 - [ ] Caching for assembly
 - [ ] Ignored properties
-- [ ] String options (case, culture)
 - [ ] Support internal classes to compare
 - [ ] use short versions of opt codes when possible
 - [ ] reuse local variables for same types
 
 ### Phase 4 Settings
 
+- [ ] String options (case, culture)
 - [ ] Float, double, date time precision
 - [ ] Customization setting to override comparer with specific implementation
 
