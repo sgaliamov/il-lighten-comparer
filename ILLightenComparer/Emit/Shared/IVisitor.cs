@@ -4,8 +4,8 @@ namespace ILLightenComparer.Emit.Shared
 {
     internal interface IVisitor
     {
-        void Visit(ComparableProperty info, ILEmitter il);
-        void Visit(ComparableField info, ILEmitter il);
-        void Visit(NestedObject info, ILEmitter il);
+        void Visit(ComparableProperty member, ILEmitter il);
+        void Visit(ComparableField member, ILEmitter il);
+        void Visit(NestedObject member, ILEmitter il);
     }
 }
