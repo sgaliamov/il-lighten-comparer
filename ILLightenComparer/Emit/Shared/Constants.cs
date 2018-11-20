@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ILLightenComparer.Shared
+namespace ILLightenComparer.Emit.Shared
 {
     internal static class Constants
     {
