@@ -22,6 +22,7 @@
 
 ### Phase 2 Hierarchical objects
 
+- [ ] FlattenHierarchy
 - [ ] Detect cycles (check graph theory)
 - [ ] Test when abstract class is replaced after a comparer is created
 
@@ -32,6 +33,7 @@
 - [ ] Ignored properties
 - [ ] Support internal classes to compare
 - [ ] use short versions of opt codes when possible
+- [ ] use call instead callvirt when possible
 - [ ] reuse local variables for same types
 - [ ] test class with more than 256 properties
 
