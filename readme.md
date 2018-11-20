@@ -48,6 +48,7 @@
 
 - [ ] Compare collection, do not iterate IEnumerable
 - [ ] IgnoreCollectionOrder setting
+- [ ] define sorting order, emission order affects sorting
 
 ### Phase Z
 

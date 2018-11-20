@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
     public struct SampleStruct
     {
-        public int KeyProperty { get; set; }
-        public string ValueProperty { get; set; }
-
         public int KeyField;
-        public string ValueField;
+        public decimal ValueProperty { get; set; }
 
         public override string ToString() =>
-            $"{nameof(KeyField)}: {KeyField}, {nameof(ValueField)}: {ValueField}, {nameof(KeyProperty)}: {KeyProperty}, {nameof(ValueProperty)}: {ValueProperty}";
+            $"{nameof(ValueProperty)}: {ValueProperty}, {nameof(KeyField)}: {KeyField}";
 
-        private sealed class SampleStructRelationalComparer : IComparer<SampleStruct>
+        private sealed class KeyFieldValuePropertyRelationalComparer : IComparer<SampleStruct>
         {
             public int Compare(SampleStruct x, SampleStruct y)
             {
@@ -24,22 +20,11 @@ namespace ILLightenComparer.Tests.Samples
                     return keyFieldComparison;
                 }
 
-                var valueFieldComparison = string.Compare(x.ValueField, y.ValueField, StringComparison.Ordinal);
-                if (valueFieldComparison != 0)
-                {
-                    return valueFieldComparison;
-                }
-
-                var keyComparison = x.KeyProperty.CompareTo(y.KeyProperty);
-                if (keyComparison != 0)
-                {
-                    return keyComparison;
-                }
-
-                return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.Ordinal);
+                return x.ValueProperty.CompareTo(y.ValueProperty);
             }
         }
 
-        public static IComparer<SampleStruct> SampleStructComparer { get; } = new SampleStructRelationalComparer();
+        public static IComparer<SampleStruct> SampleStructComparer { get; } =
+            new KeyFieldValuePropertyRelationalComparer();
     }
 }
