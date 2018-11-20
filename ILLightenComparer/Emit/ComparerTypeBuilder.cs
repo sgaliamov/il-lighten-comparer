@@ -63,7 +63,7 @@ namespace ILLightenComparer.Emit
                     objectType // y
                 });
 
-            var il = staticMethodBuilder.GetILEmitter();
+            var il = staticMethodBuilder.CreateILEmitter();
 
             if (objectType.IsClass)
             {
@@ -127,7 +127,7 @@ namespace ILLightenComparer.Emit
             Type objectType)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
-            var il = methodBuilder.GetILEmitter();
+            var il = methodBuilder.CreateILEmitter();
 
             if (objectType.IsValueType)
             {
@@ -151,7 +151,7 @@ namespace ILLightenComparer.Emit
         {
             typeBuilder
                 .DefineInterfaceMethod(interfaceMethod)
-                .GetILEmitter()
+                .CreateILEmitter()
                 .Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
                 .Emit(OpCodes.Ldarg_1) // x
                 .Emit(OpCodes.Ldarg_2)

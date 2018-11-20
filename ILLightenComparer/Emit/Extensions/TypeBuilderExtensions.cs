@@ -46,8 +46,8 @@ namespace ILLightenComparer.Emit.Extensions
                     Constants.FactoryMethodName,
                     typeBuilder,
                     null)
-                .GetILEmitter()
-                .EmitCallCtor(constructorInfo);
+                .CreateILEmitter()
+                .EmitCtorCall(constructorInfo);
 
             return typeBuilder;
         }
