@@ -18,10 +18,11 @@ namespace ILLightenComparer.Emit
                 ? local
                 : _cache[localType] = _il.DeclareLocal(localType);
 
-        public ILEmitter Emit(OpCode opCode)
+        public Label DefineLabel() => _il.DefineLabel();
+
+        public ILEmitter MarkLabel(Label label)
         {
-            Debug.WriteLine(opCode.ToString());
-            _il.Emit(opCode);
+            _il.MarkLabel(label);
 
             return this;
         }
@@ -37,13 +38,6 @@ namespace ILLightenComparer.Emit
             return this;
         }
 
-        public ILEmitter EmitCall(MethodInfo methodInfo)
-        {
-            _il.Emit(OpCodes.Call, methodInfo);
-
-            return this;
-        }
-
         public ILEmitter EmitCallCtor(ConstructorInfo constructor)
         {
             _il.Emit(OpCodes.Newobj, constructor);
@@ -52,18 +46,47 @@ namespace ILLightenComparer.Emit
             return this;
         }
 
-        public Label DefineLabel() => _il.DefineLabel();
-
-        public ILEmitter MarkLabel(Label label)
+        public ILEmitter Emit(OpCode opCode)
         {
-            _il.MarkLabel(label);
+            Debug.WriteLine(opCode.ToString());
+            _il.Emit(opCode);
 
             return this;
         }
 
-        internal ILEmitter Emit(OpCode opCode, Label label)
+        public ILEmitter Emit(OpCode opCode, MethodInfo methodInfo)
+        {
+            _il.Emit(opCode, methodInfo);
+
+            return this;
+        }
+
+        public ILEmitter Emit(OpCode opCode, int arg)
+        {
+            _il.Emit(opCode, arg);
+
+            return this;
+        }
+
+        public ILEmitter Emit(OpCode opCode, Label label)
         {
             _il.Emit(opCode, label);
+
+            return this;
+        }
+
+        public ILEmitter EmitLoadAddress(LocalBuilder local)
+        {
+            var opCode = local.LocalIndex <= 255 ? OpCodes.Ldloca_S : OpCodes.Ldloca;
+
+            _il.Emit(opCode, local);
+
+            return this;
+        }
+
+        public ILEmitter EmitStore(LocalBuilder local)
+        {
+            _il.Emit(OpCodes.Stloc, local); // todo: use short form
 
             return this;
         }

@@ -140,7 +140,7 @@ namespace ILLightenComparer.Emit
               .EmitCast(objectType)
               .Emit(OpCodes.Ldarg_2) // y
               .EmitCast(objectType)
-              .EmitCall(staticCompareMethod)
+              .Emit(OpCodes.Call, staticCompareMethod)
               .Emit(OpCodes.Ret);
         }
 
@@ -154,8 +154,8 @@ namespace ILLightenComparer.Emit
                 .GetILEmitter()
                 .Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
                 .Emit(OpCodes.Ldarg_1) // x
-                .Emit(OpCodes.Ldarg_2) // y
-                .EmitCall(staticCompareMethod)
+                .Emit(OpCodes.Ldarg_2)
+                .Emit(OpCodes.Call, staticCompareMethod)
                 .Emit(OpCodes.Ret);
         }
     }
