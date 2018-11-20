@@ -25,12 +25,16 @@ namespace ILLightenComparer.Tests.Comparers
             BasicComparer.Compare(obj, default).Should().BeGreaterThan(0);
         }
 
-        protected override IComparer BasicComparer { get; } =
-            new ComparersBuilder().CreateComparer(typeof(SampleStruct));
+        private readonly ComparersBuilder _comparersBuilder =
+            new ComparersBuilder()
+                .SetConfiguration(
+                    new CompareConfiguration
+                    {
+                        IncludeFields = true
+                    });
 
-        protected override IComparer<SampleStruct> TypedComparer { get; } =
-            new ComparersBuilder().CreateComparer<SampleStruct>();
-
+        protected override IComparer BasicComparer => _comparersBuilder.CreateComparer(typeof(SampleStruct));
+        protected override IComparer<SampleStruct> TypedComparer => _comparersBuilder.CreateComparer<SampleStruct>();
         protected override IComparer<SampleStruct> ReferenceComparer { get; } = SampleStruct.SampleStructComparer;
     }
 }
