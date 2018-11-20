@@ -11,33 +11,47 @@ namespace ILLightenComparer.Emit.Visitors
         public void Visit(ComparableProperty member, ILEmitter il)
         {
             var isValueType = member.OwnerType.IsValueType;
+            if (isValueType)
+            {
+                il.Emit(OpCodes.Ldarga_S, 1); // x = arg1
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldarg_1); // x = arg1
+            }
 
             var local = il.DeclareLocal(member.MemberType);
 
             il.Emit(
-                  isValueType ? OpCodes.Ldarga_S : OpCodes.Ldarg_S, // todo: use short form for classes
-                  1) // x = arg1
-              .Emit(OpCodes.Callvirt, member.GetterMethod) // a = x.Prop // todo: call for value types?
+                  isValueType ? OpCodes.Call : OpCodes.Callvirt,
+                  member.GetterMethod) // a = x.Prop
               .EmitStore(local)
-              .EmitLoadAddress(local) // pa = *a
+              .EmitLoadAddressOf(local) // pa = *a
               .Emit(
                   isValueType ? OpCodes.Ldarga_S : OpCodes.Ldarg_S, // todo: use short form for classes
                   2) // y = arg2 
-              .Emit(OpCodes.Callvirt, member.GetterMethod); // b = y.Prop  // todo: call for value types
-
+              .Emit(
+                  isValueType ? OpCodes.Call : OpCodes.Callvirt,
+                  member.GetterMethod); // b = y.Prop
+            
             EmitCompareToCall(il, member.CompareToMethod);
         }
 
         public void Visit(ComparableField member, ILEmitter il)
         {
             var isValueType = member.OwnerType.IsValueType;
+            if (isValueType)
+            {
+                il.Emit(OpCodes.Ldarga_S, 1); // x = arg1
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldarg_1); // x = arg1
+            }
 
-            il.Emit(
-                  isValueType ? OpCodes.Ldarga_S : OpCodes.Ldarg_S, // todo: use short form for classes
-                  1) // x = arg1
-              .Emit(OpCodes.Ldflda, member.FieldInfo) // a = x.Prop // todo: call for value types?
-              .Emit(OpCodes.Ldarg_S, 2) // y = arg2 
-              .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Prop  // todo: call for value types
+            il.Emit(OpCodes.Ldflda, member.FieldInfo) // a = x.Field 
+              .Emit(OpCodes.Ldarg_2) // y = arg2 
+              .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Field
 
             EmitCompareToCall(il, member.CompareToMethod);
         }
@@ -56,14 +70,16 @@ namespace ILLightenComparer.Emit.Visitors
         /// </summary>
         private static void EmitCompareToCall(ILEmitter il, MethodInfo compareToMethod)
         {
-            il.Emit(OpCodes.Call, compareToMethod) // r = pa->CompareTo(b);
-              .Emit(OpCodes.Stloc_0) // pop r
-              .Emit(OpCodes.Ldloc_0); // push r
+            // r = pa->CompareTo(b);
+            il.Emit(OpCodes.Call, compareToMethod)
+              .Emit(OpCodes.Stloc_0)
+              .Emit(OpCodes.Ldloc_0);
 
+            // if(r != 0) return r;
             var gotoNext = il.DefineLabel();
-            il.Emit(OpCodes.Brfalse_S, gotoNext) // if(r != 0) return r;
-              .Emit(OpCodes.Ldloc_0) // pop r
-              .Emit(OpCodes.Ret) // return r
+            il.Emit(OpCodes.Brfalse_S, gotoNext)
+              .Emit(OpCodes.Ldloc_0)
+              .Emit(OpCodes.Ret)
               .MarkLabel(gotoNext);
         }
     }

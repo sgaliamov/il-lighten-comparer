@@ -101,7 +101,7 @@ namespace ILLightenComparer.Emit
             return this;
         }
 
-        public ILEmitter EmitLoadAddress(LocalBuilder local)
+        public ILEmitter EmitLoadAddressOf(LocalBuilder local)
         {
             // todo: test
             var opCode = local.LocalIndex <= 255 ? OpCodes.Ldloca_S : OpCodes.Ldloca;
