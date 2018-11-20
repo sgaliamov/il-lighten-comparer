@@ -16,6 +16,7 @@
 
 - [x] Compare fields
 - [ ] Compare strings
+- [ ] refactor MembersProvider
 - [ ] Fixture generates nulls
 - [ ] Compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
 - [ ] Object field comparison

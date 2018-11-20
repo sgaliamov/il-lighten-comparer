@@ -6,15 +6,16 @@ namespace ILLightenComparer.Tests.Samples
     public sealed class SampleObject
     {
         public int KeyField;
+        public string ValueField;
+        public int KeyProperty { get; set; }
         public string ValueProperty { get; set; }
 
-        public static IComparer<SampleObject> SampleObjectComparer { get; } =
-            new KeyFieldValuePropertyRelationalComparer();
-
         public override string ToString() =>
-            $"{nameof(KeyField)}: {KeyField}, {nameof(ValueProperty)}: {ValueProperty}";
+            $"{nameof(KeyField)}: {KeyField}, {nameof(KeyProperty)}: {KeyProperty}, {nameof(ValueField)}: {ValueField}, {nameof(ValueProperty)}: {ValueProperty}";
 
-        private sealed class KeyFieldValuePropertyRelationalComparer : IComparer<SampleObject>
+        public static IComparer<SampleObject> SampleObjectComparer { get; } = new SampleObjectRelationalComparer();
+
+        private sealed class SampleObjectRelationalComparer : IComparer<SampleObject>
         {
             public int Compare(SampleObject x, SampleObject y)
             {
@@ -37,6 +38,18 @@ namespace ILLightenComparer.Tests.Samples
                 if (keyFieldComparison != 0)
                 {
                     return keyFieldComparison;
+                }
+
+                var keyPropertyComparison = x.KeyProperty.CompareTo(y.KeyProperty);
+                if (keyPropertyComparison != 0)
+                {
+                    return keyPropertyComparison;
+                }
+
+                var valueFieldComparison = string.Compare(x.ValueField, y.ValueField, StringComparison.Ordinal);
+                if (valueFieldComparison != 0)
+                {
+                    return valueFieldComparison;
                 }
 
                 return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.Ordinal);
