@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit
 {
@@ -37,15 +35,6 @@ namespace ILLightenComparer.Emit
             }
 
             return type;
-        }
-
-        public TReturnType CreateInstance<TReturnType>(TypeInfo typeInfo)
-        {
-            var factoryMethod = typeInfo
-                                .GetMethod(Constants.FactoryMethodName)
-                                .CreateDelegate<Func<TReturnType>>();
-
-            return factoryMethod();
         }
     }
 }
