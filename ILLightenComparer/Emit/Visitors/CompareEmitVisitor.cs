@@ -61,6 +61,16 @@ namespace ILLightenComparer.Emit.Visitors
             throw new NotImplementedException();
         }
 
+        public void Visit(StringFiledMember member, ILEmitter il)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(StringPropertyMember member, ILEmitter il)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         ///     Emits call to CompareTo method of basic type.
         ///     Expects in stack:
