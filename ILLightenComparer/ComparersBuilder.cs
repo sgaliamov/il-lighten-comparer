@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ILLightenComparer.Emit;
+using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer
@@ -9,6 +11,7 @@ namespace ILLightenComparer
     // todo: cache instances by type and configuration
     public sealed class ComparersBuilder : IComparersBuilder
     {
+        private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly TypeBuilderContext _context = new TypeBuilderContext();
         private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
@@ -20,25 +23,18 @@ namespace ILLightenComparer
             _comparerTypeBuilder = new ComparerTypeBuilder(_context, _membersProvider);
         }
 
-        public IComparer<T> CreateComparer<T>()
-        {
-            var typeInfo = _comparerTypeBuilder.Build(typeof(T));
+        public IComparer<T> CreateComparer<T>() => (IComparer<T>)CreateComparer(typeof(T));
 
-            return _context.CreateInstance<IComparer<T>>(typeInfo);
-        }
-
-        public IComparer CreateComparer(Type type)
-        {
-            var typeInfo = _comparerTypeBuilder.Build(type);
-
-            return _context.CreateInstance<IComparer>(typeInfo);
-        }
+        public IComparer CreateComparer(Type objectType) =>
+            _comparers.GetOrAdd(
+                objectType,
+                key => _comparerTypeBuilder.Build(key).CreateInstance<IComparer>());
 
         public IEqualityComparer<T> CreateEqualityComparer<T>() =>
             _equalityComparerTypeBuilder.Build<T>();
 
-        public IEqualityComparer CreateEqualityComparer(Type type) =>
-            _equalityComparerTypeBuilder.Build(type);
+        public IEqualityComparer CreateEqualityComparer(Type objectType) =>
+            _equalityComparerTypeBuilder.Build(objectType);
 
         public ComparersBuilder SetConfiguration(CompareConfiguration configuration)
         {
