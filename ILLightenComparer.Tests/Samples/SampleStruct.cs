@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
     public struct SampleStruct
     {
         public int KeyField;
-        public decimal ValueProperty { get; set; }
+        public string ValueProperty { get; set; }
 
         public override string ToString() =>
             $"{nameof(ValueProperty)}: {ValueProperty}, {nameof(KeyField)}: {KeyField}";
@@ -20,7 +21,7 @@ namespace ILLightenComparer.Tests.Samples
                     return keyFieldComparison;
                 }
 
-                return x.ValueProperty.CompareTo(y.ValueProperty);
+                return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.Ordinal);
             }
         }
 

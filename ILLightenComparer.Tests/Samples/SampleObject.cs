@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
     public sealed class SampleObject
     {
         public int KeyField;
-        public double ValueProperty { get; set; }
+        public string ValueProperty { get; set; }
 
         public static IComparer<SampleObject> SampleObjectComparer { get; } =
             new KeyFieldValuePropertyRelationalComparer();
@@ -38,7 +39,7 @@ namespace ILLightenComparer.Tests.Samples
                     return keyFieldComparison;
                 }
 
-                return x.ValueProperty.CompareTo(y.ValueProperty);
+                return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.Ordinal);
             }
         }
     }

@@ -14,7 +14,7 @@
 
 ### Phase 1 Core features
 
-- [ ] Compare fields
+- [x] Compare fields
 - [ ] Compare strings
 - [ ] Fixture generates nulls
 - [ ] Compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
