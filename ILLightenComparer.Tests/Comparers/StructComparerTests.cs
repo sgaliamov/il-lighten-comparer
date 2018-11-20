@@ -31,6 +31,6 @@ namespace ILLightenComparer.Tests.Comparers
         protected override IComparer<SampleStruct> TypedComparer { get; } =
             new ComparersBuilder().CreateComparer<SampleStruct>();
 
-        protected override IComparer<SampleStruct> ReferenceComparer { get; } = SampleStruct.Comparer;
+        protected override IComparer<SampleStruct> ReferenceComparer { get; } = SampleStruct.SampleStructComparer;
     }
 }

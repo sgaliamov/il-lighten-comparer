@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
@@ -21,17 +20,23 @@ namespace ILLightenComparer.Tests.Samples
         public ushort UInt16Property { get; set; }
         public string StringProperty { get; set; }
 
-        public static IComparer<TestObject> TestObjectComparer { get; } = new TestObjectRelationalComparer();
+        public bool BooleanField;
+        public byte ByteField;
+        public sbyte SByteField;
+        public char CharField;
+        public decimal DecimalField;
+        public double DoubleField;
+        public float SingleField;
+        public int Int32Field;
+        public uint UInt32Field;
+        public long Int64Field;
+        public ulong UInt64Field;
+        public short Int16Field;
+        public ushort UInt16Field;
+        public string StringField;
 
-        public override string ToString() =>
-            $"{nameof(BooleanProperty)}: {BooleanProperty}, {nameof(ByteProperty)}: {ByteProperty}, {nameof(SByteProperty)}: {SByteProperty}, {nameof(CharProperty)}: {CharProperty}, {nameof(DecimalProperty)}: {DecimalProperty}, {nameof(DoubleProperty)}: {DoubleProperty}, {nameof(SingleProperty)}: {SingleProperty}, {nameof(Int32Property)}: {Int32Property}, {nameof(UInt32Property)}: {UInt32Property}, {nameof(Int64Property)}: {Int64Property}, {nameof(UInt64Property)}: {UInt64Property}, {nameof(Int16Property)}: {Int16Property}, {nameof(UInt16Property)}: {UInt16Property}, {nameof(StringProperty)}: {StringProperty}";
-
-        private sealed class TestObjectRelationalComparer :
-            IComparer<TestObject>,
-            IComparer
+        private sealed class TestObjectRelationalComparer : IComparer<TestObject>
         {
-            public int Compare(object x, object y) => Compare((TestObject)x, (TestObject)y);
-
             public int Compare(TestObject x, TestObject y)
             {
                 if (ReferenceEquals(x, y))
@@ -47,6 +52,90 @@ namespace ILLightenComparer.Tests.Samples
                 if (ReferenceEquals(null, x))
                 {
                     return -1;
+                }
+
+                var booleanFieldComparison = x.BooleanField.CompareTo(y.BooleanField);
+                if (booleanFieldComparison != 0)
+                {
+                    return booleanFieldComparison;
+                }
+
+                var byteFieldComparison = x.ByteField.CompareTo(y.ByteField);
+                if (byteFieldComparison != 0)
+                {
+                    return byteFieldComparison;
+                }
+
+                var sByteFieldComparison = x.SByteField.CompareTo(y.SByteField);
+                if (sByteFieldComparison != 0)
+                {
+                    return sByteFieldComparison;
+                }
+
+                var charFieldComparison = x.CharField.CompareTo(y.CharField);
+                if (charFieldComparison != 0)
+                {
+                    return charFieldComparison;
+                }
+
+                var decimalFieldComparison = x.DecimalField.CompareTo(y.DecimalField);
+                if (decimalFieldComparison != 0)
+                {
+                    return decimalFieldComparison;
+                }
+
+                var doubleFieldComparison = x.DoubleField.CompareTo(y.DoubleField);
+                if (doubleFieldComparison != 0)
+                {
+                    return doubleFieldComparison;
+                }
+
+                var singleFieldComparison = x.SingleField.CompareTo(y.SingleField);
+                if (singleFieldComparison != 0)
+                {
+                    return singleFieldComparison;
+                }
+
+                var int32FieldComparison = x.Int32Field.CompareTo(y.Int32Field);
+                if (int32FieldComparison != 0)
+                {
+                    return int32FieldComparison;
+                }
+
+                var uInt32FieldComparison = x.UInt32Field.CompareTo(y.UInt32Field);
+                if (uInt32FieldComparison != 0)
+                {
+                    return uInt32FieldComparison;
+                }
+
+                var int64FieldComparison = x.Int64Field.CompareTo(y.Int64Field);
+                if (int64FieldComparison != 0)
+                {
+                    return int64FieldComparison;
+                }
+
+                var uInt64FieldComparison = x.UInt64Field.CompareTo(y.UInt64Field);
+                if (uInt64FieldComparison != 0)
+                {
+                    return uInt64FieldComparison;
+                }
+
+                var int16FieldComparison = x.Int16Field.CompareTo(y.Int16Field);
+                if (int16FieldComparison != 0)
+                {
+                    return int16FieldComparison;
+                }
+
+                var uInt16FieldComparison = x.UInt16Field.CompareTo(y.UInt16Field);
+                if (uInt16FieldComparison != 0)
+                {
+                    return uInt16FieldComparison;
+                }
+
+                var stringFieldComparison = string.Compare(x.StringField, y.StringField, StringComparison.CurrentCulture);
+                if (stringFieldComparison != 0)
+                {
+                    return stringFieldComparison;
                 }
 
                 var booleanPropertyComparison = x.BooleanProperty.CompareTo(y.BooleanProperty);
@@ -127,8 +216,10 @@ namespace ILLightenComparer.Tests.Samples
                     return uInt16PropertyComparison;
                 }
 
-                return string.Compare(x.StringProperty, y.StringProperty, StringComparison.Ordinal);
+                return string.Compare(x.StringProperty, y.StringProperty, StringComparison.CurrentCulture);
             }
         }
+
+        public static IComparer<TestObject> TestObjectComparer { get; } = new TestObjectRelationalComparer();
     }
 }

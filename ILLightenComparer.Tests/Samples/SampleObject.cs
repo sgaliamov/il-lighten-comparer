@@ -5,14 +5,17 @@ namespace ILLightenComparer.Tests.Samples
 {
     public sealed class SampleObject
     {
-        public int Key { get; set; }
-        public string Value { get; set; }
+        public int KeyField;
+        public string ValueField;
+        public int KeyProperty { get; set; }
+        public string ValueProperty { get; set; }
 
-        public static IComparer<SampleObject> Comparer { get; } = new KeyValueRelationalComparer();
+        public static IComparer<SampleObject> SampleObjectComparer { get; } = new SampleObjectRelationalComparer();
 
-        public override string ToString() => $"{nameof(Key)}: {Key}, {nameof(Value)}: {Value}";
+        public override string ToString() =>
+            $"{nameof(KeyField)}: {KeyField}, {nameof(ValueField)}: {ValueField}, {nameof(KeyProperty)}: {KeyProperty}, {nameof(ValueProperty)}: {ValueProperty}";
 
-        private sealed class KeyValueRelationalComparer : IComparer<SampleObject>
+        private sealed class SampleObjectRelationalComparer : IComparer<SampleObject>
         {
             public int Compare(SampleObject x, SampleObject y)
             {
@@ -31,13 +34,25 @@ namespace ILLightenComparer.Tests.Samples
                     return -1;
                 }
 
-                var keyComparison = x.Key.CompareTo(y.Key);
-                if (keyComparison != 0)
+                var keyFieldComparison = x.KeyField.CompareTo(y.KeyField);
+                if (keyFieldComparison != 0)
                 {
-                    return keyComparison;
+                    return keyFieldComparison;
                 }
 
-                return string.Compare(x.Value, y.Value, StringComparison.Ordinal);
+                var valueFieldComparison = string.Compare(x.ValueField, y.ValueField, StringComparison.Ordinal);
+                if (valueFieldComparison != 0)
+                {
+                    return valueFieldComparison;
+                }
+
+                var keyPropertyComparison = x.KeyProperty.CompareTo(y.KeyProperty);
+                if (keyPropertyComparison != 0)
+                {
+                    return keyPropertyComparison;
+                }
+
+                return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.Ordinal);
             }
         }
     }
