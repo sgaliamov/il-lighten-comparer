@@ -41,13 +41,15 @@ namespace ILLightenComparer.Emit.Extensions
         {
             var constructorInfo = typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
 
-            DefineStaticMethod(
-                    typeBuilder,
-                    Constants.FactoryMethodName,
-                    typeBuilder,
-                    null)
-                .CreateILEmitter()
-                .EmitCtorCall(constructorInfo);
+            var methodBuilder = DefineStaticMethod(typeBuilder,
+                Constants.FactoryMethodName,
+                typeBuilder,
+                null);
+
+            using (var il = methodBuilder.CreateILEmitter())
+            {
+                il.EmitCtorCall(constructorInfo);
+            }
 
             return typeBuilder;
         }

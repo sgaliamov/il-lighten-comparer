@@ -7,13 +7,13 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit
 {
-    internal sealed class ILEmitter
+    internal sealed class ILEmitter : IDisposable
     {
 #if DEBUG
         private readonly List<Label> _labels = new List<Label>();
 #endif
-        private readonly Dictionary<Type, LocalBuilder> _locals = new Dictionary<Type, LocalBuilder>();
-        private readonly ILGenerator _il;
+        private Dictionary<Type, LocalBuilder> _locals = new Dictionary<Type, LocalBuilder>();
+        private ILGenerator _il;
 
         public ILEmitter(ILGenerator il) => _il = il;
 
@@ -33,7 +33,7 @@ namespace ILLightenComparer.Emit
         public ILEmitter MarkLabel(Label label)
         {
 #if DEBUG
-            Debug.WriteLine("Label: " + _labels.IndexOf(label));
+            Debug.WriteLine($"\tLabel_{_labels.IndexOf(label)}:");
 #endif
             _il.MarkLabel(label);
 
@@ -43,7 +43,7 @@ namespace ILLightenComparer.Emit
         public ILEmitter Emit(OpCode opCode, Label label)
         {
 #if DEBUG
-            Debug.WriteLine($"{opCode} {_labels.IndexOf(label)}");
+            Debug.WriteLine($"\t\t{opCode} Label_{_labels.IndexOf(label)}");
 #endif
             _il.Emit(opCode, label);
 
@@ -56,7 +56,7 @@ namespace ILLightenComparer.Emit
                 ? OpCodes.Unbox_Any
                 : OpCodes.Castclass;
 
-            Debug.WriteLine($"{castOp} {objectType.Name}");
+            Debug.WriteLine($"\t\t{castOp} {objectType.Name}");
 
             _il.Emit(castOp, objectType);
 
@@ -69,14 +69,14 @@ namespace ILLightenComparer.Emit
         {
             _il.Emit(OpCodes.Newobj, constructorInfo);
 
-            Debug.WriteLine($"{OpCodes.Newobj} {constructorInfo.Name}");
+            Debug.WriteLine($"\t\t{OpCodes.Newobj} {constructorInfo.DisplayName()}");
 
             return this;
         }
 
         public ILEmitter Emit(OpCode opCode)
         {
-            Debug.WriteLine(opCode.ToString());
+            Debug.WriteLine($"\t\t{opCode}");
 
             _il.Emit(opCode);
 
@@ -85,7 +85,7 @@ namespace ILLightenComparer.Emit
 
         public ILEmitter Emit(OpCode opCode, MethodInfo methodInfo)
         {
-            Debug.WriteLine($"{opCode} {methodInfo.Name}");
+            Debug.WriteLine($"\t\t{opCode} {methodInfo.DisplayName()}");
 
             _il.Emit(opCode, methodInfo);
 
@@ -94,7 +94,7 @@ namespace ILLightenComparer.Emit
 
         public ILEmitter Emit(OpCode opCode, int arg)
         {
-            Debug.WriteLine($"{opCode} {arg}");
+            Debug.WriteLine($"\t\t{opCode} {arg}");
 
             _il.Emit(opCode, arg);
 
@@ -106,7 +106,7 @@ namespace ILLightenComparer.Emit
             // todo: test
             var opCode = local.LocalIndex <= 255 ? OpCodes.Ldloca_S : OpCodes.Ldloca;
 
-            Debug.WriteLine($"{opCode} {local.LocalIndex}");
+            Debug.WriteLine($"\t\t{opCode} {local.LocalIndex}");
 
             _il.Emit(opCode, local);
 
@@ -115,7 +115,7 @@ namespace ILLightenComparer.Emit
 
         public ILEmitter EmitStore(LocalBuilder local)
         {
-            Debug.WriteLine($"{OpCodes.Stloc} {local.LocalIndex}");
+            Debug.WriteLine($"\t\t{OpCodes.Stloc} {local.LocalIndex}");
 
             _il.Emit(OpCodes.Stloc, local); // todo: use short form
 
@@ -124,11 +124,29 @@ namespace ILLightenComparer.Emit
 
         public ILEmitter Emit(OpCode opCode, FieldInfo field)
         {
-            Debug.WriteLine($"{opCode} {field.DisplayName()}");
+            Debug.WriteLine($"\t\t{opCode} {field.DisplayName()}");
 
             _il.Emit(opCode, field);
 
             return this;
+        }
+
+        public void Dispose()
+        {
+#if DEBUG
+            if (_locals.Count != 0)
+            {
+                Debug.WriteLine("\t.locals init (");
+                foreach (var item in _locals)
+                {
+                    Debug.WriteLine($"\t\t[{item.Value.LocalIndex}] {item.Key.Name}");
+                }
+                Debug.WriteLine("\t)\n");
+            }
+#endif
+            _il = null;
+            _locals.Clear();
+            _locals = null;
         }
     }
 }
