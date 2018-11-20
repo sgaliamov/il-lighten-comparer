@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Visitors;
-using ILLightenComparer.Reflection;
+using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Emit
 {

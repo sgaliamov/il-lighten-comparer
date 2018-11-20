@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using ILLightenComparer.Reflection;
+using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Emit
 {
