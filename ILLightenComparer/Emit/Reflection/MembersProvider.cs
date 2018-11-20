@@ -54,7 +54,7 @@ namespace ILLightenComparer.Emit.Reflection
                         };
                     }
 
-                    return new NestedObject();
+                    return null;
             }
 
             throw new NotSupportedException(

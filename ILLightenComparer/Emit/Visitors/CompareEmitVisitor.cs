@@ -12,7 +12,8 @@ namespace ILLightenComparer.Emit.Visitors
         {
             var isValueType = member.OwnerType.IsValueType;
 
-            var local = il.GetLocal(member.MemberType);
+            var local = il.DeclareLocal(member.MemberType);
+
             il.Emit(
                   isValueType ? OpCodes.Ldarga_S : OpCodes.Ldarg_S, // todo: use short form for classes
                   1) // x = arg1

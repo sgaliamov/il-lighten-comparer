@@ -81,7 +81,7 @@ namespace ILLightenComparer.Emit
         {
             var members = _membersProvider.GetMembers(objectType, _context.Configuration);
 
-            il.GetLocal(typeof(int));
+            il.DeclareLocal(typeof(int));
             foreach (var member in members)
             {
                 member.Accept(_emitVisitor, il);

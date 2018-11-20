@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emit
 
         public ILEmitter(ILGenerator il) => _il = il;
 
-        public LocalBuilder GetLocal(Type localType) => _locals.TryGetValue(localType, out var local)
+        public LocalBuilder DeclareLocal(Type localType) => _locals.TryGetValue(localType, out var local)
             ? local
             : _locals[localType] = _il.DeclareLocal(localType);
 
