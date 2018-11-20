@@ -15,11 +15,10 @@ namespace ILLightenComparer.Tests.Utilities
         private static void AddGenerators(IFixture fixture)
         {
             fixture.Customizations.Add(new StringGenerator(() =>
-                (fixture.Create<ushort>() % 100)
-                .ToString(CultureInfo.InvariantCulture)
-                .PadLeft(2, '0')));
+                (fixture.Create<ushort>() % 6)
+                .ToString(CultureInfo.InvariantCulture)));
 
-            fixture.Customizations.Add(new RandomNumericSequenceGenerator(-10, 10));
+            fixture.Customizations.Add(new RandomNumericSequenceGenerator(-5, 5));
         }
     }
 }

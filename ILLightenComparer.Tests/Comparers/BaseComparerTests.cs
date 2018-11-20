@@ -25,7 +25,7 @@ namespace ILLightenComparer.Tests.Comparers
         [Fact]
         public void Comparison_Wrong_Type_Throw_Exception()
         {
-            Assert.Throws<InvalidCastException>(() => BasicComparer.Compare(new SampleObject(), new SampleObject()));
+            Assert.Throws<InvalidCastException>(() => BasicComparer.Compare(new TestObject(), new TestObject()));
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace ILLightenComparer.Tests.Comparers
             Compare(original, copy2);
         }
 
-        private const int Count = 100;
+        private const int Count = 1000;
 
         private static void Compare(IEnumerable<T> one, IEnumerable<T> other)
         {

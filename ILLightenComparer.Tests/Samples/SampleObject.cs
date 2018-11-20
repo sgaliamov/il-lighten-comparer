@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
     public sealed class SampleObject
     {
         public int KeyField;
-        public string ValueField;
-        public int KeyProperty { get; set; }
-        public string ValueProperty { get; set; }
+        public double ValueProperty { get; set; }
 
-        public static IComparer<SampleObject> SampleObjectComparer { get; } = new SampleObjectRelationalComparer();
+        public static IComparer<SampleObject> SampleObjectComparer { get; } =
+            new KeyFieldValuePropertyRelationalComparer();
 
         public override string ToString() =>
-            $"{nameof(KeyField)}: {KeyField}, {nameof(ValueField)}: {ValueField}, {nameof(KeyProperty)}: {KeyProperty}, {nameof(ValueProperty)}: {ValueProperty}";
+            $"{nameof(KeyField)}: {KeyField}, {nameof(ValueProperty)}: {ValueProperty}";
 
-        private sealed class SampleObjectRelationalComparer : IComparer<SampleObject>
+        private sealed class KeyFieldValuePropertyRelationalComparer : IComparer<SampleObject>
         {
             public int Compare(SampleObject x, SampleObject y)
             {
@@ -40,19 +38,7 @@ namespace ILLightenComparer.Tests.Samples
                     return keyFieldComparison;
                 }
 
-                var valueFieldComparison = string.Compare(x.ValueField, y.ValueField, StringComparison.Ordinal);
-                if (valueFieldComparison != 0)
-                {
-                    return valueFieldComparison;
-                }
-
-                var keyPropertyComparison = x.KeyProperty.CompareTo(y.KeyProperty);
-                if (keyPropertyComparison != 0)
-                {
-                    return keyPropertyComparison;
-                }
-
-                return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.Ordinal);
+                return x.ValueProperty.CompareTo(y.ValueProperty);
             }
         }
     }
