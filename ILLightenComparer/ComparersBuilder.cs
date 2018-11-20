@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Emit;
-using ILLightenComparer.Shared;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer
 {
@@ -10,7 +10,7 @@ namespace ILLightenComparer
     public sealed class ComparersBuilder : IComparersBuilder
     {
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
-        private readonly Context _context = new Context();
+        private readonly TypeBuilderContext _context = new TypeBuilderContext();
         private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
         private readonly MembersProvider _membersProvider = new MembersProvider();
 

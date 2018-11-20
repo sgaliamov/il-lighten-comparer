@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using ILLightenComparer.Shared;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
     internal sealed class EqualityComparerTypeBuilder
     {
-        private readonly Context _context;
+        private readonly TypeBuilderContext _context;
         private readonly MembersProvider _membersProvider;
 
-        public EqualityComparerTypeBuilder(Context context, MembersProvider membersProvider)
+        public EqualityComparerTypeBuilder(TypeBuilderContext context, MembersProvider membersProvider)
         {
             _membersProvider = membersProvider;
             _context = context;

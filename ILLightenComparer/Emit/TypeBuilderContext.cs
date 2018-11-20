@@ -2,15 +2,15 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Shared;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit
 {
-    internal sealed class Context
+    internal sealed class TypeBuilderContext
     {
         private readonly ModuleBuilder _moduleBuilder;
 
-        public Context()
+        public TypeBuilderContext()
         {
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("ILLightenComparer.DynamicAssembly"),
