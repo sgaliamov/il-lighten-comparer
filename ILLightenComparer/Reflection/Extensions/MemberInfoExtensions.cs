@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ILLightenComparer.Emit.Extensions
+namespace ILLightenComparer.Reflection.Extensions
 {
     internal static class MemberInfoExtensions
     {
