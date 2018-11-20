@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Reflection;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Extensions
 {
@@ -41,21 +41,15 @@ namespace ILLightenComparer.Emit.Extensions
         {
             var constructorInfo = typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
 
-            var method = DefineStaticMethod(
-                typeBuilder,
-                Constants.FactoryMethodName,
-                typeBuilder,
-                null);
-
-            EmitCallCtor(method.GetILGenerator(), constructorInfo);
+            DefineStaticMethod(
+                    typeBuilder,
+                    Constants.FactoryMethodName,
+                    typeBuilder,
+                    null)
+                .GetILEmitter()
+                .EmitCallCtor(constructorInfo);
 
             return typeBuilder;
-        }
-
-        private static void EmitCallCtor(ILGenerator ilGenerator, ConstructorInfo constructor)
-        {
-            ilGenerator.Emit(OpCodes.Newobj, constructor);
-            ilGenerator.Emit(OpCodes.Ret);
         }
     }
 }
