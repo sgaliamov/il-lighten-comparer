@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ILLightenComparer.Reflection.Extensions;
-using ILLightenComparer.Reflection.Members;
+using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Members;
 
-namespace ILLightenComparer.Shared
+namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MembersProvider
     {
@@ -24,7 +24,18 @@ namespace ILLightenComparer.Shared
             switch (memberInfo)
             {
                 case FieldInfo field:
-                    break;
+                    var compareToMethod1 = field.FieldType.GetMethod(
+                        nameof(IComparable.CompareTo),
+                        new[] { field.FieldType });
+
+                    return new ComparableField
+                    {
+                        MemberType = field.FieldType,
+                        Name = field.Name,
+                        OwnerType = field.DeclaringType,
+                        CompareToMethod = compareToMethod1,
+                        FieldInfo = field
+                    };
 
                 case PropertyInfo property:
                     var compareToMethod = property.PropertyType.GetMethod(
@@ -35,15 +46,15 @@ namespace ILLightenComparer.Shared
                     {
                         return new ComparableProperty
                         {
-                            PropertyType = property.PropertyType,
+                            MemberType = property.PropertyType,
                             Name = property.Name,
-                            GetMethod = property.GetGetMethod(),
-                            DeclaringType = property.DeclaringType,
+                            GetterMethod = property.GetGetMethod(),
+                            OwnerType = property.DeclaringType,
                             CompareToMethod = compareToMethod
                         };
                     }
 
-                    break;
+                    return new NestedObject();
             }
 
             throw new NotSupportedException(
