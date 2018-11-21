@@ -4,35 +4,35 @@
 
 ### Phase 0 PoC
 
-- [x] Comparer test
-- [x] Flat object properties comparison
-- [x] Compare structures
-- [x] Generic comparer
-- [x] Refactor generic builder
-- [x] Refactor tests
-- [x] Benchmarks
+- [x] comparer test
+- [x] flat object properties comparison
+- [x] compare structures
+- [x] generic comparer
+- [x] refactor generic builder
+- [x] refactor tests
+- [x] benchmarks
 
 ### Phase 1 Core features
 
-- [x] Compare fields
-- [ ] Compare strings
+- [x] compare fields
+- [x] compare strings
 - [ ] refactor MembersProvider
-- [ ] Fixture generates nulls
-- [ ] Compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
-- [ ] Object field comparison
+- [ ] fixture generates nulls
+- [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
+- [ ] object field comparison
 
 ### Phase 2 Hierarchical objects
 
 - [ ] FlattenHierarchy
-- [ ] Detect cycles (check graph theory)
-- [ ] Test when abstract class is replaced after a comparer is created
+- [ ] detect cycles (check graph theory)
+- [ ] test when abstract class is replaced after a comparer is created$
 
 ### Phase 3 Optimizations
 
-- [ ] Optimization for integral types
-- [ ] Caching for assembly
-- [ ] Ignored properties
-- [ ] Support internal classes to compare
+- [ ] optimization for integral types
+- [ ] caching for assembly
+- [ ] ignored properties
+- [ ] support internal classes to compare
 - [ ] use short versions of opt codes when possible
 - [ ] use call instead callvirt when possible
 - [ ] reuse local variables for same types
@@ -40,18 +40,20 @@
 
 ### Phase 4 Settings
 
-- [ ] String options (case, culture)
-- [ ] Float, double, date time precision
-- [ ] Customization setting to override comparer with specific implementation
-- [ ] Compare references and the end
+- [x] string options (case, culture)
+- [ ] tests for different cultures
+- [ ] float, double, date time precision
+- [ ] customization setting to override comparer with specific implementation
+- [ ] compare references and the end
+- [ ] how to rebuild after set new configuration?
 
 ### Phase 5 Collections
 
-- [ ] Compare collection, do not iterate IEnumerable
-- [ ] IgnoreCollectionOrder setting
+- [ ] compare collection, do not iterate IEnumerable
+- [ ] IgnoreCollectiOnorder setting
 - [ ] define sorting order, emission order affects sorting
 
 ### Phase Z
 
-- [ ] Compared dynamic?
-- [ ] Setup CI/CD
+- [ ] compared dynamic?
+- [ ] setup CI/CD
