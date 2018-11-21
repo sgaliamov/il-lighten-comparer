@@ -90,12 +90,36 @@ namespace ILLightenComparer.Emit.Visitors
 
         public void Visit(IntegralFiledMember member, ILEmitter il)
         {
-            throw new System.NotImplementedException();
+            il.Emit(OpCodes.Ldarg_1)
+              .Emit(OpCodes.Ldfld, member.FieldInfo);
+            if (member.IsInteger)
+            {
+                il.Emit(OpCodes.Conv_I8);
+            }
+
+            il.Emit(OpCodes.Ldarg_2)
+              .Emit(OpCodes.Ldfld, member.FieldInfo);
+            if (member.IsInteger)
+            {
+                il.Emit(OpCodes.Conv_I8);
+            }
         }
 
         public void Visit(IntegralPropertyMember member, ILEmitter il)
         {
-            throw new System.NotImplementedException();
+            il.Emit(OpCodes.Ldarg_1)
+              .Emit(OpCodes.Callvirt, member.GetterMethod);
+            if (member.IsInteger)
+            {
+                il.Emit(OpCodes.Conv_I8);
+            }
+
+            il.Emit(OpCodes.Ldarg_2)
+              .Emit(OpCodes.Callvirt, member.GetterMethod);
+            if (member.IsInteger)
+            {
+                il.Emit(OpCodes.Conv_I8);
+            }
         }
     }
 }

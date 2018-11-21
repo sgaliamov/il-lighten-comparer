@@ -70,9 +70,7 @@ namespace ILLightenComparer.Emit.Visitors
         /// </summary>
         private static void EmitCompareCall(ILEmitter il, MethodInfo compareToMethod)
         {
-            il.Emit(OpCodes.Call, compareToMethod)
-              .Emit(OpCodes.Stloc_0)
-              .Emit(OpCodes.Ldloc_0);
+            il.Emit(OpCodes.Call, compareToMethod);
 
             EmitCheckToZero(il);
         }
@@ -80,10 +78,13 @@ namespace ILLightenComparer.Emit.Visitors
         private static void EmitCheckToZero(ILEmitter il)
         {
             var gotoNext = il.DefineLabel();
-            il.Emit(OpCodes.Brfalse_S, gotoNext)
-              .Emit(OpCodes.Ldloc_0)
-              .Emit(OpCodes.Ret)
-              .MarkLabel(gotoNext);
+            il
+                .Emit(OpCodes.Stloc_0)
+                .Emit(OpCodes.Ldloc_0)
+                .Emit(OpCodes.Brfalse_S, gotoNext)
+                .Emit(OpCodes.Ldloc_0)
+                .Emit(OpCodes.Ret)
+                .MarkLabel(gotoNext);
         }
     }
 }
