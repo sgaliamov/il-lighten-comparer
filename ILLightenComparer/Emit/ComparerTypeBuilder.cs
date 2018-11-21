@@ -82,7 +82,7 @@ namespace ILLightenComparer.Emit
         {
             var members = _membersProvider.GetMembers(objectType, _context.Configuration);
 
-            il.DeclareLocal(typeof(int));
+            il.DeclareLocal(typeof(int)); // todo: automatically create local when needs
             foreach (var member in members)
             {
                 member.Accept(_emitVisitor, il);

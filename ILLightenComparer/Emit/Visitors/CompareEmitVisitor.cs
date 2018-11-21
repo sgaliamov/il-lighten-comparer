@@ -107,7 +107,7 @@ namespace ILLightenComparer.Emit.Visitors
         }
 
         /// <summary>
-        ///     Emits call to a compare method of basic type.
+        ///     Emits call to a compare method of a basic type.
         ///     Expects correct arguments in the stack.
         ///     Push result into Ldloc_0.
         /// </summary>
