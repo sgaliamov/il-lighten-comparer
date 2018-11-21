@@ -13,8 +13,8 @@ namespace ILLightenComparer.Emit
     internal sealed class ComparerTypeBuilder
     {
         private readonly TypeBuilderContext _context;
-        private readonly CompareEmitVisitor _visitor;
         private readonly MembersProvider _membersProvider;
+        private readonly CompareEmitVisitor _visitor;
 
         public ComparerTypeBuilder(TypeBuilderContext context, MembersProvider membersProvider)
         {
@@ -82,17 +82,48 @@ namespace ILLightenComparer.Emit
         {
             var members = _membersProvider.GetMembers(objectType, _context.Configuration);
 
-            il.DeclareLocal(typeof(int)); // todo: automatically create local when needs
+            InitFirstLocalToKeepComparisonsResult(il);
             foreach (var member in members)
             {
                 member.Accept(_visitor, il);
             }
         }
 
+        private static void InitFirstLocalToKeepComparisonsResult(ILEmitter il)
+        {
+            il.DeclareLocal(typeof(int)); // todo: automatically create local when needs
+        }
+
         private static void EmitDefaultResult(ILEmitter il)
         {
-            il.Emit(OpCodes.Ldc_I4_0);
-            il.Emit(OpCodes.Ret);
+            il.Emit(OpCodes.Ldc_I4_0)
+              .Emit(OpCodes.Ret);
+        }
+
+        private static void EmitNormalizeResult(ILEmitter il)
+        {
+            var next1 = il.DefineLabel();
+            var next2 = il.DefineLabel();
+            il.DeclareLocal(typeof(int));
+
+            il.Emit(OpCodes.Stloc_0)
+              // if r < -1 return -1
+              .Emit(OpCodes.Ldloc_0)
+              .Emit(OpCodes.Ldc_I4_M1)
+              .Emit(OpCodes.Bgt_S, next1)
+              .Emit(OpCodes.Ldc_I4_M1)
+              .Emit(OpCodes.Ret)
+              // if r > 1 return 1
+              .MarkLabel(next1)
+              .Emit(OpCodes.Ldloc_0)
+              .Emit(OpCodes.Ldc_I4_1)
+              .Emit(OpCodes.Blt_S, next2)
+              .Emit(OpCodes.Ldc_I4_1)
+              .Emit(OpCodes.Ret)
+              // return 0
+              .MarkLabel(next2)
+              .Emit(OpCodes.Ldc_I4_0)
+              .Emit(OpCodes.Ret);
         }
 
         private static void EmitReferenceComparision(ILEmitter il)
@@ -143,8 +174,9 @@ namespace ILLightenComparer.Emit
                   .EmitCast(objectType)
                   .Emit(OpCodes.Ldarg_2)
                   .EmitCast(objectType)
-                  .Emit(OpCodes.Call, staticCompareMethod)
-                  .Emit(OpCodes.Ret);
+                  .Emit(OpCodes.Call, staticCompareMethod);
+
+                EmitNormalizeResult(il);
             }
         }
 
@@ -160,8 +192,9 @@ namespace ILLightenComparer.Emit
                 il.Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
                   .Emit(OpCodes.Ldarg_1)
                   .Emit(OpCodes.Ldarg_2)
-                  .Emit(OpCodes.Call, staticCompareMethod)
-                  .Emit(OpCodes.Ret);
+                  .Emit(OpCodes.Call, staticCompareMethod);
+
+                EmitNormalizeResult(il);
             }
         }
     }
