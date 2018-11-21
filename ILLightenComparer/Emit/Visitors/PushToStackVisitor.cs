@@ -87,5 +87,15 @@ namespace ILLightenComparer.Emit.Visitors
                 OpCodes.Ldc_I4_S,
                 (int)_context.Configuration.StringComparisonType); // todo: use short form
         }
+
+        public void Visit(IntegralFiledMember member, ILEmitter il)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Visit(IntegralPropertyMember member, ILEmitter il)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

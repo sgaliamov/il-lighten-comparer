@@ -18,6 +18,7 @@
 - [x] compare strings
 - [x] compare enums
 - [ ] optimization for integral types
+- [ ] fixture generates Max and Min values
 - [ ] refactor MembersProvider
 - [ ] fixture generates nulls
 - [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463

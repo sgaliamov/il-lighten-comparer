@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members;
@@ -8,6 +9,23 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
+        private static readonly HashSet<Type> IntegralTypes = new HashSet<Type>(new[]
+        {
+            typeof(sbyte),
+            typeof(byte),
+            typeof(char),
+            typeof(short),
+            typeof(ushort),
+            typeof(int),
+            typeof(uint)
+        });
+
+        private static readonly HashSet<Type> IntegerTypes = new HashSet<Type>(new[]
+        {
+            typeof(int),
+            typeof(uint)
+        });
+
         public Member Convert(MemberInfo memberInfo)
         {
             switch (memberInfo)
@@ -26,6 +44,11 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static Member Convert(PropertyInfo property)
         {
+            if (IntegralTypes.Contains(property.PropertyType))
+            {
+                return new IntegralPropertyMember(property, IntegerTypes.Contains(property.PropertyType));
+            }
+
             if (property.PropertyType == typeof(string))
             {
                 return new StringPropertyMember(property);
@@ -43,6 +66,11 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static Member Convert(FieldInfo field)
         {
+            if (IntegralTypes.Contains(field.FieldType))
+            {
+                return new IntegralFiledMember(field, IntegerTypes.Contains(field.FieldType));
+            }
+
             if (field.FieldType == typeof(string))
             {
                 return new StringFiledMember(field);

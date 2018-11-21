@@ -11,8 +11,10 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         private readonly int[] _one = new int[N];
         private readonly int[] _other = new int[N];
 
-        // ReSharper disable once NotAccessedField.Local
+        // ReSharper disable NotAccessedField.Local
+        private long _long;
         private int _out;
+        // ReSharper restore NotAccessedField.Local
 
         [GlobalSetup]
         public void Setup()
@@ -31,7 +33,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         {
             for (var i = 0; i < N; i++)
             {
-                _out = _one[i] - _other[i];
+                _long = (long)_one[i] - _other[i];
             }
         }
 

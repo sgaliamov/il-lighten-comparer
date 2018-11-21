@@ -45,6 +45,24 @@ namespace ILLightenComparer.Emit.Visitors
             EmitCompareCall(il, StringCompareMethod);
         }
 
+        public void Visit(IntegralFiledMember member, ILEmitter il)
+        {
+            _stackVisitor.Visit(member, il);
+
+            il.Emit(OpCodes.Sub);
+
+            EmitCheckToZero(il);
+        }
+
+        public void Visit(IntegralPropertyMember member, ILEmitter il)
+        {
+            _stackVisitor.Visit(member, il);
+
+            il.Emit(OpCodes.Sub);
+
+            EmitCheckToZero(il);
+        }
+
         /// <summary>
         ///     Emits call to a compare method of a basic type.
         ///     Expects correct arguments in the stack.
@@ -56,7 +74,11 @@ namespace ILLightenComparer.Emit.Visitors
               .Emit(OpCodes.Stloc_0)
               .Emit(OpCodes.Ldloc_0);
 
-            // if(r != 0) return r;
+            EmitCheckToZero(il);
+        }
+
+        private static void EmitCheckToZero(ILEmitter il)
+        {
             var gotoNext = il.DefineLabel();
             il.Emit(OpCodes.Brfalse_S, gotoNext)
               .Emit(OpCodes.Ldloc_0)
