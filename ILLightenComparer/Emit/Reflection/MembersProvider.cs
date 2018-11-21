@@ -16,7 +16,8 @@ namespace ILLightenComparer.Emit.Reflection
                     | BindingFlags.Public)
                 .Where(memberInfo => IgnoredMembers(memberInfo, configuration.IgnoredMembers))
                 .Where(memberInfo => IncludeFields(memberInfo, configuration.IncludeFields))
-                .OrderBy(x => x.Name) // todo: use functor from settings
+                .OrderBy(x => x.MemberType) // todo: use functor from settings
+                .ThenBy(x => x.Name)
                 .Select(Convert)
                 .ToArray();
 
@@ -36,16 +37,13 @@ namespace ILLightenComparer.Emit.Reflection
                         };
                     }
 
-                    var compareToMethod1 = field.FieldType.GetMethod(
-                        nameof(IComparable.CompareTo),
-                        new[] { field.FieldType });
-
+                    var fieldCompareToMethod = GetCompareToMethod(field.FieldType);
                     return new ComparableField
                     {
-                        MemberType = field.FieldType,
+                        MemberType = GetUnderlyingType(field.FieldType),
                         Name = field.Name,
                         OwnerType = field.DeclaringType,
-                        CompareToMethod = compareToMethod1,
+                        CompareToMethod = fieldCompareToMethod,
                         FieldInfo = field
                     };
 
@@ -61,28 +59,39 @@ namespace ILLightenComparer.Emit.Reflection
                         };
                     }
 
-                    var compareToMethod = property.PropertyType.GetMethod(
-                        nameof(IComparable.CompareTo),
-                        new[] { property.PropertyType });
-
-                    if (compareToMethod != null)
+                    var propertyCompareToMethod = GetCompareToMethod(property.PropertyType);
+                    return new ComparableProperty
                     {
-                        return new ComparableProperty
-                        {
-                            MemberType = property.PropertyType,
-                            Name = property.Name,
-                            GetterMethod = property.GetGetMethod(),
-                            OwnerType = property.DeclaringType,
-                            CompareToMethod = compareToMethod
-                        };
-                    }
-
-                    return null;
+                        MemberType = GetUnderlyingType(property.PropertyType),
+                        Name = property.Name,
+                        GetterMethod = property.GetGetMethod(),
+                        OwnerType = property.DeclaringType,
+                        CompareToMethod = propertyCompareToMethod
+                    };
             }
 
             throw new NotSupportedException(
                 "Only fields and properties are supported. "
                 + $"{memberInfo.MemberType}: {memberInfo.DisplayName()}");
+        }
+
+        private static MethodInfo GetCompareToMethod(Type type)
+        {
+            type = GetUnderlyingType(type);
+
+            return type.GetMethod(
+                nameof(IComparable.CompareTo),
+                new[] { type });
+        }
+
+        private static Type GetUnderlyingType(Type type)
+        {
+            if (type.IsEnum)
+            {
+                type = Enum.GetUnderlyingType(type);
+            }
+
+            return type;
         }
 
         private static bool IgnoredMembers(MemberInfo memberInfo, ICollection<string> ignoredMembers) =>

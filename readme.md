@@ -16,7 +16,7 @@
 
 - [x] compare fields
 - [x] compare strings
-- [ ] compare enums
+- [x] compare enums
 - [ ] refactor MembersProvider
 - [ ] fixture generates nulls
 - [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
@@ -31,6 +31,7 @@
 ### Phase 3 Optimizations
 
 - [ ] optimization for integral types
+- [ ] normalize result to -1, 0. 1
 - [ ] caching for assembly
 - [ ] ignored properties
 - [ ] support internal classes to compare
