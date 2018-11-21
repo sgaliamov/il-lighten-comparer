@@ -107,13 +107,13 @@ namespace ILLightenComparer.Emit
             il.DeclareLocal(typeof(int));
 
             il.Emit(OpCodes.Stloc_0)
-              // if r < -1 return -1
+              // if r <= -1 return -1
               .Emit(OpCodes.Ldloc_0)
               .Emit(OpCodes.Ldc_I4_M1)
               .Emit(OpCodes.Bgt_S, next1)
               .Emit(OpCodes.Ldc_I4_M1)
               .Emit(OpCodes.Ret)
-              // if r > 1 return 1
+              // if r >= 1 return 1
               .MarkLabel(next1)
               .Emit(OpCodes.Ldloc_0)
               .Emit(OpCodes.Ldc_I4_1)
