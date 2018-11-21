@@ -28,27 +28,14 @@ namespace ILLightenComparer.Emit.Reflection
         {
             if (property.PropertyType == typeof(string))
             {
-                return new StringPropertyMember
-                {
-                    MemberType = property.PropertyType,
-                    Name = property.Name,
-                    OwnerType = property.DeclaringType,
-                    GetterMethod = property.GetMethod
-                };
+                return new StringPropertyMember(property);
             }
 
-            var underlyingType = GetUnderlyingType(property.PropertyType);
+            var underlyingType = GetEnumUnderlyingType(property.PropertyType);
             var compareToMethod = GetCompareToMethod(underlyingType);
             if (compareToMethod != null)
             {
-                return new ComparablePropertyMember
-                {
-                    MemberType = underlyingType,
-                    Name = property.Name,
-                    GetterMethod = property.GetGetMethod(),
-                    OwnerType = property.DeclaringType,
-                    CompareToMethod = compareToMethod
-                };
+                return new ComparablePropertyMember(property, compareToMethod);
             }
 
             throw new NotSupportedException($"Property {property.DisplayName()} is not supported.");
@@ -58,27 +45,14 @@ namespace ILLightenComparer.Emit.Reflection
         {
             if (field.FieldType == typeof(string))
             {
-                return new StringFiledMember
-                {
-                    MemberType = field.FieldType,
-                    Name = field.Name,
-                    OwnerType = field.DeclaringType,
-                    FieldInfo = field
-                };
+                return new StringFiledMember(field);
             }
 
-            var underlyingType = GetUnderlyingType(field.FieldType);
+            var underlyingType = GetEnumUnderlyingType(field.FieldType);
             var compareToMethod = GetCompareToMethod(underlyingType);
             if (compareToMethod != null)
             {
-                return new ComparableFieldMember
-                {
-                    MemberType = underlyingType,
-                    Name = field.Name,
-                    OwnerType = field.DeclaringType,
-                    FieldInfo = field,
-                    CompareToMethod = compareToMethod
-                };
+                return new ComparableFieldMember(field, compareToMethod);
             }
 
             throw new NotSupportedException($"Field {field.DisplayName()} is not supported.");
@@ -88,7 +62,7 @@ namespace ILLightenComparer.Emit.Reflection
             nameof(IComparable.CompareTo),
             new[] { type });
 
-        private static Type GetUnderlyingType(Type type) =>
+        private static Type GetEnumUnderlyingType(Type type) =>
             type.IsEnum
                 ? Enum.GetUnderlyingType(type)
                 : type;

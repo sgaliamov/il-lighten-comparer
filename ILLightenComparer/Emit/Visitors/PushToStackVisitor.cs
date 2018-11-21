@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Shared;
 
@@ -55,11 +54,6 @@ namespace ILLightenComparer.Emit.Visitors
                   .Emit(OpCodes.Ldarg_2) // y = arg2 
                   .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Field
             }
-        }
-
-        public void Visit(NestedObject member, ILEmitter il)
-        {
-            throw new NotImplementedException();
         }
 
         public void Visit(StringFiledMember member, ILEmitter il)

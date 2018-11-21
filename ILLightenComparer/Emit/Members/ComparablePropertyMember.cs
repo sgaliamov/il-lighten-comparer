@@ -6,7 +6,11 @@ namespace ILLightenComparer.Emit.Members
 {
     internal sealed class ComparablePropertyMember : PropertyMember
     {
-        public MethodInfo CompareToMethod { get; set; }
+        public ComparablePropertyMember(PropertyInfo propertyInfo, MethodInfo compareToMethod)
+            : base(propertyInfo) =>
+            CompareToMethod = compareToMethod;
+
+        public MethodInfo CompareToMethod { get; }
 
         public override void Accept(IVisitor visitor, ILEmitter il)
         {

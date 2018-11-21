@@ -31,13 +31,6 @@ namespace ILLightenComparer.Emit.Visitors
             EmitCompareCall(il, member.CompareToMethod);
         }
 
-        public void Visit(NestedObject member, ILEmitter il)
-        {
-            _stackVisitor.Visit(member, il);
-
-            throw new NotImplementedException();
-        }
-
         public void Visit(StringFiledMember member, ILEmitter il)
         {
             _stackVisitor.Visit(member, il);
