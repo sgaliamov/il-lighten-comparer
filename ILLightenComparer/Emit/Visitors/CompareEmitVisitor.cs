@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emit.Visitors
 
         public CompareEmitVisitor(TypeBuilderContext context) => _stackVisitor = new PushToStackVisitor(context);
 
-        public void Visit(PropertyMember member, ILEmitter il)
+        public void Visit(ComparablePropertyMember member, ILEmitter il)
         {
             _stackVisitor.Visit(member, il);
 
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Emit.Visitors
             EmitCompareCall(il, compareToMethod);
         }
 
-        public void Visit(FieldMember member, ILEmitter il)
+        public void Visit(ComparableFieldMember member, ILEmitter il)
         {
             _stackVisitor.Visit(member, il);
 

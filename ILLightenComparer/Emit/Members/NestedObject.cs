@@ -1,4 +1,5 @@
-﻿using ILLightenComparer.Emit.Shared;
+﻿using ILLightenComparer.Emit.Members.Base;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Members
 {

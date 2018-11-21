@@ -11,7 +11,7 @@ namespace ILLightenComparer.Emit.Visitors
 
         public PushToStackVisitor(TypeBuilderContext context) => _context = context;
 
-        public void Visit(PropertyMember member, ILEmitter il)
+        public void Visit(ComparablePropertyMember member, ILEmitter il)
         {
             var isValueType = member.OwnerType.IsValueType;
             if (isValueType)
@@ -38,7 +38,7 @@ namespace ILLightenComparer.Emit.Visitors
             }
         }
 
-        public void Visit(FieldMember member, ILEmitter il)
+        public void Visit(ComparableFieldMember member, ILEmitter il)
         {
             var isValueType = member.OwnerType.IsValueType;
             if (isValueType)

@@ -2,6 +2,7 @@
 using System.Reflection;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members;
+using ILLightenComparer.Emit.Members.Base;
 
 namespace ILLightenComparer.Emit.Reflection
 {
@@ -36,7 +37,7 @@ namespace ILLightenComparer.Emit.Reflection
                 };
             }
 
-            return new PropertyMember
+            return new ComparablePropertyMember
             {
                 MemberType = GetUnderlyingType(property.PropertyType),
                 Name = property.Name,
@@ -58,7 +59,7 @@ namespace ILLightenComparer.Emit.Reflection
                 };
             }
 
-            return new FieldMember
+            return new ComparableFieldMember
             {
                 MemberType = GetUnderlyingType(field.FieldType),
                 Name = field.Name,

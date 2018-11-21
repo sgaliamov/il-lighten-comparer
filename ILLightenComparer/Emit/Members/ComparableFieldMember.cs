@@ -1,12 +1,10 @@
-﻿using System.Reflection;
+﻿using ILLightenComparer.Emit.Members.Base;
 using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal class FieldMember : Member
+    internal sealed class ComparableFieldMember : FieldMember
     {
-        public FieldInfo FieldInfo { get; set; }
-
         public override void Accept(IVisitor visitor, ILEmitter il)
         {
             visitor.Visit(this, il);
