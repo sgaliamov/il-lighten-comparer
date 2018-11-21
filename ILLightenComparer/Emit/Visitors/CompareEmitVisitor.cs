@@ -19,11 +19,11 @@ namespace ILLightenComparer.Emit.Visitors
 
         public void Visit(PropertyMember member, ILEmitter il)
         {
-            var local = il.DeclareLocal(member.MemberType);
-
             var isValueType = member.OwnerType.IsValueType;
             if (isValueType)
             {
+                var local = il.DeclareLocal(member.MemberType);
+
                 il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
                   .Emit(OpCodes.Call, member.GetterMethod) // a = x.Prop
                   .EmitStore(local)
@@ -33,6 +33,8 @@ namespace ILLightenComparer.Emit.Visitors
             }
             else
             {
+                var local = il.DeclareLocal(member.MemberType);
+
                 il.Emit(OpCodes.Ldarg_1) // x = arg1
                   .Emit(OpCodes.Callvirt, member.GetterMethod) // a = x.Prop
                   .EmitStore(local)
@@ -51,16 +53,18 @@ namespace ILLightenComparer.Emit.Visitors
             var isValueType = member.OwnerType.IsValueType;
             if (isValueType)
             {
-                il.Emit(OpCodes.Ldarga_S, 1); // x = arg1
+                il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
+                  .Emit(OpCodes.Ldflda, member.FieldInfo) // a = x.Field 
+                  .Emit(OpCodes.Ldarg_2) // y = arg2 
+                  .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Field
             }
             else
             {
-                il.Emit(OpCodes.Ldarg_1); // x = arg1
+                il.Emit(OpCodes.Ldarg_1) // x = arg1
+                  .Emit(OpCodes.Ldflda, member.FieldInfo) // a = x.Field 
+                  .Emit(OpCodes.Ldarg_2) // y = arg2 
+                  .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Field
             }
-
-            il.Emit(OpCodes.Ldflda, member.FieldInfo) // a = x.Field 
-              .Emit(OpCodes.Ldarg_2) // y = arg2 
-              .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Field
 
             var compareToMethod = GetCompareToMethod(member.MemberType);
 
@@ -101,7 +105,9 @@ namespace ILLightenComparer.Emit.Visitors
                   .Emit(OpCodes.Callvirt, member.GetterMethod);
             }
 
-            il.Emit(OpCodes.Ldc_I4_S, (int)_context.Configuration.StringComparisonType); // todo: use short form
+            il.Emit(
+                OpCodes.Ldc_I4_S,
+                (int)_context.Configuration.StringComparisonType); // todo: use short form
 
             EmitCompareCall(il, StringCompareMethod);
         }

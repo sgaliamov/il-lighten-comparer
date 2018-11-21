@@ -13,14 +13,14 @@ namespace ILLightenComparer.Emit
     internal sealed class ComparerTypeBuilder
     {
         private readonly TypeBuilderContext _context;
-        private readonly CompareEmitVisitor _emitVisitor;
+        private readonly CompareEmitVisitor _visitor;
         private readonly MembersProvider _membersProvider;
 
         public ComparerTypeBuilder(TypeBuilderContext context, MembersProvider membersProvider)
         {
             _context = context;
             _membersProvider = membersProvider;
-            _emitVisitor = new CompareEmitVisitor(_context);
+            _visitor = new CompareEmitVisitor(_context);
         }
 
         public TypeInfo Build(Type objectType)
@@ -85,7 +85,7 @@ namespace ILLightenComparer.Emit
             il.DeclareLocal(typeof(int)); // todo: automatically create local when needs
             foreach (var member in members)
             {
-                member.Accept(_emitVisitor, il);
+                member.Accept(_visitor, il);
             }
         }
 
@@ -138,11 +138,10 @@ namespace ILLightenComparer.Emit
                     EmitReferenceComparision(il);
                 }
 
-                // todo: hash set to detect cycles
-                il.Emit(OpCodes.Ldc_I4_0)
-                  .Emit(OpCodes.Ldarg_1) // x
+                il.Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
+                  .Emit(OpCodes.Ldarg_1)
                   .EmitCast(objectType)
-                  .Emit(OpCodes.Ldarg_2) // y
+                  .Emit(OpCodes.Ldarg_2)
                   .EmitCast(objectType)
                   .Emit(OpCodes.Call, staticCompareMethod)
                   .Emit(OpCodes.Ret);
@@ -159,7 +158,7 @@ namespace ILLightenComparer.Emit
             using (var il = methodBuilder.CreateILEmitter())
             {
                 il.Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
-                  .Emit(OpCodes.Ldarg_1) // x
+                  .Emit(OpCodes.Ldarg_1)
                   .Emit(OpCodes.Ldarg_2)
                   .Emit(OpCodes.Call, staticCompareMethod)
                   .Emit(OpCodes.Ret);
