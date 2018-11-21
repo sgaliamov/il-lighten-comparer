@@ -7,8 +7,5 @@ namespace ILLightenComparer.Emit.Extensions
     {
         public static TDelegate CreateDelegate<TDelegate>(this MethodInfo methodInfo)
             where TDelegate : Delegate => (TDelegate)methodInfo.CreateDelegate(typeof(TDelegate));
-
-        public static TDelegate CreateDelegate<TDelegate, TTarget>(this MethodInfo methodInfo, TTarget target)
-            where TDelegate : Delegate => (TDelegate)methodInfo.CreateDelegate(typeof(TDelegate), target);
     }
 }

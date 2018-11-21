@@ -19,7 +19,7 @@ namespace ILLightenComparer.Emit.Visitors
 
                 il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
                   .Emit(OpCodes.Call, member.GetterMethod) // a = x.Prop
-                  .EmitStore(local)
+                  .EmitStore(local) // todo: use underlying type for enums
                   .EmitLoadAddressOf(local) // pa = *a
                   .Emit(OpCodes.Ldarga_S, 2) // y = arg2 
                   .Emit(OpCodes.Call, member.GetterMethod); // b = y.Prop
@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit.Visitors
 
                 il.Emit(OpCodes.Ldarg_1) // x = arg1
                   .Emit(OpCodes.Callvirt, member.GetterMethod) // a = x.Prop
-                  .EmitStore(local)
+                  .EmitStore(local) // todo: use underlying type for enums
                   .EmitLoadAddressOf(local) // pa = *a
                   .Emit(OpCodes.Ldarg_2) // y = arg2 
                   .Emit(OpCodes.Callvirt, member.GetterMethod); // b = y.Prop

@@ -78,8 +78,8 @@ namespace ILLightenComparer.Emit.Visitors
         private static void EmitCheckToZero(ILEmitter il)
         {
             var gotoNext = il.DefineLabel();
-            il
-                .Emit(OpCodes.Stloc_0)
+
+            il.Emit(OpCodes.Stloc_0)
                 .Emit(OpCodes.Ldloc_0)
                 .Emit(OpCodes.Brfalse_S, gotoNext)
                 .Emit(OpCodes.Ldloc_0)

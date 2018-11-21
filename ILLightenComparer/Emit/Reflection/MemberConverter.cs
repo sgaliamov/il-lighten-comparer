@@ -54,6 +54,7 @@ namespace ILLightenComparer.Emit.Reflection
                 return new StringPropertyMember(property);
             }
 
+            // todo: try compare enums as integral types
             var underlyingType = GetEnumUnderlyingType(property.PropertyType);
             var compareToMethod = GetCompareToMethod(underlyingType);
             if (compareToMethod != null)
