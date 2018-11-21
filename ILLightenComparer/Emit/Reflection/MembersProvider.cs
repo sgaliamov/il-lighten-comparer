@@ -16,7 +16,7 @@ namespace ILLightenComparer.Emit.Reflection
                     | BindingFlags.Public)
                 .Where(memberInfo => IgnoredMembers(memberInfo, configuration.IgnoredMembers))
                 .Where(memberInfo => IncludeFields(memberInfo, configuration.IncludeFields))
-                .OrderBy(x => x.Name)
+                .OrderBy(x => x.Name) // todo: use functor from settings
                 .Select(Convert)
                 .ToArray();
 

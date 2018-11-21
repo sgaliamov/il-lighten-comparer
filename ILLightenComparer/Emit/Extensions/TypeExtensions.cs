@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Reflection;
 using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Extensions
 {
-    internal static class TypeInfoExtensions
+    internal static class TypeExtensions
     {
-        public static TReturnType CreateInstance<TReturnType>(this TypeInfo typeInfo)
+        public static TReturnType CreateInstance<TReturnType>(this Type type)
         {
-            var factoryMethod = typeInfo
+            var factoryMethod = type
                                 .GetMethod(Constants.FactoryMethodName)
                                 .CreateDelegate<Func<TReturnType>>();
 

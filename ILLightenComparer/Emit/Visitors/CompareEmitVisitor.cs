@@ -8,8 +8,10 @@ namespace ILLightenComparer.Emit.Visitors
 {
     internal sealed class CompareEmitVisitor : IVisitor
     {
-        private static readonly MethodInfo StringCompareMethod = typeof(string).GetMethod(nameof(string.Compare),
-            new[] { typeof(string), typeof(string), typeof(StringComparison) });
+        private static readonly MethodInfo StringCompareMethod = typeof(string)
+            .GetMethod(
+                nameof(string.Compare),
+                new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
         private readonly TypeBuilderContext _context;
 
