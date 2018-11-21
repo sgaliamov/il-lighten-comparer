@@ -17,19 +17,22 @@
 - [x] compare fields
 - [x] compare strings
 - [x] compare enums
-- [ ] optimization for integral types
+- [x] optimization for integral types
+- [x] refactor MembersProvider
+- [x] ~~normalize result to -1, 0. 1~~
 - [ ] fixture generates Max and Min values
-- [ ] refactor MembersProvider
+- [ ] refactor MemberConverter
+- [ ] refactor visitors, introduce interfaces for member classes
 - [ ] fixture generates nulls
 - [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
-- [ ] normalize result to -1, 0. 1
-- [ ] object field comparison
 
 ### Phase 2 Hierarchical objects
 
 - [ ] FlattenHierarchy
 - [ ] detect cycles (check graph theory)
-- [ ] test when abstract class is replaced after a comparer is created$
+- [ ] abstract member comparison
+- [ ] object member comparison?
+- [ ] test when abstract class is replaced after a comparer is created
 
 ### Phase 3 Collections
 

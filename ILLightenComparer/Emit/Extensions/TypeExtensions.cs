@@ -1,5 +1,5 @@
 ﻿using System;
-using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Extensions
 {

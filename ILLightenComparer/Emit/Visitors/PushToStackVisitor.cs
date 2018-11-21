@@ -1,6 +1,5 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Members;
-using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Visitors
 {

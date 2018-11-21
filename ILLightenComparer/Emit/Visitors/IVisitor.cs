@@ -1,6 +1,6 @@
 ﻿using ILLightenComparer.Emit.Members;
 
-namespace ILLightenComparer.Emit.Shared
+namespace ILLightenComparer.Emit.Visitors
 {
     internal interface IVisitor
     {

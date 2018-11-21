@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Extensions
 {
