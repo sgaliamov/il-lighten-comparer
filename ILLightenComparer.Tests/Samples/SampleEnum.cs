@@ -1,6 +1,6 @@
 ﻿namespace ILLightenComparer.Tests.Samples
 {
-    internal enum SampleEnum : byte
+    public enum SampleEnum : byte
     {
         One = 1,
         Two = 2,

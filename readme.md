@@ -16,6 +16,7 @@
 
 - [x] compare fields
 - [x] compare strings
+- [ ] compare enums
 - [ ] refactor MembersProvider
 - [ ] fixture generates nulls
 - [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
