@@ -37,13 +37,21 @@ namespace ILLightenComparer.Emit.Reflection
                 };
             }
 
-            return new ComparablePropertyMember
+            var underlyingType = GetUnderlyingType(property.PropertyType);
+            var compareToMethod = GetCompareToMethod(underlyingType);
+            if (compareToMethod != null)
             {
-                MemberType = GetUnderlyingType(property.PropertyType),
-                Name = property.Name,
-                GetterMethod = property.GetGetMethod(),
-                OwnerType = property.DeclaringType
-            };
+                return new ComparablePropertyMember
+                {
+                    MemberType = underlyingType,
+                    Name = property.Name,
+                    GetterMethod = property.GetGetMethod(),
+                    OwnerType = property.DeclaringType,
+                    CompareToMethod = compareToMethod
+                };
+            }
+
+            throw new NotSupportedException($"Property {property.DisplayName()} is not supported.");
         }
 
         private static Member Convert(FieldInfo field)
@@ -59,14 +67,26 @@ namespace ILLightenComparer.Emit.Reflection
                 };
             }
 
-            return new ComparableFieldMember
+            var underlyingType = GetUnderlyingType(field.FieldType);
+            var compareToMethod = GetCompareToMethod(underlyingType);
+            if (compareToMethod != null)
             {
-                MemberType = GetUnderlyingType(field.FieldType),
-                Name = field.Name,
-                OwnerType = field.DeclaringType,
-                FieldInfo = field
-            };
+                return new ComparableFieldMember
+                {
+                    MemberType = underlyingType,
+                    Name = field.Name,
+                    OwnerType = field.DeclaringType,
+                    FieldInfo = field,
+                    CompareToMethod = compareToMethod
+                };
+            }
+
+            throw new NotSupportedException($"Field {field.DisplayName()} is not supported.");
         }
+
+        private static MethodInfo GetCompareToMethod(Type type) => type.GetMethod(
+            nameof(IComparable.CompareTo),
+            new[] { type });
 
         private static Type GetUnderlyingType(Type type) =>
             type.IsEnum

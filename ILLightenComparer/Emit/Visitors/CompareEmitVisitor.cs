@@ -21,18 +21,14 @@ namespace ILLightenComparer.Emit.Visitors
         {
             _stackVisitor.Visit(member, il);
 
-            var compareToMethod = GetCompareToMethod(member.MemberType);
-
-            EmitCompareCall(il, compareToMethod);
+            EmitCompareCall(il, member.CompareToMethod);
         }
 
         public void Visit(ComparableFieldMember member, ILEmitter il)
         {
             _stackVisitor.Visit(member, il);
 
-            var compareToMethod = GetCompareToMethod(member.MemberType);
-
-            EmitCompareCall(il, compareToMethod);
+            EmitCompareCall(il, member.CompareToMethod);
         }
 
         public void Visit(NestedObject member, ILEmitter il)
@@ -74,9 +70,5 @@ namespace ILLightenComparer.Emit.Visitors
               .Emit(OpCodes.Ret)
               .MarkLabel(gotoNext);
         }
-
-        private static MethodInfo GetCompareToMethod(Type type) => type.GetMethod(
-            nameof(IComparable.CompareTo),
-            new[] { type });
     }
 }
