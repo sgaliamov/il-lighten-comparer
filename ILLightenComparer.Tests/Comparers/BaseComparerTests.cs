@@ -43,7 +43,7 @@ namespace ILLightenComparer.Tests.Comparers
             Compare(original, copy2);
         }
 
-        private const int Count = 1000;
+        private const int Count = 10000;
 
         private static void Compare(IEnumerable<T> one, IEnumerable<T> other)
         {
