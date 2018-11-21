@@ -3,7 +3,7 @@ using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class ComparableField : ComparableMember
+    internal sealed class FieldMember : Member
     {
         public FieldInfo FieldInfo { get; set; }
 

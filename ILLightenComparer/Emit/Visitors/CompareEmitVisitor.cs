@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emit.Visitors
 
         public CompareEmitVisitor(TypeBuilderContext context) => _context = context;
 
-        public void Visit(ComparableProperty member, ILEmitter il)
+        public void Visit(PropertyMember member, ILEmitter il)
         {
             var local = il.DeclareLocal(member.MemberType);
 
@@ -41,10 +41,12 @@ namespace ILLightenComparer.Emit.Visitors
                   .Emit(OpCodes.Callvirt, member.GetterMethod); // b = y.Prop
             }
 
-            EmitCompareCall(il, member.CompareToMethod);
+            var compareToMethod = GetCompareToMethod(member.MemberType);
+
+            EmitCompareCall(il, compareToMethod);
         }
 
-        public void Visit(ComparableField member, ILEmitter il)
+        public void Visit(FieldMember member, ILEmitter il)
         {
             var isValueType = member.OwnerType.IsValueType;
             if (isValueType)
@@ -60,7 +62,9 @@ namespace ILLightenComparer.Emit.Visitors
               .Emit(OpCodes.Ldarg_2) // y = arg2 
               .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Field
 
-            EmitCompareCall(il, member.CompareToMethod);
+            var compareToMethod = GetCompareToMethod(member.MemberType);
+
+            EmitCompareCall(il, compareToMethod);
         }
 
         public void Visit(NestedObject member, ILEmitter il)
@@ -120,5 +124,9 @@ namespace ILLightenComparer.Emit.Visitors
               .Emit(OpCodes.Ret)
               .MarkLabel(gotoNext);
         }
+
+        private static MethodInfo GetCompareToMethod(Type type) => type.GetMethod(
+            nameof(IComparable.CompareTo),
+            new[] { type });
     }
 }

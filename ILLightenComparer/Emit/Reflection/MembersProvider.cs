@@ -12,7 +12,7 @@ namespace ILLightenComparer.Emit.Reflection
         public Member[] GetMembers(Type type, CompareConfiguration configuration) =>
             type.GetMembers(
                     BindingFlags.Instance
-                    //| BindingFlags.FlattenHierarchy
+                    | BindingFlags.FlattenHierarchy
                     | BindingFlags.Public)
                 .Where(memberInfo => IgnoredMembers(memberInfo, configuration.IgnoredMembers))
                 .Where(memberInfo => IncludeFields(memberInfo, configuration.IncludeFields))
@@ -37,13 +37,11 @@ namespace ILLightenComparer.Emit.Reflection
                         };
                     }
 
-                    var fieldCompareToMethod = GetCompareToMethod(field.FieldType);
-                    return new ComparableField
+                    return new FieldMember
                     {
                         MemberType = GetUnderlyingType(field.FieldType),
                         Name = field.Name,
                         OwnerType = field.DeclaringType,
-                        CompareToMethod = fieldCompareToMethod,
                         FieldInfo = field
                     };
 
@@ -59,14 +57,12 @@ namespace ILLightenComparer.Emit.Reflection
                         };
                     }
 
-                    var propertyCompareToMethod = GetCompareToMethod(property.PropertyType);
-                    return new ComparableProperty
+                    return new PropertyMember
                     {
                         MemberType = GetUnderlyingType(property.PropertyType),
                         Name = property.Name,
                         GetterMethod = property.GetGetMethod(),
-                        OwnerType = property.DeclaringType,
-                        CompareToMethod = propertyCompareToMethod
+                        OwnerType = property.DeclaringType
                     };
             }
 
@@ -75,24 +71,10 @@ namespace ILLightenComparer.Emit.Reflection
                 + $"{memberInfo.MemberType}: {memberInfo.DisplayName()}");
         }
 
-        private static MethodInfo GetCompareToMethod(Type type)
-        {
-            type = GetUnderlyingType(type);
-
-            return type.GetMethod(
-                nameof(IComparable.CompareTo),
-                new[] { type });
-        }
-
-        private static Type GetUnderlyingType(Type type)
-        {
-            if (type.IsEnum)
-            {
-                type = Enum.GetUnderlyingType(type);
-            }
-
-            return type;
-        }
+        private static Type GetUnderlyingType(Type type) =>
+            type.IsEnum
+                ? Enum.GetUnderlyingType(type)
+                : type;
 
         private static bool IgnoredMembers(MemberInfo memberInfo, ICollection<string> ignoredMembers) =>
             !ignoredMembers.Contains(memberInfo.Name);
