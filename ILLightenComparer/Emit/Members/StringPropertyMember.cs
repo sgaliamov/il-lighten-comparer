@@ -1,12 +1,9 @@
-﻿using System.Reflection;
-using ILLightenComparer.Emit.Shared;
+﻿using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringPropertyMember : Member
+    internal sealed class StringPropertyMember : PropertyMember
     {
-        public MethodInfo GetterMethod { get; set; }
-
         public override void Accept(IVisitor visitor, ILEmitter il)
         {
             visitor.Visit(this, il);

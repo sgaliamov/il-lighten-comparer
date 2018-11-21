@@ -3,7 +3,7 @@ using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class PropertyMember : Member
+    internal class PropertyMember : Member
     {
         public MethodInfo GetterMethod { get; set; }
 
