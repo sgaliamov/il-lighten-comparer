@@ -18,6 +18,8 @@ namespace ILLightenComparer.Tests.Utilities
                 (fixture.Create<ushort>() % 6)
                 .ToString(CultureInfo.InvariantCulture)));
 
+            fixture.Customizations.Add(new CasualNullGenerator(0.2));
+
             fixture.Customizations.Add(new NumericGenerator(-10, 0, 0.2));
         }
     }

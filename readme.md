@@ -23,7 +23,7 @@
 - [x] refactor visitors, introduce interfaces for member classes
 - [x] refactor MemberConverter
 - [x] fixture generates Max and Min values
-- [ ] fixture generates nulls
+- [X] fixture generates nulls
 - [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
 
 ### Phase 2 Hierarchical objects
