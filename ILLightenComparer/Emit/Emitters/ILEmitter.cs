@@ -12,6 +12,7 @@ namespace ILLightenComparer.Emit.Emitters
 #if DEBUG
         private readonly List<Label> _labels = new List<Label>();
 #endif
+        private const byte ShortFormLimit = byte.MaxValue; // 255
         private Dictionary<Type, LocalBuilder> _locals = new Dictionary<Type, LocalBuilder>();
         private ILGenerator _il;
 
@@ -102,10 +103,37 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
+        public ILEmitter LoadArgument(ushort index)
+        {
+            switch (index)
+            {
+                case 0:
+                    _il.Emit(OpCodes.Ldarg_0);
+                    return this;
+
+                case 1:
+                    _il.Emit(OpCodes.Ldarg_1);
+                    return this;
+
+                case 2:
+                    _il.Emit(OpCodes.Ldarg_2);
+                    return this;
+
+                case 3:
+                    _il.Emit(OpCodes.Ldarg_3);
+                    return this;
+
+                default:
+                    var opCode = index <= ShortFormLimit ? OpCodes.Ldarg_S : OpCodes.Ldarg;
+                    Debug.WriteLine($"\t\t{opCode} {index}");
+                    _il.Emit(opCode, index);
+                    return this;
+            }
+        }
+
         public ILEmitter EmitLoadAddressOf(LocalBuilder local)
         {
-            // todo: test
-            var opCode = local.LocalIndex <= 255 ? OpCodes.Ldloca_S : OpCodes.Ldloca;
+            var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
 
             Debug.WriteLine($"\t\t{opCode} {local.LocalIndex}");
 
