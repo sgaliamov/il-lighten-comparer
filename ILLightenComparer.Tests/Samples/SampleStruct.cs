@@ -7,12 +7,13 @@ namespace ILLightenComparer.Tests.Samples
     {
         public SampleEnum EnumField;
         public int KeyField;
+        public bool? NullableField;
         public string ValueField;
-        public int KeyProperty { get; set; }
-        public string ValueProperty { get; set; }
 
-        public override string ToString() =>
-            $"{nameof(EnumField)}: {EnumField}, {nameof(KeyField)}: {KeyField}, {nameof(KeyProperty)}: {KeyProperty}, {nameof(ValueField)}: {ValueField}, {nameof(ValueProperty)}: {ValueProperty}";
+        public SampleEnum EnumProperty { get; set; }
+        public int KeyProperty { get; set; }
+        public decimal? NullableProperty { get; set; }
+        public string ValueProperty { get; set; }
 
         private sealed class SampleStructRelationalComparer : IComparer<SampleStruct>
         {
@@ -30,10 +31,22 @@ namespace ILLightenComparer.Tests.Samples
                     return keyFieldComparison;
                 }
 
-                var valueFieldComparison = string.Compare(x.ValueField, y.ValueField, StringComparison.CurrentCulture);
+                var nullableFieldComparison = Nullable.Compare(x.NullableField, y.NullableField);
+                if (nullableFieldComparison != 0)
+                {
+                    return nullableFieldComparison;
+                }
+
+                var valueFieldComparison = string.Compare(x.ValueField, y.ValueField, StringComparison.Ordinal);
                 if (valueFieldComparison != 0)
                 {
                     return valueFieldComparison;
+                }
+
+                var enumPropertyComparison = x.EnumProperty.CompareTo(y.EnumProperty);
+                if (enumPropertyComparison != 0)
+                {
+                    return enumPropertyComparison;
                 }
 
                 var keyPropertyComparison = x.KeyProperty.CompareTo(y.KeyProperty);
@@ -42,7 +55,13 @@ namespace ILLightenComparer.Tests.Samples
                     return keyPropertyComparison;
                 }
 
-                return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.CurrentCulture);
+                var nullablePropertyComparison = Nullable.Compare(x.NullableProperty, y.NullableProperty);
+                if (nullablePropertyComparison != 0)
+                {
+                    return nullablePropertyComparison;
+                }
+
+                return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.Ordinal);
             }
         }
 

@@ -5,17 +5,17 @@ namespace ILLightenComparer.Tests.Samples
 {
     public sealed class SampleObject
     {
+        public SampleEnum EnumField;
         public int KeyField;
+        public bool? NullableField;
         public string ValueField;
 
         public static IComparer<SampleObject> SampleObjectComparer { get; } = new SampleObjectRelationalComparer();
 
         public SampleEnum EnumProperty { get; set; }
         public int KeyProperty { get; set; }
+        public decimal? NullableProperty { get; set; }
         public string ValueProperty { get; set; }
-
-        public override string ToString() =>
-            $"{nameof(KeyField)}: {KeyField}, {nameof(ValueField)}: {ValueField}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(KeyProperty)}: {KeyProperty}, {nameof(ValueProperty)}: {ValueProperty}";
 
         private sealed class SampleObjectRelationalComparer : IComparer<SampleObject>
         {
@@ -36,10 +36,22 @@ namespace ILLightenComparer.Tests.Samples
                     return -1;
                 }
 
+                var enumFieldComparison = x.EnumField.CompareTo(y.EnumField);
+                if (enumFieldComparison != 0)
+                {
+                    return enumFieldComparison;
+                }
+
                 var keyFieldComparison = x.KeyField.CompareTo(y.KeyField);
                 if (keyFieldComparison != 0)
                 {
                     return keyFieldComparison;
+                }
+
+                var nullableFieldComparison = Nullable.Compare(x.NullableField, y.NullableField);
+                if (nullableFieldComparison != 0)
+                {
+                    return nullableFieldComparison;
                 }
 
                 var valueFieldComparison = string.Compare(x.ValueField, y.ValueField, StringComparison.Ordinal);
@@ -58,6 +70,12 @@ namespace ILLightenComparer.Tests.Samples
                 if (keyPropertyComparison != 0)
                 {
                     return keyPropertyComparison;
+                }
+
+                var nullablePropertyComparison = Nullable.Compare(x.NullableProperty, y.NullableProperty);
+                if (nullablePropertyComparison != 0)
+                {
+                    return nullablePropertyComparison;
                 }
 
                 return string.Compare(x.ValueProperty, y.ValueProperty, StringComparison.Ordinal);

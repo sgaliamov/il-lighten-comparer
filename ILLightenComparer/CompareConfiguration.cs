@@ -6,7 +6,7 @@ namespace ILLightenComparer
     public sealed class CompareConfiguration
     {
         public bool IncludeFields { get; set; } = false;
-        public StringComparison StringComparisonType { get; set; } = StringComparison.CurrentCulture;
+        public StringComparison StringComparisonType { get; set; } = StringComparison.Ordinal;
         public HashSet<string> IgnoredMembers { get; set; } = new HashSet<string>();
     }
 }
