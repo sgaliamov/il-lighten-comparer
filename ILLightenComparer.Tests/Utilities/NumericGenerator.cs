@@ -7,11 +7,11 @@ namespace ILLightenComparer.Tests.Utilities
     internal sealed class NumericGenerator : ISpecimenBuilder
     {
         private readonly int _lower;
-        private readonly sbyte _minMaxProbability;
+        private readonly double _minMaxProbability;
         private readonly Random _random;
         private readonly int _upper;
 
-        public NumericGenerator(int lower, int upper, sbyte minMaxProbability)
+        public NumericGenerator(int lower, int upper, double minMaxProbability)
         {
             _lower = lower;
             _upper = upper;
