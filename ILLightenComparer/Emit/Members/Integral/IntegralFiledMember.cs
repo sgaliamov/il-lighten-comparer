@@ -6,9 +6,9 @@ namespace ILLightenComparer.Emit.Members.Integral
     internal sealed class IntegralFiledMember : FieldMember, IIntegralMember
     {
         public IntegralFiledMember(FieldInfo fieldInfo, bool isInteger)
-            : base(fieldInfo) => IsInteger = isInteger;
+            : base(fieldInfo) => ConvertToLong = isInteger;
 
-        public bool IsInteger { get; }
+        public bool ConvertToLong { get; }
 
         public override void Accept(StackEmitter visitor, ILEmitter il)
         {

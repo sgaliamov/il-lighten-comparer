@@ -89,14 +89,14 @@ namespace ILLightenComparer.Emit.Emitters
         {
             il.Emit(OpCodes.Ldarg_1)
               .Emit(OpCodes.Ldfld, member.FieldInfo);
-            if (member.IsInteger)
+            if (member.ConvertToLong)
             {
                 il.Emit(OpCodes.Conv_I8);
             }
 
             il.Emit(OpCodes.Ldarg_2)
               .Emit(OpCodes.Ldfld, member.FieldInfo);
-            if (member.IsInteger)
+            if (member.ConvertToLong)
             {
                 il.Emit(OpCodes.Conv_I8);
             }
@@ -106,14 +106,14 @@ namespace ILLightenComparer.Emit.Emitters
         {
             il.Emit(OpCodes.Ldarg_1)
               .Emit(OpCodes.Callvirt, member.GetterMethod);
-            if (member.IsInteger)
+            if (member.ConvertToLong)
             {
                 il.Emit(OpCodes.Conv_I8);
             }
 
             il.Emit(OpCodes.Ldarg_2)
               .Emit(OpCodes.Callvirt, member.GetterMethod);
-            if (member.IsInteger)
+            if (member.ConvertToLong)
             {
                 il.Emit(OpCodes.Conv_I8);
             }
