@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ILLightenComparer.Emit.Members.Base;
+using ILLightenComparer.Emit.Members;
 
 namespace ILLightenComparer.Emit.Reflection
 {
@@ -10,7 +10,7 @@ namespace ILLightenComparer.Emit.Reflection
     {
         private readonly MemberConverter _converter = new MemberConverter();
 
-        public Member[] GetMembers(Type type, CompareConfiguration configuration) =>
+        public IMember[] GetMembers(Type type, CompareConfiguration configuration) =>
             type.GetMembers(
                     BindingFlags.Instance
                     | BindingFlags.FlattenHierarchy

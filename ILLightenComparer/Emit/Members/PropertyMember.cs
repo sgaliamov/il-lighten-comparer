@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ILLightenComparer.Emit.Members.Base
+namespace ILLightenComparer.Emit.Members
 {
     internal abstract class PropertyMember : Member
     {

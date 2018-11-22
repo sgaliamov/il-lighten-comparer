@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members;
-using ILLightenComparer.Emit.Members.Base;
+using ILLightenComparer.Emit.Members.Comparable;
+using ILLightenComparer.Emit.Members.Integral;
 
 namespace ILLightenComparer.Emit.Reflection
 {
@@ -31,7 +32,7 @@ namespace ILLightenComparer.Emit.Reflection
                 nameof(string.Compare),
                 new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
-        public Member Convert(MemberInfo memberInfo)
+        public IMember Convert(MemberInfo memberInfo)
         {
             switch (memberInfo)
             {

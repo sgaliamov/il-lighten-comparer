@@ -1,13 +1,14 @@
 ﻿using System.Reflection.Emit;
-using ILLightenComparer.Emit.Members;
+using ILLightenComparer.Emit.Members.Comparable;
+using ILLightenComparer.Emit.Members.Integral;
 
 namespace ILLightenComparer.Emit.Emitters
 {
-    internal sealed class MembersStacker : IMemvberVisitor
+    internal sealed class StackEmitter
     {
         private readonly TypeBuilderContext _context;
 
-        public MembersStacker(TypeBuilderContext context) => _context = context;
+        public StackEmitter(TypeBuilderContext context) => _context = context;
 
         public void Visit(ComparablePropertyMember member, ILEmitter il)
         {

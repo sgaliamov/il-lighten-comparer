@@ -1,10 +1,9 @@
 ﻿using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Members.Base;
 
-namespace ILLightenComparer.Emit.Members
+namespace ILLightenComparer.Emit.Members.Comparable
 {
-    internal class ComparablePropertyMember : PropertyMember
+    internal class ComparablePropertyMember : PropertyMember, IComparableMember
     {
         public ComparablePropertyMember(PropertyInfo propertyInfo, MethodInfo compareToMethod)
             : base(propertyInfo) =>
@@ -12,7 +11,12 @@ namespace ILLightenComparer.Emit.Members
 
         public MethodInfo CompareToMethod { get; }
 
-        public override void Accept(IMemvberVisitor visitor, ILEmitter il)
+        public override void Accept(StackEmitter visitor, ILEmitter il)
+        {
+            visitor.Visit(this, il);
+        }
+
+        public override void Accept(CompareEmitter visitor, ILEmitter il)
         {
             visitor.Visit(this, il);
         }
