@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ILLightenComparer.Emit.Members;
+using ILLightenComparer.Emit.Emitters;
 
 namespace ILLightenComparer.Emit.Reflection
 {

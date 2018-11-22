@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 
-namespace ILLightenComparer.Emit
+namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class ILEmitter : IDisposable
     {

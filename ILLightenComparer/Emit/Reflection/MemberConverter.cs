@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Members.Comparable;

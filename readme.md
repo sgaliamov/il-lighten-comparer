@@ -20,9 +20,9 @@
 - [x] optimization for integral types
 - [x] refactor MembersProvider
 - [x] ~~normalize result to -1, 0. 1~~
+- [x] refactor visitors, introduce interfaces for member classes
 - [ ] fixture generates Max and Min values
 - [ ] refactor MemberConverter
-- [ ] refactor visitors, introduce interfaces for member classes
 - [ ] fixture generates nulls
 - [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
 
