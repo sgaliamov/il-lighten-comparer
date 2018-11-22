@@ -1,7 +1,7 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Members;
 
-namespace ILLightenComparer.Emit.Visitors
+namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class PushToStackVisitor : IVisitor
     {

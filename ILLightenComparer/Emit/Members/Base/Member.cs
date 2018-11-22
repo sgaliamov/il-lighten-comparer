@@ -1,5 +1,5 @@
 ﻿using System;
-using ILLightenComparer.Emit.Visitors;
+using ILLightenComparer.Emit.Emitters;
 
 namespace ILLightenComparer.Emit.Members.Base
 {
