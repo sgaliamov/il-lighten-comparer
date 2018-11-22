@@ -12,10 +12,5 @@ namespace ILLightenComparer.Emit.Members.Comparable
         {
             visitor.Visit(this, il);
         }
-
-        public override void Accept(CompareEmitter visitor, ILEmitter il)
-        {
-            visitor.Visit(this, il);
-        }
     }
 }

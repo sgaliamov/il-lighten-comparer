@@ -94,9 +94,10 @@ namespace ILLightenComparer.Emit.Reflection
             throw new NotSupportedException($"Field {field.DisplayName()} is not supported.");
         }
 
-        private static MethodInfo GetCompareToMethod(Type type) => type.GetMethod(
-            nameof(IComparable.CompareTo),
-            new[] { type });
+        private static MethodInfo GetCompareToMethod(Type type) =>
+            type.GetMethod(
+                nameof(IComparable.CompareTo),
+                new[] { type });
 
         private static Type GetEnumUnderlyingType(Type type) =>
             type.IsEnum

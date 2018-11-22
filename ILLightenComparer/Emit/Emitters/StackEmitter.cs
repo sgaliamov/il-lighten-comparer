@@ -12,7 +12,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(ComparablePropertyMember member, ILEmitter il)
         {
-            if (member.IsValueType)
+            if (member.OwnerType.IsValueType)
             {
                 var local = il.DeclareLocal(member.MemberType);
 
@@ -38,7 +38,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(ComparableFieldMember member, ILEmitter il)
         {
-            if (member.IsValueType)
+            if (member.OwnerType.IsValueType)
             {
                 il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
                   .Emit(OpCodes.Ldflda, member.FieldInfo) // a = x.Field 
@@ -65,7 +65,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(StringPropertyMember member, ILEmitter il)
         {
-            if (member.IsValueType)
+            if (member.OwnerType.IsValueType)
             {
                 il.Emit(OpCodes.Ldarga_S, 1)
                   .Emit(OpCodes.Call, member.GetterMethod)

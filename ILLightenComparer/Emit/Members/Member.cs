@@ -16,8 +16,6 @@ namespace ILLightenComparer.Emit.Members
         public string Name { get; }
         public Type OwnerType { get; }
 
-        public bool IsValueType => OwnerType.IsValueType;
-
         public abstract void Accept(StackEmitter visitor, ILEmitter il);
         public abstract void Accept(CompareEmitter visitor, ILEmitter il);
     }

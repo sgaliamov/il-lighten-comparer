@@ -21,8 +21,8 @@
 - [x] refactor MembersProvider
 - [x] ~~normalize result to -1, 0. 1~~
 - [x] refactor visitors, introduce interfaces for member classes
+- [x] refactor MemberConverter
 - [ ] fixture generates Max and Min values
-- [ ] refactor MemberConverter
 - [ ] fixture generates nulls
 - [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
 
