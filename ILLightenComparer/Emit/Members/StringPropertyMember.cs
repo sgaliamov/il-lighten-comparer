@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Members.Base;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringPropertyMember : PropertyMember
+    internal sealed class StringPropertyMember : ComparablePropertyMember
     {
-        public StringPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        public StringPropertyMember(PropertyInfo propertyInfo, MethodInfo compareToMethod) : base(propertyInfo,
+            compareToMethod) { }
 
         public override void Accept(IMemvberVisitor visitor, ILEmitter il)
         {

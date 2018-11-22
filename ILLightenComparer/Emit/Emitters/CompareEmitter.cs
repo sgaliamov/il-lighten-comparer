@@ -7,11 +7,6 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CompareEmitter : IMemvberVisitor
     {
-        private static readonly MethodInfo StringCompareMethod = typeof(string)
-            .GetMethod(
-                nameof(string.Compare),
-                new[] { typeof(string), typeof(string), typeof(StringComparison) });
-
         private readonly MembersStacker _stackVisitor;
 
         public CompareEmitter(TypeBuilderContext context) => _stackVisitor = new MembersStacker(context);
@@ -34,14 +29,14 @@ namespace ILLightenComparer.Emit.Emitters
         {
             _stackVisitor.Visit(member, il);
 
-            EmitCompareCall(il, StringCompareMethod);
+            EmitCompareCall(il, member.CompareToMethod);
         }
 
         public void Visit(StringPropertyMember member, ILEmitter il)
         {
             _stackVisitor.Visit(member, il);
 
-            EmitCompareCall(il, StringCompareMethod);
+            EmitCompareCall(il, member.CompareToMethod);
         }
 
         public void Visit(IntegralFiledMember member, ILEmitter il)

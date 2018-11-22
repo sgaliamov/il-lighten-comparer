@@ -4,7 +4,7 @@ using ILLightenComparer.Emit.Members.Base;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class ComparableFieldMember : FieldMember
+    internal class ComparableFieldMember : FieldMember
     {
         public ComparableFieldMember(FieldInfo fieldInfo, MethodInfo compareToMethod)
             : base(fieldInfo) =>

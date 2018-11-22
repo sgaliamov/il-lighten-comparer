@@ -26,6 +26,11 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(uint)
         });
 
+        private static readonly MethodInfo StringCompareMethod = typeof(string)
+            .GetMethod(
+                nameof(string.Compare),
+                new[] { typeof(string), typeof(string), typeof(StringComparison) });
+
         public Member Convert(MemberInfo memberInfo)
         {
             switch (memberInfo)
@@ -51,7 +56,7 @@ namespace ILLightenComparer.Emit.Reflection
 
             if (property.PropertyType == typeof(string))
             {
-                return new StringPropertyMember(property);
+                return new StringPropertyMember(property, StringCompareMethod);
             }
 
             // todo: try compare enums as integral types
@@ -74,7 +79,7 @@ namespace ILLightenComparer.Emit.Reflection
 
             if (field.FieldType == typeof(string))
             {
-                return new StringFiledMember(field);
+                return new StringFiledMember(field, StringCompareMethod);
             }
 
             var underlyingType = GetEnumUnderlyingType(field.FieldType);
