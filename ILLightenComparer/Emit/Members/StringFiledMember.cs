@@ -8,7 +8,7 @@ namespace ILLightenComparer.Emit.Members
     {
         public StringFiledMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public override void Accept(IVisitor visitor, ILEmitter il)
+        public override void Accept(IMemvberVisitor visitor, ILEmitter il)
         {
             visitor.Visit(this, il);
         }

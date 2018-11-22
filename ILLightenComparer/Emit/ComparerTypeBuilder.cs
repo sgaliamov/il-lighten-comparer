@@ -13,13 +13,13 @@ namespace ILLightenComparer.Emit
     {
         private readonly TypeBuilderContext _context;
         private readonly MembersProvider _membersProvider;
-        private readonly CompareEmitVisitor _visitor;
+        private readonly CompareEmitter _visitor;
 
         public ComparerTypeBuilder(TypeBuilderContext context, MembersProvider membersProvider)
         {
             _context = context;
             _membersProvider = membersProvider;
-            _visitor = new CompareEmitVisitor(_context);
+            _visitor = new CompareEmitter(_context);
         }
 
         public TypeInfo Build(Type objectType)

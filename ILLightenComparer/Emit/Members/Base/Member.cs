@@ -16,6 +16,6 @@ namespace ILLightenComparer.Emit.Members.Base
         public string Name { get; }
         public Type OwnerType { get; }
 
-        public abstract void Accept(IVisitor visitor, ILEmitter il);
+        public abstract void Accept(IMemvberVisitor visitor, ILEmitter il);
     }
 }

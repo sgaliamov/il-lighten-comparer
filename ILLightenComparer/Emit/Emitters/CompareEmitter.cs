@@ -3,18 +3,18 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Members;
 
-namespace ILLightenComparer.Emit.Visitors
+namespace ILLightenComparer.Emit.Emitters
 {
-    internal sealed class CompareEmitVisitor : IVisitor
+    internal sealed class CompareEmitter : IMemvberVisitor
     {
         private static readonly MethodInfo StringCompareMethod = typeof(string)
             .GetMethod(
                 nameof(string.Compare),
                 new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
-        private readonly PushToStackVisitor _stackVisitor;
+        private readonly MembersStacker _stackVisitor;
 
-        public CompareEmitVisitor(TypeBuilderContext context) => _stackVisitor = new PushToStackVisitor(context);
+        public CompareEmitter(TypeBuilderContext context) => _stackVisitor = new MembersStacker(context);
 
         public void Visit(ComparablePropertyMember member, ILEmitter il)
         {

@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Emit.Emitters
 {
-    internal interface IVisitor
+    internal interface IMemvberVisitor
     {
         void Visit(ComparableFieldMember member, ILEmitter il);
         void Visit(ComparablePropertyMember member, ILEmitter il);

@@ -3,11 +3,11 @@ using ILLightenComparer.Emit.Members;
 
 namespace ILLightenComparer.Emit.Emitters
 {
-    internal sealed class PushToStackVisitor : IVisitor
+    internal sealed class MembersStacker : IMemvberVisitor
     {
         private readonly TypeBuilderContext _context;
 
-        public PushToStackVisitor(TypeBuilderContext context) => _context = context;
+        public MembersStacker(TypeBuilderContext context) => _context = context;
 
         public void Visit(ComparablePropertyMember member, ILEmitter il)
         {

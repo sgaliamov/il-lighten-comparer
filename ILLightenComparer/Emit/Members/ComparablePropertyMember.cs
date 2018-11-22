@@ -12,7 +12,7 @@ namespace ILLightenComparer.Emit.Members
 
         public MethodInfo CompareToMethod { get; }
 
-        public override void Accept(IVisitor visitor, ILEmitter il)
+        public override void Accept(IMemvberVisitor visitor, ILEmitter il)
         {
             visitor.Visit(this, il);
         }
