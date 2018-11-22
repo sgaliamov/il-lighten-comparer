@@ -35,43 +35,44 @@ namespace ILLightenComparer.Tests.Utilities
             switch (Type.GetTypeCode(request))
             {
                 case TypeCode.Byte:
-                    return (byte)GetNextRandom();
+                    return MinMax<byte>(request) ?? (byte)GetNextRandom();
 
                 case TypeCode.Decimal:
-                    return (decimal)GetNextRandom();
+                    return MinMax<decimal>(request) ?? GetNextRandom();
 
                 case TypeCode.Double:
-                    return (double)GetNextRandom();
+                    return MinMax<double>(request) ?? GetNextRandom();
 
                 case TypeCode.Int16:
-                    return (short)GetNextRandom();
+                    return MinMax<short>(request) ?? (short)GetNextRandom();
 
                 case TypeCode.Int32:
-                    return (int)GetNextRandom();
+                    return MinMax<int>(request) ?? (int)GetNextRandom();
 
                 case TypeCode.Int64:
-                    return GetNextRandom();
+                    return MinMax<long>(request) ?? GetNextRandom();
 
                 case TypeCode.SByte:
-                    return (sbyte)GetNextRandom();
+                    return MinMax<sbyte>(request) ?? (sbyte)GetNextRandom();
 
                 case TypeCode.Single:
-                    return (float)GetNextRandom();
+                    return MinMax<float>(request) ?? GetNextRandom();
 
                 case TypeCode.UInt16:
-                    return (ushort)GetNextRandom();
+                    return MinMax<ushort>(request) ?? (ushort)GetNextRandom();
 
                 case TypeCode.UInt32:
-                    return (uint)GetNextRandom();
+                    return MinMax<uint>(request) ?? (uint)GetNextRandom();
 
                 case TypeCode.UInt64:
-                    return (ulong)GetNextRandom();
+                    return MinMax<ulong>(request) ?? (ulong)GetNextRandom();
 
                 default: return new NoSpecimen();
             }
         }
 
-        private object MinMax(IReflect request)
+        private T? MinMax<T>(IReflect request)
+            where T : struct
         {
             if (!(_random.NextDouble() < _minMaxProbability))
             {
@@ -82,38 +83,10 @@ namespace ILLightenComparer.Tests.Utilities
                 t.GetField(name, BindingFlags.Static | BindingFlags.Public).GetValue(null);
 
             return _random.NextDouble() < 0.5
-                ? Get(request, "MinValue")
-                : Get(request, "MaxValue");
+                ? (T)Get(request, "MinValue")
+                : (T)Get(request, "MaxValue");
         }
 
-        private long GetNextRandom()
-        {
-            long result;
-            if (_lower >= int.MinValue && _upper <= int.MaxValue)
-            {
-                result = _random.Next((int)_lower, (int)_upper);
-            }
-            else
-            {
-                result = GetNextInt64InRange();
-            }
-
-            return result;
-        }
-
-        private long GetNextInt64InRange()
-        {
-            var range = (ulong)(_upper - _lower);
-            var limit = ulong.MaxValue - ulong.MaxValue % range;
-            ulong number;
-            do
-            {
-                var buffer = new byte[sizeof(ulong)];
-                _random.NextBytes(buffer);
-                number = BitConverter.ToUInt64(buffer, 0);
-            } while (number > limit);
-
-            return (long)(number % range + (ulong)_lower);
-        }
+        private long GetNextRandom() => _random.Next(_lower, _upper);
     }
 }
