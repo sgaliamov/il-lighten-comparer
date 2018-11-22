@@ -5,10 +5,8 @@ namespace ILLightenComparer.Emit.Members.Integral
 {
     internal sealed class IntegralPropertyMember : PropertyMember, IIntegralMember
     {
-        public IntegralPropertyMember(PropertyInfo propertyInfo, bool isInteger)
-            : base(propertyInfo) => ConvertToLong = isInteger;
-
-        public bool ConvertToLong { get; }
+        public IntegralPropertyMember(PropertyInfo propertyInfo)
+            : base(propertyInfo) { }
 
         public override void Accept(StackEmitter visitor, ILEmitter il)
         {

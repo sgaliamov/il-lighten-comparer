@@ -88,35 +88,17 @@ namespace ILLightenComparer.Emit.Emitters
         public void Visit(IntegralFiledMember member, ILEmitter il)
         {
             il.Emit(OpCodes.Ldarg_1)
+              .Emit(OpCodes.Ldfld, member.FieldInfo)
+              .Emit(OpCodes.Ldarg_2)
               .Emit(OpCodes.Ldfld, member.FieldInfo);
-            if (member.ConvertToLong)
-            {
-                il.Emit(OpCodes.Conv_I8);
-            }
-
-            il.Emit(OpCodes.Ldarg_2)
-              .Emit(OpCodes.Ldfld, member.FieldInfo);
-            if (member.ConvertToLong)
-            {
-                il.Emit(OpCodes.Conv_I8);
-            }
         }
 
         public void Visit(IntegralPropertyMember member, ILEmitter il)
         {
             il.Emit(OpCodes.Ldarg_1)
+              .Emit(OpCodes.Callvirt, member.GetterMethod)
+              .Emit(OpCodes.Ldarg_2)
               .Emit(OpCodes.Callvirt, member.GetterMethod);
-            if (member.ConvertToLong)
-            {
-                il.Emit(OpCodes.Conv_I8);
-            }
-
-            il.Emit(OpCodes.Ldarg_2)
-              .Emit(OpCodes.Callvirt, member.GetterMethod);
-            if (member.ConvertToLong)
-            {
-                il.Emit(OpCodes.Conv_I8);
-            }
         }
     }
 }

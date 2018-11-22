@@ -17,15 +17,7 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(byte),
             typeof(char),
             typeof(short),
-            typeof(ushort),
-            typeof(int),
-            typeof(uint)
-        });
-
-        private static readonly HashSet<Type> IntegerTypes = new HashSet<Type>(new[]
-        {
-            typeof(int),
-            typeof(uint)
+            typeof(ushort)
         });
 
         private static readonly MethodInfo StringCompareMethod = typeof(string)
@@ -53,7 +45,7 @@ namespace ILLightenComparer.Emit.Reflection
         {
             if (IntegralTypes.Contains(property.PropertyType))
             {
-                return new IntegralPropertyMember(property, IntegerTypes.Contains(property.PropertyType));
+                return new IntegralPropertyMember(property);
             }
 
             if (property.PropertyType == typeof(string))
@@ -76,7 +68,7 @@ namespace ILLightenComparer.Emit.Reflection
         {
             if (IntegralTypes.Contains(field.FieldType))
             {
-                return new IntegralFiledMember(field, IntegerTypes.Contains(field.FieldType));
+                return new IntegralFiledMember(field);
             }
 
             if (field.FieldType == typeof(string))

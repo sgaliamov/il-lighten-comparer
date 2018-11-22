@@ -2,8 +2,5 @@
 
 namespace ILLightenComparer.Emit.Members.Integral
 {
-    internal interface IIntegralMember : IMember
-    {
-        bool ConvertToLong { get; }
-    }
+    internal interface IIntegralMember : IMember { }
 }
