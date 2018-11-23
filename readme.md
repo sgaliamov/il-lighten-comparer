@@ -8,6 +8,7 @@
 * Support for complex classes and structures.
 * Cycle detection.
 * Collections comparison.
+* 100% code coverage.
 
 ### Links
 

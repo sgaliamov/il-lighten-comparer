@@ -14,4 +14,4 @@
     
      Class of *_visitor* will have to implement method that depends on type of *method* parameter.
 
-1. sdf
+1. *AutoVisitor* don't depend on *IVisitor* to be able to name the *Visit* method differently. *AutoVisitor* uses duck typing, thus methods must follow signature of *IVisitor*.

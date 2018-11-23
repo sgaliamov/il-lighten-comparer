@@ -11,10 +11,10 @@ namespace ILLightenComparer.Emit
         public TypeBuilderContext()
         {
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
-                new AssemblyName("ILLightenComparer.DynamicAssembly"),
+                new AssemblyName("ILLightenComparer.Compares"),
                 AssemblyBuilderAccess.RunAndCollect);
 
-            _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.Module.dll");
+            _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.Compares.dll");
         }
 
         public CompareConfiguration Configuration { get; private set; } = new CompareConfiguration();
