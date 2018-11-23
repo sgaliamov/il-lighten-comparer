@@ -54,6 +54,10 @@ namespace ILLightenComparer.Tests.Visitor
             var boxedStruct = (object)sampleStruct;
             var interfaceStruct = (ISampleStruct)sampleStruct;
 
+            _target.Accept(sampleStruct, new SampleVisitor(), 1)
+                   .Should()
+                   .Be(sampleStruct.KeyField + 1);
+
             _target.Accept(interfaceStruct, new SampleVisitor(), 1)
                    .Should()
                    .Be(sampleStruct.KeyField + 1);
