@@ -4,9 +4,9 @@ using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.Visitor
 {
-    public sealed class SampleVisitor
+    public sealed class SampleVisitor : IVisitor<SampleObject, int>
     {
-        public int TestVisit(SampleObject acceptor, int state) => acceptor.KeyField += state;
+        public int Do(SampleObject acceptor, int state) => acceptor.KeyField += state;
 
         public int TestVisit(SampleParentObject acceptor, int state) => acceptor.KeyField += state;
 

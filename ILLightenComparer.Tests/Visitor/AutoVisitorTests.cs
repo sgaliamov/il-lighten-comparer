@@ -52,19 +52,36 @@ namespace ILLightenComparer.Tests.Visitor
         {
             var sampleStruct = _fixture.Create<SampleStruct>();
             var boxedStruct = (object)sampleStruct;
-            var interfaceStruct = (ISampleStruct)sampleStruct;
+            var interfaceStruct = (ISample)sampleStruct;
 
-            _target.Accept(sampleStruct, new SampleVisitor(), 1)
+            _target.Accept(interfaceStruct, new SampleVisitor(), 1)
                    .Should()
                    .Be(sampleStruct.KeyField + 1);
 
-            _target.Accept(interfaceStruct, new SampleVisitor(), 1)
+            _target.Accept(sampleStruct, new SampleVisitor(), 1)
                    .Should()
                    .Be(sampleStruct.KeyField + 1);
 
             _target.Accept(boxedStruct, new SampleVisitor(), 1)
                    .Should()
                    .Be(sampleStruct.KeyField + 1);
+        }
+
+        [Fact]
+        public void Box_Struct_Visitor()
+        {
+            var sampleStruct = _fixture.Create<SampleStruct>();
+            var boxedStruct = (object)sampleStruct;
+
+            IVisitor<SampleStruct, int> visitor = new SampleStructVisitor();
+
+            _target.Accept(boxedStruct, visitor, 1)
+                   .Should()
+                   .Be(sampleStruct.KeyField);
+
+            _target.Accept(boxedStruct, (object)visitor, 1)
+                   .Should()
+                   .Be(sampleStruct.KeyField);
         }
 
         [Fact]
@@ -95,7 +112,19 @@ namespace ILLightenComparer.Tests.Visitor
             Assert.Throws<NotSupportedException>(() => _target.Accept(acceptor, new SampleVisitor(), 1));
         }
 
-        private readonly AutoVisitor _target = new AutoVisitor(true, "TestVisit");
+        [Fact]
+        public void Visitor_Used_As_Interface()
+        {
+            var acceptor = _fixture.Create<SampleObject>();
+
+            IVisitor<SampleObject, int> visitor = new SampleVisitor();
+
+            var actual = _target.Accept(acceptor, visitor, 1);
+
+            actual.Should().Be(acceptor.KeyField);
+        }
+
+        private readonly AutoVisitor _target = new AutoVisitor(true, nameof(SampleVisitor.Do));
         private readonly Fixture _fixture;
     }
 }

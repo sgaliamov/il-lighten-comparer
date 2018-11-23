@@ -16,7 +16,7 @@ namespace ILLightenComparer.Visitor
         private readonly bool _strict;
         private readonly string _visitMethodName;
 
-        public AutoVisitor() : this(true, "Visit") { }
+        public AutoVisitor() : this(false, "Visit") { }
 
         public AutoVisitor(bool strict, string visitMethodName)
         {
@@ -49,11 +49,11 @@ namespace ILLightenComparer.Visitor
 
             var methods = _delegates
                 .GetOrAdd(
-                    typeOfAcceptor,
+                    typeof(TAcceptor),
                     _ => new ConcurrentDictionary<Type, Delegate>());
 
             var visitorMethod = (Func<TVisitor, TAcceptor, TState, TState>)methods.GetOrAdd(
-                typeOfVisitor,
+                typeof(TVisitor),
                 key => BuildMethod<TVisitor, TAcceptor, TState>(key, typeOfAcceptor, typeOfState));
 
             if (visitorMethod == null)
