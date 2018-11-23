@@ -7,8 +7,11 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Visitor
 {
+    using DelegatesCollection = ConcurrentDictionary<Type, ConcurrentDictionary<Type, Delegate>>;
+
     public sealed class AutoVisitor
     {
+        private readonly DelegatesCollection _delegates = new DelegatesCollection();
         private readonly ModuleBuilder _moduleBuilder;
         private readonly bool _strict;
         private readonly string _visitMethodName;
@@ -44,13 +47,12 @@ namespace ILLightenComparer.Visitor
             var typeOfVisitor = visitor.GetType();
             var typeOfState = state.GetType();
 
-            var methods = Store<TAcceptor, TVisitor, TState>
-                          .Delegates
-                          .GetOrAdd(
-                              typeOfAcceptor,
-                              _ => new ConcurrentDictionary<Type, Store<TAcceptor, TVisitor, TState>.VisitDelegate>());
+            var methods = _delegates
+                .GetOrAdd(
+                    typeOfAcceptor,
+                    _ => new ConcurrentDictionary<Type, Delegate>());
 
-            var visitorMethod = methods.GetOrAdd(
+            var visitorMethod = (Func<TVisitor, TAcceptor, TState, TState>)methods.GetOrAdd(
                 typeOfVisitor,
                 key => BuildMethod<TVisitor, TAcceptor, TState>(key, typeOfAcceptor, typeOfState));
 
@@ -64,7 +66,7 @@ namespace ILLightenComparer.Visitor
             return visitorMethod(visitor, acceptor, state);
         }
 
-        private Store<TAcceptor, TVisitor, TState>.VisitDelegate
+        private Func<TVisitor, TAcceptor, TState, TState>
             BuildMethod<TVisitor, TAcceptor, TState>(Type typeOfVisitor, Type typeOfAcceptor, Type typeOfState)
         {
             var visitMethod = GetVisitorMethod(typeOfVisitor, typeOfAcceptor, typeOfState);
@@ -75,9 +77,10 @@ namespace ILLightenComparer.Visitor
 
             var method = BuildStaticMethod<TVisitor, TAcceptor, TState>(
                 $"{typeOfAcceptor}_{typeOfVisitor}_Acceptor",
+                typeOfAcceptor,
                 visitMethod);
 
-            return method.CreateDelegate<Store<TAcceptor, TVisitor, TState>.VisitDelegate>();
+            return method.CreateDelegate<Func<TVisitor, TAcceptor, TState, TState>>();
         }
 
         private MethodInfo GetVisitorMethod(Type typeOfVisitor, Type typeOfAcceptor, Type typeOfState) =>
@@ -95,7 +98,10 @@ namespace ILLightenComparer.Visitor
                 })
                 .SingleOrDefault();
 
-        private MethodInfo BuildStaticMethod<TVisitor, TAcceptor, TState>(string name, MethodInfo visitMethod)
+        private MethodInfo BuildStaticMethod<TVisitor, TAcceptor, TState>(
+            string name,
+            Type typeOfAcceptor,
+            MethodInfo visitMethod)
         {
             var callTypeOfAcceptor = typeof(TAcceptor);
             var callTypeOfVisitor = typeof(TVisitor);
@@ -111,6 +117,7 @@ namespace ILLightenComparer.Visitor
             var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldarg_1);
+            UnboxBoxed(il, typeOfAcceptor, callTypeOfAcceptor);
             il.Emit(OpCodes.Ldarg_2);
             il.Emit(callTypeOfVisitor.IsSealed ? OpCodes.Call : OpCodes.Callvirt, visitMethod);
             il.Emit(OpCodes.Ret);
@@ -120,13 +127,14 @@ namespace ILLightenComparer.Visitor
             return typeInfo.GetMethod(nameof(Accept), parameterTypes);
         }
 
-        private static class Store<TAcceptor, TVisitor, TState>
+        private static void UnboxBoxed(ILGenerator il, Type actualType, Type callType)
         {
-            public delegate TState VisitDelegate(TVisitor visitor, TAcceptor acceptor, TState state);
+            if (callType.IsValueType || !actualType.IsValueType)
+            {
+                return;
+            }
 
-            public static readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, VisitDelegate>> Delegates;
-
-            static Store() => Delegates = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, VisitDelegate>>();
+            il.Emit(OpCodes.Unbox_Any, actualType);
         }
     }
 }

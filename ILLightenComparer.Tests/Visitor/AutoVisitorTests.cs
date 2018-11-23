@@ -16,6 +16,17 @@ namespace ILLightenComparer.Tests.Visitor
         }
 
         [Fact]
+        public void Acceptor_Is_Defined_As_Object()
+        {
+            var sampleObject = _fixture.Create<SampleObject>();
+            var acceptorObject = (object)sampleObject;
+
+            _target.Accept(acceptorObject, new SampleVisitor(), 1)
+                   .Should()
+                   .Be(sampleObject.KeyField);
+        }
+
+        [Fact]
         public void Acceptors_Are_Defined_As_ParentClass()
         {
             var sampleObject = _fixture.Create<SampleObject>();
@@ -27,25 +38,27 @@ namespace ILLightenComparer.Tests.Visitor
                    .Should()
                    .Be(sampleObject.KeyField);
 
+            _target.Accept(sampleObject, new SampleVisitor(), 1)
+                   .Should()
+                   .Be(sampleObject.KeyField);
+
             _target.Accept(sampleParentObject, new SampleVisitor(), 1)
                    .Should()
                    .Be(sampleParentObject.KeyField);
         }
 
         [Fact]
-        public void Acceptors_Are_Defined_As_Object()
+        public void Box_Struct_Acceptor()
         {
-            var sampleObject = _fixture.Create<SampleObject>();
-            var acceptorObject = (object)sampleObject;
-
             var sampleStruct = _fixture.Create<SampleStruct>();
-            var acceptorStruct = (object)sampleStruct;
+            var boxedStruct = (object)sampleStruct;
+            var interfaceStruct = (ISampleStruct)sampleStruct;
 
-            _target.Accept(acceptorObject, new SampleVisitor(), 1)
+            _target.Accept(interfaceStruct, new SampleVisitor(), 1)
                    .Should()
-                   .Be(sampleObject.KeyField);
+                   .Be(sampleStruct.KeyField + 1);
 
-            _target.Accept(acceptorStruct, new SampleVisitor(), 1)
+            _target.Accept(boxedStruct, new SampleVisitor(), 1)
                    .Should()
                    .Be(sampleStruct.KeyField + 1);
         }
