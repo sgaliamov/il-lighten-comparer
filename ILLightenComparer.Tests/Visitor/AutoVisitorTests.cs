@@ -48,6 +48,17 @@ namespace ILLightenComparer.Tests.Visitor
         }
 
         [Fact]
+        public void Box_State()
+        {
+            var sampleStruct = _fixture.Create<SampleStruct>();
+
+            var actual = _target.Accept(sampleStruct, new SampleVisitor(), (object)1);
+
+            actual.Should()
+                  .Be(sampleStruct.KeyField + 1);
+        }
+
+        [Fact]
         public void Box_Struct_Acceptor()
         {
             var sampleStruct = _fixture.Create<SampleStruct>();

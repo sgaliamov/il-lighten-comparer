@@ -54,7 +54,7 @@ namespace ILLightenComparer.Visitor
 
             var visitorMethod = (Func<TVisitor, TAcceptor, TState, TState>)methods.GetOrAdd(
                 typeof(TVisitor),
-                key => BuildMethod<TVisitor, TAcceptor, TState>(key, typeOfAcceptor, typeOfState));
+                _ => BuildMethod<TVisitor, TAcceptor, TState>(typeOfVisitor, typeOfAcceptor, typeOfState));
 
             if (visitorMethod == null)
             {
@@ -78,6 +78,7 @@ namespace ILLightenComparer.Visitor
             var method = BuildStaticMethod<TVisitor, TAcceptor, TState>(
                 $"{typeof(TAcceptor)}_{typeof(TVisitor)}_Acceptor",
                 typeOfAcceptor,
+                typeOfState,
                 visitMethod);
 
             return method.CreateDelegate<Func<TVisitor, TAcceptor, TState, TState>>();
@@ -101,6 +102,7 @@ namespace ILLightenComparer.Visitor
         private MethodInfo BuildStaticMethod<TVisitor, TAcceptor, TState>(
             string name,
             Type typeOfAcceptor,
+            Type typeOfState,
             MethodInfo visitMethod)
         {
             var callTypeOfAcceptor = typeof(TAcceptor);
@@ -117,9 +119,11 @@ namespace ILLightenComparer.Visitor
             var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldarg_1);
-            UnboxBoxed(il, typeOfAcceptor, callTypeOfAcceptor);
+            UnboxCastValue(il, typeOfAcceptor, callTypeOfAcceptor);
             il.Emit(OpCodes.Ldarg_2);
+            UnboxCastValue(il, typeOfState, callTypeOfState);
             il.Emit(callTypeOfVisitor.IsSealed ? OpCodes.Call : OpCodes.Callvirt, visitMethod);
+            BoxCastValue(il, typeOfState, callTypeOfState);
             il.Emit(OpCodes.Ret);
 
             var typeInfo = typeBuilder.CreateTypeInfo();
@@ -127,7 +131,7 @@ namespace ILLightenComparer.Visitor
             return typeInfo.GetMethod(nameof(Accept), parameterTypes);
         }
 
-        private static void UnboxBoxed(ILGenerator il, Type actualType, Type callType)
+        private static void UnboxCastValue(ILGenerator il, Type actualType, Type callType)
         {
             if (callType.IsValueType || !actualType.IsValueType)
             {
@@ -135,6 +139,16 @@ namespace ILLightenComparer.Visitor
             }
 
             il.Emit(OpCodes.Unbox_Any, actualType);
+        }
+
+        private static void BoxCastValue(ILGenerator il, Type actualType, Type callType)
+        {
+            if (callType.IsValueType || !actualType.IsValueType)
+            {
+                return;
+            }
+
+            il.Emit(OpCodes.Box, actualType);
         }
     }
 }
