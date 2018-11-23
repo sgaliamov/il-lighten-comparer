@@ -76,7 +76,7 @@ namespace ILLightenComparer.Visitor
             }
 
             var method = BuildStaticMethod<TVisitor, TAcceptor, TState>(
-                $"{typeOfAcceptor}_{typeOfVisitor}_Acceptor",
+                $"{typeof(TAcceptor)}_{typeof(TVisitor)}_Acceptor",
                 typeOfAcceptor,
                 visitMethod);
 

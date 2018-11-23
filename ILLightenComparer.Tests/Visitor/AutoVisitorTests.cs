@@ -23,7 +23,7 @@ namespace ILLightenComparer.Tests.Visitor
 
             _target.Accept(acceptorObject, new SampleVisitor(), 1)
                    .Should()
-                   .Be(sampleObject.KeyField);
+                   .Be(sampleObject.KeyField + 1);
         }
 
         [Fact]
@@ -36,15 +36,15 @@ namespace ILLightenComparer.Tests.Visitor
 
             _target.Accept(acceptorObject, new SampleVisitor(), 1)
                    .Should()
-                   .Be(sampleObject.KeyField);
+                   .Be(sampleObject.KeyField + 1);
 
             _target.Accept(sampleObject, new SampleVisitor(), 1)
                    .Should()
-                   .Be(sampleObject.KeyField);
+                   .Be(sampleObject.KeyField + 1);
 
             _target.Accept(sampleParentObject, new SampleVisitor(), 1)
                    .Should()
-                   .Be(sampleParentObject.KeyField);
+                   .Be(sampleParentObject.KeyField + 1);
         }
 
         [Fact]
@@ -77,11 +77,11 @@ namespace ILLightenComparer.Tests.Visitor
 
             _target.Accept(boxedStruct, visitor, 1)
                    .Should()
-                   .Be(sampleStruct.KeyField);
+                   .Be(sampleStruct.KeyField + 1);
 
             _target.Accept(boxedStruct, (object)visitor, 1)
                    .Should()
-                   .Be(sampleStruct.KeyField);
+                   .Be(sampleStruct.KeyField + 1);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace ILLightenComparer.Tests.Visitor
 
             var actual = _target.Accept(acceptor, new SampleVisitor(), 1);
 
-            actual.Should().Be(acceptor.KeyField);
+            actual.Should().Be(acceptor.KeyField + 1);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace ILLightenComparer.Tests.Visitor
 
             var actual = _target.Accept(acceptor, visitor, 1);
 
-            actual.Should().Be(acceptor.KeyField);
+            actual.Should().Be(acceptor.KeyField + 1);
         }
 
         private readonly AutoVisitor _target = new AutoVisitor(true, nameof(SampleVisitor.Do));
