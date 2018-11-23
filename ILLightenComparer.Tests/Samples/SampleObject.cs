@@ -3,17 +3,21 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleObject
+    public class SampleParentObject
     {
         public SampleEnum EnumField;
         public int KeyField;
+        public SampleEnum EnumProperty { get; set; }
+        public int KeyProperty { get; set; }
+    }
+
+    public sealed class SampleObject : SampleParentObject
+    {
         public bool? NullableField;
         public string ValueField;
 
         public static IComparer<SampleObject> SampleObjectComparer { get; } = new SampleObjectRelationalComparer();
 
-        public SampleEnum EnumProperty { get; set; }
-        public int KeyProperty { get; set; }
         public decimal? NullableProperty { get; set; }
         public string ValueProperty { get; set; }
 

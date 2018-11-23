@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Visitor
 {
-    internal sealed class AutoVisitor
+    public sealed class AutoVisitor
     {
         private readonly ModuleBuilder _moduleBuilder;
         private readonly bool _strict;
@@ -40,18 +40,19 @@ namespace ILLightenComparer.Visitor
             TVisitor visitor,
             TState state)
         {
-            var typeOfAcceptor = typeof(TAcceptor);
-            var typeOfVisitor = typeof(TVisitor);
+            var typeOfAcceptor = acceptor.GetType();
+            var typeOfVisitor = visitor.GetType();
+            var typeOfState = state.GetType();
 
-            var methods = Cache<TAcceptor, TVisitor, TState>
+            var methods = Store<TAcceptor, TVisitor, TState>
                           .Delegates
                           .GetOrAdd(
                               typeOfAcceptor,
-                              _ => new ConcurrentDictionary<Type, Cache<TAcceptor, TVisitor, TState>.VisitDelegate>());
+                              _ => new ConcurrentDictionary<Type, Store<TAcceptor, TVisitor, TState>.VisitDelegate>());
 
             var visitorMethod = methods.GetOrAdd(
                 typeOfVisitor,
-                BuildMethod<TAcceptor, TVisitor, TState>);
+                key => BuildMethod<TVisitor, TAcceptor, TState>(key, typeOfAcceptor, typeOfState));
 
             if (visitorMethod == null)
             {
@@ -63,49 +64,55 @@ namespace ILLightenComparer.Visitor
             return visitorMethod(visitor, acceptor, state);
         }
 
-        private Cache<TAcceptor, TVisitor, TState>.VisitDelegate
-            BuildMethod<TAcceptor, TVisitor, TState>(Type typeOfVisitor) =>
-            BuildStaticMethod(typeof(TAcceptor), typeOfVisitor, typeof(TState))
-                .CreateDelegate<Cache<TAcceptor, TVisitor, TState>.VisitDelegate>();
-
-        private MethodInfo GetVisitMethod(Type typeOfAcceptor, Type typeOfVisitor, Type typeOfState) =>
-            typeOfVisitor
-                .GetMethods(BindingFlags.Instance | BindingFlags.Public)
-                .Where(methodInfo =>
-                {
-                    var arguments1 = methodInfo.GetGenericArguments();
-
-                    return methodInfo.Name == _visitMethodName
-                           && arguments1.Length == 2
-                           && arguments1[0] == typeOfAcceptor
-                           && arguments1[1] == typeOfState
-                           && methodInfo.ReturnType == typeOfState;
-                })
-                .SingleOrDefault();
-
-        private MethodInfo BuildStaticMethod(
-            Type typeOfAcceptor,
-            Type typeOfVisitor,
-            Type typeOfState)
+        private Store<TAcceptor, TVisitor, TState>.VisitDelegate
+            BuildMethod<TVisitor, TAcceptor, TState>(Type typeOfVisitor, Type typeOfAcceptor, Type typeOfState)
         {
-            var visitMethod = GetVisitMethod(typeOfAcceptor, typeOfVisitor, typeOfState);
+            var visitMethod = GetVisitorMethod(typeOfVisitor, typeOfAcceptor, typeOfState);
             if (visitMethod == null)
             {
                 return null;
             }
 
-            var typeBuilder = DefineStaticClass($"{typeOfAcceptor}_{typeOfVisitor}_Acceptor");
-            var parameterTypes = new[] { typeOfVisitor, typeOfAcceptor, typeOfState };
+            var method = BuildStaticMethod<TVisitor, TAcceptor, TState>(
+                $"{typeOfAcceptor}_{typeOfVisitor}_Acceptor",
+                visitMethod);
+
+            return method.CreateDelegate<Store<TAcceptor, TVisitor, TState>.VisitDelegate>();
+        }
+
+        private MethodInfo GetVisitorMethod(Type typeOfVisitor, Type typeOfAcceptor, Type typeOfState) =>
+            typeOfVisitor
+                .GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                .Where(methodInfo =>
+                {
+                    var parameters = methodInfo.GetParameters();
+
+                    return methodInfo.Name == _visitMethodName
+                           && parameters.Length == 2
+                           && parameters[0].ParameterType == typeOfAcceptor
+                           && parameters[1].ParameterType == typeOfState
+                           && methodInfo.ReturnType == typeOfState;
+                })
+                .SingleOrDefault();
+
+        private MethodInfo BuildStaticMethod<TVisitor, TAcceptor, TState>(string name, MethodInfo visitMethod)
+        {
+            var callTypeOfAcceptor = typeof(TAcceptor);
+            var callTypeOfVisitor = typeof(TVisitor);
+            var callTypeOfState = typeof(TState);
+
+            var typeBuilder = DefineStaticClass(name);
+            var parameterTypes = new[] { callTypeOfVisitor, callTypeOfAcceptor, callTypeOfState };
             var methodBuilder = typeBuilder.DefineStaticMethod(
                 nameof(Accept),
-                typeOfState,
+                callTypeOfState,
                 parameterTypes);
 
             var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldarg_1);
             il.Emit(OpCodes.Ldarg_2);
-            il.Emit(typeOfVisitor.IsSealed ? OpCodes.Call : OpCodes.Callvirt, visitMethod);
+            il.Emit(callTypeOfVisitor.IsSealed ? OpCodes.Call : OpCodes.Callvirt, visitMethod);
             il.Emit(OpCodes.Ret);
 
             var typeInfo = typeBuilder.CreateTypeInfo();
@@ -113,13 +120,13 @@ namespace ILLightenComparer.Visitor
             return typeInfo.GetMethod(nameof(Accept), parameterTypes);
         }
 
-        private static class Cache<TAcceptor, TVisitor, TState>
+        private static class Store<TAcceptor, TVisitor, TState>
         {
             public delegate TState VisitDelegate(TVisitor visitor, TAcceptor acceptor, TState state);
 
             public static readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, VisitDelegate>> Delegates;
 
-            static Cache() => Delegates = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, VisitDelegate>>();
+            static Store() => Delegates = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, VisitDelegate>>();
         }
     }
 }
