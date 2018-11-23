@@ -1,6 +1,6 @@
 ﻿namespace ILLightenComparer.Tests.Samples
 {
-    public interface ISampleStruct
+    public interface ISample
     {
         SampleEnum EnumProperty { get; set; }
         int KeyProperty { get; set; }

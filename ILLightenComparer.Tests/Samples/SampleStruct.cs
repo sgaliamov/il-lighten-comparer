@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public struct SampleStruct : ISampleStruct
+    public struct SampleStruct : ISample
     {
         public SampleEnum EnumField;
         public int KeyField;
