@@ -1,31 +1,38 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Members.Comparable;
 using ILLightenComparer.Emit.Members.Integral;
+using ILLightenComparer.Visitor;
 
 namespace ILLightenComparer.Emit.Emitters
 {
-    internal sealed class CompareEmitter
+    internal sealed class CompareEmitter :
+        IVisitor<IComparableMember, ILEmitter>,
+        IVisitor<IIntegralMember, ILEmitter>
     {
         private readonly StackEmitter _stackVisitor;
 
         public CompareEmitter(TypeBuilderContext context) => _stackVisitor = new StackEmitter(context);
 
-        public void Visit(IComparableMember member, ILEmitter il)
+        public ILEmitter Visit(IComparableMember member, ILEmitter il)
         {
             member.Accept(_stackVisitor, il);
 
             il.Emit(OpCodes.Call, member.CompareToMethod);
 
             EmitCheckToZero(il);
+
+            return il;
         }
 
-        public void Visit(IIntegralMember member, ILEmitter il)
+        public ILEmitter Visit(IIntegralMember member, ILEmitter il)
         {
             member.Accept(_stackVisitor, il);
 
             il.Emit(OpCodes.Sub);
 
             EmitCheckToZero(il);
+
+            return il;
         }
 
         private static void EmitCheckToZero(ILEmitter il)
