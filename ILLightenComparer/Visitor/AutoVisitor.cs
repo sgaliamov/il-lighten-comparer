@@ -77,6 +77,7 @@ namespace ILLightenComparer.Visitor
 
             var method = BuildStaticMethod<TVisitor, TAcceptor, TState>(
                 $"{typeof(TAcceptor)}_{typeof(TVisitor)}_Acceptor",
+                typeOfVisitor,
                 typeOfAcceptor,
                 typeOfState,
                 visitMethod);
@@ -101,6 +102,7 @@ namespace ILLightenComparer.Visitor
 
         private MethodInfo BuildStaticMethod<TVisitor, TAcceptor, TState>(
             string name,
+            Type typeOfVisitor,
             Type typeOfAcceptor,
             Type typeOfState,
             MethodInfo visitMethod)
@@ -118,6 +120,7 @@ namespace ILLightenComparer.Visitor
 
             var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
+            UnboxCastValue(il, typeOfVisitor, callTypeOfVisitor);
             il.Emit(OpCodes.Ldarg_1);
             UnboxCastValue(il, typeOfAcceptor, callTypeOfAcceptor);
             il.Emit(OpCodes.Ldarg_2);
