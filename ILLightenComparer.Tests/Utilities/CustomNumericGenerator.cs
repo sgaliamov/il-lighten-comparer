@@ -4,14 +4,14 @@ using AutoFixture.Kernel;
 
 namespace ILLightenComparer.Tests.Utilities
 {
-    internal sealed class NumericGenerator : ISpecimenBuilder
+    internal sealed class CustomNumericGenerator : ISpecimenBuilder
     {
         private readonly int _lower;
         private readonly double _minMaxProbability;
         private readonly Random _random;
         private readonly int _upper;
 
-        public NumericGenerator(int lower, int upper, double minMaxProbability)
+        public CustomNumericGenerator(int lower, int upper, double minMaxProbability)
         {
             _lower = lower;
             _upper = upper;

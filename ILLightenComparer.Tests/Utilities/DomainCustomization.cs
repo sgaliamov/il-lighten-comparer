@@ -20,7 +20,7 @@ namespace ILLightenComparer.Tests.Utilities
 
             fixture.Customizations.Add(new CasualNullGenerator(0.2));
 
-            fixture.Customizations.Add(new NumericGenerator(-10, 0, 0.2));
+            fixture.Customizations.Add(new CustomNumericGenerator(-10, 0, 0.2));
         }
     }
 }
