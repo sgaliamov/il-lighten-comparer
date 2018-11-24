@@ -24,6 +24,7 @@ namespace ILLightenComparer.Emit.Reflection
             new Converter(GetPropertyType, IsString, info => new StringPropertyMember((PropertyInfo)info)),
             new Converter(GetPropertyType, IsIntegral, info => new IntegralPropertyMember((PropertyInfo)info)),
             new Converter(GetPropertyType, IsComparable, info => new ComparablePropertyMember((PropertyInfo)info)),
+            new Converter(GetPropertyType, IsNullable, info => new NullablePropertyMember((PropertyInfo)info)),
 
             new Converter(GetFieldType, IsString, info => new StringFiledMember((FieldInfo)info)),
             new Converter(GetFieldType, IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
@@ -47,8 +48,10 @@ namespace ILLightenComparer.Emit.Reflection
             }
 
             throw new NotSupportedException(
-                $"{memberInfo.MemberType} {memberInfo.DisplayName()} is not supported.");
+                $"{memberInfo.DisplayName()} is not supported.");
         }
+
+        private static bool IsNullable(Type type) => type.IsNullable();
 
         private static (MemberInfo, Type) GetPropertyType(MemberInfo memberInfo)
         {

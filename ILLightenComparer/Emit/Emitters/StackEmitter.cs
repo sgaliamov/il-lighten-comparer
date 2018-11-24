@@ -101,5 +101,10 @@ namespace ILLightenComparer.Emit.Emitters
               .Emit(OpCodes.Ldarg_2)
               .CallGetter(member);
         }
+
+        public void Visit(NullablePropertyMember member, ILEmitter il)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
