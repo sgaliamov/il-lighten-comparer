@@ -13,5 +13,10 @@ namespace ILLightenComparer.Emit.Extensions
 
             return factoryMethod();
         }
+
+        public static Type GetUnderlyingType(this Type type) =>
+            type.IsEnum
+                ? Enum.GetUnderlyingType(type)
+                : type;
     }
 }

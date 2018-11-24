@@ -86,9 +86,5 @@ namespace ILLightenComparer.Emit.Reflection
                 MethodName.CompareTo,
                 new[] { type });
 
-        private static Type GetEnumUnderlyingType(Type type) =>
-            type.IsEnum
-                ? Enum.GetUnderlyingType(type)
-                : type;
     }
 }

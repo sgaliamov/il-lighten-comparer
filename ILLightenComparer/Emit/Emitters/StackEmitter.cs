@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Emit;
+using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members.Comparable;
 using ILLightenComparer.Emit.Members.Integral;
 
@@ -14,22 +15,24 @@ namespace ILLightenComparer.Emit.Emitters
         {
             if (member.OwnerType.IsValueType)
             {
-                var local = il.DeclareLocal(member.MemberType);
+                var underlyingType = member.MemberType.GetUnderlyingType();
+                var local = il.DeclareLocal(underlyingType);
 
                 il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
                   .Emit(OpCodes.Call, member.GetterMethod) // a = x.Prop
-                  .EmitStore(local) // todo: use underlying type for enums
+                  .EmitStore(local)
                   .EmitLoadAddressOf(local) // pa = *a
                   .Emit(OpCodes.Ldarga_S, 2) // y = arg2 
                   .Emit(OpCodes.Call, member.GetterMethod); // b = y.Prop
             }
             else
             {
-                var local = il.DeclareLocal(member.MemberType);
+                var underlyingType = member.MemberType.GetUnderlyingType();
+                var local = il.DeclareLocal(underlyingType);
 
                 il.Emit(OpCodes.Ldarg_1) // x = arg1
                   .Emit(OpCodes.Callvirt, member.GetterMethod) // a = x.Prop
-                  .EmitStore(local) // todo: use underlying type for enums
+                  .EmitStore(local)
                   .EmitLoadAddressOf(local) // pa = *a
                   .Emit(OpCodes.Ldarg_2) // y = arg2 
                   .Emit(OpCodes.Callvirt, member.GetterMethod); // b = y.Prop
