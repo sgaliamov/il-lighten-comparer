@@ -29,11 +29,11 @@ namespace ILLightenComparer.Emit.Emitters
             {
                 var local = il.DeclareLocal(member.ComparableType);
 
-                il.Emit(OpCodes.Ldarg_1)
+                il.LoadArgument(1)
                   .CallGetter(member)
                   .EmitStore(local)
                   .EmitLoadAddressOf(local)
-                  .Emit(OpCodes.Ldarg_2)
+                  .LoadArgument(2)
                   .CallGetter(member);
             }
         }
@@ -44,23 +44,23 @@ namespace ILLightenComparer.Emit.Emitters
             {
                 il.Emit(OpCodes.Ldarga_S, 1)
                   .Emit(OpCodes.Ldflda, member.FieldInfo)
-                  .Emit(OpCodes.Ldarg_2)
+                  .LoadArgument(2)
                   .Emit(OpCodes.Ldfld, member.FieldInfo);
             }
             else
             {
-                il.Emit(OpCodes.Ldarg_1)
+                il.LoadArgument(1)
                   .Emit(OpCodes.Ldflda, member.FieldInfo)
-                  .Emit(OpCodes.Ldarg_2)
+                  .LoadArgument(2)
                   .Emit(OpCodes.Ldfld, member.FieldInfo);
             }
         }
 
         public void Visit(StringFiledMember member, ILEmitter il)
         {
-            il.Emit(OpCodes.Ldarg_1)
+            il.LoadArgument(1)
               .Emit(OpCodes.Ldfld, member.FieldInfo)
-              .Emit(OpCodes.Ldarg_2)
+              .LoadArgument(2)
               .Emit(OpCodes.Ldfld, member.FieldInfo)
               .Emit(OpCodes.Ldc_I4_S, (int)_context.Configuration.StringComparisonType); // todo: use short form
         }
@@ -76,9 +76,9 @@ namespace ILLightenComparer.Emit.Emitters
             }
             else
             {
-                il.Emit(OpCodes.Ldarg_1)
+                il.LoadArgument(1)
                   .CallGetter(member)
-                  .Emit(OpCodes.Ldarg_2)
+                  .LoadArgument(2)
                   .CallGetter(member);
             }
 
@@ -89,17 +89,17 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(IntegralFiledMember member, ILEmitter il)
         {
-            il.Emit(OpCodes.Ldarg_1)
+            il.LoadArgument(1)
               .Emit(OpCodes.Ldfld, member.FieldInfo)
-              .Emit(OpCodes.Ldarg_2)
+              .LoadArgument(2)
               .Emit(OpCodes.Ldfld, member.FieldInfo);
         }
 
         public void Visit(IntegralPropertyMember member, ILEmitter il)
         {
-            il.Emit(OpCodes.Ldarg_1)
+            il.LoadArgument(1)
               .CallGetter(member)
-              .Emit(OpCodes.Ldarg_2)
+              .LoadArgument(2)
               .CallGetter(member);
         }
 

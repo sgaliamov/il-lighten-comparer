@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
-using ILLightenComparer.Emit.Emitters;
 
-namespace ILLightenComparer.Emit.Members.Comparable
+namespace ILLightenComparer.Emit.Emitters
 {
     internal interface IComparableMember : IMember
     {
