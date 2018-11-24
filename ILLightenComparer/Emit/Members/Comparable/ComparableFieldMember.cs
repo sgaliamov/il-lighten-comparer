@@ -2,6 +2,7 @@
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members.Comparable
 {
@@ -10,7 +11,9 @@ namespace ILLightenComparer.Emit.Members.Comparable
         public ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo)
         {
             ComparableType = fieldInfo.FieldType.GetUnderlyingType();
-            CompareToMethod = ComparableType.GetCompareToMethod();
+            CompareToMethod = ComparableType.GetCompareToMethod()
+                              ?? throw new ArgumentException(
+                                  $"{fieldInfo.DisplayName()} does not have {MethodName.CompareTo} method.");
         }
 
         public Type ComparableType { get; }

@@ -2,6 +2,7 @@
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members.Comparable
 {
@@ -10,7 +11,9 @@ namespace ILLightenComparer.Emit.Members.Comparable
         public ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo)
         {
             ComparableType = propertyInfo.PropertyType.GetUnderlyingType();
-            CompareToMethod = ComparableType.GetCompareToMethod();
+            CompareToMethod = ComparableType.GetCompareToMethod()
+                              ?? throw new ArgumentException(
+                                  $"{propertyInfo.DisplayName()} does not have {MethodName.CompareTo} method.");
         }
 
         public Type ComparableType { get; }

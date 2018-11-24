@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members.Comparable;
 using ILLightenComparer.Emit.Members.Integral;
@@ -17,23 +18,23 @@ namespace ILLightenComparer.Emit.Emitters
             {
                 var local = il.DeclareLocal(member.ComparableType);
 
-                il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
-                  .CallGetter(member) // a = x.Prop
+                il.Emit(OpCodes.Ldarga_S, 1)
+                  .CallGetter(member)
                   .EmitStore(local)
-                  .EmitLoadAddressOf(local) // pa = *a
-                  .Emit(OpCodes.Ldarga_S, 2) // y = arg2 
-                  .CallGetter(member); // b = y.Prop
+                  .EmitLoadAddressOf(local)
+                  .Emit(OpCodes.Ldarga_S, 2)
+                  .CallGetter(member);
             }
             else
             {
                 var local = il.DeclareLocal(member.ComparableType);
 
-                il.Emit(OpCodes.Ldarg_1) // x = arg1
-                  .CallGetter(member) // a = x.Prop
+                il.Emit(OpCodes.Ldarg_1)
+                  .CallGetter(member)
                   .EmitStore(local)
-                  .EmitLoadAddressOf(local) // pa = *a
-                  .Emit(OpCodes.Ldarg_2) // y = arg2 
-                  .CallGetter(member); // b = y.Prop
+                  .EmitLoadAddressOf(local)
+                  .Emit(OpCodes.Ldarg_2)
+                  .CallGetter(member);
             }
         }
 
@@ -41,17 +42,17 @@ namespace ILLightenComparer.Emit.Emitters
         {
             if (member.OwnerType.IsValueType)
             {
-                il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
-                  .Emit(OpCodes.Ldflda, member.FieldInfo) // a = x.Field 
-                  .Emit(OpCodes.Ldarg_2) // y = arg2 
-                  .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Field
+                il.Emit(OpCodes.Ldarga_S, 1)
+                  .Emit(OpCodes.Ldflda, member.FieldInfo)
+                  .Emit(OpCodes.Ldarg_2)
+                  .Emit(OpCodes.Ldfld, member.FieldInfo);
             }
             else
             {
-                il.Emit(OpCodes.Ldarg_1) // x = arg1
-                  .Emit(OpCodes.Ldflda, member.FieldInfo) // a = x.Field 
-                  .Emit(OpCodes.Ldarg_2) // y = arg2 
-                  .Emit(OpCodes.Ldfld, member.FieldInfo); // b = y.Field
+                il.Emit(OpCodes.Ldarg_1)
+                  .Emit(OpCodes.Ldflda, member.FieldInfo)
+                  .Emit(OpCodes.Ldarg_2)
+                  .Emit(OpCodes.Ldfld, member.FieldInfo);
             }
         }
 
@@ -104,7 +105,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(NullablePropertyMember member, ILEmitter il)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }
