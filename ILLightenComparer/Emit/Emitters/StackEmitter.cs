@@ -15,27 +15,25 @@ namespace ILLightenComparer.Emit.Emitters
         {
             if (member.OwnerType.IsValueType)
             {
-                var underlyingType = member.ComparableType.GetUnderlyingType();
-                var local = il.DeclareLocal(underlyingType);
+                var local = il.DeclareLocal(member.ComparableType);
 
                 il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
-                  .Emit(OpCodes.Call, member.GetterMethod) // a = x.Prop
+                  .CallGetter(member) // a = x.Prop
                   .EmitStore(local)
                   .EmitLoadAddressOf(local) // pa = *a
                   .Emit(OpCodes.Ldarga_S, 2) // y = arg2 
-                  .Emit(OpCodes.Call, member.GetterMethod); // b = y.Prop
+                  .CallGetter(member); // b = y.Prop
             }
             else
             {
-                var underlyingType = member.ComparableType.GetUnderlyingType();
-                var local = il.DeclareLocal(underlyingType);
+                var local = il.DeclareLocal(member.ComparableType);
 
                 il.Emit(OpCodes.Ldarg_1) // x = arg1
-                  .Emit(OpCodes.Callvirt, member.GetterMethod) // a = x.Prop
+                  .CallGetter(member) // a = x.Prop
                   .EmitStore(local)
                   .EmitLoadAddressOf(local) // pa = *a
                   .Emit(OpCodes.Ldarg_2) // y = arg2 
-                  .Emit(OpCodes.Callvirt, member.GetterMethod); // b = y.Prop
+                  .CallGetter(member); // b = y.Prop
             }
         }
 
@@ -71,16 +69,16 @@ namespace ILLightenComparer.Emit.Emitters
             if (member.OwnerType.IsValueType)
             {
                 il.Emit(OpCodes.Ldarga_S, 1)
-                  .Emit(OpCodes.Call, member.GetterMethod)
+                  .CallGetter(member)
                   .Emit(OpCodes.Ldarga_S, 2)
-                  .Emit(OpCodes.Call, member.GetterMethod);
+                  .CallGetter(member);
             }
             else
             {
                 il.Emit(OpCodes.Ldarg_1)
-                  .Emit(OpCodes.Callvirt, member.GetterMethod)
+                  .CallGetter(member)
                   .Emit(OpCodes.Ldarg_2)
-                  .Emit(OpCodes.Callvirt, member.GetterMethod);
+                  .CallGetter(member);
             }
 
             il.Emit(
@@ -99,9 +97,9 @@ namespace ILLightenComparer.Emit.Emitters
         public void Visit(IntegralPropertyMember member, ILEmitter il)
         {
             il.Emit(OpCodes.Ldarg_1)
-              .Emit(OpCodes.Callvirt, member.GetterMethod)
+              .CallGetter(member)
               .Emit(OpCodes.Ldarg_2)
-              .Emit(OpCodes.Callvirt, member.GetterMethod);
+              .CallGetter(member);
         }
     }
 }
