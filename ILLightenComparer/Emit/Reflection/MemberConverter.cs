@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Members.Comparable;
 using ILLightenComparer.Emit.Members.Integral;
 
@@ -20,71 +19,73 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(ushort)
         });
 
+        private static readonly Converter[] Converters =
+        {
+            new Converter(GetPropertyType, IsString, info => new StringPropertyMember((PropertyInfo)info)),
+            new Converter(GetPropertyType, IsIntegral, info => new IntegralPropertyMember((PropertyInfo)info)),
+            new Converter(GetPropertyType, IsComparable, info => new ComparablePropertyMember((PropertyInfo)info)),
+
+            new Converter(GetFieldType, IsString, info => new StringFiledMember((FieldInfo)info)),
+            new Converter(GetFieldType, IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
+            new Converter(GetFieldType, IsComparable, info => new ComparableFieldMember((FieldInfo)info))
+        };
+
         public IMember Convert(MemberInfo memberInfo)
         {
-            switch (memberInfo)
+            foreach (var converter in Converters)
             {
-                case FieldInfo field:
-                    return Convert(field);
-
-                case PropertyInfo property:
-                    return Convert(property);
+                var (info, memberType) = converter.Convert(memberInfo);
+                if (converter.Condition(memberType))
+                {
+                    return converter.Factory(info);
+                }
             }
 
             throw new NotSupportedException(
-                "Only fields and properties are supported. "
-                + $"{memberInfo.MemberType}: {memberInfo.DisplayName()}");
+                $"{memberInfo.MemberType} {memberInfo.DisplayName()} is not supported.");
         }
 
-        private static Member Convert(PropertyInfo property)
+        private static (MemberInfo, Type) GetPropertyType(MemberInfo memberInfo)
         {
-            if (SmallIntegralTypes.Contains(property.PropertyType))
+            if (memberInfo is PropertyInfo propertyInfo)
             {
-                return new IntegralPropertyMember(property);
+                return (propertyInfo, propertyInfo.PropertyType);
             }
 
-            if (property.PropertyType == typeof(string))
-            {
-                return new StringPropertyMember(property);
-            }
-
-            // todo: try compare enums as integral types
-            var underlyingType = GetEnumUnderlyingType(property.PropertyType);
-            var compareToMethod = GetCompareToMethod(underlyingType);
-            if (compareToMethod != null)
-            {
-                return new ComparablePropertyMember(property, compareToMethod);
-            }
-
-            throw new NotSupportedException($"Property {property.DisplayName()} is not supported.");
+            return default;
         }
 
-        private static Member Convert(FieldInfo field)
+        private static (MemberInfo, Type) GetFieldType(MemberInfo memberInfo)
         {
-            if (SmallIntegralTypes.Contains(field.FieldType))
+            if (memberInfo is FieldInfo fieldInfo)
             {
-                return new IntegralFiledMember(field);
+                return (fieldInfo, fieldInfo.FieldType);
             }
 
-            if (field.FieldType == typeof(string))
-            {
-                return new StringFiledMember(field);
-            }
-
-            var underlyingType = GetEnumUnderlyingType(field.FieldType);
-            var compareToMethod = GetCompareToMethod(underlyingType);
-            if (compareToMethod != null)
-            {
-                return new ComparableFieldMember(field, compareToMethod);
-            }
-
-            throw new NotSupportedException($"Field {field.DisplayName()} is not supported.");
+            return default;
         }
 
-        private static MethodInfo GetCompareToMethod(Type type) =>
-            type.GetMethod(
-                MethodName.CompareTo,
-                new[] { type });
+        private static bool IsComparable(Type type) => type.GetCompareToMethod() != null;
 
+        private static bool IsString(Type type) => type == typeof(string);
+
+        private static bool IsIntegral(Type type) => SmallIntegralTypes.Contains(type);
+
+        private sealed class Converter
+        {
+            public Converter(
+                Func<MemberInfo, (MemberInfo, Type)> convert,
+                Func<Type, bool> condition,
+                Func<MemberInfo, IMember> factory)
+            {
+                Convert = convert;
+                Condition = condition;
+                Factory = factory;
+            }
+
+            public Func<Type, bool> Condition { get; }
+            public Func<MemberInfo, (MemberInfo, Type)> Convert { get; }
+            public Func<MemberInfo, IMember> Factory { get; }
+        }
     }
 }
