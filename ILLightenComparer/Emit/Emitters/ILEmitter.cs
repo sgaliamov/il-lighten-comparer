@@ -9,14 +9,33 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class ILEmitter : IDisposable
     {
+        private const byte ShortFormLimit = byte.MaxValue; // 255
 #if DEBUG
         private readonly List<Label> _labels = new List<Label>();
 #endif
-        private const byte ShortFormLimit = byte.MaxValue; // 255
-        private Dictionary<Type, LocalBuilder> _locals = new Dictionary<Type, LocalBuilder>();
         private ILGenerator _il;
+        private Dictionary<Type, LocalBuilder> _locals = new Dictionary<Type, LocalBuilder>();
 
         public ILEmitter(ILGenerator il) => _il = il;
+
+        public void Dispose()
+        {
+#if DEBUG
+            if (_locals.Count != 0)
+            {
+                Debug.WriteLine("\t.locals init (");
+                foreach (var item in _locals)
+                {
+                    Debug.WriteLine($"\t\t[{item.Value.LocalIndex}] {item.Key.Name}");
+                }
+
+                Debug.WriteLine("\t)\n");
+            }
+#endif
+            _il = null;
+            _locals.Clear();
+            _locals = null;
+        }
 
         public LocalBuilder DeclareLocal(Type localType) =>
             _locals.TryGetValue(localType, out var local)
@@ -67,15 +86,6 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter EmitCtorCall(ConstructorInfo constructor) => EmitNew(constructor).Emit(OpCodes.Ret);
 
-        private ILEmitter EmitNew(ConstructorInfo constructorInfo)
-        {
-            _il.Emit(OpCodes.Newobj, constructorInfo);
-
-            Debug.WriteLine($"\t\t{OpCodes.Newobj} {constructorInfo.DisplayName()}");
-
-            return this;
-        }
-
         public ILEmitter Emit(OpCode opCode)
         {
             Debug.WriteLine($"\t\t{opCode}");
@@ -108,25 +118,25 @@ namespace ILLightenComparer.Emit.Emitters
             switch (index)
             {
                 case 0:
-                    _il.Emit(OpCodes.Ldarg_0);
+                    Emit(OpCodes.Ldarg_0);
                     return this;
 
                 case 1:
-                    _il.Emit(OpCodes.Ldarg_1);
+                    Emit(OpCodes.Ldarg_1);
                     return this;
 
                 case 2:
-                    _il.Emit(OpCodes.Ldarg_2);
+                    Emit(OpCodes.Ldarg_2);
                     return this;
 
                 case 3:
-                    _il.Emit(OpCodes.Ldarg_3);
+                    Emit(OpCodes.Ldarg_3);
                     return this;
 
                 default:
                     var opCode = index <= ShortFormLimit ? OpCodes.Ldarg_S : OpCodes.Ldarg;
                     Debug.WriteLine($"\t\t{opCode} {index}");
-                    _il.Emit(opCode, index);
+                    Emit(opCode, index);
                     return this;
             }
         }
@@ -144,11 +154,30 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter EmitStore(LocalBuilder local)
         {
-            Debug.WriteLine($"\t\t{OpCodes.Stloc} {local.LocalIndex}");
+            switch (local.LocalIndex)
+            {
+                case 0:
+                    Emit(OpCodes.Stloc_0);
+                    return this;
 
-            _il.Emit(OpCodes.Stloc, local); // todo: use short form
+                case 1:
+                    Emit(OpCodes.Stloc_1);
+                    return this;
 
-            return this;
+                case 2:
+                    Emit(OpCodes.Stloc_2);
+                    return this;
+
+                case 3:
+                    Emit(OpCodes.Stloc_3);
+                    return this;
+
+                default:
+                    var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Stloc_S : OpCodes.Stloc;
+                    Debug.WriteLine($"\t\t{OpCodes.Stloc} {local.LocalIndex}");
+                    _il.Emit(opCode, local);
+                    return this;
+            }
         }
 
         public ILEmitter Emit(OpCode opCode, FieldInfo field)
@@ -160,22 +189,13 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public void Dispose()
+        private ILEmitter EmitNew(ConstructorInfo constructorInfo)
         {
-#if DEBUG
-            if (_locals.Count != 0)
-            {
-                Debug.WriteLine("\t.locals init (");
-                foreach (var item in _locals)
-                {
-                    Debug.WriteLine($"\t\t[{item.Value.LocalIndex}] {item.Key.Name}");
-                }
-                Debug.WriteLine("\t)\n");
-            }
-#endif
-            _il = null;
-            _locals.Clear();
-            _locals = null;
+            _il.Emit(OpCodes.Newobj, constructorInfo);
+
+            Debug.WriteLine($"\t\t{OpCodes.Newobj} {constructorInfo.DisplayName()}");
+
+            return this;
         }
     }
 }
