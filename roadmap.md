@@ -17,12 +17,12 @@
 - [x] compare enums
 - [x] optimization for integral types
 - [x] refactor MembersProvider
-- [x] ~~normalize result to -1, 0. 1~~
+- [x] ~~normalize result to -1, 0. 1~~ - no need to do it
 - [x] refactor visitors, introduce interfaces for member classes
 - [x] refactor MemberConverter
 - [x] fixture generates Max and Min values
 - [X] fixture generates nulls
-- [ ] try to implement auto visitor
+- [x] ~~try to implement auto visitor~~ - moved to a separate project, to mush extra complexity
 - [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
 
 ## Phase 2 Hierarchical objects

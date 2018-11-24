@@ -11,7 +11,7 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private static readonly HashSet<Type> IntegralTypes = new HashSet<Type>(new[]
+        private static readonly HashSet<Type> SmallIntegralTypes = new HashSet<Type>(new[]
         {
             typeof(sbyte),
             typeof(byte),
@@ -19,11 +19,6 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(short),
             typeof(ushort)
         });
-
-        private static readonly MethodInfo StringCompareMethod = typeof(string)
-            .GetMethod(
-                nameof(string.Compare),
-                new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
         public IMember Convert(MemberInfo memberInfo)
         {
@@ -43,14 +38,14 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static Member Convert(PropertyInfo property)
         {
-            if (IntegralTypes.Contains(property.PropertyType))
+            if (SmallIntegralTypes.Contains(property.PropertyType))
             {
                 return new IntegralPropertyMember(property);
             }
 
             if (property.PropertyType == typeof(string))
             {
-                return new StringPropertyMember(property, StringCompareMethod);
+                return new StringPropertyMember(property);
             }
 
             // todo: try compare enums as integral types
@@ -66,14 +61,14 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static Member Convert(FieldInfo field)
         {
-            if (IntegralTypes.Contains(field.FieldType))
+            if (SmallIntegralTypes.Contains(field.FieldType))
             {
                 return new IntegralFiledMember(field);
             }
 
             if (field.FieldType == typeof(string))
             {
-                return new StringFiledMember(field, StringCompareMethod);
+                return new StringFiledMember(field);
             }
 
             var underlyingType = GetEnumUnderlyingType(field.FieldType);

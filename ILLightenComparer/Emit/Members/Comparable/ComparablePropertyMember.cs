@@ -3,7 +3,7 @@ using ILLightenComparer.Emit.Emitters;
 
 namespace ILLightenComparer.Emit.Members.Comparable
 {
-    internal class ComparablePropertyMember : PropertyMember, IComparableMember
+    internal sealed class ComparablePropertyMember : PropertyMember, IComparableMember
     {
         public ComparablePropertyMember(PropertyInfo propertyInfo, MethodInfo compareToMethod)
             : base(propertyInfo) =>
