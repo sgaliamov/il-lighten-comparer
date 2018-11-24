@@ -1,13 +1,10 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Members.Comparable;
 using ILLightenComparer.Emit.Members.Integral;
-using ILLightenComparer.Visitor;
 
 namespace ILLightenComparer.Emit.Emitters
 {
-    internal sealed class CompareEmitter :
-        IVisitor<IComparableMember, ILEmitter>,
-        IVisitor<IIntegralMember, ILEmitter>
+    internal sealed class CompareEmitter
     {
         private readonly StackEmitter _stackVisitor;
 

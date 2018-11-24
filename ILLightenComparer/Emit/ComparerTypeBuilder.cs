@@ -6,13 +6,11 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
-using ILLightenComparer.Visitor;
 
 namespace ILLightenComparer.Emit
 {
     internal sealed class ComparerTypeBuilder
     {
-        private readonly AutoVisitor _autoVisitor = new AutoVisitor();
         private readonly TypeBuilderContext _context;
         private readonly MembersProvider _membersProvider;
         private readonly CompareEmitter _compareEmitter;
@@ -86,8 +84,7 @@ namespace ILLightenComparer.Emit
             InitFirstLocalToKeepComparisonsResult(il);
             foreach (var member in members)
             {
-                _autoVisitor.Accept(member, _compareEmitter, il);
-                //member.Accept(_compareEmitter, il);
+                member.Accept(_compareEmitter, il);
             }
         }
 
