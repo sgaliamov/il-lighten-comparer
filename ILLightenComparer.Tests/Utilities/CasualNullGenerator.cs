@@ -25,13 +25,7 @@ namespace ILLightenComparer.Tests.Utilities
             var owner = property?.DeclaringType ?? field?.DeclaringType;
             var type = property?.PropertyType ?? field?.FieldType;
 
-            var isNullable = type != null
-                             && type.IsValueType
-                             && type.Name == typeof(Nullable<>).Name
-                             && type.Namespace == "System"
-                             && type.IsGenericType;
-
-            if ((isNullable || type != null && type.IsClass)
+            if ((type.IsNullable() || type != null && type.IsClass)
                 && owner != null
                 && !_exclude.Contains(owner)
                 && _random.NextDouble() < _probability)

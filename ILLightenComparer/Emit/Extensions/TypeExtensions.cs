@@ -13,9 +13,24 @@ namespace ILLightenComparer.Emit.Extensions
         public static MethodInfo GetCompareToMethod(this Type type) =>
             type.GetMethod(MethodName.CompareTo, new[] { type });
 
-        public static Type GetUnderlyingType(this Type type) =>
-            type.IsEnum
-                ? Enum.GetUnderlyingType(type)
-                : Nullable.GetUnderlyingType(type) ?? type;
+        public static Type GetUnderlyingType(this Type type)
+        {
+            if (type.IsEnum)
+            {
+                return Enum.GetUnderlyingType(type);
+            }
+
+            if (type.IsNullable())
+            {
+                return type.GetGenericArguments()[0];
+            }
+
+            return type;
+        }
+
+        public static bool IsNullable(this Type type) =>
+            type.IsGenericType
+            && !type.IsGenericTypeDefinition
+            && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
     }
 }
