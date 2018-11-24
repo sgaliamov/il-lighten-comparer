@@ -42,7 +42,7 @@ namespace ILLightenComparer.Emit.Extensions
             var constructorInfo = typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
 
             var methodBuilder = DefineStaticMethod(typeBuilder,
-                Constants.FactoryMethodName,
+                MethodName.Factory,
                 typeBuilder,
                 null);
 

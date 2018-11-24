@@ -38,13 +38,13 @@ namespace ILLightenComparer.Emit
             BuildBasicCompareMethod(
                 typeBuilder,
                 staticCompare,
-                basicInterface.GetMethod(Constants.CompareMethodName),
+                basicInterface.GetMethod(MethodName.Compare),
                 objectType);
 
             BuildTypedCompareMethod(
                 typeBuilder,
                 staticCompare,
-                genericInterface.GetMethod(Constants.CompareMethodName));
+                genericInterface.GetMethod(MethodName.Compare));
 
             return typeBuilder
                    .BuildFactoryMethod()
@@ -54,7 +54,7 @@ namespace ILLightenComparer.Emit
         private MethodBuilder BuildStaticCompareMethod(TypeBuilder typeBuilder, Type objectType)
         {
             var staticMethodBuilder = typeBuilder.DefineStaticMethod(
-                Constants.CompareMethodName,
+                MethodName.Compare,
                 typeof(int),
                 new[]
                 {

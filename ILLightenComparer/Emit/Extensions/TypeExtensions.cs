@@ -8,7 +8,7 @@ namespace ILLightenComparer.Emit.Extensions
         public static TReturnType CreateInstance<TReturnType>(this Type type)
         {
             var factoryMethod = type
-                                .GetMethod(Constants.FactoryMethodName)
+                                .GetMethod(MethodName.Factory)
                                 .CreateDelegate<Func<TReturnType>>();
 
             return factoryMethod();

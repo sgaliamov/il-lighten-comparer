@@ -83,7 +83,7 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static MethodInfo GetCompareToMethod(Type type) =>
             type.GetMethod(
-                nameof(IComparable.CompareTo),
+                MethodName.CompareTo,
                 new[] { type });
 
         private static Type GetEnumUnderlyingType(Type type) =>
