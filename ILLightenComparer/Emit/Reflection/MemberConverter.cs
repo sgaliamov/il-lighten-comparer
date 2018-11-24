@@ -74,7 +74,7 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static bool IsString(Type type) => type == typeof(string);
 
-        private static bool IsIntegral(Type type) => SmallIntegralTypes.Contains(type);
+        private static bool IsIntegral(Type type) => SmallIntegralTypes.Contains(type.GetUnderlyingType());
 
         private sealed class Converter
         {

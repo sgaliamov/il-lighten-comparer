@@ -10,7 +10,7 @@ namespace ILLightenComparer.Tests.Samples
         public char CharField;
         public decimal DecimalField;
         public double DoubleField;
-        public SampleEnum EnumField;
+        public BigEnum EnumField;
         public short Int16Field;
         public int Int32Field;
         public long Int64Field;
@@ -28,7 +28,7 @@ namespace ILLightenComparer.Tests.Samples
         public char CharProperty { get; set; }
         public decimal DecimalProperty { get; set; }
         public double DoubleProperty { get; set; }
-        public SampleEnum EnumProperty { get; set; }
+        public BigEnum EnumProperty { get; set; }
         public short Int16Property { get; set; }
         public int Int32Property { get; set; }
         public long Int64Property { get; set; }

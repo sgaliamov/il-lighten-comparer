@@ -5,12 +5,12 @@ namespace ILLightenComparer.Tests.Samples
 {
     public struct SampleStruct : ISample
     {
-        public SampleEnum EnumField;
+        public SmallEnum EnumField;
         public int KeyField;
         public bool? NullableField;
         public string ValueField;
 
-        public SampleEnum EnumProperty { get; set; }
+        public BigEnum EnumProperty { get; set; }
         public int KeyProperty { get; set; }
         public decimal? NullableProperty { get; set; }
         public string ValueProperty { get; set; }
