@@ -35,6 +35,11 @@ namespace ILLightenComparer.Emit.Reflection
             foreach (var converter in Converters)
             {
                 var (info, memberType) = converter.Convert(memberInfo);
+                if (info == null || memberType == null)
+                {
+                    continue;
+                }
+
                 if (converter.Condition(memberType))
                 {
                     return converter.Factory(info);

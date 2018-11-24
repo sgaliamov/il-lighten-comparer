@@ -15,7 +15,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             if (member.OwnerType.IsValueType)
             {
-                var underlyingType = member.MemberType.GetUnderlyingType();
+                var underlyingType = member.ComparableType.GetUnderlyingType();
                 var local = il.DeclareLocal(underlyingType);
 
                 il.Emit(OpCodes.Ldarga_S, 1) // x = arg1
@@ -27,7 +27,7 @@ namespace ILLightenComparer.Emit.Emitters
             }
             else
             {
-                var underlyingType = member.MemberType.GetUnderlyingType();
+                var underlyingType = member.ComparableType.GetUnderlyingType();
                 var local = il.DeclareLocal(underlyingType);
 
                 il.Emit(OpCodes.Ldarg_1) // x = arg1
