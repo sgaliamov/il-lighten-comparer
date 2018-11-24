@@ -19,16 +19,10 @@ namespace ILLightenComparer.Tests.Utilities
             _random = new Random();
         }
 
-        public object Create(object request, ISpecimenContext context)
-        {
-            var type = request as Type;
-            if (type == null)
-            {
-                return new NoSpecimen();
-            }
-
-            return CreateRandom(type);
-        }
+        public object Create(object request, ISpecimenContext context) =>
+            request is Type type
+                ? CreateRandom(type)
+                : new NoSpecimen();
 
         private object CreateRandom(Type request)
         {
@@ -71,10 +65,9 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        private T? MinMax<T>(IReflect request)
-            where T : struct
+        private T? MinMax<T>(IReflect request) where T : struct
         {
-            if (!(_random.NextDouble() < _minMaxProbability))
+            if (_random.NextDouble() >= _minMaxProbability)
             {
                 return null;
             }

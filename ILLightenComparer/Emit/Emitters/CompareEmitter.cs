@@ -16,7 +16,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             il.Emit(OpCodes.Call, member.CompareToMethod);
 
-            EmitCheckToZero(il);
+            EmitCheckForZero(il);
 
             return il;
         }
@@ -27,12 +27,12 @@ namespace ILLightenComparer.Emit.Emitters
 
             il.Emit(OpCodes.Sub);
 
-            EmitCheckToZero(il);
+            EmitCheckForZero(il);
 
             return il;
         }
 
-        private static void EmitCheckToZero(ILEmitter il)
+        private static void EmitCheckForZero(ILEmitter il)
         {
             var gotoNext = il.DefineLabel();
 
