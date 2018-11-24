@@ -15,13 +15,13 @@ namespace ILLightenComparer.Emit
         private readonly AutoVisitor _autoVisitor = new AutoVisitor();
         private readonly TypeBuilderContext _context;
         private readonly MembersProvider _membersProvider;
-        private readonly CompareEmitter _visitor;
+        private readonly CompareEmitter _compareEmitter;
 
         public ComparerTypeBuilder(TypeBuilderContext context, MembersProvider membersProvider)
         {
             _context = context;
             _membersProvider = membersProvider;
-            _visitor = new CompareEmitter(_context);
+            _compareEmitter = new CompareEmitter(_context);
         }
 
         public TypeInfo Build(Type objectType)
@@ -86,7 +86,8 @@ namespace ILLightenComparer.Emit
             InitFirstLocalToKeepComparisonsResult(il);
             foreach (var member in members)
             {
-                _autoVisitor.Accept(member, _visitor, il);
+                _autoVisitor.Accept(member, _compareEmitter, il);
+                //member.Accept(_compareEmitter, il);
             }
         }
 
