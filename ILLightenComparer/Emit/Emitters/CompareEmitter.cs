@@ -1,5 +1,4 @@
 ﻿using System.Reflection.Emit;
-using ILLightenComparer.Emit.Members.Comparable;
 using ILLightenComparer.Emit.Members.Integral;
 
 namespace ILLightenComparer.Emit.Emitters
@@ -34,10 +33,9 @@ namespace ILLightenComparer.Emit.Emitters
 
         private static void EmitCheckForZero(ILEmitter il)
         {
-            var gotoNext = il.DefineLabel();
-
             il.Emit(OpCodes.Stloc_0)
               .Emit(OpCodes.Ldloc_0)
+              .DefineLabel(out var gotoNext)
               .Emit(OpCodes.Brfalse_S, gotoNext)
               .Emit(OpCodes.Ldloc_0)
               .Emit(OpCodes.Ret)

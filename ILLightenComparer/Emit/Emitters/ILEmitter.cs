@@ -37,24 +37,10 @@ namespace ILLightenComparer.Emit.Emitters
             _locals = null;
         }
 
-        public LocalBuilder DeclareLocal(Type localType) =>
-            _locals.TryGetValue(localType, out var local)
-                ? local
-                : _locals[localType] = _il.DeclareLocal(localType);
-
         public ILEmitter DeclareLocal(Type localType, out LocalBuilder local)
         {
             local = DeclareLocal(localType);
             return this;
-        }
-
-        public Label DefineLabel()
-        {
-            var label = _il.DefineLabel();
-#if DEBUG
-            _labels.Add(label);
-#endif
-            return label;
         }
 
         public ILEmitter DefineLabel(out Label label)
@@ -96,7 +82,13 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter EmitCtorCall(ConstructorInfo constructor) => EmitNew(constructor).Emit(OpCodes.Ret);
+        public ILEmitter EmitCtorCall(ConstructorInfo constructor)
+        {
+            _il.Emit(OpCodes.Newobj, constructor);
+            Debug.WriteLine($"\t\t{OpCodes.Newobj} {constructor.DisplayName()}");
+
+            return Emit(OpCodes.Ret);
+        }
 
         public ILEmitter Emit(OpCode opCode)
         {
@@ -182,13 +174,18 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        private ILEmitter EmitNew(ConstructorInfo constructorInfo)
+        private LocalBuilder DeclareLocal(Type localType) =>
+            _locals.TryGetValue(localType, out var local)
+                ? local
+                : _locals[localType] = _il.DeclareLocal(localType);
+
+        private Label DefineLabel()
         {
-            _il.Emit(OpCodes.Newobj, constructorInfo);
-
-            Debug.WriteLine($"\t\t{OpCodes.Newobj} {constructorInfo.DisplayName()}");
-
-            return this;
+            var label = _il.DefineLabel();
+#if DEBUG
+            _labels.Add(label);
+#endif
+            return label;
         }
     }
 }

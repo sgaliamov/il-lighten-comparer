@@ -11,9 +11,9 @@ namespace ILLightenComparer.Emit
 {
     internal sealed class ComparerTypeBuilder
     {
+        private readonly CompareEmitter _compareEmitter;
         private readonly TypeBuilderContext _context;
         private readonly MembersProvider _membersProvider;
-        private readonly CompareEmitter _compareEmitter;
 
         public ComparerTypeBuilder(TypeBuilderContext context, MembersProvider membersProvider)
         {
@@ -90,7 +90,7 @@ namespace ILLightenComparer.Emit
 
         private static void InitFirstLocalToKeepComparisonsResult(ILEmitter il)
         {
-            il.DeclareLocal(typeof(int)); // todo: automatically create local when needs
+            il.DeclareLocal(typeof(int), out _); // todo: automatically create local when needs
         }
 
         private static void EmitDefaultResult(ILEmitter il)
@@ -102,29 +102,27 @@ namespace ILLightenComparer.Emit
         private static void EmitReferenceComparision(ILEmitter il)
         {
             // x == y
-            var else0 = il.DefineLabel();
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Ldarg_2);
-            il.Emit(OpCodes.Bne_Un_S, else0);
-            il.Emit(OpCodes.Ldc_I4_0); // return 0
-            il.Emit(OpCodes.Ret);
-            il.MarkLabel(else0);
-
-            // y != null
-            var else1 = il.DefineLabel();
-            il.Emit(OpCodes.Ldarg_2);
-            il.Emit(OpCodes.Brtrue_S, else1);
-            il.Emit(OpCodes.Ldc_I4_1); // return 1
-            il.Emit(OpCodes.Ret);
-            il.MarkLabel(else1);
-
-            // x != null
-            var else2 = il.DefineLabel();
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Brtrue_S, else2);
-            il.Emit(OpCodes.Ldc_I4_M1); // return -1
-            il.Emit(OpCodes.Ret);
-            il.MarkLabel(else2);
+            il.Emit(OpCodes.Ldarg_1)
+              .Emit(OpCodes.Ldarg_2)
+              .DefineLabel(out var else0)
+              .Emit(OpCodes.Bne_Un_S, else0)
+              .Emit(OpCodes.Ldc_I4_0) // return 0
+              .Emit(OpCodes.Ret)
+              .MarkLabel(else0)
+              // y != null
+              .Emit(OpCodes.Ldarg_2)
+              .DefineLabel(out var else1)
+              .Emit(OpCodes.Brtrue_S, else1)
+              .Emit(OpCodes.Ldc_I4_1) // return 1
+              .Emit(OpCodes.Ret)
+              .MarkLabel(else1)
+              // x != null
+              .Emit(OpCodes.Ldarg_1)
+              .DefineLabel(out var else2)
+              .Emit(OpCodes.Brtrue_S, else2)
+              .Emit(OpCodes.Ldc_I4_M1) // return -1
+              .Emit(OpCodes.Ret)
+              .MarkLabel(else2);
         }
 
         private static void BuildBasicCompareMethod(
