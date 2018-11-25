@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members.Comparable;
 using ILLightenComparer.Emit.Members.Integral;
@@ -29,12 +28,10 @@ namespace ILLightenComparer.Emit.Emitters
             {
                 var local = il.DeclareLocal(member.ComparableType);
 
-                il.LoadArgument(1)
-                  .CallGetter(member)
+                il.LoadProperty(member, 1)
                   .EmitStore(local)
                   .EmitLoadAddressOf(local)
-                  .LoadArgument(2)
-                  .CallGetter(member);
+                  .LoadProperty(member, 2);
             }
         }
 
@@ -44,24 +41,20 @@ namespace ILLightenComparer.Emit.Emitters
             {
                 il.Emit(OpCodes.Ldarga_S, 1)
                   .Emit(OpCodes.Ldflda, member.FieldInfo)
-                  .LoadArgument(2)
-                  .Emit(OpCodes.Ldfld, member.FieldInfo);
+                  .LoadField(member, 2);
             }
             else
             {
                 il.LoadArgument(1)
                   .Emit(OpCodes.Ldflda, member.FieldInfo)
-                  .LoadArgument(2)
-                  .Emit(OpCodes.Ldfld, member.FieldInfo);
+                  .LoadField(member, 2);
             }
         }
 
         public void Visit(StringFiledMember member, ILEmitter il)
         {
-            il.LoadArgument(1)
-              .Emit(OpCodes.Ldfld, member.FieldInfo)
-              .LoadArgument(2)
-              .Emit(OpCodes.Ldfld, member.FieldInfo)
+            il.LoadField(member, 1)
+              .LoadField(member, 2)
               .Emit(OpCodes.Ldc_I4_S, (int)_context.Configuration.StringComparisonType); // todo: use short form
         }
 
@@ -76,10 +69,8 @@ namespace ILLightenComparer.Emit.Emitters
             }
             else
             {
-                il.LoadArgument(1)
-                  .CallGetter(member)
-                  .LoadArgument(2)
-                  .CallGetter(member);
+                il.LoadProperty(member, 1)
+                  .LoadProperty(member, 2);
             }
 
             il.Emit(
@@ -89,23 +80,44 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(IntegralFiledMember member, ILEmitter il)
         {
-            il.LoadArgument(1)
-              .Emit(OpCodes.Ldfld, member.FieldInfo)
-              .LoadArgument(2)
-              .Emit(OpCodes.Ldfld, member.FieldInfo);
+            il.LoadField(member, 1)
+              .LoadField(member, 2);
         }
 
         public void Visit(IntegralPropertyMember member, ILEmitter il)
         {
-            il.LoadArgument(1)
-              .CallGetter(member)
-              .LoadArgument(2)
-              .CallGetter(member);
+            il.LoadProperty(member, 1)
+              .LoadProperty(member, 2);
         }
 
         public void Visit(NullablePropertyMember member, ILEmitter il)
         {
-            throw new NotImplementedException();
+            //var hasValue = il.DeclareLocal(typeof(bool));
+
+            //il.LoadArgument(2)
+            //  .Call(member, member.HasValueMethod)
+            //  .EmitStore(hasValue)
+            //  .LoadArgument(1)
+            //  .Call(member, member.HasValueMethod)
+            //IL_000A:  call        System.Nullable<>.get_HasValue
+            //IL_000F:  brtrue.s    IL_0018
+            //IL_0011:  ldloc.0     // n2HasValue
+            //IL_0012:  brfalse.s   IL_0016
+            //IL_0014:  ldc.i4.m1   
+            //IL_0015:  ret         
+            //IL_0016:  ldc.i4.0    
+            //IL_0017:  ret         
+            //IL_0018:  ldloc.0     // n2HasValue
+            //IL_0019:  brtrue.s    IL_001D
+            //IL_001B:  ldc.i4.1    
+            //IL_001C:  ret         
+            //IL_001D:  call        System.Collections.Generic.Comparer<>.get_Default
+            //IL_0022:  ldarga.s    00 
+            //IL_0024:  call        System.Nullable<>.get_Value
+            //IL_0029:  ldarga.s    01 
+            //IL_002B:  call        System.Nullable<>.get_Value
+            //IL_0030:  callvirt    System.Collections.Generic.Comparer<>.Compare
+            //IL_0035:  ret  
         }
     }
 }
