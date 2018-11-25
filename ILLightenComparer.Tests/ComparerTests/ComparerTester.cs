@@ -7,7 +7,7 @@ using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
 
-namespace ILLightenComparer.Tests.Comparers
+namespace ILLightenComparer.Tests.ComparerTests
 {
     internal static class ComparerTester
     {

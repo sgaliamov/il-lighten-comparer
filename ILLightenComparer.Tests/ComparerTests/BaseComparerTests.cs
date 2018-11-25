@@ -9,7 +9,7 @@ using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
-namespace ILLightenComparer.Tests.Comparers
+namespace ILLightenComparer.Tests.ComparerTests
 {
     public abstract class BaseComparerTests<T>
     {

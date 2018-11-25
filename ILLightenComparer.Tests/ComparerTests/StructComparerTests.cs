@@ -5,7 +5,7 @@ using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
 using Xunit;
 
-namespace ILLightenComparer.Tests.Comparers
+namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class StructComparerTests : BaseComparerTests<SampleStruct>
     {
