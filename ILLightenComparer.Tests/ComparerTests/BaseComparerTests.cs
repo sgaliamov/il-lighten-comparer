@@ -25,7 +25,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Comparison_Wrong_Type_Throw_Exception()
         {
-            Assert.Throws<InvalidCastException>(() => BasicComparer.Compare(new TestObject(), new TestObject()));
+            Assert.Throws<InvalidCastException>(() => BasicComparer.Compare(new DummyObject(), new DummyStruct()));
         }
 
         [Fact]
