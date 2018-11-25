@@ -42,6 +42,12 @@ namespace ILLightenComparer.Emit.Emitters
                 ? local
                 : _locals[localType] = _il.DeclareLocal(localType);
 
+        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local)
+        {
+            local = DeclareLocal(localType);
+            return this;
+        }
+
         public Label DefineLabel()
         {
             var label = _il.DefineLabel();
@@ -49,6 +55,12 @@ namespace ILLightenComparer.Emit.Emitters
             _labels.Add(label);
 #endif
             return label;
+        }
+
+        public ILEmitter DefineLabel(out Label label)
+        {
+            label = DefineLabel();
+            return this;
         }
 
         public ILEmitter MarkLabel(Label label)
@@ -117,27 +129,13 @@ namespace ILLightenComparer.Emit.Emitters
         {
             switch (index)
             {
-                case 0:
-                    Emit(OpCodes.Ldarg_0);
-                    return this;
-
-                case 1:
-                    Emit(OpCodes.Ldarg_1);
-                    return this;
-
-                case 2:
-                    Emit(OpCodes.Ldarg_2);
-                    return this;
-
-                case 3:
-                    Emit(OpCodes.Ldarg_3);
-                    return this;
-
+                case 0: return Emit(OpCodes.Ldarg_0);
+                case 1: return Emit(OpCodes.Ldarg_1);
+                case 2: return Emit(OpCodes.Ldarg_2);
+                case 3: return Emit(OpCodes.Ldarg_3);
                 default:
                     var opCode = index <= ShortFormLimit ? OpCodes.Ldarg_S : OpCodes.Ldarg;
-                    Debug.WriteLine($"\t\t{opCode} {index}");
-                    Emit(opCode, index);
-                    return this;
+                    return Emit(opCode, index);
             }
         }
 
@@ -162,21 +160,10 @@ namespace ILLightenComparer.Emit.Emitters
         {
             switch (local.LocalIndex)
             {
-                case 0:
-                    Emit(OpCodes.Stloc_0);
-                    return this;
-
-                case 1:
-                    Emit(OpCodes.Stloc_1);
-                    return this;
-
-                case 2:
-                    Emit(OpCodes.Stloc_2);
-                    return this;
-
-                case 3:
-                    Emit(OpCodes.Stloc_3);
-                    return this;
+                case 0: return Emit(OpCodes.Stloc_0);
+                case 1: return Emit(OpCodes.Stloc_1);
+                case 2: return Emit(OpCodes.Stloc_2);
+                case 3: return Emit(OpCodes.Stloc_3);
 
                 default:
                     var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Stloc_S : OpCodes.Stloc;
