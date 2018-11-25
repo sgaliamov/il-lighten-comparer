@@ -7,9 +7,6 @@ namespace ILLightenComparer.Emit.Extensions
 {
     internal static class ILEmitterExtensions
     {
-        public static ILEmitter CallGetter(this ILEmitter il, PropertyMember member) =>
-            il.Call(member, member.GetterMethod);
-
         public static ILEmitter Call(
             this ILEmitter il,
             Member member,
@@ -34,7 +31,7 @@ namespace ILLightenComparer.Emit.Extensions
                 il.LoadArgument(argumentIndex);
             }
 
-            return il.CallGetter(member);
+            return il.Call(member, member.GetterMethod);
         }
 
         public static ILEmitter LoadField(
