@@ -11,30 +11,6 @@ namespace ILLightenComparer.Emit.Emitters
 
         public StackEmitter(TypeBuilderContext context) => _context = context;
 
-        public void Visit(ComparablePropertyMember member, ILEmitter il)
-        {
-            if (member.OwnerType.IsValueType)
-            {
-                var local = il.DeclareLocal(member.ComparableType);
-
-                il.Emit(OpCodes.Ldarga_S, 1)
-                  .CallGetter(member)
-                  .EmitStore(local)
-                  .EmitLoadAddressOf(local)
-                  .Emit(OpCodes.Ldarga_S, 2)
-                  .CallGetter(member);
-            }
-            else
-            {
-                var local = il.DeclareLocal(member.ComparableType);
-
-                il.LoadProperty(member, 1)
-                  .EmitStore(local)
-                  .EmitLoadAddressOf(local)
-                  .LoadProperty(member, 2);
-            }
-        }
-
         public void Visit(ComparableFieldMember member, ILEmitter il)
         {
             if (member.OwnerType.IsValueType)
@@ -51,6 +27,15 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
+        public void Visit(ComparablePropertyMember member, ILEmitter il)
+        {
+            il.LoadProperty(member, 1)
+              .DeclareLocal(member.ComparableType, out var local)
+              .EmitStore(local)
+              .EmitLoadAddressOf(local)
+              .LoadProperty(member, 2);
+        }
+
         public void Visit(StringFiledMember member, ILEmitter il)
         {
             il.LoadField(member, 1)
@@ -60,22 +45,11 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(StringPropertyMember member, ILEmitter il)
         {
-            if (member.OwnerType.IsValueType)
-            {
-                il.Emit(OpCodes.Ldarga_S, 1)
-                  .CallGetter(member)
-                  .Emit(OpCodes.Ldarga_S, 2)
-                  .CallGetter(member);
-            }
-            else
-            {
-                il.LoadProperty(member, 1)
-                  .LoadProperty(member, 2);
-            }
-
-            il.Emit(
-                OpCodes.Ldc_I4_S,
-                (int)_context.Configuration.StringComparisonType); // todo: use short form
+            il.LoadProperty(member, 1)
+              .LoadProperty(member, 2)
+              .Emit(
+                  OpCodes.Ldc_I4_S,
+                  (int)_context.Configuration.StringComparisonType); // todo: use short form
         }
 
         public void Visit(IntegralFiledMember member, ILEmitter il)
