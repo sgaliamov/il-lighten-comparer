@@ -23,9 +23,19 @@ namespace ILLightenComparer.Emit.Extensions
         public static ILEmitter LoadProperty(
             this ILEmitter il,
             PropertyMember member,
-            ushort argumentIndex) =>
-            il.LoadArgument(argumentIndex)
-              .CallGetter(member);
+            ushort argumentIndex)
+        {
+            if (member.OwnerType.IsValueType)
+            {
+                il.LoadAddress(argumentIndex);
+            }
+            else
+            {
+                il.LoadArgument(argumentIndex);
+            }
+
+            return il.CallGetter(member);
+        }
 
         public static ILEmitter LoadField(
             this ILEmitter il,

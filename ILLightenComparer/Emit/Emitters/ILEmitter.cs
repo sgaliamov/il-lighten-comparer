@@ -141,6 +141,12 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
+        public ILEmitter LoadAddress(ushort argumentIndex)
+        {
+            var opCode = argumentIndex <= ShortFormLimit ? OpCodes.Ldarga_S : OpCodes.Ldarga;
+            return Emit(opCode, argumentIndex);
+        }
+
         public ILEmitter EmitLoadAddressOf(LocalBuilder local)
         {
             var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
