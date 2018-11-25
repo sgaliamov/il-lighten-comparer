@@ -7,20 +7,14 @@ namespace ILLightenComparer.Emit.Extensions
 {
     internal static class ILEmitterExtensions
     {
-        public static ILEmitter Call(
-            this ILEmitter il,
-            Member member,
-            MethodInfo methodInfo) =>
+        public static ILEmitter Call(this ILEmitter il, Member member, MethodInfo methodInfo) =>
             il.Emit(
                 member.OwnerType.IsValueType || member.OwnerType.IsSealed
                     ? OpCodes.Call
                     : OpCodes.Callvirt,
                 methodInfo);
 
-        public static ILEmitter LoadProperty(
-            this ILEmitter il,
-            PropertyMember member,
-            ushort argumentIndex)
+        public static ILEmitter LoadProperty(this ILEmitter il, PropertyMember member, ushort argumentIndex)
         {
             if (member.OwnerType.IsValueType)
             {
@@ -34,11 +28,22 @@ namespace ILLightenComparer.Emit.Extensions
             return il.Call(member, member.GetterMethod);
         }
 
-        public static ILEmitter LoadField(
-            this ILEmitter il,
-            FieldMember member,
-            ushort argumentIndex) =>
+        public static ILEmitter LoadField(this ILEmitter il, FieldMember member, ushort argumentIndex) =>
             il.LoadArgument(argumentIndex)
               .Emit(OpCodes.Ldfld, member.FieldInfo);
+
+        public static ILEmitter LoadFieldAddress(this ILEmitter il, FieldMember member, ushort argumentIndex)
+        {
+            if (member.OwnerType.IsValueType)
+            {
+                il.LoadAddress(argumentIndex);
+            }
+            else
+            {
+                il.LoadArgument(argumentIndex);
+            }
+
+            return il.Emit(OpCodes.Ldflda, member.FieldInfo);
+        }
     }
 }

@@ -13,18 +13,8 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(ComparableFieldMember member, ILEmitter il)
         {
-            if (member.OwnerType.IsValueType)
-            {
-                il.Emit(OpCodes.Ldarga_S, 1)
-                  .Emit(OpCodes.Ldflda, member.FieldInfo)
-                  .LoadField(member, 2);
-            }
-            else
-            {
-                il.LoadArgument(1)
-                  .Emit(OpCodes.Ldflda, member.FieldInfo)
-                  .LoadField(member, 2);
-            }
+            il.LoadFieldAddress(member, 1)
+              .LoadField(member, 2);
         }
 
         public void Visit(ComparablePropertyMember member, ILEmitter il)
@@ -38,18 +28,20 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(StringFiledMember member, ILEmitter il)
         {
+            var comparisonType = (int)_context.Configuration.StringComparisonType;
+
             il.LoadField(member, 1)
               .LoadField(member, 2)
-              .Emit(OpCodes.Ldc_I4_S, (int)_context.Configuration.StringComparisonType); // todo: use short form
+              .Emit(OpCodes.Ldc_I4_S, comparisonType); // todo: use short form
         }
 
         public void Visit(StringPropertyMember member, ILEmitter il)
         {
+            var comparisonType = (int)_context.Configuration.StringComparisonType;
+
             il.LoadProperty(member, 1)
               .LoadProperty(member, 2)
-              .Emit(
-                  OpCodes.Ldc_I4_S,
-                  (int)_context.Configuration.StringComparisonType); // todo: use short form
+              .Emit(OpCodes.Ldc_I4_S, comparisonType); // todo: use short form
         }
 
         public void Visit(IntegralFiledMember member, ILEmitter il)
