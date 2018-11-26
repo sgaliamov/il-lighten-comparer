@@ -15,17 +15,20 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static Type GetUnderlyingType(this Type type)
         {
-            if (type.IsEnum)
+            while (true)
             {
-                return Enum.GetUnderlyingType(type);
-            }
+                if (type.IsEnum)
+                {
+                    return Enum.GetUnderlyingType(type);
+                }
 
-            if (type.IsNullable())
-            {
-                return type.GetGenericArguments()[0];
-            }
+                if (!type.IsNullable())
+                {
+                    return type;
+                }
 
-            return type;
+                type = type.GetGenericArguments()[0];
+            }
         }
 
         public static bool IsNullable(this Type type) =>

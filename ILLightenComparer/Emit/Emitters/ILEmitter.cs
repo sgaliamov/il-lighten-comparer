@@ -23,10 +23,10 @@ namespace ILLightenComparer.Emit.Emitters
                 Debug.WriteLine("\t.locals init (");
                 foreach (var item in _locals)
                 {
-                    Debug.WriteLine($"\t\t[{item.LocalIndex}] {item.LocalType?.Name}");
+                    Debug.WriteLine($"\t\t[{item.LocalIndex}] {item.LocalType}");
                 }
 
-                Debug.WriteLine("\t)\n");
+                Debug.WriteLine("\t)");
             }
 #endif
             _il = null;
@@ -150,12 +150,11 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Branch(OpCode opCode, out Label label)
         {
-            if (opCode.OperandType != OperandType.InlineBrTarget
-                || opCode.OperandType == OperandType.ShortInlineBrTarget
-                || opCode.FlowControl != FlowControl.Branch
-                || opCode.FlowControl != FlowControl.Cond_Branch)
+            if (opCode.FlowControl != FlowControl.Branch
+                && opCode.FlowControl != FlowControl.Cond_Branch)
             {
-                throw new ArgumentOutOfRangeException(nameof(opCode), "Only a branch instruction is allowed.");
+                throw new ArgumentOutOfRangeException(nameof(opCode),
+                    $"Only a branch instruction is allowed. OpCode: {opCode}.");
             }
 
             return DefineLabel(out label).Emit(opCode, label);
@@ -197,7 +196,7 @@ namespace ILLightenComparer.Emit.Emitters
 
                 default:
                     var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Stloc_S : OpCodes.Stloc;
-                    Debug.WriteLine($"\t\t{OpCodes.Stloc} {local.LocalIndex}");
+                    Debug.WriteLine($"\t\t{opCode} {local.LocalIndex}");
                     _il.Emit(opCode, local);
                     return this;
             }
@@ -214,17 +213,17 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter TempLocal(Type localType, out LocalBuilder local)
         {
-            local = TempLocal(localType);
+            if (_tempLocals.TryGetValue(localType, out local))
+            {
+                return this;
+            }
+
+            local = _tempLocals[localType] = _il.DeclareLocal(localType);
 #if DEBUG
             _locals.Add(local);
 #endif
             return this;
         }
-
-        private LocalBuilder TempLocal(Type localType) =>
-            _tempLocals.TryGetValue(localType, out var local)
-                ? local
-                : _tempLocals[localType] = _il.DeclareLocal(localType);
 
 #if DEBUG
         private readonly List<Label> _labels = new List<Label>();

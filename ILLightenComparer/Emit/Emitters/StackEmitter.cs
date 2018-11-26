@@ -20,7 +20,7 @@ namespace ILLightenComparer.Emit.Emitters
         public void Visit(ComparablePropertyMember member, ILEmitter il)
         {
             il.LoadProperty(member, 1)
-              .TempLocal(member.GetterMethod.ReturnType, out var local)
+              .TempLocal(member.MemberType.GetUnderlyingType(), out var local)
               .Store(local)
               .LoadAddress(local)
               .LoadProperty(member, 2);
@@ -58,7 +58,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(NullablePropertyMember member, ILEmitter il)
         {
-            var propertyType = member.GetterMethod.ReturnType;
+            var propertyType = member.MemberType;
 
             il.LoadProperty(member, 2) // var n2 = &arg2
               .DeclareLocal(propertyType, out var n2)
@@ -97,6 +97,9 @@ namespace ILLightenComparer.Emit.Emitters
               .MarkLabel(getValues)
               .LoadAddress(n1)
               .Call(propertyType, member.GetValueMethod)
+              .TempLocal(member.MemberType.GetUnderlyingType(), out var local)
+              .Store(local)
+              .LoadAddress(local)
               .LoadAddress(n2)
               .Call(propertyType, member.GetValueMethod);
         }
