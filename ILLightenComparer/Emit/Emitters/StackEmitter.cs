@@ -19,7 +19,10 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(ComparablePropertyMember member, ILEmitter il)
         {
-            il.LoadPropertyAddress(member, 1)
+            il.LoadProperty(member, 1)
+              .TempLocal(member.GetterMethod.ReturnType, out var local)
+              .Store(local)
+              .LoadAddress(local)
               .LoadProperty(member, 2);
         }
 
@@ -55,20 +58,28 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(NullablePropertyMember member, ILEmitter il)
         {
-            il.LoadPropertyAddress(member, 2) // var n2 = arg2 
-              // var secondHasValue = n2.HasValue
-              .Call(member, member.HasValueMethod)
+            var propertyType = member.GetterMethod.ReturnType;
+
+            il.LoadProperty(member, 2) // var n2 = &arg2
+              .DeclareLocal(propertyType, out var n2)
+              .Store(n2)
+              .LoadAddress(n2)
+              // var secondHasValue = n2->HasValue
+              .Call(propertyType, member.HasValueMethod)
               .TempLocal(typeof(bool), out var secondHasValue)
               .Store(secondHasValue)
-              // n1 = arg1
-              .LoadPropertyAddress(member, 1)
-              .Call(member, member.HasValueMethod)
-              // if n1.HasValue goto firstHasValue
+              // var n1 = &arg1
+              .LoadProperty(member, 1)
+              .DeclareLocal(propertyType, out var n1)
+              .Store(n1)
+              .LoadAddress(n1)
+              // if n1->HasValue goto firstHasValue
+              .Call(propertyType, member.HasValueMethod)
               .Branch(OpCodes.Brtrue_S, out var firstHasValue)
-              // if n2.HasValue goto returnZero
+              // if n2->HasValue goto returnZero
               .LoadLocal(secondHasValue)
               .Branch(OpCodes.Brfalse_S, out var returnZero)
-              // return -1
+              // else return -1
               .Emit(OpCodes.Ldc_I4_M1)
               .Emit(OpCodes.Ret)
               // returnZero: return 0
@@ -84,8 +95,10 @@ namespace ILLightenComparer.Emit.Emitters
               .Emit(OpCodes.Ret)
               // getValues: load values
               .MarkLabel(getValues)
-              .Emit(OpCodes.Call, member.GetValueMethod)
-              .Emit(OpCodes.Call, member.GetValueMethod);
+              .LoadAddress(n1)
+              .Call(propertyType, member.GetValueMethod)
+              .LoadAddress(n2)
+              .Call(propertyType, member.GetValueMethod);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace ILLightenComparer.Emit.Extensions
     {
         public static ILEmitter CreateILEmitter(this MethodBuilder methodBuilder)
         {
-            Debug.WriteLine($"{methodBuilder.DisplayName()}");
+            Debug.WriteLine($"\n{methodBuilder.DisplayName()}");
             return new ILEmitter(methodBuilder.GetILGenerator());
         }
     }
