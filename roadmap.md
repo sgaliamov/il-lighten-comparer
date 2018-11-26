@@ -23,11 +23,13 @@
 - [x] fixture generates Max and Min values
 - [X] fixture generates nulls
 - [x] ~~try to implement auto visitor~~ - moved to a separate project, to mush extra complexity
-- [ ] compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
+- [ ] compare nullable
 
 ## Phase 2 Hierarchical objects
 
 - [ ] FlattenHierarchy
+- [ ] nested object
+- [ ] nested struct
 - [ ] detect cycles (check graph theory)
 - [ ] abstract member comparison
 - [ ] object member comparison?
