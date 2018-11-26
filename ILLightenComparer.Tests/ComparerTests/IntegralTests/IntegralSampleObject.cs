@@ -1,16 +1,23 @@
 ﻿using System.Collections.Generic;
-using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
 {
     public class IntegralSampleObject
     {
+        public byte ByteField;
         public char CharField;
-        public SmallEnum EnumField;
-        public short Field;
+        public sbyte SByteField;
+        public short ShortField;
+        public ushort UShortField;
+
+        public byte ByteProperty { get; set; }
         public char CharProperty { get; set; }
-        public SmallEnum EnumProperty { get; set; }
-        public short Property { get; set; }
+        public sbyte SByteProperty { get; set; }
+        public short ShortProperty { get; set; }
+        public ushort UShortProperty { get; set; }
+
+        public static IComparer<IntegralSampleObject> Comparer { get; } =
+            new IntegralSampleObjectRelationalComparer();
 
         private sealed class IntegralSampleObjectRelationalComparer : IComparer<IntegralSampleObject>
         {
@@ -31,22 +38,40 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
                     return -1;
                 }
 
+                var byteFieldComparison = x.ByteField.CompareTo(y.ByteField);
+                if (byteFieldComparison != 0)
+                {
+                    return byteFieldComparison;
+                }
+
                 var charFieldComparison = x.CharField.CompareTo(y.CharField);
                 if (charFieldComparison != 0)
                 {
                     return charFieldComparison;
                 }
 
-                var enumFieldComparison = x.EnumField.CompareTo(y.EnumField);
-                if (enumFieldComparison != 0)
+                var sByteFieldComparison = x.SByteField.CompareTo(y.SByteField);
+                if (sByteFieldComparison != 0)
                 {
-                    return enumFieldComparison;
+                    return sByteFieldComparison;
                 }
 
-                var fieldComparison = x.Field.CompareTo(y.Field);
-                if (fieldComparison != 0)
+                var shortFieldComparison = x.ShortField.CompareTo(y.ShortField);
+                if (shortFieldComparison != 0)
                 {
-                    return fieldComparison;
+                    return shortFieldComparison;
+                }
+
+                var uShortFieldComparison = x.UShortField.CompareTo(y.UShortField);
+                if (uShortFieldComparison != 0)
+                {
+                    return uShortFieldComparison;
+                }
+
+                var bytePropertyComparison = x.ByteProperty.CompareTo(y.ByteProperty);
+                if (bytePropertyComparison != 0)
+                {
+                    return bytePropertyComparison;
                 }
 
                 var charPropertyComparison = x.CharProperty.CompareTo(y.CharProperty);
@@ -55,16 +80,20 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
                     return charPropertyComparison;
                 }
 
-                var enumPropertyComparison = x.EnumProperty.CompareTo(y.EnumProperty);
-                if (enumPropertyComparison != 0)
+                var sBytePropertyComparison = x.SByteProperty.CompareTo(y.SByteProperty);
+                if (sBytePropertyComparison != 0)
                 {
-                    return enumPropertyComparison;
+                    return sBytePropertyComparison;
                 }
 
-                return x.Property.CompareTo(y.Property);
+                var shortPropertyComparison = x.ShortProperty.CompareTo(y.ShortProperty);
+                if (shortPropertyComparison != 0)
+                {
+                    return shortPropertyComparison;
+                }
+
+                return x.UShortProperty.CompareTo(y.UShortProperty);
             }
         }
-
-        public static IComparer<IntegralSampleObject> Comparer { get; } = new IntegralSampleObjectRelationalComparer();
     }
 }
