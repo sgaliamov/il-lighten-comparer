@@ -4,7 +4,9 @@ namespace ILLightenComparer.Emit.Members
 {
     internal abstract class FieldMember : Member
     {
-        protected FieldMember(FieldInfo fieldInfo) : base(fieldInfo.DeclaringType) => FieldInfo = fieldInfo;
+        protected FieldMember(FieldInfo fieldInfo)
+            : base(fieldInfo.FieldType, fieldInfo.DeclaringType) =>
+            FieldInfo = fieldInfo;
 
         public FieldInfo FieldInfo { get; }
     }
