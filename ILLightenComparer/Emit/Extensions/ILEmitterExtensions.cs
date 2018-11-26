@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Members;
 
@@ -7,13 +6,6 @@ namespace ILLightenComparer.Emit.Extensions
 {
     internal static class ILEmitterExtensions
     {
-        public static ILEmitter Call(this ILEmitter il, Member member, MethodInfo methodInfo) =>
-            il.Emit(
-                member.OwnerType.IsValueType || member.OwnerType.IsSealed
-                    ? OpCodes.Call
-                    : OpCodes.Callvirt,
-                methodInfo);
-
         public static ILEmitter LoadProperty(this ILEmitter il, PropertyMember member, ushort argumentIndex)
         {
             if (member.OwnerType.IsValueType)
@@ -25,14 +17,8 @@ namespace ILLightenComparer.Emit.Extensions
                 il.LoadArgument(argumentIndex);
             }
 
-            return il.Call(member, member.GetterMethod);
+            return il.Call(member.OwnerType, member.GetterMethod);
         }
-
-        public static ILEmitter LoadPropertyAddress(this ILEmitter il, PropertyMember member, ushort argumentIndex) =>
-            il.LoadProperty(member, argumentIndex)
-              .TempLocal(member.GetterMethod.ReturnType, out var local)
-              .Store(local)
-              .LoadAddress(local);
 
         public static ILEmitter LoadField(this ILEmitter il, FieldMember member, ushort argumentIndex) =>
             il.LoadArgument(argumentIndex)

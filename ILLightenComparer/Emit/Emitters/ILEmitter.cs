@@ -10,10 +10,6 @@ namespace ILLightenComparer.Emit.Emitters
     internal sealed class ILEmitter : IDisposable
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
-#if DEBUG
-        private readonly List<Label> _labels = new List<Label>();
-        private readonly List<LocalBuilder> _locals = new List<LocalBuilder>();
-#endif
         private ILGenerator _il;
         private Dictionary<Type, LocalBuilder> _tempLocals = new Dictionary<Type, LocalBuilder>();
 
@@ -100,6 +96,15 @@ namespace ILLightenComparer.Emit.Emitters
             _il.Emit(opCode, field);
 
             return this;
+        }
+
+        public ILEmitter Call(Type methodOwner, MethodInfo methodInfo)
+        {
+            var opCode = methodOwner == null || methodOwner.IsValueType || methodOwner.IsSealed
+                ? OpCodes.Call
+                : OpCodes.Callvirt;
+
+            return Emit(opCode, methodInfo);
         }
 
         public ILEmitter EmitCast(Type objectType)
@@ -217,5 +222,10 @@ namespace ILLightenComparer.Emit.Emitters
             _tempLocals.TryGetValue(localType, out var local)
                 ? local
                 : _tempLocals[localType] = _il.DeclareLocal(localType);
+
+#if DEBUG
+        private readonly List<Label> _labels = new List<Label>();
+        private readonly List<LocalBuilder> _locals = new List<LocalBuilder>();
+#endif
     }
 }
