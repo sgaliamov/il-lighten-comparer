@@ -28,6 +28,12 @@ namespace ILLightenComparer.Emit.Extensions
             return il.Call(member, member.GetterMethod);
         }
 
+        public static ILEmitter LoadPropertyAddress(this ILEmitter il, PropertyMember member, ushort argumentIndex) =>
+            il.LoadProperty(member, argumentIndex)
+              .DeclareLocal(member.GetterMethod.ReturnType.GetUnderlyingType(), out var local)
+              .Store(local)
+              .LoadAddress(local);
+
         public static ILEmitter LoadField(this ILEmitter il, FieldMember member, ushort argumentIndex) =>
             il.LoadArgument(argumentIndex)
               .Emit(OpCodes.Ldfld, member.FieldInfo);
