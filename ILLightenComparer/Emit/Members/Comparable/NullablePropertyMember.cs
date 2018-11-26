@@ -13,9 +13,9 @@ namespace ILLightenComparer.Emit.Members.Comparable
         {
             var propertyType = propertyInfo.PropertyType;
 
-            ComparableType = propertyType.GetUnderlyingType();
-
-            CompareToMethod = ComparableType.GetCompareToMethod()
+            CompareToMethod = propertyType
+                              .GetUnderlyingType()
+                              .GetCompareToMethod()
                               ?? throw new ArgumentException(
                                   $"{propertyInfo.DisplayName()} does not have {MethodName.CompareTo} method.");
 
@@ -28,7 +28,6 @@ namespace ILLightenComparer.Emit.Members.Comparable
                                  $"{propertyInfo.DisplayName()} does not have {MethodName.Value} property.");
         }
 
-        public Type ComparableType { get; }
         public MethodInfo GetValueMethod { get; }
         public MethodInfo HasValueMethod { get; }
         public MethodInfo CompareToMethod { get; }

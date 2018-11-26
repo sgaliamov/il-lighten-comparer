@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members.Comparable;
@@ -20,6 +19,7 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(ushort)
         });
 
+        // todo: split on two collections and use IncludeFields setting
         private static readonly Converter[] Converters =
         {
             new Converter(GetPropertyType, IsString, info => new StringPropertyMember((PropertyInfo)info)),
