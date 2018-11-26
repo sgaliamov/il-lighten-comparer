@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
 {
@@ -6,18 +7,17 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
     {
         public byte ByteField;
         public char CharField;
+        public SmallEnum EnumField;
         public sbyte SByteField;
         public short ShortField;
         public ushort UShortField;
 
         public byte ByteProperty { get; set; }
         public char CharProperty { get; set; }
+        public SmallEnum EnumProperty { get; set; }
         public sbyte SByteProperty { get; set; }
         public short ShortProperty { get; set; }
         public ushort UShortProperty { get; set; }
-
-        public static IComparer<IntegralSampleObject> Comparer { get; } =
-            new IntegralSampleObjectRelationalComparer();
 
         private sealed class IntegralSampleObjectRelationalComparer : IComparer<IntegralSampleObject>
         {
@@ -50,6 +50,12 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
                     return charFieldComparison;
                 }
 
+                var enumFieldComparison = x.EnumField.CompareTo(y.EnumField);
+                if (enumFieldComparison != 0)
+                {
+                    return enumFieldComparison;
+                }
+
                 var sByteFieldComparison = x.SByteField.CompareTo(y.SByteField);
                 if (sByteFieldComparison != 0)
                 {
@@ -80,6 +86,12 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
                     return charPropertyComparison;
                 }
 
+                var enumPropertyComparison = x.EnumProperty.CompareTo(y.EnumProperty);
+                if (enumPropertyComparison != 0)
+                {
+                    return enumPropertyComparison;
+                }
+
                 var sBytePropertyComparison = x.SByteProperty.CompareTo(y.SByteProperty);
                 if (sBytePropertyComparison != 0)
                 {
@@ -95,5 +107,7 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
                 return x.UShortProperty.CompareTo(y.UShortProperty);
             }
         }
+
+        public static IComparer<IntegralSampleObject> Comparer { get; } = new IntegralSampleObjectRelationalComparer();
     }
 }
