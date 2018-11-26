@@ -1,18 +1,22 @@
 ﻿using System.Collections.Generic;
+using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 {
     public class ComparableSampleObject
     {
+        public BigEnum EnumField;
         public int Field;
+        public BigEnum EnumProperty { get; set; }
         public int Property { get; set; }
 
         public static IComparer<ComparableSampleObject> Comparer { get; } =
-            new FieldPropertyRelationalComparer();
+            new ComparableSampleObjectRelationalComparer();
 
-        public override string ToString() => $"{nameof(Field)}: {Field}, {nameof(Property)}: {Property}";
+        public override string ToString() =>
+            $"{nameof(EnumField)}: {EnumField}, {nameof(Field)}: {Field}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(Property)}: {Property}";
 
-        private sealed class FieldPropertyRelationalComparer : IComparer<ComparableSampleObject>
+        private sealed class ComparableSampleObjectRelationalComparer : IComparer<ComparableSampleObject>
         {
             public int Compare(ComparableSampleObject x, ComparableSampleObject y)
             {
@@ -31,10 +35,22 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
                     return -1;
                 }
 
+                var enumFieldComparison = x.EnumField.CompareTo(y.EnumField);
+                if (enumFieldComparison != 0)
+                {
+                    return enumFieldComparison;
+                }
+
                 var fieldComparison = x.Field.CompareTo(y.Field);
                 if (fieldComparison != 0)
                 {
                     return fieldComparison;
+                }
+
+                var enumPropertyComparison = x.EnumProperty.CompareTo(y.EnumProperty);
+                if (enumPropertyComparison != 0)
+                {
+                    return enumPropertyComparison;
                 }
 
                 return x.Property.CompareTo(y.Property);

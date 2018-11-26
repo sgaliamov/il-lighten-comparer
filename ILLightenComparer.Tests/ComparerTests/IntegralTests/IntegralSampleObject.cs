@@ -6,16 +6,12 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
     public class IntegralSampleObject
     {
         public SmallEnum EnumField;
-        public int Field;
-
+        public short Field;
         public SmallEnum EnumProperty { get; set; }
-        public int Property { get; set; }
+        public short Property { get; set; }
 
         public static IComparer<IntegralSampleObject> Comparer { get; } =
             new IntegralSampleObjectRelationalComparer();
-
-        public override string ToString() =>
-            $"{nameof(EnumField)}: {EnumField}, {nameof(Field)}: {Field}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(Property)}: {Property}";
 
         private sealed class IntegralSampleObjectRelationalComparer : IComparer<IntegralSampleObject>
         {

@@ -6,13 +6,9 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
     public struct IntegralSampleStruct
     {
         public SmallEnum EnumField;
-        public int Field;
-
+        public short Field;
         public SmallEnum EnumProperty { get; set; }
-        public int Property { get; set; }
-
-        public override string ToString() =>
-            $"{nameof(EnumField)}: {EnumField}, {nameof(Field)}: {Field}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(Property)}: {Property}";
+        public short Property { get; set; }
 
         private sealed class IntegralSampleStructRelationalComparer : IComparer<IntegralSampleStruct>
         {
