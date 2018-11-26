@@ -50,9 +50,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
                     oneCurrent
                         .Should()
-                        .BeEquivalentTo(
-                            otherCurrent,
-                            $"object \n{{\n\t{oneCurrent}\n}} must be equal to\n{{\n\t{otherCurrent}\n}}");
+                        .BeEquivalentTo(otherCurrent);
                 }
 
                 enumeratorOne.MoveNext().Should().BeFalse();

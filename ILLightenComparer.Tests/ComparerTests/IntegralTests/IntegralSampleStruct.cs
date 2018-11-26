@@ -5,8 +5,10 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
 {
     public struct IntegralSampleStruct
     {
+        public char CharField;
         public SmallEnum EnumField;
         public short Field;
+        public char CharProperty { get; set; }
         public SmallEnum EnumProperty { get; set; }
         public short Property { get; set; }
 
@@ -14,25 +16,37 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
         {
             public int Compare(IntegralSampleStruct x, IntegralSampleStruct y)
             {
-                var enumFieldComparison = x.EnumField - y.EnumField;
+                var charFieldComparison = x.CharField.CompareTo(y.CharField);
+                if (charFieldComparison != 0)
+                {
+                    return charFieldComparison;
+                }
+
+                var enumFieldComparison = x.EnumField.CompareTo(y.EnumField);
                 if (enumFieldComparison != 0)
                 {
                     return enumFieldComparison;
                 }
 
-                var fieldComparison = x.Field - y.Field;
+                var fieldComparison = x.Field.CompareTo(y.Field);
                 if (fieldComparison != 0)
                 {
                     return fieldComparison;
                 }
 
-                var enumPropertyComparison = x.EnumProperty - y.EnumProperty;
+                var charPropertyComparison = x.CharProperty.CompareTo(y.CharProperty);
+                if (charPropertyComparison != 0)
+                {
+                    return charPropertyComparison;
+                }
+
+                var enumPropertyComparison = x.EnumProperty.CompareTo(y.EnumProperty);
                 if (enumPropertyComparison != 0)
                 {
                     return enumPropertyComparison;
                 }
 
-                return x.Property - y.Property;
+                return x.Property.CompareTo(y.Property);
             }
         }
 
