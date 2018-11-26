@@ -18,7 +18,7 @@ namespace ILLightenComparer.Emit.Extensions
         {
             if (member.OwnerType.IsValueType)
             {
-                il.LoadAddress(argumentIndex);
+                il.LoadArgumentAddress(argumentIndex);
             }
             else
             {
@@ -36,7 +36,7 @@ namespace ILLightenComparer.Emit.Extensions
         {
             if (member.OwnerType.IsValueType)
             {
-                il.LoadAddress(argumentIndex);
+                il.LoadArgumentAddress(argumentIndex);
             }
             else
             {

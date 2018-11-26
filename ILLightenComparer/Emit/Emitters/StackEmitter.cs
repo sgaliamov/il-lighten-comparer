@@ -21,8 +21,8 @@ namespace ILLightenComparer.Emit.Emitters
         {
             il.LoadProperty(member, 1)
               .DeclareLocal(member.ComparableType, out var local)
-              .EmitStore(local)
-              .EmitLoadAddressOf(local)
+              .Store(local)
+              .LoadAddress(local)
               .LoadProperty(member, 2);
         }
 

@@ -16,7 +16,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     [RankColumn]
     public class ComparersBenchmark
     {
-        private const int N = 1000;
+        private const int N = 10000;
 
         private static readonly IComparer<TestObject> Native = TestObject.TestObjectComparer;
 
