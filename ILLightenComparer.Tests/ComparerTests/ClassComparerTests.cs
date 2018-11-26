@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
@@ -27,16 +27,12 @@ namespace ILLightenComparer.Tests.ComparerTests
             TypedComparer.Compare(obj, default).Should().BeGreaterThan(0);
         }
 
-        private readonly ComparersBuilder _comparersBuilder =
-            new ComparersBuilder()
-                .SetConfiguration(
-                    new CompareConfiguration
-                    {
-                        IncludeFields = true
-                    });
+        [Fact]
+        public void Comparison_Wrong_Type_Throw_Exception()
+        {
+            Assert.Throws<InvalidCastException>(() => BasicComparer.Compare(new DummyObject(), new DummyObject()));
+        }
 
-        protected override IComparer BasicComparer => _comparersBuilder.CreateComparer(typeof(SampleObject));
-        protected override IComparer<SampleObject> TypedComparer => _comparersBuilder.CreateComparer<SampleObject>();
         protected override IComparer<SampleObject> ReferenceComparer { get; } = SampleObject.SampleObjectComparer;
     }
 }

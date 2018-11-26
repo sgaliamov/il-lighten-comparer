@@ -5,7 +5,6 @@ using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
-using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -20,12 +19,6 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             BasicComparer.Compare(obj, obj).Should().Be(0);
             TypedComparer.Compare(obj, obj).Should().Be(0);
-        }
-
-        [Fact]
-        public void Comparison_Wrong_Type_Throw_Exception()
-        {
-            Assert.Throws<InvalidCastException>(() => BasicComparer.Compare(new DummyObject(), new DummyStruct()));
         }
 
         [Fact]
@@ -67,10 +60,17 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        protected readonly Fixture Fixture = FixtureBuilder.GetInstance();
-
-        protected abstract IComparer BasicComparer { get; }
-        protected abstract IComparer<T> TypedComparer { get; }
         protected abstract IComparer<T> ReferenceComparer { get; }
+        protected readonly Fixture Fixture = FixtureBuilder.GetInstance();
+        protected IComparer BasicComparer => ComparersBuilder.CreateComparer(typeof(T));
+        protected IComparer<T> TypedComparer => ComparersBuilder.CreateComparer<T>();
+
+        protected readonly ComparersBuilder ComparersBuilder =
+            new ComparersBuilder()
+                .SetConfiguration(
+                    new CompareConfiguration
+                    {
+                        IncludeFields = true
+                    });
     }
 }
