@@ -58,32 +58,31 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Visit(NullablePropertyMember member, ILEmitter il)
         {
-            //var hasValue = il.DeclareLocal(typeof(bool));
-
-            //il.LoadArgument(2)
-            //  .Call(member, member.HasValueMethod)
-            //  .EmitStore(hasValue)
-            //  .LoadArgument(1)
-            //  .Call(member, member.HasValueMethod)
-            //IL_000A:  call        System.Nullable<>.get_HasValue
-            //IL_000F:  brtrue.s    IL_0018
-            //IL_0011:  ldloc.0     // n2HasValue
-            //IL_0012:  brfalse.s   IL_0016
-            //IL_0014:  ldc.i4.m1   
-            //IL_0015:  ret         
-            //IL_0016:  ldc.i4.0    
-            //IL_0017:  ret         
-            //IL_0018:  ldloc.0     // n2HasValue
-            //IL_0019:  brtrue.s    IL_001D
-            //IL_001B:  ldc.i4.1    
-            //IL_001C:  ret         
-            //IL_001D:  call        System.Collections.Generic.Comparer<>.get_Default
-            //IL_0022:  ldarga.s    00 
-            //IL_0024:  call        System.Nullable<>.get_Value
-            //IL_0029:  ldarga.s    01 
-            //IL_002B:  call        System.Nullable<>.get_Value
-            //IL_0030:  callvirt    System.Collections.Generic.Comparer<>.Compare
-            //IL_0035:  ret  
+            il.LoadArgument(2)
+              .Call(member, member.HasValueMethod)
+              .DeclareLocal(typeof(bool), out var secondHasValue)
+              .Store(secondHasValue)
+              .LoadArgument(1)
+              .Call(member, member.HasValueMethod)
+              .Branch(OpCodes.Brtrue_S, out var else2)
+              .LoadLocal(secondHasValue)
+              .Branch(OpCodes.Brfalse_S, out var returnZero)
+              // return -1
+              .Emit(OpCodes.Ldc_I4_M1)
+              .Emit(OpCodes.Ret)
+              // return 0
+              .MarkLabel(returnZero)
+              .Emit(OpCodes.Ldc_I4_0)
+              .Emit(OpCodes.Ret)
+              .MarkLabel(else2)
+              .LoadLocal(secondHasValue)
+              .Branch(OpCodes.Brtrue_S, out var getValues)
+              // return 1
+              .Emit(OpCodes.Ldc_I4_1)
+              .Emit(OpCodes.Ret)
+              .MarkLabel(getValues)
+              .Emit(OpCodes.Call, member.GetValueMethod)
+              .Emit(OpCodes.Call, member.GetValueMethod);
         }
     }
 }

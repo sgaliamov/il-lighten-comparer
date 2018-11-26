@@ -57,7 +57,10 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter DefineLabel(out Label label)
         {
-            label = DefineLabel();
+            label = _il.DefineLabel();
+#if DEBUG
+            _labels.Add(label);
+#endif
             return this;
         }
 
@@ -140,10 +143,17 @@ namespace ILLightenComparer.Emit.Emitters
             return Emit(opCode, argumentIndex);
         }
 
-        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local)
+        public ILEmitter Branch(OpCode opCode, out Label label)
         {
-            local = DeclareLocal(localType);
-            return this;
+            if (opCode.OperandType != OperandType.InlineBrTarget
+                || opCode.OperandType == OperandType.ShortInlineBrTarget
+                || opCode.FlowControl != FlowControl.Branch
+                || opCode.FlowControl != FlowControl.Cond_Branch)
+            {
+                throw new ArgumentOutOfRangeException(nameof(opCode), "Only a branch instruction is allowed.");
+            }
+
+            return DefineLabel(out label).Emit(opCode, label);
         }
 
         public ILEmitter LoadLocal(LocalBuilder local)
@@ -188,18 +198,15 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
+        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local)
+        {
+            local = DeclareLocal(localType);
+            return this;
+        }
+
         private LocalBuilder DeclareLocal(Type localType) =>
             _locals.TryGetValue(localType, out var local)
                 ? local
                 : _locals[localType] = _il.DeclareLocal(localType);
-
-        private Label DefineLabel()
-        {
-            var label = _il.DefineLabel();
-#if DEBUG
-            _labels.Add(label);
-#endif
-            return label;
-        }
     }
 }
