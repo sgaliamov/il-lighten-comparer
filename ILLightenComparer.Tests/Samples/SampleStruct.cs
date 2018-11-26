@@ -10,7 +10,7 @@ namespace ILLightenComparer.Tests.Samples
         public bool? NullableField;
         public string ValueField;
 
-        public BigEnum EnumProperty { get; set; }
+        public SmallEnum EnumProperty { get; set; }
         public int KeyProperty { get; set; }
         public decimal? NullableProperty { get; set; }
         public string ValueProperty { get; set; }

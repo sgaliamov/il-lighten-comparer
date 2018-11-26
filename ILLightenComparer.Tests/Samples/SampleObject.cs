@@ -5,9 +5,9 @@ namespace ILLightenComparer.Tests.Samples
 {
     public class SampleParentObject
     {
-        public SampleEnum EnumField;
+        public BigEnum EnumField;
         public int KeyField;
-        public SampleEnum EnumProperty { get; set; }
+        public BigEnum EnumProperty { get; set; }
         public int KeyProperty { get; set; }
     }
 
