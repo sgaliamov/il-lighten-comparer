@@ -6,9 +6,9 @@ namespace ILLightenComparer.Tests.ComparerTests.NullableTests
 {
     public class NullableSampleObject
     {
-        public BigEnum? EnumField;
-        public int? Field;
-        public BigEnum? EnumProperty { get; set; }
+        //public BigEnum? EnumField;
+        //public int? Field;
+        public short? EnumProperty { get; set; }
         public int? Property { get; set; }
 
         public static IComparer<NullableSampleObject> Comparer { get; } =
@@ -33,17 +33,17 @@ namespace ILLightenComparer.Tests.ComparerTests.NullableTests
                     return -1;
                 }
 
-                var enumFieldComparison = Nullable.Compare(x.EnumField, y.EnumField);
-                if (enumFieldComparison != 0)
-                {
-                    return enumFieldComparison;
-                }
+                //var enumFieldComparison = Nullable.Compare(x.EnumField, y.EnumField);
+                //if (enumFieldComparison != 0)
+                //{
+                //    return enumFieldComparison;
+                //}
 
-                var fieldComparison = Nullable.Compare(x.Field, y.Field);
-                if (fieldComparison != 0)
-                {
-                    return fieldComparison;
-                }
+                //var fieldComparison = Nullable.Compare(x.Field, y.Field);
+                //if (fieldComparison != 0)
+                //{
+                //    return fieldComparison;
+                //}
 
                 var enumPropertyComparison = Nullable.Compare(x.EnumProperty, y.EnumProperty);
                 if (enumPropertyComparison != 0)

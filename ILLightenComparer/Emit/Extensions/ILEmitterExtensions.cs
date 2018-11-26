@@ -1,12 +1,13 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
+using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Members;
 
 namespace ILLightenComparer.Emit.Extensions
 {
     internal static class ILEmitterExtensions
     {
-        public static ILEmitter LoadProperty(this ILEmitter il, PropertyMember member, ushort argumentIndex)
+        public static ILEmitter LoadProperty(this ILEmitter il, IPropertyMember member, ushort argumentIndex)
         {
             if (member.OwnerType.IsValueType)
             {

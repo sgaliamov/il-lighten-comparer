@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members.Comparable
 {
-    internal sealed class NullablePropertyMember : PropertyMember, IComparableMember
+    internal sealed class NullablePropertyMember : PropertyMember, INullableMember
     {
         public NullablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo)
         {
@@ -19,11 +19,15 @@ namespace ILLightenComparer.Emit.Members.Comparable
                               ?? throw new ArgumentException(
                                   $"{propertyInfo.DisplayName()} does not have {MethodName.CompareTo} method.");
 
-            HasValueMethod = propertyType.GetProperty(MethodName.HasValue)?.GetGetMethod()
+            HasValueMethod = propertyType
+                             .GetProperty(MethodName.HasValue)
+                             ?.GetGetMethod()
                              ?? throw new ArgumentException(
                                  $"{propertyInfo.DisplayName()} does not have {MethodName.HasValue} property.");
 
-            GetValueMethod = propertyType.GetProperty(MethodName.Value)?.GetGetMethod()
+            GetValueMethod = propertyType
+                             .GetProperty(MethodName.Value)
+                             ?.GetGetMethod()
                              ?? throw new ArgumentException(
                                  $"{propertyInfo.DisplayName()} does not have {MethodName.Value} property.");
         }

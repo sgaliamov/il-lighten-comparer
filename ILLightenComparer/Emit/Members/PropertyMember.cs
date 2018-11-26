@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
+using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal abstract class PropertyMember : Member
+    internal abstract class PropertyMember : Member, IPropertyMember
     {
         private readonly PropertyInfo _propertyInfo;
 
