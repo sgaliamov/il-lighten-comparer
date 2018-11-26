@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members.Integral;
 
 namespace ILLightenComparer.Emit.Emitters
@@ -25,7 +26,8 @@ namespace ILLightenComparer.Emit.Emitters
         {
             member.Accept(_stackVisitor, il);
 
-            il.Emit(OpCodes.Sub);
+            il.Emit(OpCodes.Sub)
+              .ConvertToInt(member.MemberType.GetUnderlyingType());
 
             EmitCheckForZero(il);
 
