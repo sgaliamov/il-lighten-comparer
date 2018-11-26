@@ -120,41 +120,6 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter ConvertToInt(Type type)
-        {
-            if (type == typeof(int))
-            {
-                return this;
-            }
-
-            if (type == typeof(byte))
-            {
-                return Emit(OpCodes.Conv_U1);
-            }
-
-            if (type == typeof(sbyte))
-            {
-                return this;
-            }
-
-            if (type == typeof(char))
-            {
-                return this;
-            }
-
-            if (type == typeof(short))
-            {
-                return this;
-            }
-
-            if (type == typeof(ushort))
-            {
-                return Emit(OpCodes.Conv_U2);
-            }
-
-            throw new NotImplementedException($"Only integral types need to convert.\nType: {type}.");
-        }
-
         public ILEmitter EmitCtorCall(ConstructorInfo constructor)
         {
             _il.Emit(OpCodes.Newobj, constructor);

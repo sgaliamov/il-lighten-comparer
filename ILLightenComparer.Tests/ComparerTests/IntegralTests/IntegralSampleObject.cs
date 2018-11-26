@@ -19,6 +19,9 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
         public short ShortProperty { get; set; }
         public ushort UShortProperty { get; set; }
 
+        public static IComparer<IntegralSampleObject> Comparer { get; } =
+            new IntegralSampleObjectRelationalComparer();
+
         private sealed class IntegralSampleObjectRelationalComparer : IComparer<IntegralSampleObject>
         {
             public int Compare(IntegralSampleObject x, IntegralSampleObject y)
@@ -107,7 +110,5 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
                 return x.UShortProperty.CompareTo(y.UShortProperty);
             }
         }
-
-        public static IComparer<IntegralSampleObject> Comparer { get; } = new IntegralSampleObjectRelationalComparer();
     }
 }
