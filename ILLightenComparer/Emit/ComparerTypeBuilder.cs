@@ -90,7 +90,7 @@ namespace ILLightenComparer.Emit
 
         private static void InitFirstLocalToKeepComparisonsResult(ILEmitter il)
         {
-            il.DeclareLocal(typeof(int), out _); // todo: automatically create local when needs
+            il.TempLocal(typeof(int), out _); // todo: automatically create local when needs
         }
 
         private static void EmitDefaultResult(ILEmitter il)

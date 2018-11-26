@@ -12,9 +12,10 @@ namespace ILLightenComparer.Emit.Emitters
         private const byte ShortFormLimit = byte.MaxValue; // 255
 #if DEBUG
         private readonly List<Label> _labels = new List<Label>();
+        private readonly List<LocalBuilder> _locals = new List<LocalBuilder>();
 #endif
         private ILGenerator _il;
-        private Dictionary<Type, LocalBuilder> _locals = new Dictionary<Type, LocalBuilder>();
+        private Dictionary<Type, LocalBuilder> _tempLocals = new Dictionary<Type, LocalBuilder>();
 
         public ILEmitter(ILGenerator il) => _il = il;
 
@@ -26,15 +27,14 @@ namespace ILLightenComparer.Emit.Emitters
                 Debug.WriteLine("\t.locals init (");
                 foreach (var item in _locals)
                 {
-                    Debug.WriteLine($"\t\t[{item.Value.LocalIndex}] {item.Key.Name}");
+                    Debug.WriteLine($"\t\t[{item.LocalIndex}] {item.LocalType?.Name}");
                 }
 
                 Debug.WriteLine("\t)\n");
             }
 #endif
             _il = null;
-            _locals.Clear();
-            _locals = null;
+            _tempLocals = null;
         }
 
         public ILEmitter Emit(OpCode opCode)
@@ -200,13 +200,22 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter DeclareLocal(Type localType, out LocalBuilder local)
         {
-            local = DeclareLocal(localType);
+            local = _il.DeclareLocal(localType);
+#if DEBUG
+            _locals.Add(local);
+#endif
             return this;
         }
 
-        private LocalBuilder DeclareLocal(Type localType) =>
-            _locals.TryGetValue(localType, out var local)
+        public ILEmitter TempLocal(Type localType, out LocalBuilder local)
+        {
+            local = TempLocal(localType);
+            return this;
+        }
+
+        private LocalBuilder TempLocal(Type localType) =>
+            _tempLocals.TryGetValue(localType, out var local)
                 ? local
-                : _locals[localType] = _il.DeclareLocal(localType);
+                : _tempLocals[localType] = _il.DeclareLocal(localType);
     }
 }

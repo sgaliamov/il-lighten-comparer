@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static ILEmitter LoadPropertyAddress(this ILEmitter il, PropertyMember member, ushort argumentIndex) =>
             il.LoadProperty(member, argumentIndex)
-              .DeclareLocal(member.GetterMethod.ReturnType.GetUnderlyingType(), out var local)
+              .TempLocal(member.GetterMethod.ReturnType, out var local)
               .Store(local)
               .LoadAddress(local);
 

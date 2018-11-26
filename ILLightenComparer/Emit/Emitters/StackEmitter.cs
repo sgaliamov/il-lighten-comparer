@@ -58,7 +58,7 @@ namespace ILLightenComparer.Emit.Emitters
             il.LoadPropertyAddress(member, 2) // var n2 = arg2 
               // var secondHasValue = n2.HasValue
               .Call(member, member.HasValueMethod)
-              .DeclareLocal(typeof(bool), out var secondHasValue)
+              .TempLocal(typeof(bool), out var secondHasValue)
               .Store(secondHasValue)
               // n1 = arg1
               .LoadPropertyAddress(member, 1)
