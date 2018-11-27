@@ -6,9 +6,9 @@ namespace ILLightenComparer.Tests.ComparerTests.NullableTests
 {
     public struct NullableSampleStruct
     {
-        public SmallEnum? EnumField;
+        public EnumSmall? EnumField;
         public int? Field;
-        public SmallEnum? EnumProperty { get; set; }
+        public EnumSmall? EnumProperty { get; set; }
         public int? Property { get; set; }
 
         private sealed class NullableSampleStructRelationalComparer : IComparer<NullableSampleStruct>

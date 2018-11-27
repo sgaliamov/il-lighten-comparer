@@ -5,9 +5,9 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 {
     public struct ComparableSampleStruct
     {
-        public BigEnum EnumField;
+        public EnumBig EnumField;
         public int Field;
-        public BigEnum EnumProperty { get; set; }
+        public EnumBig EnumProperty { get; set; }
         public int Property { get; set; }
 
         public override string ToString() =>

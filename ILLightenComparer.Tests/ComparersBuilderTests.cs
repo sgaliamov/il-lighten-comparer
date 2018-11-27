@@ -24,7 +24,7 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        [Fact]
+        [Fact(Skip = "Not implemented yet")]
         public void Create_Generic_EqualityComparer()
         {
             var comparer = _builder.CreateEqualityComparer<TestObject>();
@@ -40,7 +40,7 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        [Fact]
+        [Fact(Skip = "Not implemented yet")]
         public void Create_Not_Generic_EqualityComparer()
         {
             var comparer = _builder.CreateEqualityComparer(typeof(TestObject));
@@ -58,7 +58,7 @@ namespace ILLightenComparer.Tests
             }
 
             Test(_builder.CreateComparer(typeof(TestObject)), _builder.CreateComparer<TestObject>());
-            Test(_builder.CreateComparer<SampleStruct>(), _builder.CreateComparer(typeof(SampleStruct)));
+            Test(_builder.CreateComparer<TestObject>(), _builder.CreateComparer(typeof(TestObject)));
         }
 
         private readonly IComparersBuilder _builder;

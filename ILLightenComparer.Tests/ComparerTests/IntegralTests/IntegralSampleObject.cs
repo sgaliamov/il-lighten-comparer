@@ -7,14 +7,14 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
     {
         public byte ByteField;
         public char CharField;
-        public SmallEnum EnumField;
+        public EnumSmall EnumField;
         public sbyte SByteField;
         public short ShortField;
         public ushort UShortField;
 
         public byte ByteProperty { get; set; }
         public char CharProperty { get; set; }
-        public SmallEnum EnumProperty { get; set; }
+        public EnumSmall EnumProperty { get; set; }
         public sbyte SByteProperty { get; set; }
         public short ShortProperty { get; set; }
         public ushort UShortProperty { get; set; }

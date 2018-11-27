@@ -7,12 +7,12 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
-    public sealed class StructComparerTests : BaseComparerTests<SampleStruct>
+    public sealed class StructComparerTests : BaseComparerTests<TestStruct>
     {
         [Fact]
         public void Comparison_Of_Null_With_Object_Produces_Negative_Value()
         {
-            var obj = Fixture.Create<SampleStruct>();
+            var obj = Fixture.Create<TestStruct>();
 
             BasicComparer.Compare(default, obj).Should().BeLessThan(0);
         }
@@ -20,7 +20,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Comparison_Of_Object_With_Null_Produces_Positive_Value()
         {
-            var obj = Fixture.Create<SampleStruct>();
+            var obj = Fixture.Create<TestStruct>();
 
             BasicComparer.Compare(obj, default).Should().BeGreaterThan(0);
         }
@@ -31,6 +31,6 @@ namespace ILLightenComparer.Tests.ComparerTests
             Assert.Throws<InvalidCastException>(() => BasicComparer.Compare(new DummyStruct(), new DummyStruct()));
         }
 
-        protected override IComparer<SampleStruct> ReferenceComparer { get; } = SampleStruct.SampleStructComparer;
+        protected override IComparer<TestStruct> ReferenceComparer { get; } = TestStruct.TestStructComparer;
     }
 }

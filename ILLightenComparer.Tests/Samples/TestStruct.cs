@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class TestObject
+    public struct TestStruct
     {
         public EnumBig BigEnumField;
         public EnumBig? BigEnumNullableField;
@@ -37,7 +37,7 @@ namespace ILLightenComparer.Tests.Samples
         public ulong UInt64Field;
         public ulong? UInt64NullableField;
 
-        public static IComparer<TestObject> TestObjectComparer { get; } = new TestObjectRelationalComparer();
+        public static IComparer<TestStruct> TestStructComparer { get; } = new TestStructRelationalComparer();
 
         public EnumBig? BigEnumNullableProperty { get; set; }
         public EnumBig BigEnumProperty { get; set; }
@@ -71,25 +71,10 @@ namespace ILLightenComparer.Tests.Samples
         public ulong? UInt64NullableProperty { get; set; }
         public ulong UInt64Property { get; set; }
 
-        private sealed class TestObjectRelationalComparer : IComparer<TestObject>
+        private sealed class TestStructRelationalComparer : IComparer<TestStruct>
         {
-            public int Compare(TestObject x, TestObject y)
+            public int Compare(TestStruct x, TestStruct y)
             {
-                if (ReferenceEquals(x, y))
-                {
-                    return 0;
-                }
-
-                if (ReferenceEquals(null, y))
-                {
-                    return 1;
-                }
-
-                if (ReferenceEquals(null, x))
-                {
-                    return -1;
-                }
-
                 var bigEnumFieldComparison = x.BigEnumField.CompareTo(y.BigEnumField);
                 if (bigEnumFieldComparison != 0)
                 {

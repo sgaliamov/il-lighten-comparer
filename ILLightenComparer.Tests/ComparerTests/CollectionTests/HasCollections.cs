@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.Samples
+namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 {
     internal class HasCollections
     {
@@ -8,7 +9,7 @@ namespace ILLightenComparer.Tests.Samples
         public int[][] ArrayOfArrays { get; set; }
         public string[] Strings { get; set; }
         public List<int> Integers { get; set; }
-        public IEnumerable<TestObject> SimpleItems { get; set; }
-        public Dictionary<int, HierarchicalObject> Dictionary { get; set; }
+        public IEnumerable<DummyObject> SimpleItems { get; set; }
+        public Dictionary<int, DummyObject> Dictionary { get; set; }
     }
 }

@@ -1,11 +1,11 @@
 ﻿namespace ILLightenComparer.Tests.Samples
 {
-    public enum BigEnum : ulong
+    public enum EnumSmall : byte
     {
-        First = ulong.MinValue,
+        First = byte.MinValue,
         One = 1,
         Two = 2,
         Three = 3,
-        All = ulong.MaxValue
+        All = byte.MaxValue
     }
 }
