@@ -1,53 +1,34 @@
-# ILLightenComparer
+# IL Lighten Comparer
 
-## To do
+**ILLightenComparer** is a library that can generate implementation for *IComparer\<T\>*, *IComparer*, *IEqualityComparer\<T\>* and *IEqualityComparer* on runtime using advantages of IL code emission.
 
-### Phase 0 PoC
+## Features
 
-- [x] Comparer test
-- [x] Flat object properties comparison
-- [x] Compare structures
-- [x] Generic comparer
-- [x] Refactor generic builder
-- [x] Refactor tests
-- [ ] Benchmarks
+* High permormance.
+* Support for complex classes and structures.
+* Cycle detection.
+* Collections comparison.
+* 100% code coverage.
 
-### Phase 1 Core features
+## Benchmarks
 
-- [ ] Compare strings
-- [ ] Compare fields
-- [ ] Fixture generates nulls
-- [ ] Compare nullable https://referencesource.microsoft.com/#mscorlib/system/nullable.cs,7fc9e4edf9eff463
-- [ ] Object field comparison
+``` ini
 
-### Phase 2 Hierarchical objects
+BenchmarkDotNet=v0.11.2, OS=Windows 10.0.17134.407 (1803/April2018Update/Redstone4)
+Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical cores
+Frequency=2531248 Hz, Resolution=395.0620 ns, Timer=TSC
+.NET Core SDK=2.1.500
+  [Host]     : .NET Core 2.1.6 (CoreCLR 4.6.27019.06, CoreFX 4.6.27019.05), 64bit RyuJIT
+  DefaultJob : .NET Core 2.1.6 (CoreCLR 4.6.27019.06, CoreFX 4.6.27019.05), 64bit RyuJIT
 
-- [ ] Detect cycles (check graph theory)
-- [ ] Test when abstract class is replaced after a comparer is created
 
-### Phase 3 Optimizations
+```
+|          Method |     Mean |    Error |   StdDev |   Median | Ratio | Rank |
+|---------------- |---------:|---------:|---------:|---------:|------:|-----:|
+|     IL_Comparer | 240.3 us | 2.676 us | 2.503 us | 240.4 us |  0.70 |    1 |
+| Native_Comparer | 343.2 us | 3.218 us | 2.853 us | 343.7 us |  1.00 |    2 |
 
-- [ ] Optimization for integral types
-- [ ] Caching for assembly
-- [ ] Ignored properties
-- [ ] Support internal classes to compare
-- [ ] use short versions of opt codes when possible
-- [ ] reuse local variables for same types
-- [ ] test class with more than 256 properties
+### Links
 
-### Phase 4 Settings
-
-- [ ] String options (case, culture)
-- [ ] Float, double, date time precision
-- [ ] Customization setting to override comparer with specific implementation
-- [ ] Compare references and the end
-
-### Phase 5 Collections
-
-- [ ] Compare collection, do not iterate IEnumerable
-- [ ] IgnoreCollectionOrder setting
-
-### Phase Z
-
-- [ ] Compared dynamic?
-- [ ] Setup CI/CD
+* [Roadmap](./roadmap.md).
+* [Impementation details](./reasoning.md).

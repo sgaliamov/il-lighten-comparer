@@ -6,9 +6,9 @@ namespace ILLightenComparer
 {
     public interface IComparersBuilder
     {
-        IComparer CreateComparer(Type type);
+        IComparer CreateComparer(Type objectType);
         IComparer<T> CreateComparer<T>();
-        IEqualityComparer CreateEqualityComparer(Type type);
+        IEqualityComparer CreateEqualityComparer(Type objectType);
         IEqualityComparer<T> CreateEqualityComparer<T>();
     }
 }
