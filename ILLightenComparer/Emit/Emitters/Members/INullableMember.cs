@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using ILLightenComparer.Emit.Emitters.Behavioural;
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
