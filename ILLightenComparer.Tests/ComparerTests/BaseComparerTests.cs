@@ -36,7 +36,24 @@ namespace ILLightenComparer.Tests.ComparerTests
             Compare(original, copy2);
         }
 
+        protected readonly Fixture Fixture = FixtureBuilder.GetInstance();
+
+        protected IComparer BasicComparer => ComparersBuilder.CreateComparer(typeof(T));
+
+        protected virtual CompareConfiguration CompareConfiguration { get; } =
+            new CompareConfiguration { IncludeFields = true };
+
+        protected ComparersBuilder ComparersBuilder =>
+            _comparersBuilder
+            ?? (_comparersBuilder = new ComparersBuilder().SetConfiguration(CompareConfiguration));
+
+        protected abstract IComparer<T> ReferenceComparer { get; }
+
+        protected IComparer<T> TypedComparer => ComparersBuilder.CreateComparer<T>();
+
         private const int Count = 10000;
+        
+        private ComparersBuilder _comparersBuilder;
 
         private static void Compare(IEnumerable<T> one, IEnumerable<T> other)
         {
@@ -57,18 +74,5 @@ namespace ILLightenComparer.Tests.ComparerTests
                 enumeratorOther.MoveNext().Should().BeFalse();
             }
         }
-
-        protected abstract IComparer<T> ReferenceComparer { get; }
-        protected readonly Fixture Fixture = FixtureBuilder.GetInstance();
-        protected IComparer BasicComparer => ComparersBuilder.CreateComparer(typeof(T));
-        protected IComparer<T> TypedComparer => ComparersBuilder.CreateComparer<T>();
-
-        protected readonly ComparersBuilder ComparersBuilder =
-            new ComparersBuilder()
-                .SetConfiguration(
-                    new CompareConfiguration
-                    {
-                        IncludeFields = true
-                    });
     }
 }

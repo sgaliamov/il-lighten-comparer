@@ -5,8 +5,9 @@ namespace ILLightenComparer
 {
     public sealed class CompareConfiguration
     {
-        public bool IncludeFields { get; set; } = false;
-        public StringComparison StringComparisonType { get; set; } = StringComparison.Ordinal;
         public HashSet<string> IgnoredMembers { get; set; } = new HashSet<string>();
+        public bool IncludeFields { get; set; } = false;
+        public string[] MembersOrder { get; set; } = new string[0]; // todo: use expressions
+        public StringComparison StringComparisonType { get; set; } = StringComparison.Ordinal;
     }
 }

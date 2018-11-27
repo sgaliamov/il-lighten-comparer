@@ -17,23 +17,66 @@ namespace ILLightenComparer.Emit.Reflection
             _converter = new MemberConverter(_context);
         }
 
-        public IAcceptor[] GetMembers(Type type) =>
-            type.GetMembers(
-                    BindingFlags.Instance
-                    | BindingFlags.FlattenHierarchy
-                    | BindingFlags.Public)
-                .Where(memberInfo => IgnoredMembers(memberInfo, _context.Configuration.IgnoredMembers))
-                .Where(memberInfo => IncludeFields(memberInfo, _context.Configuration.IncludeFields))
-                .OrderBy(x => x.MemberType) // todo: use functor from settings
-                .ThenBy(x => x.Name)
-                .Select(_converter.Convert)
-                .ToArray();
+        public IAcceptor[] GetMembers(Type type) => Convert(Sort(Filter(type)));
 
-        private static bool IgnoredMembers(MemberInfo memberInfo, ICollection<string> ignoredMembers) =>
-            !ignoredMembers.Contains(memberInfo.Name);
+        private IAcceptor[] Convert(IEnumerable<MemberInfo> members) =>
+            members.Select(_converter.Convert).ToArray();
 
-        private static bool IncludeFields(MemberInfo memberInfo, bool includeFields) =>
+        private IEnumerable<MemberInfo> Filter(IReflect type) =>
+            type.GetMembers(BindingFlags.Instance
+                            | BindingFlags.FlattenHierarchy
+                            | BindingFlags.Public)
+                .Where(IgnoredMembers)
+                .Where(IncludeFields);
+
+        private IEnumerable<MemberInfo> Sort(IEnumerable<MemberInfo> members)
+        {
+            var order = _context.Configuration.MembersOrder;
+
+            if (order == null || order.Length == 0)
+            {
+                return DefaultOrder(members);
+            }
+
+            return PredefinedOrder(members);
+        }
+
+        private IEnumerable<MemberInfo> PredefinedOrder(IEnumerable<MemberInfo> members)
+        {
+            var order = _context.Configuration.MembersOrder;
+            var dictionary = members.ToDictionary(x => x.Name);
+
+            foreach (var item in order)
+            {
+                if (!dictionary.TryGetValue(item, out var memberInfo))
+                {
+                    continue;
+                }
+
+                dictionary.Remove(item);
+                
+                yield return memberInfo;
+            }
+
+            foreach (var item in DefaultOrder(dictionary.Values))
+            {
+                yield return item;
+            }
+        }
+
+        private static IEnumerable<MemberInfo> DefaultOrder(IEnumerable<MemberInfo> members)
+        {
+            return members
+                   .OrderBy(x => x.DeclaringType?.FullName ?? string.Empty)
+                   .ThenBy(x => x.MemberType)
+                   .ThenBy(x => x.Name);
+        }
+
+        private bool IncludeFields(MemberInfo memberInfo) =>
             memberInfo.MemberType == MemberTypes.Property
-            || includeFields && memberInfo.MemberType == MemberTypes.Field;
+            || _context.Configuration.IncludeFields && memberInfo.MemberType == MemberTypes.Field;
+
+        private bool IgnoredMembers(MemberInfo memberInfo) =>
+            !_context.Configuration.IgnoredMembers.Contains(memberInfo.Name);
     }
 }
