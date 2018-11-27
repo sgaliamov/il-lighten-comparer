@@ -12,18 +12,12 @@ namespace ILLightenComparer.Emit.Reflection
         private static readonly Converter[] Converters =
         {
             new Converter(GetPropertyType, IsString, info => new StringPropertyMember((PropertyInfo)info)),
-            new Converter(
-                GetPropertyType,
-                TypeExtensions.IsSmallIntegral,
-                info => new IntegralPropertyMember((PropertyInfo)info)),
+            new Converter(GetPropertyType, IsIntegral, info => new IntegralPropertyMember((PropertyInfo)info)),
             new Converter(GetPropertyType, IsComparable, info => new ComparablePropertyMember((PropertyInfo)info)),
             new Converter(GetPropertyType, IsNullable, info => new NullablePropertyMember((PropertyInfo)info)),
 
             new Converter(GetFieldType, IsString, info => new StringFiledMember((FieldInfo)info)),
-            new Converter(
-                GetFieldType,
-                TypeExtensions.IsSmallIntegral,
-                info => new IntegralFiledMember((FieldInfo)info)),
+            new Converter(GetFieldType, IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
             new Converter(GetFieldType, IsComparable, info => new ComparableFieldMember((FieldInfo)info)),
             new Converter(GetFieldType, IsNullable, info => new NullableFieldMember((FieldInfo)info))
         };
@@ -48,6 +42,8 @@ namespace ILLightenComparer.Emit.Reflection
                 $"{memberInfo.DisplayName()} is not supported.");
         }
 
+        private static bool IsIntegral(Type type) => !type.IsNullable() && type.IsSmallIntegral();
+
         private static bool IsNullable(Type type) => type.IsNullable();
 
         private static (MemberInfo, Type) GetPropertyType(MemberInfo memberInfo)
@@ -70,8 +66,7 @@ namespace ILLightenComparer.Emit.Reflection
             return default;
         }
 
-        private static bool IsComparable(Type type) =>
-            !type.IsNullable() && type.GetCompareToMethod() != null;
+        private static bool IsComparable(Type type) => !type.IsNullable() && type.GetCompareToMethod() != null;
 
         private static bool IsString(Type type) => type == typeof(string);
 

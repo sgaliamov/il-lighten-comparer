@@ -48,11 +48,12 @@ namespace ILLightenComparer.Emit.Extensions
         }
 
         public static bool IsNullable(this Type type) =>
-            type.IsGenericType
+            type.IsValueType
+            && type.IsGenericType
             && !type.IsGenericTypeDefinition
             && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
 
         public static bool IsSmallIntegral(this Type type) =>
-            !type.IsNullable() && SmallIntegralTypes.Contains(type.GetUnderlyingType());
+            SmallIntegralTypes.Contains(type.GetUnderlyingType());
     }
 }

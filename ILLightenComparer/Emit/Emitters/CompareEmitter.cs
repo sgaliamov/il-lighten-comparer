@@ -24,12 +24,36 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(INullableAcceptor member, ILEmitter il)
         {
+            var memberType = member.MemberType;
+
             member.Accept(_stackEmitter, il)
+                  .DeclareLocal(memberType, out var n1, 0)
+                  .DeclareLocal(memberType, out var n2, 1)
                   .DefineLabel(out var next);
 
-            LoadValuesFromNullable(il, member, next)
-                .Emit(OpCodes.Call, member.CompareToMethod)
-                .EmitReturnNotZero(next);
+            CheckValuesForNull(il, member, n1, n2, next);
+
+            if (memberType.IsSmallIntegral())
+            {
+                il.LoadAddress(n1)
+                  .Call(memberType, member.GetValueMethod)
+                  .LoadAddress(n2)
+                  .Call(memberType, member.GetValueMethod)
+                  .Emit(OpCodes.Sub);
+            }
+            else
+            {
+                il.LoadAddress(n1)
+                  .Call(memberType, member.GetValueMethod)
+                  .DeclareLocal(memberType.GetUnderlyingType(), out var local)
+                  .Store(local)
+                  .LoadAddress(local)
+                  .LoadAddress(n2)
+                  .Call(memberType, member.GetValueMethod)
+                  .Emit(OpCodes.Call, member.CompareToMethod);
+            }
+
+            il.EmitReturnNotZero(next);
 
             return il;
         }
@@ -44,49 +68,43 @@ namespace ILLightenComparer.Emit.Emitters
                          .EmitReturnNotZero();
         }
 
-        private static ILEmitter LoadValuesFromNullable(
+        private static void CheckValuesForNull(
             ILEmitter il,
             INullableAcceptor member,
+            LocalBuilder n1,
+            LocalBuilder n2,
             Label next)
         {
             var memberType = member.MemberType;
 
-            return il.DeclareLocal(memberType, out var n1, 0)
-                     .DeclareLocal(memberType, out var n2, 1)
-                     .Store(n2)
-                     .LoadAddress(n2)
-                     // var secondHasValue = n2->HasValue
-                     .Call(memberType, member.HasValueMethod)
-                     .DeclareLocal(typeof(bool), out var secondHasValue)
-                     .Store(secondHasValue)
-                     // var n1 = &arg1
-                     .Store(n1)
-                     .LoadAddress(n1)
-                     // if n1->HasValue goto firstHasValue
-                     .Call(memberType, member.HasValueMethod)
-                     .Branch(OpCodes.Brtrue_S, out var firstHasValue)
-                     // if n2->HasValue goto returnZero
-                     .LoadLocal(secondHasValue)
-                     .Emit(OpCodes.Brfalse_S, next)
-                     // else return -1
-                     .Emit(OpCodes.Ldc_I4_M1)
-                     .Emit(OpCodes.Ret)
-                     // firstHasValue:
-                     .MarkLabel(firstHasValue)
-                     .LoadLocal(secondHasValue)
-                     .Branch(OpCodes.Brtrue_S, out var getValues)
-                     // return 1
-                     .Emit(OpCodes.Ldc_I4_1)
-                     .Emit(OpCodes.Ret)
-                     // getValues: load values
-                     .MarkLabel(getValues)
-                     .LoadAddress(n1)
-                     .Call(memberType, member.GetValueMethod)
-                     .DeclareLocal(memberType.GetUnderlyingType(), out var local)
-                     .Store(local)
-                     .LoadAddress(local)
-                     .LoadAddress(n2)
-                     .Call(memberType, member.GetValueMethod);
+            il
+                .Store(n2)
+                .LoadAddress(n2)
+                // var secondHasValue = n2->HasValue
+                .Call(memberType, member.HasValueMethod)
+                .DeclareLocal(typeof(bool), out var secondHasValue)
+                .Store(secondHasValue)
+                // var n1 = &arg1
+                .Store(n1)
+                .LoadAddress(n1)
+                // if n1->HasValue goto firstHasValue
+                .Call(memberType, member.HasValueMethod)
+                .Branch(OpCodes.Brtrue_S, out var firstHasValue)
+                // if n2->HasValue goto returnZero
+                .LoadLocal(secondHasValue)
+                .Emit(OpCodes.Brfalse_S, next)
+                // else return -1
+                .Emit(OpCodes.Ldc_I4_M1)
+                .Emit(OpCodes.Ret)
+                // firstHasValue:
+                .MarkLabel(firstHasValue)
+                .LoadLocal(secondHasValue)
+                .Branch(OpCodes.Brtrue_S, out var getValues)
+                // return 1
+                .Emit(OpCodes.Ldc_I4_1)
+                .Emit(OpCodes.Ret)
+                // getValues: load values
+                .MarkLabel(getValues);
         }
     }
 }
