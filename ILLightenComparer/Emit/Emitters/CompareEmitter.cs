@@ -1,14 +1,16 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CompareEmitter
     {
-        private readonly StackEmitter _stackEmitter;
+        private readonly TypeBuilderContext _context;
+        private readonly StackEmitter _stackEmitter = new StackEmitter();
 
-        public CompareEmitter(TypeBuilderContext context) => _stackEmitter = new StackEmitter(context);
+        public CompareEmitter(TypeBuilderContext context) => _context = context;
 
         public ILEmitter Visit(IComparableMember member, ILEmitter il) =>
             member.Accept(_stackEmitter, il)
@@ -30,6 +32,16 @@ namespace ILLightenComparer.Emit.Emitters
                 .EmitReturnNotZero(next);
 
             return il;
+        }
+
+        public ILEmitter Visit(IStringMember member, ILEmitter il)
+        {
+            var comparisonType = (int)_context.Configuration.StringComparisonType;
+
+            return member.Accept(_stackEmitter, il)
+                         .Emit(OpCodes.Ldc_I4_S, comparisonType) // todo: use short form for constants
+                         .Emit(OpCodes.Call, Method.StringCompare)
+                         .EmitReturnNotZero();
         }
 
         private static ILEmitter LoadValuesFromNullable(

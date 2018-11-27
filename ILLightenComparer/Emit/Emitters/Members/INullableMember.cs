@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
-using ILLightenComparer.Emit.Emitters.Behavioural;
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface INullableMember : IComparableMember, IPropertyMember
+    internal interface INullableMember : IMember
     {
         MethodInfo GetValueMethod { get; }
         MethodInfo HasValueMethod { get; }
+        MethodInfo CompareToMethod { get; }
     }
 }
