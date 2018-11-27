@@ -1,5 +1,5 @@
 ﻿using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Cases;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
@@ -12,17 +12,17 @@ namespace ILLightenComparer.Emit.Emitters
 
         public CompareEmitter(TypeBuilderContext context) => _context = context;
 
-        public ILEmitter Visit(IComparableMember member, ILEmitter il) =>
+        public ILEmitter Visit(IComparableCase member, ILEmitter il) =>
             member.Accept(_stackEmitter, il)
                   .Emit(OpCodes.Call, member.CompareToMethod)
                   .EmitReturnNotZero();
 
-        public ILEmitter Visit(IIntegralMember member, ILEmitter il) =>
+        public ILEmitter Visit(IIntegralCase member, ILEmitter il) =>
             member.Accept(_stackEmitter, il)
                   .Emit(OpCodes.Sub)
                   .EmitReturnNotZero();
 
-        public ILEmitter Visit(INullableMember member, ILEmitter il)
+        public ILEmitter Visit(INullableCase member, ILEmitter il)
         {
             member.Accept(_stackEmitter, il)
                   .DefineLabel(out var next);
@@ -34,7 +34,7 @@ namespace ILLightenComparer.Emit.Emitters
             return il;
         }
 
-        public ILEmitter Visit(IStringMember member, ILEmitter il)
+        public ILEmitter Visit(IStringCase member, ILEmitter il)
         {
             var comparisonType = (int)_context.Configuration.StringComparisonType;
 
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         private static ILEmitter LoadValuesFromNullable(
             ILEmitter il,
-            INullableMember member,
+            INullableCase member,
             Label next)
         {
             var propertyType = member.MemberType;

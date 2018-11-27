@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Behavioural;
+using ILLightenComparer.Emit.Emitters.Cases;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
-namespace ILLightenComparer.Emit.Members.Comparable
+namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class ComparableFieldMember : FieldMember, IComparableMember, ICallableField
+    internal sealed class ComparableFieldMember : FieldMember, IComparableCase, ICallableField
     {
         public ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) =>
             CompareToMethod = fieldInfo

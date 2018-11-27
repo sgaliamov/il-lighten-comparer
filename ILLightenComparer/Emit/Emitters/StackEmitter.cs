@@ -1,4 +1,4 @@
-﻿using ILLightenComparer.Emit.Emitters.Behavioural;
+﻿using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters

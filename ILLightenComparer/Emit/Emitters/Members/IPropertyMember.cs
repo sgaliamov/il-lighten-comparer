@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
-using ILLightenComparer.Emit.Emitters.Members;
 
-namespace ILLightenComparer.Emit.Emitters.Behavioural
+namespace ILLightenComparer.Emit.Emitters.Members
 {
     internal interface IPropertyMember : IMember
     {

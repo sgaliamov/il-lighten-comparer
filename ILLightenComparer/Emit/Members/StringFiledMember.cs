@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Behavioural;
+using ILLightenComparer.Emit.Emitters.Cases;
 using ILLightenComparer.Emit.Emitters.Members;
-using ILLightenComparer.Emit.Reflection;
 
-namespace ILLightenComparer.Emit.Members.Comparable
+namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringFiledMember : FieldMember, IStringMember, IFieldValues
+    internal sealed class StringFiledMember : FieldMember, IStringCase, IFieldValues
     {
         public StringFiledMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 

@@ -1,14 +1,13 @@
 ﻿using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Behavioural;
+using ILLightenComparer.Emit.Emitters.Cases;
 using ILLightenComparer.Emit.Emitters.Members;
-using ILLightenComparer.Emit.Reflection;
 
-namespace ILLightenComparer.Emit.Members.Comparable
+namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringPropertyMember : PropertyMember, IStringMember, IPropertyValues
+    internal sealed class IntegralPropertyMember : PropertyMember, IPropertyValues, IIntegralCase
     {
-        public StringPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        public IntegralPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public override ILEmitter Accept(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
         public override ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);

@@ -1,4 +1,4 @@
 ﻿namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IIntegralMember : IMember { }
+    internal interface IFieldValues : IFieldMember { }
 }
