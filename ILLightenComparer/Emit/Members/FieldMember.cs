@@ -14,8 +14,5 @@ namespace ILLightenComparer.Emit.Members
 
         public Type MemberType => FieldInfo.FieldType;
         public Type OwnerType => FieldInfo.DeclaringType;
-
-        public abstract ILEmitter Accept(StackEmitter stacker, ILEmitter il);
-        public abstract ILEmitter Accept(CompareEmitter emitter, ILEmitter il);
     }
 }

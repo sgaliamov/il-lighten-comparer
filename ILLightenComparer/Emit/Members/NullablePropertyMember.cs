@@ -36,7 +36,7 @@ namespace ILLightenComparer.Emit.Members
         public MethodInfo HasValueMethod { get; }
         public MethodInfo CompareToMethod { get; }
 
-        public override ILEmitter Accept(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
-        public override ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
     }
 }

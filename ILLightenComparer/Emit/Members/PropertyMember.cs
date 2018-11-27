@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
@@ -12,11 +11,8 @@ namespace ILLightenComparer.Emit.Members
         protected PropertyMember(PropertyInfo propertyInfo) =>
             _propertyInfo = propertyInfo;
 
-        public MethodInfo GetterMethod => _propertyInfo.GetMethod;
         public Type MemberType => _propertyInfo.PropertyType;
+        public MethodInfo GetterMethod => _propertyInfo.GetMethod;
         public Type OwnerType => _propertyInfo.DeclaringType;
-
-        public abstract ILEmitter Accept(StackEmitter stacker, ILEmitter il);
-        public abstract ILEmitter Accept(CompareEmitter emitter, ILEmitter il);
     }
 }
