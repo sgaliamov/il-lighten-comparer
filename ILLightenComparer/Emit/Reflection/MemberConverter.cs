@@ -28,7 +28,8 @@ namespace ILLightenComparer.Emit.Reflection
 
             new Converter(GetFieldType, IsString, info => new StringFiledMember((FieldInfo)info)),
             new Converter(GetFieldType, IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
-            new Converter(GetFieldType, IsComparable, info => new ComparableFieldMember((FieldInfo)info))
+            new Converter(GetFieldType, IsComparable, info => new ComparableFieldMember((FieldInfo)info)),
+            new Converter(GetFieldType, IsNullable, info => new NullableFieldMember((FieldInfo)info))
         };
 
         public IAcceptor Convert(MemberInfo memberInfo)
