@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Cases;
+using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class ComparablePropertyMember : PropertyMember, IComparableCase, ICallableProperty
+    internal sealed class ComparablePropertyMember : PropertyMember, IComparableAcceptor, ICallableProperty
     {
         public ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) =>
             CompareToMethod = propertyInfo

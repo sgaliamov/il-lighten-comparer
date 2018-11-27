@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Cases;
+using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class IntegralPropertyMember : PropertyMember, IPropertyValues, IIntegralCase
+    internal sealed class IntegralPropertyMember : PropertyMember, IPropertyValues, IIntegralAcceptor
     {
         public IntegralPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 

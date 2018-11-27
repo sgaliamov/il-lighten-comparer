@@ -1,16 +1,22 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
+using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal abstract class PropertyMember : Member, IPropertyMember
+    internal abstract class PropertyMember : IPropertyMember
     {
-        protected PropertyMember(PropertyInfo propertyInfo)
-            : base(propertyInfo.PropertyType, propertyInfo.DeclaringType) =>
-            PropertyInfo = propertyInfo;
+        private readonly PropertyInfo _propertyInfo;
 
-        public PropertyInfo PropertyInfo { get; }
+        protected PropertyMember(PropertyInfo propertyInfo) =>
+            _propertyInfo = propertyInfo;
 
-        public MethodInfo GetterMethod => PropertyInfo.GetMethod;
+        public MethodInfo GetterMethod => _propertyInfo.GetMethod;
+        public Type MemberType => _propertyInfo.PropertyType;
+        public Type OwnerType => _propertyInfo.DeclaringType;
+
+        public abstract ILEmitter Accept(StackEmitter stacker, ILEmitter il);
+        public abstract ILEmitter Accept(CompareEmitter emitter, ILEmitter il);
     }
 }

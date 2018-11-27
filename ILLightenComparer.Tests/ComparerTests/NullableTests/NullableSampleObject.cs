@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.NullableTests
 {

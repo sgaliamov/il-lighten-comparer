@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Cases;
+using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class NullablePropertyMember : PropertyMember, INullableCase, IPropertyValues
+    internal sealed class NullablePropertyMember : PropertyMember, INullableAcceptor, IPropertyValues
     {
         public NullablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo)
         {

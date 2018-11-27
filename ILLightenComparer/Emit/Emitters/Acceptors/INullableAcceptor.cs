@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
-using ILLightenComparer.Emit.Emitters.Members;
 
-namespace ILLightenComparer.Emit.Emitters.Cases
+namespace ILLightenComparer.Emit.Emitters.Acceptors
 {
-    internal interface INullableCase : IMember
+    internal interface INullableAcceptor : IAcceptor
     {
         MethodInfo GetValueMethod { get; }
         MethodInfo HasValueMethod { get; }

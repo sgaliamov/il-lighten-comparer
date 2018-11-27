@@ -1,7 +1,6 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Members;
-using ILLightenComparer.Emit.Members;
 
 namespace ILLightenComparer.Emit.Extensions
 {

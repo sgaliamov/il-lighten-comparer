@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members;
 
@@ -31,7 +31,7 @@ namespace ILLightenComparer.Emit.Reflection
             new Converter(GetFieldType, IsComparable, info => new ComparableFieldMember((FieldInfo)info))
         };
 
-        public IMember Convert(MemberInfo memberInfo)
+        public IAcceptor Convert(MemberInfo memberInfo)
         {
             foreach (var converter in Converters)
             {
@@ -86,7 +86,7 @@ namespace ILLightenComparer.Emit.Reflection
             public Converter(
                 Func<MemberInfo, (MemberInfo, Type)> convert,
                 Func<Type, bool> condition,
-                Func<MemberInfo, IMember> factory)
+                Func<MemberInfo, IAcceptor> factory)
             {
                 Convert = convert;
                 Condition = condition;
@@ -95,7 +95,7 @@ namespace ILLightenComparer.Emit.Reflection
 
             public Func<Type, bool> Condition { get; }
             public Func<MemberInfo, (MemberInfo, Type)> Convert { get; }
-            public Func<MemberInfo, IMember> Factory { get; }
+            public Func<MemberInfo, IAcceptor> Factory { get; }
         }
     }
 }
