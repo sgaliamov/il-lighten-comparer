@@ -78,7 +78,7 @@ namespace ILLightenComparer.Emit.Emitters
                          .EmitReturnNotZero();
         }
 
-        public ILEmitter Visit(INestedAcceptor member, ILEmitter il)
+        public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
             throw new NotImplementedException();
         }

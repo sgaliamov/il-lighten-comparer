@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Emit.Emitters.Acceptors
 {
-    internal interface INestedAcceptor : IAcceptor
+    internal interface IHierarchicalAcceptor : IAcceptor
     {
         Type MemberType { get; }
     }
