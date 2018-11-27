@@ -15,7 +15,7 @@ namespace ILLightenComparer.Emit.Members
         public Type OwnerType { get; }
         public Type MemberType { get; }
 
-        public abstract void Accept(StackEmitter visitor, ILEmitter il);
-        public abstract void Accept(CompareEmitter visitor, ILEmitter il);
+        public abstract ILEmitter Accept(StackEmitter visitor, ILEmitter il);
+        public abstract ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
     }
 }

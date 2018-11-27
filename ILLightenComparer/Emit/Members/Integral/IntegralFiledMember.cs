@@ -7,7 +7,7 @@ namespace ILLightenComparer.Emit.Members.Integral
     {
         public IntegralFiledMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public override void Accept(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
-        public override void Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public override ILEmitter Accept(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public override ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
     }
 }

@@ -7,7 +7,7 @@ namespace ILLightenComparer.Emit.Emitters.Members
         Type MemberType { get; }
         Type OwnerType { get; }
 
-        void Accept(StackEmitter stacker, ILEmitter il);
-        void Accept(CompareEmitter emitter, ILEmitter il);
+        ILEmitter Accept(StackEmitter stacker, ILEmitter il);
+        ILEmitter Accept(CompareEmitter emitter, ILEmitter il);
     }
 }
