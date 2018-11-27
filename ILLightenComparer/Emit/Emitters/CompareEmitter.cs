@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters
@@ -75,6 +76,11 @@ namespace ILLightenComparer.Emit.Emitters
                          .Emit(OpCodes.Ldc_I4_S, comparisonType) // todo: use short form for constants
                          .Emit(OpCodes.Call, Method.StringCompare)
                          .EmitReturnNotZero();
+        }
+
+        public ILEmitter Visit(INestedAcceptor member, ILEmitter il)
+        {
+            throw new NotImplementedException();
         }
 
         private static MethodInfo GetCompareToMethod(Type memberType) =>
