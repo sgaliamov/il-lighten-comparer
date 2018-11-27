@@ -10,9 +10,12 @@ namespace ILLightenComparer.Emit.Extensions
             type.GetMethod(MethodName.Factory)
                 .CreateDelegate<Func<TReturnType>>()();
 
-        public static MethodInfo GetCompareToMethod(this Type type) =>
-            type.GetUnderlyingType()
-                .GetMethod(MethodName.CompareTo, new[] { type });
+        public static MethodInfo GetCompareToMethod(this Type type)
+        {
+            var underlyingType = type.GetUnderlyingType();
+
+            return underlyingType.GetMethod(MethodName.CompareTo, new[] { underlyingType });
+        }
 
         public static Type GetUnderlyingType(this Type type)
         {
@@ -23,12 +26,14 @@ namespace ILLightenComparer.Emit.Extensions
                     return Enum.GetUnderlyingType(type);
                 }
 
-                if (!type.IsNullable())
+                if (type.IsNullable())
+                {
+                    type = type.GetGenericArguments()[0];
+                }
+                else
                 {
                     return type;
                 }
-
-                type = type.GetGenericArguments()[0];
             }
         }
 

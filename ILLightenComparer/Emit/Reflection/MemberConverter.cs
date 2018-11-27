@@ -74,7 +74,8 @@ namespace ILLightenComparer.Emit.Reflection
             return default;
         }
 
-        private static bool IsComparable(Type type) => type.GetCompareToMethod() != null;
+        private static bool IsComparable(Type type) => 
+            !type.IsNullable() && type.GetCompareToMethod() != null;
 
         private static bool IsString(Type type) => type == typeof(string);
 
