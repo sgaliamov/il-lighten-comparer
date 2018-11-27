@@ -11,7 +11,8 @@ namespace ILLightenComparer.Emit.Extensions
                 .CreateDelegate<Func<TReturnType>>()();
 
         public static MethodInfo GetCompareToMethod(this Type type) =>
-            type.GetMethod(MethodName.CompareTo, new[] { type });
+            type.GetUnderlyingType()
+                .GetMethod(MethodName.CompareTo, new[] { type });
 
         public static Type GetUnderlyingType(this Type type)
         {

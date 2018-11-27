@@ -12,7 +12,6 @@ namespace ILLightenComparer.Emit.Members.Comparable
         public ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) =>
             CompareToMethod = fieldInfo
                               .FieldType
-                              .GetUnderlyingType()
                               .GetCompareToMethod()
                               ?? throw new ArgumentException(
                                   $"{fieldInfo.DisplayName()} does not have {MethodName.CompareTo} method.");

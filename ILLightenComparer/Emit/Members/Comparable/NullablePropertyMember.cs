@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
+using ILLightenComparer.Emit.Emitters.Behaviours;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
@@ -14,7 +15,6 @@ namespace ILLightenComparer.Emit.Members.Comparable
             var propertyType = propertyInfo.PropertyType;
 
             CompareToMethod = propertyType
-                              .GetUnderlyingType()
                               .GetCompareToMethod()
                               ?? throw new ArgumentException(
                                   $"{propertyInfo.DisplayName()} does not have {MethodName.CompareTo} method.");

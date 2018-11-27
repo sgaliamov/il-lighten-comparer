@@ -12,7 +12,6 @@ namespace ILLightenComparer.Emit.Members.Comparable
         public ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) =>
             CompareToMethod = propertyInfo
                               .PropertyType
-                              .GetUnderlyingType()
                               .GetCompareToMethod()
                               ?? throw new ArgumentException(
                                   $"{propertyInfo.DisplayName()} does not have {MethodName.CompareTo} method.");
