@@ -21,11 +21,11 @@ namespace ILLightenComparer.Emit.Extensions
             return il.Call(member.OwnerType, member.GetterMethod);
         }
 
-        public static ILEmitter LoadField(this ILEmitter il, FieldMember member, ushort argumentIndex) =>
+        public static ILEmitter LoadField(this ILEmitter il, IFieldMember member, ushort argumentIndex) =>
             il.LoadArgument(argumentIndex)
               .Emit(OpCodes.Ldfld, member.FieldInfo);
 
-        public static ILEmitter LoadFieldAddress(this ILEmitter il, FieldMember member, ushort argumentIndex)
+        public static ILEmitter LoadFieldAddress(this ILEmitter il, IFieldMember member, ushort argumentIndex)
         {
             if (member.OwnerType.IsValueType)
             {

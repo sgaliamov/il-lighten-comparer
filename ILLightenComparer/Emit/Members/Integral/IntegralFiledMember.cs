@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
+using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members.Integral
 {
-    internal sealed class IntegralFiledMember : FieldMember, IIntegralMember
+    internal sealed class IntegralFiledMember : FieldMember, IFieldValues, IIntegralMember
     {
         public IntegralFiledMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 

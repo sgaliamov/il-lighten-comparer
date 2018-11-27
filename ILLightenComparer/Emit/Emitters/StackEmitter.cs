@@ -1,7 +1,7 @@
 ﻿using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members.Comparable;
-using ILLightenComparer.Emit.Members.Integral;
 
 namespace ILLightenComparer.Emit.Emitters
 {
@@ -44,15 +44,11 @@ namespace ILLightenComparer.Emit.Emitters
             return il;
         }
 
-        public ILEmitter Visit(IntegralFiledMember member, ILEmitter il) =>
+        public ILEmitter Visit(IFieldValues member, ILEmitter il) =>
             il.LoadField(member, 1)
               .LoadField(member, 2);
 
-        public ILEmitter Visit(IntegralPropertyMember member, ILEmitter il) =>
-            il.LoadProperty(member, 1)
-              .LoadProperty(member, 2);
-
-        public ILEmitter Visit(NullablePropertyMember member, ILEmitter il) =>
+        public ILEmitter Visit(IPropertyValues member, ILEmitter il) =>
             il.LoadProperty(member, 1)
               .LoadProperty(member, 2);
     }

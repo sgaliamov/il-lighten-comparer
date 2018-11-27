@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
+using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal abstract class FieldMember : Member
+    internal abstract class FieldMember : Member, IFieldMember
     {
         protected FieldMember(FieldInfo fieldInfo)
             : base(fieldInfo.FieldType, fieldInfo.DeclaringType) =>

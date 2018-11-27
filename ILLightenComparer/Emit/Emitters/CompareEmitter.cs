@@ -1,8 +1,6 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Members.Comparable;
-using ILLightenComparer.Emit.Members.Integral;
 
 namespace ILLightenComparer.Emit.Emitters
 {
@@ -22,7 +20,7 @@ namespace ILLightenComparer.Emit.Emitters
                   .Emit(OpCodes.Sub)
                   .EmitReturnNotZero();
 
-        public ILEmitter Visit(NullablePropertyMember member, ILEmitter il)
+        public ILEmitter Visit(INullableMember member, ILEmitter il)
         {
             member.Accept(_stackEmitter, il)
                   .DefineLabel(out var next);

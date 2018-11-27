@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members.Comparable
 {
-    internal sealed class NullablePropertyMember : PropertyMember, INullableMember
+    internal sealed class NullablePropertyMember : PropertyMember, INullableMember, IPropertyValues
     {
         public NullablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo)
         {

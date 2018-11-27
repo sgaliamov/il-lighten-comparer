@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
 using ILLightenComparer.Emit.Emitters;
+using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members.Integral
 {
-    internal sealed class IntegralPropertyMember : PropertyMember, IIntegralMember
+    internal sealed class IntegralPropertyMember : PropertyMember, IPropertyValues, IIntegralMember
     {
         public IntegralPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
