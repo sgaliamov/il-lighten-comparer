@@ -7,11 +7,6 @@ using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
-//          Method |     Mean |     Error |    StdDev |   Median | Ratio | Rank |
-//---------------- |---------:|----------:|----------:|---------:|------:|-----:|
-//     IL_Comparer | 16.91 us | 0.1019 us | 0.0953 us | 16.90 us |  1.06 |    2 |
-// Native_Comparer | 15.92 us | 0.0932 us | 0.0872 us | 15.93 us |  1.00 |    1 |
-
     [MedianColumn]
     [RankColumn]
     public class ComparersBenchmark

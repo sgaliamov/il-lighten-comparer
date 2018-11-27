@@ -23,7 +23,7 @@
 - [x] fixture generates Max and Min values
 - [X] fixture generates nulls
 - [x] ~~try to implement auto visitor~~ - moved to a separate project, to mush extra complexity
-- [ ] compare nullable
+- [x] compare nullable
 
 ## Phase 2 Hierarchical objects
 
