@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Behavioural;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members.Comparable;
