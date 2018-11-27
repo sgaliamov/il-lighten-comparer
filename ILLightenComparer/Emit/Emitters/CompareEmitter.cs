@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
@@ -16,10 +17,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IDefaultAcceptor member, ILEmitter il)
         {
             var memberType = member.MemberType;
-
-            var method =  memberType.GetCompareToMethod()
-                ?? throw new ArgumentException(
-                    $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
+            var method = GetCompareToMethod(memberType);
 
             return member.Accept(_stackEmitter, il)
                          .Emit(OpCodes.Call, method)
@@ -52,6 +50,8 @@ namespace ILLightenComparer.Emit.Emitters
             }
             else
             {
+                var method = GetCompareToMethod(memberType);
+
                 il.LoadAddress(n1)
                   .Call(memberType, member.GetValueMethod)
                   .DeclareLocal(memberType.GetUnderlyingType(), out var local)
@@ -59,7 +59,7 @@ namespace ILLightenComparer.Emit.Emitters
                   .LoadAddress(local)
                   .LoadAddress(n2)
                   .Call(memberType, member.GetValueMethod)
-                  .Emit(OpCodes.Call, member.CompareToMethod);
+                  .Emit(OpCodes.Call, method);
             }
 
             il.EmitReturnNotZero(next);
@@ -76,6 +76,11 @@ namespace ILLightenComparer.Emit.Emitters
                          .Emit(OpCodes.Call, Method.StringCompare)
                          .EmitReturnNotZero();
         }
+
+        private static MethodInfo GetCompareToMethod(Type memberType) =>
+            memberType.GetCompareToMethod()
+            ?? throw new ArgumentException(
+                $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
         private static void CheckValuesForNull(
             ILEmitter il,

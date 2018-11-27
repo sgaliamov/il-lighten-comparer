@@ -14,11 +14,6 @@ namespace ILLightenComparer.Emit.Members
         {
             var propertyType = propertyInfo.PropertyType;
 
-            CompareToMethod = propertyType
-                                  .GetCompareToMethod()
-                              ?? throw new ArgumentException(
-                                  $"{propertyInfo.DisplayName()} does not have {MethodName.CompareTo} method.");
-
             HasValueMethod = propertyType
                              .GetProperty(MethodName.HasValue)
                              ?.GetGetMethod()
@@ -34,7 +29,6 @@ namespace ILLightenComparer.Emit.Members
 
         public MethodInfo GetValueMethod { get; }
         public MethodInfo HasValueMethod { get; }
-        public MethodInfo CompareToMethod { get; }
 
         public ILEmitter Accept(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
