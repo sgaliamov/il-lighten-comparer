@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
+
+#if DEBUG
+using System.Linq;
+#endif
 
 namespace ILLightenComparer.Emit.Emitters
 {
@@ -214,7 +217,7 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
-        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local) => 
+        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local) =>
             DeclareLocal(localType, out local, 0);
 
         public ILEmitter DeclareLocal(Type localType, out LocalBuilder local, byte bucket)

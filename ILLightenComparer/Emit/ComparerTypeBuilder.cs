@@ -79,7 +79,7 @@ namespace ILLightenComparer.Emit
 
         private void EmitMembersComparision(ILEmitter il, Type objectType)
         {
-            var members = _membersProvider.GetMembers(objectType, _context.Configuration);
+            var members = _membersProvider.GetMembers(objectType);
 
             InitFirstLocalToKeepComparisonsResult(il);
             foreach (var member in members)

@@ -8,15 +8,22 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MembersProvider
     {
-        private readonly MemberConverter _converter = new MemberConverter();
+        private readonly TypeBuilderContext _context;
+        private readonly MemberConverter _converter;
 
-        public IAcceptor[] GetMembers(Type type, CompareConfiguration configuration) =>
+        public MembersProvider(TypeBuilderContext context)
+        {
+            _context = context;
+            _converter = new MemberConverter(_context);
+        }
+
+        public IAcceptor[] GetMembers(Type type) =>
             type.GetMembers(
                     BindingFlags.Instance
                     | BindingFlags.FlattenHierarchy
                     | BindingFlags.Public)
-                .Where(memberInfo => IgnoredMembers(memberInfo, configuration.IgnoredMembers))
-                .Where(memberInfo => IncludeFields(memberInfo, configuration.IncludeFields))
+                .Where(memberInfo => IgnoredMembers(memberInfo, _context.Configuration.IgnoredMembers))
+                .Where(memberInfo => IncludeFields(memberInfo, _context.Configuration.IncludeFields))
                 .OrderBy(x => x.MemberType) // todo: use functor from settings
                 .ThenBy(x => x.Name)
                 .Select(_converter.Convert)

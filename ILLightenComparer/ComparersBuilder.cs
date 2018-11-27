@@ -15,12 +15,12 @@ namespace ILLightenComparer
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly TypeBuilderContext _context = new TypeBuilderContext();
         private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
-        private readonly MembersProvider _membersProvider = new MembersProvider();
 
         public ComparersBuilder()
         {
-            _equalityComparerTypeBuilder = new EqualityComparerTypeBuilder(_context, _membersProvider);
-            _comparerTypeBuilder = new ComparerTypeBuilder(_context, _membersProvider);
+            var membersProvider = new MembersProvider(_context);
+            _equalityComparerTypeBuilder = new EqualityComparerTypeBuilder(_context, membersProvider);
+            _comparerTypeBuilder = new ComparerTypeBuilder(_context, membersProvider);
         }
 
         public IComparer<T> CreateComparer<T>() => (IComparer<T>)CreateComparer(typeof(T));
