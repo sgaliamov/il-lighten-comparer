@@ -15,7 +15,7 @@ namespace ILLightenComparer.Emit.Reflection
             new Converter(IsString, info => new StringPropertyMember((PropertyInfo)info)),
             new Converter(IsIntegral, info => new IntegralPropertyMember((PropertyInfo)info)),
             new Converter(TypeExtensions.IsNullable, info => new NullablePropertyMember((PropertyInfo)info)),
-            new Converter(IsComparable, info => new ComparablePropertyMember((PropertyInfo)info))
+            new Converter(IsComparable, info => new DefaultPropertyMember((PropertyInfo)info))
         };
 
         private static readonly Converter[] FieldConverters =
@@ -23,7 +23,7 @@ namespace ILLightenComparer.Emit.Reflection
             new Converter(IsString, info => new StringFiledMember((FieldInfo)info)),
             new Converter(IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
             new Converter(TypeExtensions.IsNullable, info => new NullableFieldMember((FieldInfo)info)),
-            new Converter(IsComparable, info => new ComparableFieldMember((FieldInfo)info))
+            new Converter(IsComparable, info => new DefaultFieldMember((FieldInfo)info))
         };
 
         private readonly TypeBuilderContext _context;

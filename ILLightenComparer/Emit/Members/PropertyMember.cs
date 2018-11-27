@@ -8,8 +8,7 @@ namespace ILLightenComparer.Emit.Members
     {
         private readonly PropertyInfo _propertyInfo;
 
-        protected PropertyMember(PropertyInfo propertyInfo) =>
-            _propertyInfo = propertyInfo;
+        protected PropertyMember(PropertyInfo propertyInfo) => _propertyInfo = propertyInfo;
 
         public Type MemberType => _propertyInfo.PropertyType;
         public MethodInfo GetterMethod => _propertyInfo.GetMethod;

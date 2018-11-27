@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
@@ -12,10 +13,18 @@ namespace ILLightenComparer.Emit.Emitters
 
         public CompareEmitter(TypeBuilderContext context) => _context = context;
 
-        public ILEmitter Visit(IComparableAcceptor member, ILEmitter il) =>
-            member.Accept(_stackEmitter, il)
-                  .Emit(OpCodes.Call, member.CompareToMethod)
-                  .EmitReturnNotZero();
+        public ILEmitter Visit(IDefaultAcceptor member, ILEmitter il)
+        {
+            var memberType = member.MemberType;
+
+            var method =  memberType.GetCompareToMethod()
+                ?? throw new ArgumentException(
+                    $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
+
+            return member.Accept(_stackEmitter, il)
+                         .Emit(OpCodes.Call, method)
+                         .EmitReturnNotZero();
+        }
 
         public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il) =>
             member.Accept(_stackEmitter, il)
