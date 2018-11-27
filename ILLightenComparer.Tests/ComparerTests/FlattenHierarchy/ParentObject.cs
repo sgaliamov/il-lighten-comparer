@@ -9,8 +9,14 @@ namespace ILLightenComparer.Tests.ComparerTests.FlattenHierarchy
         public EnumSmall? EnumField;
 
         public static IComparer<ParentObject> ParentObjectComparer { get; } = new ParentObjectRelationalComparer();
-        
+
         public EnumBig? EnumProperty { get; set; }
+
+        // ReSharper disable once UnusedMember.Local
+        private int IgnoredPrivateProperty { get; set; }
+
+        // ReSharper disable once UnusedMember.Global
+        protected int IgnoredProtectedProperty { get; set; }
 
         private sealed class ParentObjectRelationalComparer : IComparer<ParentObject>
         {

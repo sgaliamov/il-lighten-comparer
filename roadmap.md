@@ -67,3 +67,4 @@
 - [ ] prepare presentation
 - [ ] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
 - [ ] compared dynamic?
+- [ ] compare private and protected members?

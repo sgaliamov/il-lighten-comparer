@@ -28,6 +28,10 @@ Frequency=2531248 Hz, Resolution=395.0620 ns, Timer=TSC
 |     IL_Comparer | 240.3 us | 2.676 us | 2.503 us | 240.4 us |  0.70 |    1 |
 | Native_Comparer | 343.2 us | 3.218 us | 2.853 us | 343.7 us |  1.00 |    2 |
 
+## Limitations
+
+* *protected* and *private* members are ignored during comparison.
+
 ### Links
 
 * [Roadmap](./roadmap.md).

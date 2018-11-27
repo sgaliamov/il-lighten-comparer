@@ -5,3 +5,5 @@
     ``` csharp
     public IComparer CreateComparer(Type type) => (IComparer)_comparerBuilder.Build<T>(type);
     ```
+
+1. *protected* and *private* members are not taken into account for now, because they are not visible for outer code and it will be not possible to define ordering for them.
