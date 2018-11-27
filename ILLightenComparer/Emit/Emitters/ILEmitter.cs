@@ -1,27 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters
 {
+    using Locals = Dictionary<byte, Dictionary<Type, LocalBuilder>>;
+
     internal sealed class ILEmitter : IDisposable
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
+
+#if DEBUG
+        private readonly List<Label> _debugLabels = new List<Label>();
+#endif
         private ILGenerator _il;
-        private Dictionary<Type, LocalBuilder> _tempLocals = new Dictionary<Type, LocalBuilder>();
+
+        private Locals _localBuckets = new Locals
+        {
+            { 0, new Dictionary<Type, LocalBuilder>() }
+        };
 
         public ILEmitter(ILGenerator il) => _il = il;
 
         public void Dispose()
         {
 #if DEBUG
-            if (_locals.Count != 0)
+            var locals = _localBuckets.Values.SelectMany(x => x.Values).ToArray();
+            if (locals.Length != 0)
             {
                 Debug.WriteLine("\t.locals init (");
-                foreach (var item in _locals)
+                foreach (var item in locals)
                 {
                     Debug.WriteLine($"\t\t[{item.LocalIndex}] {item.LocalType}");
                 }
@@ -30,7 +42,7 @@ namespace ILLightenComparer.Emit.Emitters
             }
 #endif
             _il = null;
-            _tempLocals = null;
+            _localBuckets = null;
         }
 
         public ILEmitter Emit(OpCode opCode)
@@ -55,7 +67,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             label = _il.DefineLabel();
 #if DEBUG
-            _labels.Add(label);
+            _debugLabels.Add(label);
 #endif
             return this;
         }
@@ -63,7 +75,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter MarkLabel(Label label)
         {
 #if DEBUG
-            Debug.WriteLine($"\tLabel_{_labels.IndexOf(label)}:");
+            Debug.WriteLine($"\tLabel_{_debugLabels.IndexOf(label)}:");
 #endif
             _il.MarkLabel(label);
 
@@ -73,7 +85,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Emit(OpCode opCode, Label label)
         {
 #if DEBUG
-            Debug.WriteLine($"\t\t{opCode} Label_{_labels.IndexOf(label)}");
+            Debug.WriteLine($"\t\t{opCode} Label_{_debugLabels.IndexOf(label)}");
 #endif
             _il.Emit(opCode, label);
 
@@ -202,32 +214,22 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
-        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local)
-        {
-            local = _il.DeclareLocal(localType);
-#if DEBUG
-            _locals.Add(local);
-#endif
-            return this;
-        }
+        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local) => 
+            DeclareLocal(localType, out local, 0);
 
-        public ILEmitter TempLocal(Type localType, out LocalBuilder local)
+        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local, byte bucket)
         {
-            if (_tempLocals.TryGetValue(localType, out local))
+            if (!_localBuckets.TryGetValue(bucket, out var locals))
             {
-                return this;
+                locals = _localBuckets[bucket] = new Dictionary<Type, LocalBuilder>();
             }
 
-            local = _tempLocals[localType] = _il.DeclareLocal(localType);
-#if DEBUG
-            _locals.Add(local);
-#endif
+            if (!locals.TryGetValue(localType, out local))
+            {
+                local = locals[localType] = _il.DeclareLocal(localType);
+            }
+
             return this;
         }
-
-#if DEBUG
-        private readonly List<Label> _labels = new List<Label>();
-        private readonly List<LocalBuilder> _locals = new List<LocalBuilder>();
-#endif
     }
 }

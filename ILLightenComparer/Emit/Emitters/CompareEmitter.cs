@@ -38,16 +38,16 @@ namespace ILLightenComparer.Emit.Emitters
             var propertyType = member.MemberType;
 
             il.LoadProperty(member, 2) // var n2 = &arg2
-              .DeclareLocal(propertyType, out var n2)
+              .DeclareLocal(propertyType, out var n2, 0)
               .Store(n2)
               .LoadAddress(n2)
               // var secondHasValue = n2->HasValue
               .Call(propertyType, member.HasValueMethod)
-              .TempLocal(typeof(bool), out var secondHasValue)
+              .DeclareLocal(typeof(bool), out var secondHasValue)
               .Store(secondHasValue)
               // var n1 = &arg1
               .LoadProperty(member, 1)
-              .DeclareLocal(propertyType, out var n1)
+              .DeclareLocal(propertyType, out var n1, 1)
               .Store(n1)
               .LoadAddress(n1)
               // if n1->HasValue goto firstHasValue
@@ -70,7 +70,7 @@ namespace ILLightenComparer.Emit.Emitters
               .MarkLabel(getValues)
               .LoadAddress(n1)
               .Call(propertyType, member.GetValueMethod)
-              .TempLocal(member.MemberType.GetUnderlyingType(), out var local)
+              .DeclareLocal(member.MemberType.GetUnderlyingType(), out var local)
               .Store(local)
               .LoadAddress(local)
               .LoadAddress(n2)

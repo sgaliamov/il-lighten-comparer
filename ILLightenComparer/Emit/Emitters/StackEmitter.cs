@@ -20,7 +20,7 @@ namespace ILLightenComparer.Emit.Emitters
         public void Visit(ComparablePropertyMember member, ILEmitter il)
         {
             il.LoadProperty(member, 1)
-              .TempLocal(member.MemberType.GetUnderlyingType(), out var local)
+              .DeclareLocal(member.MemberType.GetUnderlyingType(), out var local)
               .Store(local)
               .LoadAddress(local)
               .LoadProperty(member, 2);

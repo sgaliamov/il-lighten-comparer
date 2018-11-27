@@ -5,12 +5,12 @@ namespace ILLightenComparer.Emit.Members
 {
     internal abstract class PropertyMember : Member, IPropertyMember
     {
-        private readonly PropertyInfo _propertyInfo;
-
         protected PropertyMember(PropertyInfo propertyInfo)
             : base(propertyInfo.PropertyType, propertyInfo.DeclaringType) =>
-            _propertyInfo = propertyInfo;
+            PropertyInfo = propertyInfo;
 
-        public MethodInfo GetterMethod => _propertyInfo.GetMethod;
+        public PropertyInfo PropertyInfo { get; }
+
+        public MethodInfo GetterMethod => PropertyInfo.GetMethod;
     }
 }
