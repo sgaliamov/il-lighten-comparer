@@ -1,6 +1,5 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Behavioural;
-using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members.Comparable;
 
@@ -16,7 +15,7 @@ namespace ILLightenComparer.Emit.Emitters
             il.LoadFieldAddress(member, 1)
               .LoadField(member, 2);
 
-        public ILEmitter Visit(ComparablePropertyMember member, ILEmitter il) =>
+        public ILEmitter Visit(ICallableProperty member, ILEmitter il) =>
             il.LoadProperty(member, 1)
               .DeclareLocal(member.MemberType.GetUnderlyingType(), out var local)
               .Store(local)
