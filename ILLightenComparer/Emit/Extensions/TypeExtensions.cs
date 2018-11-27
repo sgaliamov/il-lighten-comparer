@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using ILLightenComparer.Emit.Reflection;
 
@@ -6,6 +7,15 @@ namespace ILLightenComparer.Emit.Extensions
 {
     internal static class TypeExtensions
     {
+        private static readonly HashSet<Type> SmallIntegralTypes = new HashSet<Type>(new[]
+        {
+            typeof(sbyte),
+            typeof(byte),
+            typeof(char),
+            typeof(short),
+            typeof(ushort)
+        });
+
         public static TReturnType CreateInstance<TReturnType>(this Type type) =>
             type.GetMethod(MethodName.Factory)
                 .CreateDelegate<Func<TReturnType>>()();
@@ -41,5 +51,8 @@ namespace ILLightenComparer.Emit.Extensions
             type.IsGenericType
             && !type.IsGenericTypeDefinition
             && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
+
+        public static bool IsSmallIntegral(this Type type) =>
+            !type.IsNullable() && SmallIntegralTypes.Contains(type.GetUnderlyingType());
     }
 }

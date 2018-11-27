@@ -82,7 +82,7 @@ namespace ILLightenComparer.Emit.Emitters
                      .MarkLabel(getValues)
                      .LoadAddress(n1)
                      .Call(memberType, member.GetValueMethod)
-                     .DeclareLocal(member.MemberType.GetUnderlyingType(), out var local)
+                     .DeclareLocal(memberType.GetUnderlyingType(), out var local)
                      .Store(local)
                      .LoadAddress(local)
                      .LoadAddress(n2)

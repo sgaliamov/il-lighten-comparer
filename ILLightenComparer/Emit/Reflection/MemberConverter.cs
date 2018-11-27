@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
@@ -9,25 +8,22 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private static readonly HashSet<Type> SmallIntegralTypes = new HashSet<Type>(new[]
-        {
-            typeof(sbyte),
-            typeof(byte),
-            typeof(char),
-            typeof(short),
-            typeof(ushort)
-        });
-
         // todo: split on two collections and use IncludeFields setting
         private static readonly Converter[] Converters =
         {
             new Converter(GetPropertyType, IsString, info => new StringPropertyMember((PropertyInfo)info)),
-            new Converter(GetPropertyType, IsIntegral, info => new IntegralPropertyMember((PropertyInfo)info)),
+            new Converter(
+                GetPropertyType,
+                TypeExtensions.IsSmallIntegral,
+                info => new IntegralPropertyMember((PropertyInfo)info)),
             new Converter(GetPropertyType, IsComparable, info => new ComparablePropertyMember((PropertyInfo)info)),
             new Converter(GetPropertyType, IsNullable, info => new NullablePropertyMember((PropertyInfo)info)),
 
             new Converter(GetFieldType, IsString, info => new StringFiledMember((FieldInfo)info)),
-            new Converter(GetFieldType, IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
+            new Converter(
+                GetFieldType,
+                TypeExtensions.IsSmallIntegral,
+                info => new IntegralFiledMember((FieldInfo)info)),
             new Converter(GetFieldType, IsComparable, info => new ComparableFieldMember((FieldInfo)info)),
             new Converter(GetFieldType, IsNullable, info => new NullableFieldMember((FieldInfo)info))
         };
@@ -74,13 +70,10 @@ namespace ILLightenComparer.Emit.Reflection
             return default;
         }
 
-        private static bool IsComparable(Type type) => 
+        private static bool IsComparable(Type type) =>
             !type.IsNullable() && type.GetCompareToMethod() != null;
 
         private static bool IsString(Type type) => type == typeof(string);
-
-        private static bool IsIntegral(Type type) =>
-            !type.IsNullable() && SmallIntegralTypes.Contains(type.GetUnderlyingType());
 
         private sealed class Converter
         {
