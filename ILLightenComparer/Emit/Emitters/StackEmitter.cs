@@ -12,7 +12,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public StackEmitter(TypeBuilderContext context) => _context = context;
 
-        public ILEmitter Visit(ComparableFieldMember member, ILEmitter il) =>
+        public ILEmitter Visit(ICallableField member, ILEmitter il) =>
             il.LoadFieldAddress(member, 1)
               .LoadField(member, 2);
 

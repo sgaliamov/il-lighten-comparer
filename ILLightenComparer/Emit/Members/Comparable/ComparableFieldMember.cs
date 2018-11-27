@@ -8,7 +8,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members.Comparable
 {
-    internal sealed class ComparableFieldMember : FieldMember, IComparableMember
+    internal sealed class ComparableFieldMember : FieldMember, IComparableMember, ICallableField
     {
         public ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) =>
             CompareToMethod = fieldInfo
