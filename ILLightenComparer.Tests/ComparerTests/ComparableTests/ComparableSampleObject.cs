@@ -7,11 +7,12 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
     {
         public EnumBig EnumField;
         public int Field;
-        public EnumBig EnumProperty { get; set; }
-        public int Property { get; set; }
 
         public static IComparer<ComparableSampleObject> Comparer { get; } =
             new ComparableSampleObjectRelationalComparer();
+
+        public EnumBig EnumProperty { get; set; }
+        public int Property { get; set; }
 
         public override string ToString() =>
             $"{nameof(EnumField)}: {EnumField}, {nameof(Field)}: {Field}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(Property)}: {Property}";

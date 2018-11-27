@@ -52,7 +52,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         protected IComparer<T> TypedComparer => ComparersBuilder.CreateComparer<T>();
 
         private const int Count = 10000;
-        
+
         private ComparersBuilder _comparersBuilder;
 
         private static void Compare(IEnumerable<T> one, IEnumerable<T> other)

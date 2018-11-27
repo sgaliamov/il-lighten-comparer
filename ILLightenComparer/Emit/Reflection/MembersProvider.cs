@@ -54,7 +54,7 @@ namespace ILLightenComparer.Emit.Reflection
                 }
 
                 dictionary.Remove(item);
-                
+
                 yield return memberInfo;
             }
 

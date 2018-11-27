@@ -5,9 +5,9 @@ namespace ILLightenComparer.Emit.Emitters.Acceptors
 {
     internal interface INullableAcceptor : IAcceptor
     {
-        Type MemberType { get; }
+        MethodInfo CompareToMethod { get; }
         MethodInfo GetValueMethod { get; }
         MethodInfo HasValueMethod { get; }
-        MethodInfo CompareToMethod { get; }
+        Type MemberType { get; }
     }
 }

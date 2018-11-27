@@ -37,7 +37,7 @@ namespace ILLightenComparer.Tests.ComparerTests.NullableTests
             }
         }
 
-        public static IComparer<NullableSampleStruct> Comparer { get; } = 
+        public static IComparer<NullableSampleStruct> Comparer { get; } =
             new NullableSampleStructRelationalComparer();
     }
 }

@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
-
 #if DEBUG
 using System.Linq;
+
 #endif
 
 namespace ILLightenComparer.Emit.Emitters

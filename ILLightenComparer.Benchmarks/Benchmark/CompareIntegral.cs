@@ -17,6 +17,10 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         private readonly byte[] _one = new byte[N];
         private readonly byte[] _other = new byte[N];
 
+        // ReSharper disable NotAccessedField.Local
+        private int _out;
+        // ReSharper restore NotAccessedField.Local
+
         [GlobalSetup]
         public void Setup()
         {
@@ -67,9 +71,5 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                 }
             }
         }
-
-        // ReSharper disable NotAccessedField.Local
-        private int _out;
-        // ReSharper restore NotAccessedField.Local
     }
 }

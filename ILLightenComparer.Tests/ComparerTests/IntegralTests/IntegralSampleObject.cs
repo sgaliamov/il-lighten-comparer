@@ -12,15 +12,15 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
         public short ShortField;
         public ushort UShortField;
 
+        public static IComparer<IntegralSampleObject> Comparer { get; } =
+            new IntegralSampleObjectRelationalComparer();
+
         public byte ByteProperty { get; set; }
         public char CharProperty { get; set; }
         public EnumSmall EnumProperty { get; set; }
         public sbyte SByteProperty { get; set; }
         public short ShortProperty { get; set; }
         public ushort UShortProperty { get; set; }
-
-        public static IComparer<IntegralSampleObject> Comparer { get; } =
-            new IntegralSampleObjectRelationalComparer();
 
         private sealed class IntegralSampleObjectRelationalComparer : IComparer<IntegralSampleObject>
         {

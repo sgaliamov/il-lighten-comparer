@@ -27,7 +27,7 @@
 
 ## Phase 2 Hierarchical objects
 
-- [ ] FlattenHierarchy
+- [x] FlattenHierarchy
 - [ ] nested object
 - [ ] nested struct
 - [ ] detect cycles (check graph theory)
