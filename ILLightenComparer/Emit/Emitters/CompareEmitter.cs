@@ -21,7 +21,7 @@ namespace ILLightenComparer.Emit.Emitters
             var method = GetCompareToMethod(memberType);
 
             return member.Accept(_stackEmitter, il)
-                         .Emit(OpCodes.Call, method)
+                         .Call(method)
                          .EmitReturnNotZero();
         }
 
@@ -44,9 +44,9 @@ namespace ILLightenComparer.Emit.Emitters
             if (memberType.IsSmallIntegral())
             {
                 il.LoadAddress(n1)
-                  .Call(memberType, member.GetValueMethod)
+                  .Call(member.GetValueMethod)
                   .LoadAddress(n2)
-                  .Call(memberType, member.GetValueMethod)
+                  .Call(member.GetValueMethod)
                   .Emit(OpCodes.Sub);
             }
             else
@@ -54,13 +54,13 @@ namespace ILLightenComparer.Emit.Emitters
                 var method = GetCompareToMethod(memberType);
 
                 il.LoadAddress(n1)
-                  .Call(memberType, member.GetValueMethod)
+                  .Call(member.GetValueMethod)
                   .DeclareLocal(memberType.GetUnderlyingType(), out var local)
                   .Store(local)
                   .LoadAddress(local)
                   .LoadAddress(n2)
-                  .Call(memberType, member.GetValueMethod)
-                  .Emit(OpCodes.Call, method);
+                  .Call(member.GetValueMethod)
+                  .Call(method);
             }
 
             il.EmitReturnNotZero(next);
@@ -74,7 +74,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             return member.Accept(_stackEmitter, il)
                          .Emit(OpCodes.Ldc_I4_S, comparisonType) // todo: use short form for constants
-                         .Emit(OpCodes.Call, Method.StringCompare)
+                         .Call(Method.StringCompare)
                          .EmitReturnNotZero();
         }
 
@@ -106,14 +106,14 @@ namespace ILLightenComparer.Emit.Emitters
                 .Store(n2)
                 .LoadAddress(n2)
                 // var secondHasValue = n2->HasValue
-                .Call(memberType, member.HasValueMethod)
+                .Call(member.HasValueMethod)
                 .DeclareLocal(typeof(bool), out var secondHasValue)
                 .Store(secondHasValue)
                 // var n1 = &arg1
                 .Store(n1)
                 .LoadAddress(n1)
                 // if n1->HasValue goto firstHasValue
-                .Call(memberType, member.HasValueMethod)
+                .Call(member.HasValueMethod)
                 .Branch(OpCodes.Brtrue_S, out var firstHasValue)
                 // if n2->HasValue goto returnZero
                 .LoadLocal(secondHasValue)

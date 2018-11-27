@@ -145,7 +145,7 @@ namespace ILLightenComparer.Emit
                   .EmitCast(objectType)
                   .Emit(OpCodes.Ldarg_2)
                   .EmitCast(objectType)
-                  .Emit(OpCodes.Call, staticCompareMethod)
+                  .Call(staticCompareMethod)
                   .Emit(OpCodes.Ret);
             }
         }
@@ -162,7 +162,7 @@ namespace ILLightenComparer.Emit
                 il.Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
                   .Emit(OpCodes.Ldarg_1)
                   .Emit(OpCodes.Ldarg_2)
-                  .Emit(OpCodes.Call, staticCompareMethod)
+                  .Call(staticCompareMethod)
                   .Emit(OpCodes.Ret);
             }
         }

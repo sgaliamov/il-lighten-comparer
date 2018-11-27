@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emit.Extensions
                 il.LoadArgument(argumentIndex);
             }
 
-            return il.Call(member.OwnerType, member.GetterMethod);
+            return il.Call(member.GetterMethod);
         }
 
         public static ILEmitter LoadField(this ILEmitter il, IFieldMember member, ushort argumentIndex) =>

@@ -113,9 +113,11 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter Call(Type methodOwner, MethodInfo methodInfo)
+        public ILEmitter Call(MethodInfo methodInfo)
         {
-            var opCode = methodOwner == null || methodOwner.IsValueType || methodOwner.IsSealed
+            var owner = methodInfo.DeclaringType;
+
+            var opCode = owner == null || owner.IsValueType || owner.IsSealed
                 ? OpCodes.Call
                 : OpCodes.Callvirt;
 
