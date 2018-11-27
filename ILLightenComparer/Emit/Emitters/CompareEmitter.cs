@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters
@@ -17,6 +16,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IDefaultAcceptor member, ILEmitter il)
         {
+            // todo: maybe merge with IHierarchicalAcceptor
             var memberType = member.MemberType;
             var method = GetCompareToMethod(memberType);
 
@@ -80,7 +80,12 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
-            throw new NotImplementedException();
+            if (member.MemberType.IsValueType || member.MemberType.IsSealed)
+            {
+                throw new NotImplementedException();
+            }
+
+            return il;
         }
 
         private static MethodInfo GetCompareToMethod(Type memberType) =>

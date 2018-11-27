@@ -64,6 +64,7 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static bool IsIntegral(Type type) => !type.IsNullable() && type.IsSmallIntegral();
 
+        // todo: converter should not know about type of visitor
         private static bool IsComparable(Type type) => !type.IsNullable() && type.GetCompareToMethod() != null;
 
         private static bool IsString(Type type) => type == typeof(string);

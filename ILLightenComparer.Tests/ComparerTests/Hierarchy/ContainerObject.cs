@@ -8,7 +8,7 @@ namespace ILLightenComparer.Tests.ComparerTests.Hierarchy
 
         public ComparableNestedObject Comparable { get; set; }
         public NestedObject First { get; set; }
-        public NestedObject Second { get; set; }
+        public NestedObject Second { get; set; } // todo: test with field
         public int Value { get; set; }
 
         private sealed class ValueRelationalComparer : IComparer<ContainerObject>
