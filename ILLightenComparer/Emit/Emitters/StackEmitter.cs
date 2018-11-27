@@ -16,11 +16,11 @@ namespace ILLightenComparer.Emit.Emitters
               .LoadAddress(local)
               .LoadProperty(member, 2);
 
-        public ILEmitter Visit(IFieldValues member, ILEmitter il) =>
+        public ILEmitter Visit(ITwoArgumentsField member, ILEmitter il) =>
             il.LoadField(member, 1)
               .LoadField(member, 2);
 
-        public ILEmitter Visit(IPropertyValues member, ILEmitter il) =>
+        public ILEmitter Visit(ITwoArgumentsProperty member, ILEmitter il) =>
             il.LoadProperty(member, 1)
               .LoadProperty(member, 2);
     }

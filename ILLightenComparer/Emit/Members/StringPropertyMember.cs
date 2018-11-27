@@ -5,7 +5,7 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringPropertyMember : PropertyMember, IStringAcceptor, IPropertyValues
+    internal sealed class StringPropertyMember : PropertyMember, IStringAcceptor, ITwoArgumentsProperty
     {
         public StringPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 

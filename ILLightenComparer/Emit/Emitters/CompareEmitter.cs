@@ -49,21 +49,21 @@ namespace ILLightenComparer.Emit.Emitters
             INullableAcceptor member,
             Label next)
         {
-            var propertyType = member.MemberType;
+            var memberType = member.MemberType;
 
-            return il.DeclareLocal(propertyType, out var n1, 0)
-                     .DeclareLocal(propertyType, out var n2, 1)
+            return il.DeclareLocal(memberType, out var n1, 0)
+                     .DeclareLocal(memberType, out var n2, 1)
                      .Store(n2)
                      .LoadAddress(n2)
                      // var secondHasValue = n2->HasValue
-                     .Call(propertyType, member.HasValueMethod)
+                     .Call(memberType, member.HasValueMethod)
                      .DeclareLocal(typeof(bool), out var secondHasValue)
                      .Store(secondHasValue)
                      // var n1 = &arg1
                      .Store(n1)
                      .LoadAddress(n1)
                      // if n1->HasValue goto firstHasValue
-                     .Call(propertyType, member.HasValueMethod)
+                     .Call(memberType, member.HasValueMethod)
                      .Branch(OpCodes.Brtrue_S, out var firstHasValue)
                      // if n2->HasValue goto returnZero
                      .LoadLocal(secondHasValue)
@@ -81,12 +81,12 @@ namespace ILLightenComparer.Emit.Emitters
                      // getValues: load values
                      .MarkLabel(getValues)
                      .LoadAddress(n1)
-                     .Call(propertyType, member.GetValueMethod)
+                     .Call(memberType, member.GetValueMethod)
                      .DeclareLocal(member.MemberType.GetUnderlyingType(), out var local)
                      .Store(local)
                      .LoadAddress(local)
                      .LoadAddress(n2)
-                     .Call(propertyType, member.GetValueMethod);
+                     .Call(memberType, member.GetValueMethod);
         }
     }
 }

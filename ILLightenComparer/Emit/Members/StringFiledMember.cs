@@ -5,7 +5,7 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringFiledMember : FieldMember, IStringAcceptor, IFieldValues
+    internal sealed class StringFiledMember : FieldMember, IStringAcceptor, ITwoArgumentsField
     {
         public StringFiledMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 

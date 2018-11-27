@@ -5,7 +5,7 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class IntegralPropertyMember : PropertyMember, IPropertyValues, IIntegralAcceptor
+    internal sealed class IntegralPropertyMember : PropertyMember, ITwoArgumentsProperty, IIntegralAcceptor
     {
         public IntegralPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
