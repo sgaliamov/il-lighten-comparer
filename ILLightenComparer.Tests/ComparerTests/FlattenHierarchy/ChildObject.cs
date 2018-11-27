@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.ComparerTests.FlattenHierarchy
 {
-    public sealed class ChildObject : ParentObject
+    public sealed class ChildObject : BaseObject
     {
         public int Field;
 

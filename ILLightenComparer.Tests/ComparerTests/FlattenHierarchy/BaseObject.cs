@@ -4,11 +4,11 @@ using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.FlattenHierarchy
 {
-    public class ParentObject
+    public class BaseObject
     {
         public EnumSmall? EnumField;
 
-        public static IComparer<ParentObject> ParentObjectComparer { get; } = new ParentObjectRelationalComparer();
+        public static IComparer<BaseObject> ParentObjectComparer { get; } = new ParentObjectRelationalComparer();
 
         public EnumBig? EnumProperty { get; set; }
 
@@ -18,9 +18,9 @@ namespace ILLightenComparer.Tests.ComparerTests.FlattenHierarchy
         // ReSharper disable once UnusedMember.Global
         protected int IgnoredProtectedProperty { get; set; }
 
-        private sealed class ParentObjectRelationalComparer : IComparer<ParentObject>
+        private sealed class ParentObjectRelationalComparer : IComparer<BaseObject>
         {
-            public int Compare(ParentObject x, ParentObject y)
+            public int Compare(BaseObject x, BaseObject y)
             {
                 if (ReferenceEquals(x, y))
                 {

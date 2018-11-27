@@ -39,18 +39,19 @@
 
 - [ ] compare collection, do not iterate IEnumerable
 - [ ] IgnoreCollectiOnorder setting
-- [ ] define sorting order, emission order affects sorting
 
 ## Phase 4 Settings
 
-- [ ] string options (case, culture)
 - [ ] separate settings for each comparable type
-- [ ] ignored properties
+- [ ] define order for members using expressions, order of emitted code affects sorting
+- [ ] use expressions to define ignored properties
+- [ ] string options (case, culture)
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
 - [ ] customization setting to override comparer with specific implementation
 - [ ] compare references and the end?
 - [ ] how to rebuild after set new configuration?
+- [ ] include protected (BindingFlags.NonPublic)?
 
 ## Phase 5 Optimizations
 
