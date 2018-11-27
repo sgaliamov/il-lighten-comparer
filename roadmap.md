@@ -30,6 +30,7 @@
 - [x] FlattenHierarchy
 - [ ] nested object
 - [ ] nested struct
+- [ ] nested members sort configuration
 - [ ] detect cycles (check graph theory)
 - [ ] abstract member comparison
 - [ ] object member comparison?
@@ -43,7 +44,7 @@
 ## Phase 4 Settings
 
 - [ ] separate settings for each comparable type
-- [ ] define order for members using expressions, order of emitted code affects sorting
+- [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
 - [ ] string options (case, culture)
 - [ ] tests for different cultures
