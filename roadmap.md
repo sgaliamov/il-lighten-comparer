@@ -67,6 +67,7 @@
 ## Phase 6
 
 - [ ] setup CI/CD
+- [ ] add documentation comments
 - [ ] prepare presentation
 - [ ] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
 - [ ] compared dynamic?

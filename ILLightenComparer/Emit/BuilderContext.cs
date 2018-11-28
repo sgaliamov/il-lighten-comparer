@@ -39,22 +39,6 @@ namespace ILLightenComparer.Emit
             return this;
         }
 
-        public TypeBuilder DefineType(string name, params Type[] interfaceTypes)
-        {
-            var type = _moduleBuilder.DefineType(name, TypeAttributes.Sealed | TypeAttributes.Public);
-            if (interfaceTypes == null)
-            {
-                return type;
-            }
-
-            foreach (var interfaceType in interfaceTypes)
-            {
-                type.AddInterfaceImplementation(interfaceType);
-            }
-
-            return type;
-        }
-        
         public IComparer<T> GetComparer<T>() => (IComparer<T>)GetComparer(typeof(T));
 
         public IComparer GetComparer(Type objectType) =>
@@ -73,5 +57,7 @@ namespace ILLightenComparer.Emit
         public IBuilderContext<T> For<T>() => throw new NotImplementedException();
 
         public IBuilderContext For(Type type) => throw new NotImplementedException();
+
+        public TypeBuilder DefineType(string name, params Type[] interfaceTypes) => _moduleBuilder.DefineType(name, interfaceTypes);
     }
 }
