@@ -27,9 +27,9 @@ namespace ILLightenComparer.Emit.Reflection
             new Converter(IsComparable, info => new DefaultFieldMember((FieldInfo)info))
         };
 
-        private readonly ContextBuilder _context;
+        private readonly BuilderContext _context;
 
-        public MemberConverter(ContextBuilder context) => _context = context;
+        public MemberConverter(BuilderContext context) => _context = context;
 
         public IAcceptor Convert(MemberInfo memberInfo)
         {

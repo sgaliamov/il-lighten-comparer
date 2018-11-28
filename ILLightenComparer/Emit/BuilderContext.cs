@@ -8,7 +8,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    internal class ContextBuilder
+    internal class BuilderContext
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
@@ -16,7 +16,7 @@ namespace ILLightenComparer.Emit
         private readonly ModuleBuilder _moduleBuilder;
         private readonly Type _objectType;
 
-        public ContextBuilder(ModuleBuilder moduleBuilder, Type objectType)
+        public BuilderContext(ModuleBuilder moduleBuilder, Type objectType)
         {
             _moduleBuilder = moduleBuilder;
             _objectType = objectType;
