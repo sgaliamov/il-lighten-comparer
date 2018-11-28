@@ -6,6 +6,6 @@ namespace ILLightenComparer.Emit.Emitters.Members
     internal interface IFieldMember
     {
         FieldInfo FieldInfo { get; }
-        Type OwnerType { get; }
+        Type DeclaringType { get; }
     }
 }

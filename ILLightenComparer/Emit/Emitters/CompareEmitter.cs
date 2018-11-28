@@ -70,7 +70,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
         {
-            var comparisonType = (int)_context.GetConfiguration(member.OwnerType).StringComparisonType;
+            var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
 
             return member.Accept(_stackEmitter, il)
                          .Emit(OpCodes.Ldc_I4_S, comparisonType) // todo: use short form for constants

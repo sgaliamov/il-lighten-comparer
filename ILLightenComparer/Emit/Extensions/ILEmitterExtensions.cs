@@ -8,7 +8,7 @@ namespace ILLightenComparer.Emit.Extensions
     {
         public static ILEmitter LoadProperty(this ILEmitter il, IPropertyMember member, ushort argumentIndex)
         {
-            if (member.OwnerType.IsValueType)
+            if (member.DeclaringType.IsValueType)
             {
                 il.LoadArgumentAddress(argumentIndex);
             }
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static ILEmitter LoadFieldAddress(this ILEmitter il, IFieldMember member, ushort argumentIndex)
         {
-            if (member.OwnerType.IsValueType)
+            if (member.DeclaringType.IsValueType)
             {
                 il.LoadArgumentAddress(argumentIndex);
             }

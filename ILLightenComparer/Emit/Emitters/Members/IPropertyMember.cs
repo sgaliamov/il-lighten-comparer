@@ -6,6 +6,6 @@ namespace ILLightenComparer.Emit.Emitters.Members
     internal interface IPropertyMember
     {
         MethodInfo GetterMethod { get; }
-        Type OwnerType { get; }
+        Type DeclaringType { get; }
     }
 }

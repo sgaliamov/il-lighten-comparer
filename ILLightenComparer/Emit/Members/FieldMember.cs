@@ -11,6 +11,6 @@ namespace ILLightenComparer.Emit.Members
 
         public Type MemberType => FieldInfo.FieldType;
         public FieldInfo FieldInfo { get; }
-        public Type OwnerType => FieldInfo.DeclaringType;
+        public Type DeclaringType => FieldInfo.DeclaringType;
     }
 }

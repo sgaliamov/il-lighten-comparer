@@ -12,6 +12,6 @@ namespace ILLightenComparer.Emit.Members
 
         public Type MemberType => _propertyInfo.PropertyType;
         public MethodInfo GetterMethod => _propertyInfo.GetMethod;
-        public Type OwnerType => _propertyInfo.DeclaringType;
+        public Type DeclaringType => _propertyInfo.DeclaringType;
     }
 }
