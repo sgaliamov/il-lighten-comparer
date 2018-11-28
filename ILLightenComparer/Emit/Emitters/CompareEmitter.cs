@@ -9,10 +9,10 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CompareEmitter
     {
-        private readonly BuilderContext _context;
+        private readonly Context _context;
         private readonly StackEmitter _stackEmitter = new StackEmitter();
 
-        public CompareEmitter(BuilderContext context) => _context = context;
+        public CompareEmitter(Context context) => _context = context;
 
         public ILEmitter Visit(IDefaultAcceptor member, ILEmitter il)
         {
@@ -70,7 +70,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
         {
-            var comparisonType = (int)_context.Configuration.StringComparisonType;
+            var comparisonType = (int)_context.GetConfiguration(member.OwnerType).StringComparisonType;
 
             return member.Accept(_stackEmitter, il)
                          .Emit(OpCodes.Ldc_I4_S, comparisonType) // todo: use short form for constants

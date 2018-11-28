@@ -27,15 +27,15 @@ namespace ILLightenComparer.Emit.Reflection
             new Converter(IsComparable, info => new DefaultFieldMember((FieldInfo)info))
         };
 
-        private readonly BuilderContext _context;
+        private readonly Context _context;
 
-        public MemberConverter(BuilderContext context) => _context = context;
+        public MemberConverter(Context context) => _context = context;
 
         public IAcceptor Convert(MemberInfo memberInfo)
         {
             var acceptor = Convert(memberInfo, GetPropertyType(memberInfo), PropertyConverters);
 
-            if (acceptor == null && _context.Configuration.IncludeFields)
+            if (acceptor == null && _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields)
             {
                 acceptor = Convert(memberInfo, GetFieldType(memberInfo), FieldConverters);
             }

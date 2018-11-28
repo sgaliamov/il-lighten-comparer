@@ -7,10 +7,10 @@ namespace ILLightenComparer.Emit
 {
     internal sealed class EqualityComparerTypeBuilder
     {
-        private readonly BuilderContext _context;
+        private readonly Context _context;
         private readonly MembersProvider _membersProvider;
 
-        public EqualityComparerTypeBuilder(BuilderContext context, MembersProvider membersProvider)
+        public EqualityComparerTypeBuilder(Context context, MembersProvider membersProvider)
         {
             _membersProvider = membersProvider;
             _context = context;

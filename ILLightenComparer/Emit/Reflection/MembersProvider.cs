@@ -8,16 +8,23 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MembersProvider
     {
-        private readonly BuilderContext _context;
+        private readonly Context _context;
         private readonly MemberConverter _converter;
 
-        public MembersProvider(BuilderContext context)
+        public MembersProvider(Context context)
         {
             _context = context;
             _converter = new MemberConverter(_context);
         }
 
-        public IAcceptor[] GetMembers(Type type) => Convert(Sort(Filter(type)));
+        public IAcceptor[] GetMembers(Type type)
+        {
+            var filtered = Filter(type);
+            var sorted = Sort(type, filtered);
+            var converted = Convert(sorted);
+
+            return converted;
+        }
 
         private IAcceptor[] Convert(IEnumerable<MemberInfo> members) =>
             members.Select(_converter.Convert).ToArray();
@@ -29,21 +36,21 @@ namespace ILLightenComparer.Emit.Reflection
                 .Where(IgnoredMembers)
                 .Where(IncludeFields);
 
-        private IEnumerable<MemberInfo> Sort(IEnumerable<MemberInfo> members)
+        private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members)
         {
-            var order = _context.Configuration.MembersOrder;
+            var order = _context.GetConfiguration(ownerType).MembersOrder;
 
             if (order == null || order.Length == 0)
             {
                 return DefaultOrder(members);
             }
 
-            return PredefinedOrder(members);
+            return PredefinedOrder(ownerType, members);
         }
 
-        private IEnumerable<MemberInfo> PredefinedOrder(IEnumerable<MemberInfo> members)
+        private IEnumerable<MemberInfo> PredefinedOrder(Type ownerType, IEnumerable<MemberInfo> members)
         {
-            var order = _context.Configuration.MembersOrder;
+            var order = _context.GetConfiguration(ownerType).MembersOrder;
             var dictionary = members.ToDictionary(x => x.Name);
 
             foreach (var item in order)
@@ -72,11 +79,23 @@ namespace ILLightenComparer.Emit.Reflection
                    .ThenBy(x => x.Name);
         }
 
-        private bool IncludeFields(MemberInfo memberInfo) =>
-            memberInfo.MemberType == MemberTypes.Property
-            || _context.Configuration.IncludeFields && memberInfo.MemberType == MemberTypes.Field;
+        private bool IncludeFields(MemberInfo memberInfo)
+        {
+            if (memberInfo.MemberType == MemberTypes.Property)
+            {
+                return true;
+            }
 
-        private bool IgnoredMembers(MemberInfo memberInfo) =>
-            !_context.Configuration.IgnoredMembers.Contains(memberInfo.Name);
+            var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
+
+            return includeFields && memberInfo.MemberType == MemberTypes.Field;
+        }
+
+        private bool IgnoredMembers(MemberInfo memberInfo)
+        {
+            var ignoredMembers = _context.GetConfiguration(memberInfo.DeclaringType).IgnoredMembers;
+
+            return !ignoredMembers.Contains(memberInfo.Name);
+        }
     }
 }
