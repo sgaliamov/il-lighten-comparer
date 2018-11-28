@@ -13,7 +13,8 @@ namespace ILLightenComparer.Tests
                 IncludeFields = false
             };
 
-            _builder = new ComparersBuilder().SetDefaultConfiguration(configuration);
+            _builder = new ComparersBuilder()
+                .SetDefaultConfiguration(configuration);
         }
 
         [Fact]
@@ -27,7 +28,7 @@ namespace ILLightenComparer.Tests
         [Fact(Skip = "Not implemented yet")]
         public void Create_Generic_EqualityComparer()
         {
-            var comparer = _builder.GetEqualityComparer<TestObject>();
+            var comparer = _builder.For(typeof(TestObject)).GetEqualityComparer<TestObject>();
 
             comparer.Should().NotBeNull();
         }
@@ -61,6 +62,6 @@ namespace ILLightenComparer.Tests
             Test(_builder.GetComparer<TestObject>(), _builder.GetComparer(typeof(TestObject)));
         }
 
-        private readonly ComparersBuilder _builder;
+        private readonly IBuilderContext _builder;
     }
 }

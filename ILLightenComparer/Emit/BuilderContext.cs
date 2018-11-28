@@ -12,16 +12,23 @@ namespace ILLightenComparer.Emit
     internal sealed class BuilderContext : IBuilderContext
     {
         private readonly ModuleBuilder _moduleBuilder;
+        private readonly Type _objectType;
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
 
-        public BuilderContext(ModuleBuilder moduleBuilder, Type type)
+        public BuilderContext(ModuleBuilder moduleBuilder, Type objectType)
         {
             _moduleBuilder = moduleBuilder;
+            _objectType = objectType;
             var membersProvider = new MembersProvider(this);
             _equalityComparerTypeBuilder = new EqualityComparerTypeBuilder(this, membersProvider);
             _comparerTypeBuilder = new ComparerTypeBuilder(this, membersProvider);
+        }
+
+        public BuilderContext(CompareConfiguration defaultConfiguration)
+        {
+            throw new NotImplementedException();
         }
 
         public CompareConfiguration Configuration { get; private set; } = new CompareConfiguration();
@@ -60,5 +67,11 @@ namespace ILLightenComparer.Emit
 
         public IEqualityComparer GetEqualityComparer(Type objectType) =>
             _equalityComparerTypeBuilder.Build(objectType);
+
+        public IBuilderContext<T> SetConfiguration<T>(CompareConfiguration configuration) => throw new NotImplementedException();
+
+        public IBuilderContext<T> For<T>() => throw new NotImplementedException();
+
+        public IBuilderContext For(Type type) => throw new NotImplementedException();
     }
 }

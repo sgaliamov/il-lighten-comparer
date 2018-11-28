@@ -4,7 +4,13 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer
 {
-    public interface IBuilder
+    public interface IComparerProvider<in T> : IComparerProvider
+    {
+        IComparer<T> GetComparer();
+        IEqualityComparer<T> GetEqualityComparer();
+    }
+
+    public interface IComparerProvider
     {
         IComparer GetComparer(Type objectType);
         IComparer<T> GetComparer<T>();
