@@ -13,13 +13,13 @@ namespace ILLightenComparer.Tests
                 IncludeFields = false
             };
 
-            _builder = new ComparersBuilder().SetConfiguration(configuration);
+            _builder = new ComparersBuilder().SetDefaultConfiguration(configuration);
         }
 
         [Fact]
         public void Create_Generic_Comparer()
         {
-            var comparer = _builder.CreateComparer<TestObject>();
+            var comparer = _builder.For<TestObject>().GetComparer();
 
             comparer.Should().NotBeNull();
         }
@@ -27,7 +27,7 @@ namespace ILLightenComparer.Tests
         [Fact(Skip = "Not implemented yet")]
         public void Create_Generic_EqualityComparer()
         {
-            var comparer = _builder.CreateEqualityComparer<TestObject>();
+            var comparer = _builder.GetEqualityComparer<TestObject>();
 
             comparer.Should().NotBeNull();
         }
@@ -35,7 +35,7 @@ namespace ILLightenComparer.Tests
         [Fact]
         public void Create_Not_Generic_Comparer()
         {
-            var comparer = _builder.CreateComparer(typeof(TestObject));
+            var comparer = _builder.GetComparer(typeof(TestObject));
 
             comparer.Should().NotBeNull();
         }
@@ -43,7 +43,7 @@ namespace ILLightenComparer.Tests
         [Fact(Skip = "Not implemented yet")]
         public void Create_Not_Generic_EqualityComparer()
         {
-            var comparer = _builder.CreateEqualityComparer(typeof(TestObject));
+            var comparer = _builder.GetEqualityComparer(typeof(TestObject));
 
             comparer.Should().NotBeNull();
         }
@@ -57,10 +57,10 @@ namespace ILLightenComparer.Tests
                 other.Should().BeSameAs(one);
             }
 
-            Test(_builder.CreateComparer(typeof(TestObject)), _builder.CreateComparer<TestObject>());
-            Test(_builder.CreateComparer<TestObject>(), _builder.CreateComparer(typeof(TestObject)));
+            Test(_builder.GetComparer(typeof(TestObject)), _builder.GetComparer<TestObject>());
+            Test(_builder.GetComparer<TestObject>(), _builder.GetComparer(typeof(TestObject)));
         }
 
-        private readonly IComparersBuilder _builder;
+        private readonly ComparersBuilder _builder;
     }
 }

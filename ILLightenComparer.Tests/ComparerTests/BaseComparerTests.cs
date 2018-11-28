@@ -38,18 +38,18 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         protected readonly Fixture Fixture = FixtureBuilder.GetInstance();
 
-        protected IComparer BasicComparer => ComparersBuilder.CreateComparer(typeof(T));
+        protected IComparer BasicComparer => ComparersBuilder.GetComparer(typeof(T));
 
         protected virtual CompareConfiguration CompareConfiguration { get; } =
             new CompareConfiguration { IncludeFields = true };
 
         protected ComparersBuilder ComparersBuilder =>
             _comparersBuilder
-            ?? (_comparersBuilder = new ComparersBuilder().SetConfiguration(CompareConfiguration));
+            ?? (_comparersBuilder = new ComparersBuilder().SetDefaultConfiguration(CompareConfiguration));
 
         protected abstract IComparer<T> ReferenceComparer { get; }
 
-        protected IComparer<T> TypedComparer => ComparersBuilder.CreateComparer<T>();
+        protected IComparer<T> TypedComparer => ComparersBuilder.GetComparer<T>();
 
         private const int Count = 10000;
 

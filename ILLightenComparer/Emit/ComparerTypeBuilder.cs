@@ -12,10 +12,10 @@ namespace ILLightenComparer.Emit
     internal sealed class ComparerTypeBuilder
     {
         private readonly CompareEmitter _compareEmitter;
-        private readonly TypeBuilderContext _context;
+        private readonly BuilderContext _context;
         private readonly MembersProvider _membersProvider;
 
-        public ComparerTypeBuilder(TypeBuilderContext context, MembersProvider membersProvider)
+        public ComparerTypeBuilder(BuilderContext context, MembersProvider membersProvider)
         {
             _context = context;
             _membersProvider = membersProvider;

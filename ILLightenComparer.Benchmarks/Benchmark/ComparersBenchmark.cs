@@ -17,11 +17,11 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         private static readonly IComparer<TestObject> ILLightenComparer =
             new ComparersBuilder()
-                .SetConfiguration(new CompareConfiguration
+                .SetDefaultConfiguration(new CompareConfiguration
                 {
                     IncludeFields = true
                 })
-                .CreateComparer<TestObject>();
+                .GetComparer<TestObject>();
 
         //private static readonly IComparer<TestObject> NitoComparer = ComparerBuilder
         //                                                             .For<TestObject>()

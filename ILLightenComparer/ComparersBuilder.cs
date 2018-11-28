@@ -1,45 +1,30 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit;
-using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer
 {
-    // todo: cache instances by type and configuration
-    public sealed class ComparersBuilder : IComparersBuilder
+    public sealed class ComparersBuilder
     {
-        private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
-        private readonly ComparerTypeBuilder _comparerTypeBuilder;
-        private readonly TypeBuilderContext _context = new TypeBuilderContext();
-        private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
+        private readonly ModuleBuilder _moduleBuilder;
 
         public ComparersBuilder()
         {
-            var membersProvider = new MembersProvider(_context);
-            _equalityComparerTypeBuilder = new EqualityComparerTypeBuilder(_context, membersProvider);
-            _comparerTypeBuilder = new ComparerTypeBuilder(_context, membersProvider);
+            var assembly = AssemblyBuilder.DefineDynamicAssembly(
+                new AssemblyName("ILLightenComparer.Compares"),
+                AssemblyBuilderAccess.RunAndCollect);
+
+            _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.Compares.dll");
         }
 
-        public IComparer<T> CreateComparer<T>() => (IComparer<T>)CreateComparer(typeof(T));
-
-        public IComparer CreateComparer(Type objectType) =>
-            _comparers.GetOrAdd(
-                objectType,
-                key => _comparerTypeBuilder.Build(key).CreateInstance<IComparer>());
-
-        public IEqualityComparer<T> CreateEqualityComparer<T>() =>
-            _equalityComparerTypeBuilder.Build<T>();
-
-        public IEqualityComparer CreateEqualityComparer(Type objectType) =>
-            _equalityComparerTypeBuilder.Build(objectType);
-
-        public ComparersBuilder SetConfiguration(CompareConfiguration configuration)
+        public IBuilderContext SetDefaultConfiguration(CompareConfiguration compareConfiguration)
         {
-            _context.SetConfiguration(configuration);
-            return this;
+            return null;
         }
+
+        public IBuilderContext For<T>() => new BuilderContext(_moduleBuilder, typeof(T));
+
+        public IBuilderContext For(Type type) => new BuilderContext(_moduleBuilder, type);
     }
 }

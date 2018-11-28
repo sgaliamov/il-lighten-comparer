@@ -8,10 +8,10 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MembersProvider
     {
-        private readonly TypeBuilderContext _context;
+        private readonly BuilderContext _context;
         private readonly MemberConverter _converter;
 
-        public MembersProvider(TypeBuilderContext context)
+        public MembersProvider(BuilderContext context)
         {
             _context = context;
             _converter = new MemberConverter(_context);
