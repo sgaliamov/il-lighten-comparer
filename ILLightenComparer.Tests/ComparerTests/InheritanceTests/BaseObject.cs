@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.ComparerTests.FlattenHierarchy
+namespace ILLightenComparer.Tests.ComparerTests.InheritanceTests
 {
     public class BaseObject
     {

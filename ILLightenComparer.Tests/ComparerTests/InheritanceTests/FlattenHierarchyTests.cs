@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.ComparerTests.FlattenHierarchy
+namespace ILLightenComparer.Tests.ComparerTests.InheritanceTests
 {
     public class FlattenHierarchyTests : BaseComparerTests<ChildObject>
     {

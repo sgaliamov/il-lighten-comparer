@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.ComparerTests.Hierarchy
+namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public sealed class NestedObject
     {

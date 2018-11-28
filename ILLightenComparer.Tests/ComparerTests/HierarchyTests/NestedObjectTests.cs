@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using ILLightenComparer.Tests.ComparerTests.ComparableTests;
 
-namespace ILLightenComparer.Tests.ComparerTests.Hierarchy
+namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public sealed class NestedObjectTests : BaseComparerTests<ContainerObject>
     {

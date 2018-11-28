@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.ComparerTests.Hierarchy
+namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public sealed class ContainerObject
     {
