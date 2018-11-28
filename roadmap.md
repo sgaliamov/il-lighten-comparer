@@ -57,6 +57,7 @@
 ## Phase 5 Optimizations
 
 - [x] reuse local variables for same types
+- [ ] create unified *IComparer<>: IComparer<>, IComparer* interface
 - [ ] caching for assembly
 - [ ] cache instances by type and configuration
 - [ ] support internal classes to compare

@@ -19,8 +19,7 @@ namespace ILLightenComparer
     ///     Provides an instance of a comparer based on provided type in generic parameter.
     /// </summary>
     /// <typeparam name="T">The type whose instances need to compare.</typeparam>
-    /// <inheritdoc />
-    public interface IComparerProvider<in T> : IComparerProvider
+    public interface IComparerProvider<in T>
     {
         IComparer<T> GetComparer();
         IEqualityComparer<T> GetEqualityComparer();
