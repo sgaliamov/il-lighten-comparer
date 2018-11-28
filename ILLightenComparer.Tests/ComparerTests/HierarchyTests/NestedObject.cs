@@ -8,7 +8,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     {
         public static IComparer<NestedObject> Comparer { get; } = new NestedObjectComparer();
 
+        public DeepNestedObject DeepNestedField { get; set; } // todo: test with field
         public EnumSmall? Key { get; set; }
+        public DeepNestedObject DeepNestedProperty { get; set; }
         public string Text { get; set; }
 
         private sealed class NestedObjectComparer : IComparer<NestedObject>
@@ -30,10 +32,22 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     return -1;
                 }
 
-                var keyComparison = Nullable.Compare(x.Key, y.Key);
-                if (keyComparison != 0)
+                var compare = DeepNestedObject.Comparer.Compare(x.DeepNestedField, y.DeepNestedField);
+                if (compare != 0)
                 {
-                    return keyComparison;
+                    return compare;
+                }
+
+                compare = Nullable.Compare(x.Key, y.Key);
+                if (compare != 0)
+                {
+                    return compare;
+                }
+
+                compare = DeepNestedObject.Comparer.Compare(x.DeepNestedProperty, y.DeepNestedProperty);
+                if (compare != 0)
+                {
+                    return compare;
                 }
 
                 return string.Compare(x.Text, y.Text, StringComparison.Ordinal);
