@@ -1,11 +1,7 @@
-﻿using System;
-
-namespace ILLightenComparer
+﻿namespace ILLightenComparer
 {
-    public interface IComparersBuilder : IComparerProvider
+    public interface IComparersBuilder : IBuilderContext
     {
-        IBuilderContext For<T>();
-        IBuilderContext For(Type type);
         IBuilderContext SetDefaultConfiguration(CompareConfiguration compareConfiguration);
     }
 }

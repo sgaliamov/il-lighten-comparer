@@ -8,9 +8,8 @@ namespace ILLightenComparer
         IBuilderContext For(Type type);
     }
 
-    public interface IBuilderContext<in T> : IComparerProvider<T>, IConfigurationSetter<T>
+    public interface IBuilderContext<in T> : IBuilderContext, IComparerProvider<T>, IConfigurationSetter<T>
     {
         IBuilderContext<T> For();
-        IBuilderContext For(Type type);
     }
 }

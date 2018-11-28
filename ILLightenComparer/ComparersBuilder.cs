@@ -23,7 +23,7 @@ namespace ILLightenComparer
         public IBuilderContext SetDefaultConfiguration(CompareConfiguration configuration) =>
             new BuilderContext(configuration);
 
-        public IBuilderContext For<T>() => new BuilderContext(_moduleBuilder, typeof(T));
+        public IBuilderContext<T> For<T>() => new BuilderContext<T>(_moduleBuilder, typeof(T));
 
         public IBuilderContext For(Type type) => new BuilderContext(_moduleBuilder, type);
 
