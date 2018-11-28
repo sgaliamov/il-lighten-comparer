@@ -29,7 +29,7 @@
 
 - [x] FlattenHierarchy
 - [ ] nested object
-- [ ] nested struct
+- [ ] nested structure
 - [ ] nested members sort configuration
 - [ ] detect cycles (check graph theory)
 - [ ] abstract member comparison
@@ -39,11 +39,11 @@
 ## Phase 3 Collections
 
 - [ ] compare collection, do not iterate IEnumerable
-- [ ] IgnoreCollectiOnorder setting
+- [ ] IgnoreCollectionOrder setting
 
 ## Phase 4 Settings
 
-- [ ] separate settings for each comparable type
+- [x] separate settings for each comparable type
 - [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
 - [ ] string options (case, culture)
@@ -57,9 +57,9 @@
 ## Phase 5 Optimizations
 
 - [x] reuse local variables for same types
+- [x] caching for assembly
 - [ ] create unified *IComparer<>: IComparer<>, IComparer* interface
-- [ ] caching for assembly
-- [ ] cache instances by type and configuration
+- [ ] cache instances by type and configuration in *Context.GetComparerType*
 - [ ] support internal classes to compare
 - [ ] use short versions of opt codes when possible
 - [ ] use call instead callvirt when possible

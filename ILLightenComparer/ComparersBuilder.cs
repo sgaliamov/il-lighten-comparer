@@ -21,6 +21,7 @@ namespace ILLightenComparer
                 AssemblyBuilderAccess.RunAndCollect);
 
             var moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
+
             _context = new Context(moduleBuilder);
         }
 
