@@ -43,7 +43,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         protected virtual CompareConfiguration CompareConfiguration { get; } =
             new CompareConfiguration { IncludeFields = true };
 
-        protected IBuilderContext<T> ComparersBuilder =>
+        protected IContextBuilder<T> ComparersBuilder =>
             _comparersBuilder
             ?? (_comparersBuilder = new ComparersBuilder()
                                     .SetDefaultConfiguration(CompareConfiguration)
@@ -55,7 +55,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private const int Count = 10000;
 
-        private IBuilderContext<T> _comparersBuilder;
+        private IContextBuilder<T> _comparersBuilder;
 
         private static void Compare(IEnumerable<T> one, IEnumerable<T> other)
         {

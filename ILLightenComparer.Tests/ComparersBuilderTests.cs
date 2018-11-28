@@ -62,6 +62,6 @@ namespace ILLightenComparer.Tests
             Test(_builder.GetComparer<TestObject>(), _builder.GetComparer(typeof(TestObject)));
         }
 
-        private readonly IBuilderContext _builder;
+        private readonly IContextBuilder _builder;
     }
 }

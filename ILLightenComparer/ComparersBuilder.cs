@@ -1,31 +1,38 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit;
 
 namespace ILLightenComparer
 {
     public sealed class ComparersBuilder : IComparersBuilder
     {
+        private readonly ConcurrentDictionary<Type, CompareConfiguration> _configurations = new ConcurrentDictionary<Type, CompareConfiguration>();
         private readonly ModuleBuilder _moduleBuilder;
+        private CompareConfiguration _defaultConfiguration;
 
         public ComparersBuilder()
         {
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
-                new AssemblyName("ILLightenComparer.Compares"),
+                new AssemblyName("ILLightenComparer"),
                 AssemblyBuilderAccess.RunAndCollect);
 
-            _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.Compares.dll");
+            _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
         }
 
-        public IBuilderContext SetDefaultConfiguration(CompareConfiguration configuration) =>
-            new BuilderContext(configuration);
+        public IContextBuilder SetDefaultConfiguration(CompareConfiguration configuration)
+        {
+            _defaultConfiguration = configuration;
+            return this;
+        }
 
-        public IBuilderContext<T> For<T>() => new BuilderContext<T>(_moduleBuilder, typeof(T));
-
-        public IBuilderContext For(Type type) => new BuilderContext(_moduleBuilder, type);
+        public IContextBuilder SetConfiguration(Type type, CompareConfiguration configuration)
+        {
+            _configurations[type] = configuration;
+            return this;
+        }
 
         public IComparer GetComparer(Type objectType) => throw new NotImplementedException();
 
@@ -34,5 +41,7 @@ namespace ILLightenComparer
         public IEqualityComparer GetEqualityComparer(Type objectType) => throw new NotImplementedException();
 
         public IEqualityComparer<T> GetEqualityComparer<T>() => throw new NotImplementedException();
+
+        public IContextBuilder<T> For<T>() => throw new NotImplementedException();
     }
 }

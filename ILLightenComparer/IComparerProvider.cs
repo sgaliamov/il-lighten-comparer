@@ -24,4 +24,21 @@ namespace ILLightenComparer
         IComparer<T> GetComparer();
         IEqualityComparer<T> GetEqualityComparer();
     }
+
+    /// <summary>
+    ///     Prevents multiple calls of generic version of IConfigurationBuilder&lt;in T&gt;.SetConfiguration method.
+    /// </summary>
+    /// <inheritdoc />
+    public interface IComparerProviderOrBuilderContext<in T> : IComparerProvider<T>
+    {
+        /// <summary>
+        ///     Sugar to convert the builder to generic version.
+        ///     Starts another builder context.
+        /// </summary>
+        /// <typeparam name="TOther">
+        ///     The type whose instances need to compare.
+        ///     Defines context for the following methods.
+        /// </typeparam>
+        IContextBuilder<TOther> For<TOther>();
+    }
 }

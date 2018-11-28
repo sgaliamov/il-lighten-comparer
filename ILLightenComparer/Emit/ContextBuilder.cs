@@ -8,21 +8,21 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    internal sealed class BuilderContext<T> : BuilderContext, IBuilderContext<T>
+    internal sealed class ContextBuilder<T> : ContextBuilder, IContextBuilder<T>
     {
-        public BuilderContext(ModuleBuilder moduleBuilder, Type objectType) : base(moduleBuilder, objectType) { }
-        public BuilderContext(CompareConfiguration defaultConfiguration) : base(defaultConfiguration) { }
+        public ContextBuilder(ModuleBuilder moduleBuilder, Type objectType) : base(moduleBuilder, objectType) { }
+        public ContextBuilder(CompareConfiguration defaultConfiguration) : base(defaultConfiguration) { }
 
         public IComparer<T> GetComparer() => throw new NotImplementedException();
 
         public IEqualityComparer<T> GetEqualityComparer() => throw new NotImplementedException();
 
-        public IBuilderContext<T> SetConfiguration(CompareConfiguration configuration) => throw new NotImplementedException();
+        public IContextBuilder<T> SetConfiguration(CompareConfiguration configuration) => throw new NotImplementedException();
 
-        public IBuilderContext<T> For() => throw new NotImplementedException();
+        public IContextBuilder<T> For() => throw new NotImplementedException();
     }
 
-    internal class BuilderContext : IBuilderContext
+    internal class ContextBuilder : IContextBuilder
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit
         private readonly ModuleBuilder _moduleBuilder;
         private readonly Type _objectType;
 
-        public BuilderContext(ModuleBuilder moduleBuilder, Type objectType)
+        public ContextBuilder(ModuleBuilder moduleBuilder, Type objectType)
         {
             _moduleBuilder = moduleBuilder;
             _objectType = objectType;
@@ -39,9 +39,7 @@ namespace ILLightenComparer.Emit
             _comparerTypeBuilder = new ComparerTypeBuilder(this, membersProvider);
         }
 
-        public BuilderContext(CompareConfiguration defaultConfiguration) => throw new NotImplementedException();
-
-        public CompareConfiguration Configuration { get; private set; } = new CompareConfiguration();
+        public CompareConfiguration Configuration { get; } = new CompareConfiguration();
 
         public IComparer<T> GetComparer<T>() => (IComparer<T>)GetComparer(typeof(T));
 
@@ -56,17 +54,7 @@ namespace ILLightenComparer.Emit
         public IEqualityComparer GetEqualityComparer(Type objectType) =>
             _equalityComparerTypeBuilder.Build(objectType);
 
-        public IBuilderContext<T> SetConfiguration<T>(CompareConfiguration configuration) => throw new NotImplementedException();
-
-        public IBuilderContext<T> For<T>() => throw new NotImplementedException();
-
-        public IBuilderContext For(Type type) => throw new NotImplementedException();
-
-        public IBuilderContext SetConfiguration(CompareConfiguration configuration)
-        {
-            Configuration = configuration;
-            return this;
-        }
+        public IContextBuilder<T> For<T>() => throw new NotImplementedException();
 
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) => _moduleBuilder.DefineType(name, interfaceTypes);
     }
