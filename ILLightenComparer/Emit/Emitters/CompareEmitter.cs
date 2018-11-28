@@ -100,36 +100,33 @@ namespace ILLightenComparer.Emit.Emitters
             LocalBuilder n2,
             Label next)
         {
-            var memberType = member.MemberType;
-
-            il
-                .Store(n2)
-                .LoadAddress(n2)
-                // var secondHasValue = n2->HasValue
-                .Call(member.HasValueMethod)
-                .DeclareLocal(typeof(bool), out var secondHasValue)
-                .Store(secondHasValue)
-                // var n1 = &arg1
-                .Store(n1)
-                .LoadAddress(n1)
-                // if n1->HasValue goto firstHasValue
-                .Call(member.HasValueMethod)
-                .Branch(OpCodes.Brtrue_S, out var firstHasValue)
-                // if n2->HasValue goto returnZero
-                .LoadLocal(secondHasValue)
-                .Emit(OpCodes.Brfalse_S, next)
-                // else return -1
-                .Emit(OpCodes.Ldc_I4_M1)
-                .Emit(OpCodes.Ret)
-                // firstHasValue:
-                .MarkLabel(firstHasValue)
-                .LoadLocal(secondHasValue)
-                .Branch(OpCodes.Brtrue_S, out var getValues)
-                // return 1
-                .Emit(OpCodes.Ldc_I4_1)
-                .Emit(OpCodes.Ret)
-                // getValues: load values
-                .MarkLabel(getValues);
+            il.Store(n2)
+              .LoadAddress(n2)
+              // var secondHasValue = n2->HasValue
+              .Call(member.HasValueMethod)
+              .DeclareLocal(typeof(bool), out var secondHasValue)
+              .Store(secondHasValue)
+              // var n1 = &arg1
+              .Store(n1)
+              .LoadAddress(n1)
+              // if n1->HasValue goto firstHasValue
+              .Call(member.HasValueMethod)
+              .Branch(OpCodes.Brtrue_S, out var firstHasValue)
+              // if n2->HasValue goto returnZero
+              .LoadLocal(secondHasValue)
+              .Emit(OpCodes.Brfalse_S, next)
+              // else return -1
+              .Emit(OpCodes.Ldc_I4_M1)
+              .Emit(OpCodes.Ret)
+              // firstHasValue:
+              .MarkLabel(firstHasValue)
+              .LoadLocal(secondHasValue)
+              .Branch(OpCodes.Brtrue_S, out var getValues)
+              // return 1
+              .Emit(OpCodes.Ldc_I4_1)
+              .Emit(OpCodes.Ret)
+              // getValues: load values
+              .MarkLabel(getValues);
         }
     }
 }

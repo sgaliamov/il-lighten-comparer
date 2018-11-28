@@ -23,7 +23,7 @@ namespace ILLightenComparer.Emit
 
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes)
         {
-            var type = _moduleBuilder.DefineType(name, TypeAttributes.Sealed | TypeAttributes.NotPublic);
+            var type = _moduleBuilder.DefineType(name, TypeAttributes.Sealed | TypeAttributes.Public);
             if (interfaceTypes == null)
             {
                 return type;
