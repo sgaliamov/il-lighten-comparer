@@ -8,21 +8,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    internal sealed class ContextBuilder<T> : ContextBuilder, IContextBuilder<T>
-    {
-        public ContextBuilder(ModuleBuilder moduleBuilder, Type objectType) : base(moduleBuilder, objectType) { }
-        public ContextBuilder(CompareConfiguration defaultConfiguration) : base(defaultConfiguration) { }
-
-        public IComparer<T> GetComparer() => throw new NotImplementedException();
-
-        public IEqualityComparer<T> GetEqualityComparer() => throw new NotImplementedException();
-
-        public IContextBuilder<T> SetConfiguration(CompareConfiguration configuration) => throw new NotImplementedException();
-
-        public IContextBuilder<T> For() => throw new NotImplementedException();
-    }
-
-    internal class ContextBuilder : IContextBuilder
+    internal class ContextBuilder
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;

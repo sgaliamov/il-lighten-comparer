@@ -19,5 +19,4 @@ namespace ILLightenComparer
         /// </summary>
         IComparerProviderOrBuilderContext<T> SetConfiguration(CompareConfiguration configuration);
     }
-
 }

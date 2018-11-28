@@ -28,7 +28,7 @@ namespace ILLightenComparer.Tests
         [Fact(Skip = "Not implemented yet")]
         public void Create_Generic_EqualityComparer()
         {
-            var comparer = _builder.For(typeof(TestObject)).GetEqualityComparer<TestObject>();
+            var comparer = _builder.For<TestObject>().GetEqualityComparer();
 
             comparer.Should().NotBeNull();
         }
