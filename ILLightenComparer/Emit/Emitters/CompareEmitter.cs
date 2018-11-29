@@ -81,6 +81,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
+            il.Emit(OpCodes.Ldc_I4_0);
             member.Accept(_stackEmitter, il);
 
             var memberType = member.MemberType;

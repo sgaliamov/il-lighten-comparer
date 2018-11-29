@@ -64,6 +64,7 @@
 - [ ] use short versions of opt codes when possible
 - [ ] use call instead callvirt when possible
 - [ ] test class with more than 256 properties
+- [ ] optimization for a last member - just return its result
 
 ## Phase 6
 
