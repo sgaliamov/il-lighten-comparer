@@ -4,11 +4,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public sealed class ContainerObject
     {
+        public NestedObject NestedField;
+
         public static IComparer<ContainerObject> Comparer { get; } = new ValueRelationalComparer();
 
         public ComparableNestedObject Comparable { get; set; }
-        public NestedObject First { get; set; }
-        public NestedObject Second { get; set; } // todo: test with field
+        public NestedObject FirstProperty { get; set; }
+        public NestedObject SecondProperty { get; set; }
         public int Value { get; set; }
 
         private sealed class ValueRelationalComparer : IComparer<ContainerObject>
@@ -30,27 +32,33 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     return -1;
                 }
 
-                var comparableComparison = Comparer<ComparableNestedObject>.Default.Compare(
+                var compare = Comparer<ComparableNestedObject>.Default.Compare(
                     x.Comparable,
                     y.Comparable);
-                if (comparableComparison != 0)
-                {
-                    return comparableComparison;
-                }
-
-                var compare = x.Value.CompareTo(y.Value);
                 if (compare != 0)
                 {
                     return compare;
                 }
 
-                compare = NestedObject.Comparer.Compare(x.First, y.First);
+                compare = x.Value.CompareTo(y.Value);
                 if (compare != 0)
                 {
                     return compare;
                 }
 
-                compare = NestedObject.Comparer.Compare(x.Second, y.Second);
+                compare = NestedObject.Comparer.Compare(x.FirstProperty, y.FirstProperty);
+                if (compare != 0)
+                {
+                    return compare;
+                }
+
+                compare = NestedObject.Comparer.Compare(x.SecondProperty, y.SecondProperty);
+                if (compare != 0)
+                {
+                    return compare;
+                }
+
+                compare = NestedObject.Comparer.Compare(x.NestedField, y.NestedField);
                 if (compare != 0)
                 {
                     return compare;

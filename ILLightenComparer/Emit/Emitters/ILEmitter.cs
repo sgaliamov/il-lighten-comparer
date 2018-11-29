@@ -211,12 +211,18 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
+        #region debug
+
         // ReSharper disable PartialMethodWithSinglePart
+        
+        partial void DebugOutput();
         partial void DebugEmitLabel(OpCode opCode, Label label);
         partial void DebugMarkLabel(Label label);
         partial void DebugLine(string message);
         partial void AddDebugLabel(Label label);
-        partial void DebugOutput();
+
         // ReSharper restore PartialMethodWithSinglePart
+
+        #endregion
     }
 }

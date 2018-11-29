@@ -41,7 +41,9 @@ namespace ILLightenComparer.Emit.Reflection
                 TypeExtensions.IsNullable,
                 info => new NullableFieldMember((FieldInfo)info)),
 
-            new Converter(TypeExtensions.IsBasic, info => new BasicFieldMember((FieldInfo)info))
+            new Converter(TypeExtensions.IsBasic, info => new BasicFieldMember((FieldInfo)info)),
+
+            new Converter(_ => true, info => new HierarchicalFieldMember((FieldInfo)info))
         };
 
         private readonly Context _context;
@@ -61,7 +63,10 @@ namespace ILLightenComparer.Emit.Reflection
             return acceptor ?? throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
         }
 
-        private static IAcceptor Convert(MemberInfo memberInfo, Type memberType, IEnumerable<Converter> converters)
+        private static IAcceptor Convert(
+            MemberInfo memberInfo,
+            Type memberType,
+            IEnumerable<Converter> converters)
         {
             if (memberType == null)
             {

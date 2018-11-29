@@ -29,8 +29,8 @@
 
 - [x] FlattenHierarchy
 - [x] nested members sort configuration
+- [x] compare fields
 - [ ] use existing *Compare* method
-- [ ] compare fields
 - [ ] nested object
 - [ ] nested structure
 - [ ] detect cycles (check graph theory)
@@ -53,6 +53,7 @@
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
 - [ ] customization setting to override comparer with specific implementation
+- [ ] ignore existing *IComparable* implementation
 - [ ] compare references and the end?
 - [ ] how to rebuild after set new configuration?
 - [ ] include protected (BindingFlags.NonPublic)?
@@ -61,7 +62,7 @@
 
 - [x] reuse local variables for same types
 - [x] caching for assembly
-- [ ] create unified *IComparer<>: IComparer<>, IComparer* interface
+- [ ] create unified interface *IComparer<>: IComparer<>, IComparer*
 - [ ] cache instances by type and configuration in *Context.GetComparerType*
 - [ ] support internal classes to compare
 - [ ] use short versions of opt codes when possible

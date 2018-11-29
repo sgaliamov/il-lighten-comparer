@@ -6,9 +6,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public sealed class NestedObject
     {
+        public DeepNestedObject DeepNestedField;
         public static IComparer<NestedObject> Comparer { get; } = new NestedObjectComparer();
-
-        public DeepNestedObject DeepNestedField { get; set; } // todo: test with field
         public DeepNestedObject DeepNestedProperty { get; set; }
         public EnumSmall? Key { get; set; }
         public string Text { get; set; }

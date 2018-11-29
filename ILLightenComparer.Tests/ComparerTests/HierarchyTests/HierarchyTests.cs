@@ -26,7 +26,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     MembersOrder = new[]
                     {
                         nameof(ContainerObject.Comparable),
-                        nameof(ContainerObject.Value)
+                        nameof(ContainerObject.Value),
+                        nameof(ContainerObject.FirstProperty),
+                        nameof(ContainerObject.SecondProperty),
+                        nameof(ContainerObject.NestedField)
                     }
                 });
         }
