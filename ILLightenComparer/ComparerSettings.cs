@@ -10,7 +10,7 @@ namespace ILLightenComparer
     /// </summary>
     public sealed class ComparerSettings
     {
-        public HashSet<string> IgnoredMembers { get; set; }
+        public string[] IgnoredMembers { get; set; }
         public bool? IncludeFields { get; set; }
         public string[] MembersOrder { get; set; }
         public StringComparison? StringComparisonType { get; set; }

@@ -28,7 +28,7 @@ namespace ILLightenComparer.Emit
             var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
 
             var typeBuilder = _context.DefineType(
-                $"{objectType.FullName}.Comparer",
+                $"{objectType.FullName}.DynamicComparer",
                 basicInterface,
                 genericInterface
             );

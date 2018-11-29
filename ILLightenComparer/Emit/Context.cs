@@ -72,7 +72,9 @@ namespace ILLightenComparer.Emit
 
             public Configuration Mutate(ComparerSettings settings) =>
                 new Configuration(
-                    settings.IgnoredMembers ?? IgnoredMembers,
+                    settings.IgnoredMembers == null
+                        ? IgnoredMembers
+                        : new HashSet<string>(settings.IgnoredMembers),
                     settings.IncludeFields ?? IncludeFields,
                     settings.MembersOrder ?? MembersOrder,
                     settings.StringComparisonType ?? StringComparisonType);
