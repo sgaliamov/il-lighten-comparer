@@ -53,7 +53,12 @@ namespace ILLightenComparer.Emit.Extensions
             && !type.IsGenericTypeDefinition
             && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
 
-        public static bool IsSmallIntegral(this Type type) =>
-            SmallIntegralTypes.Contains(type.GetUnderlyingType());
+        public static bool IsSmallIntegral(this Type type) => SmallIntegralTypes.Contains(type);
+
+        public static bool IsBasic(this Type type) =>
+            type.IsPrimitive
+            || type.IsEnum
+            || ReferenceEquals(type, typeof(string))
+            || ReferenceEquals(type, typeof(decimal));
     }
 }

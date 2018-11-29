@@ -13,18 +13,35 @@ namespace ILLightenComparer.Emit.Reflection
         private static readonly Converter[] PropertyConverters =
         {
             new Converter(IsString, info => new StringPropertyMember((PropertyInfo)info)),
-            new Converter(IsIntegral, info => new IntegralPropertyMember((PropertyInfo)info)),
-            new Converter(TypeExtensions.IsNullable, info => new NullablePropertyMember((PropertyInfo)info)),
-            new Converter(IsBasic, info => new BasicPropertyMember((PropertyInfo)info)),
+
+            new Converter(
+                TypeExtensions.IsSmallIntegral,
+                info => new IntegralPropertyMember((PropertyInfo)info)),
+
+            new Converter(
+                TypeExtensions.IsNullable,
+                info => new NullablePropertyMember((PropertyInfo)info)),
+
+            new Converter(
+                TypeExtensions.IsBasic,
+                info => new BasicPropertyMember((PropertyInfo)info)),
+
             new Converter(_ => true, info => new HierarchicalPropertyMember((PropertyInfo)info))
         };
 
         private static readonly Converter[] FieldConverters =
         {
             new Converter(IsString, info => new StringFiledMember((FieldInfo)info)),
-            new Converter(IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
-            new Converter(TypeExtensions.IsNullable, info => new NullableFieldMember((FieldInfo)info)),
-            new Converter(IsBasic, info => new BasicFieldMember((FieldInfo)info))
+
+            new Converter(
+                TypeExtensions.IsSmallIntegral,
+                info => new IntegralFiledMember((FieldInfo)info)),
+
+            new Converter(
+                TypeExtensions.IsNullable,
+                info => new NullableFieldMember((FieldInfo)info)),
+
+            new Converter(TypeExtensions.IsBasic, info => new BasicFieldMember((FieldInfo)info))
         };
 
         private readonly Context _context;
@@ -62,12 +79,6 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static Type GetFieldType(MemberInfo memberInfo) =>
             memberInfo is FieldInfo fieldInfo ? fieldInfo.FieldType : default;
-
-        private static bool IsIntegral(Type type) => !type.IsNullable() && type.IsSmallIntegral();
-
-        // todo: converter should not know about type of visitor
-        // todo: filter only basic types
-        private static bool IsBasic(Type type) => !type.IsNullable() && type.GetCompareToMethod() != null;
 
         private static bool IsString(Type type) => type == typeof(string);
 

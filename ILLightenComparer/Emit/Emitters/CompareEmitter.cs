@@ -41,7 +41,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             CheckValuesForNull(il, member, n1, n2, next);
 
-            if (memberType.IsSmallIntegral())
+            if (memberType.GetUnderlyingType().IsSmallIntegral())
             {
                 il.LoadAddress(n1)
                   .Call(member.GetValueMethod)
@@ -62,6 +62,8 @@ namespace ILLightenComparer.Emit.Emitters
                   .Call(member.GetValueMethod)
                   .Call(method);
             }
+
+            // todo: nullable can be also complex struct, not only primitive types, so it can be considered as hierarchical
 
             il.EmitReturnNotZero(next);
 
