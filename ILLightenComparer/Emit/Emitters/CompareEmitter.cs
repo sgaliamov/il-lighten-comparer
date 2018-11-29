@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
@@ -80,7 +81,25 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
-            if (member.MemberType.IsValueType || member.MemberType.IsSealed)
+            member.Accept(_stackEmitter, il);
+
+            var memberType = member.MemberType;
+            if (memberType.IsValueType || memberType.IsSealed)
+            {
+                var comparerType = _context.GetComparerType(memberType);
+
+                var method = comparerType.GetMethod(
+                    MethodName.Compare,
+                    new[]
+                    {
+                        typeof(HashSet<object>),
+                        memberType,
+                        memberType
+                    });
+
+                il.Call(method).EmitReturnNotZero();
+            }
+            else
             {
                 throw new NotImplementedException();
             }

@@ -32,7 +32,7 @@ namespace ILLightenComparer.Emit.Extensions
             Type[] parameterTypes) =>
             staticTypeBuilder.DefineMethod(
                 name,
-                MethodAttributes.Public | MethodAttributes.Static,
+                MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.Final,
                 CallingConventions.Standard,
                 returnType,
                 parameterTypes);

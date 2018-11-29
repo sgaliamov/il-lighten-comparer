@@ -37,7 +37,7 @@ namespace ILLightenComparer.Emit
                 ? configuration
                 : _defaultConfiguration;
 
-        public Type GetComparerType(Type objectType)
+        public TypeInfo GetComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
