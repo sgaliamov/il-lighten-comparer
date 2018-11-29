@@ -15,9 +15,8 @@ namespace ILLightenComparer.Emit.Emitters
 
         public CompareEmitter(Context context) => _context = context;
 
-        public ILEmitter Visit(IDefaultAcceptor member, ILEmitter il)
+        public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {
-            // todo: maybe merge with IHierarchicalAcceptor
             var memberType = member.MemberType;
             var method = GetCompareToMethod(memberType);
 
@@ -81,7 +80,9 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
-            il.Emit(OpCodes.Ldc_I4_0);
+            // todo: IComparable can be null
+
+            il.Emit(OpCodes.Ldarg_0); // todo: hash set will be hare
             member.Accept(_stackEmitter, il);
 
             var memberType = member.MemberType;

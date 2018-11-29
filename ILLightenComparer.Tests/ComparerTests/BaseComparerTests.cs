@@ -25,15 +25,16 @@ namespace ILLightenComparer.Tests.ComparerTests
         public void Sorting_Must_Work_The_Same_As_For_Reference_Comparer()
         {
             var original = Fixture.CreateMany<T>(Count).ToArray();
+            var copy0 = original.DeepClone();
             var copy1 = original.DeepClone();
             var copy2 = original.DeepClone();
 
-            Array.Sort(original, ReferenceComparer);
+            Array.Sort(copy0, ReferenceComparer);
             Array.Sort(copy1, BasicComparer);
             Array.Sort(copy2, TypedComparer);
 
-            Compare(original, copy1);
-            Compare(original, copy2);
+            Compare(copy0, copy1);
+            Compare(copy0, copy2);
         }
 
         protected readonly Fixture Fixture = FixtureBuilder.GetInstance();

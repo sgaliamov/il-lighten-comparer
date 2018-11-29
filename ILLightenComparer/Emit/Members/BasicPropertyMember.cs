@@ -5,9 +5,9 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class DefaultFieldMember : FieldMember, IDefaultAcceptor, ICallableField
+    internal sealed class BasicPropertyMember : PropertyMember, IBasicAcceptor, ICallableProperty
     {
-        public DefaultFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+        public BasicPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public ILEmitter Accept(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
@@ -82,9 +83,10 @@ namespace ILLightenComparer.Emit
                 string[] membersOrder,
                 StringComparison stringComparisonType)
             {
-                IgnoredMembers = ignoredMembers;
+                IgnoredMembers = ignoredMembers ?? throw new ArgumentNullException(nameof(ignoredMembers));
                 IncludeFields = includeFields;
-                MembersOrder = membersOrder;
+                MembersOrder = membersOrder?.Distinct().ToArray()
+                               ?? throw new ArgumentNullException(nameof(membersOrder));
                 StringComparisonType = stringComparisonType;
             }
         }

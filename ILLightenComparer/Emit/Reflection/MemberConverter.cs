@@ -15,7 +15,7 @@ namespace ILLightenComparer.Emit.Reflection
             new Converter(IsString, info => new StringPropertyMember((PropertyInfo)info)),
             new Converter(IsIntegral, info => new IntegralPropertyMember((PropertyInfo)info)),
             new Converter(TypeExtensions.IsNullable, info => new NullablePropertyMember((PropertyInfo)info)),
-            new Converter(IsComparable, info => new DefaultPropertyMember((PropertyInfo)info)),
+            new Converter(IsBasic, info => new BasicPropertyMember((PropertyInfo)info)),
             new Converter(_ => true, info => new HierarchicalPropertyMember((PropertyInfo)info))
         };
 
@@ -24,7 +24,7 @@ namespace ILLightenComparer.Emit.Reflection
             new Converter(IsString, info => new StringFiledMember((FieldInfo)info)),
             new Converter(IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
             new Converter(TypeExtensions.IsNullable, info => new NullableFieldMember((FieldInfo)info)),
-            new Converter(IsComparable, info => new DefaultFieldMember((FieldInfo)info))
+            new Converter(IsBasic, info => new BasicFieldMember((FieldInfo)info))
         };
 
         private readonly Context _context;
@@ -66,7 +66,8 @@ namespace ILLightenComparer.Emit.Reflection
         private static bool IsIntegral(Type type) => !type.IsNullable() && type.IsSmallIntegral();
 
         // todo: converter should not know about type of visitor
-        private static bool IsComparable(Type type) => !type.IsNullable() && type.GetCompareToMethod() != null;
+        // todo: filter only basic types
+        private static bool IsBasic(Type type) => !type.IsNullable() && type.GetCompareToMethod() != null;
 
         private static bool IsString(Type type) => type == typeof(string);
 

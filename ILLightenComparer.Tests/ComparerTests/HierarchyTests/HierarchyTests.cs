@@ -12,6 +12,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                                 MembersOrder = new[]
                                 {
                                     nameof(NestedObject.DeepNestedField),
+                                    nameof(NestedObject.Key),
                                     nameof(NestedObject.DeepNestedProperty)
                                 }
                             })
