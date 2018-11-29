@@ -2,6 +2,6 @@
 {
     public interface IComparersBuilder : IContextBuilder
     {
-        IContextBuilder SetDefaultConfiguration(CompareConfiguration configuration);
+        IContextBuilder DefineDefaultConfiguration(ComparerSettings settings);
     }
 }

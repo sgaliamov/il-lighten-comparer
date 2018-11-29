@@ -25,15 +25,15 @@ namespace ILLightenComparer
             _context = new Context(moduleBuilder);
         }
 
-        public IContextBuilder SetDefaultConfiguration(CompareConfiguration configuration)
+        public IContextBuilder DefineDefaultConfiguration(ComparerSettings settings)
         {
-            _context.SetDefaultConfiguration(configuration);
+            _context.DefineDefaultConfiguration(settings);
             return this;
         }
 
-        public IContextBuilder SetConfiguration(Type type, CompareConfiguration configuration)
+        public IContextBuilder DefineConfiguration(Type type, ComparerSettings settings)
         {
-            _context.SetConfiguration(type, configuration);
+            _context.DefineConfiguration(type, settings);
             return this;
         }
 
@@ -58,9 +58,9 @@ namespace ILLightenComparer
 
             public IContextBuilder<TOther> For<TOther>() => _owner.For<TOther>();
 
-            public IComparerProviderOrBuilderContext<T> SetConfiguration(CompareConfiguration configuration)
+            public IComparerProviderOrBuilderContext<T> DefineConfiguration(ComparerSettings settings)
             {
-                _owner.SetConfiguration(typeof(T), configuration);
+                _owner.DefineConfiguration(typeof(T), settings);
                 return this;
             }
 

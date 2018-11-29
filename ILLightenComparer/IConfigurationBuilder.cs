@@ -8,7 +8,7 @@ namespace ILLightenComparer
         ///     Defines the configuration for the type specified in the argument of the method.
         ///     Builder can define multiple configurations for different types.
         /// </summary>
-        IContextBuilder SetConfiguration(Type type, CompareConfiguration configuration);
+        IContextBuilder DefineConfiguration(Type type, ComparerSettings settings);
     }
 
     public interface IConfigurationBuilder<in T>
@@ -17,6 +17,6 @@ namespace ILLightenComparer
         ///     Defines the configuration for the type specified in the generic parameter of the interface.
         ///     Generic version can define a configuration only for the specified type.
         /// </summary>
-        IComparerProviderOrBuilderContext<T> SetConfiguration(CompareConfiguration configuration);
+        IComparerProviderOrBuilderContext<T> DefineConfiguration(ComparerSettings settings);
     }
 }

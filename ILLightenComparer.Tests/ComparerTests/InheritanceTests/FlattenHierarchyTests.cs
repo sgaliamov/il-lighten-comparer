@@ -4,17 +4,19 @@ namespace ILLightenComparer.Tests.ComparerTests.InheritanceTests
 {
     public class FlattenHierarchyTests : BaseComparerTests<ChildObject>
     {
-        protected override CompareConfiguration CompareConfiguration { get; } = new CompareConfiguration
+        public FlattenHierarchyTests()
         {
-            IncludeFields = true,
-            MembersOrder = new[]
-            {
-                "Field",
-                "Property"
-            }
-        };
+            ComparersBuilder.For<ChildObject>()
+                            .DefineConfiguration(new ComparerSettings
+                            {
+                                MembersOrder = new[]
+                                {
+                                    nameof(ChildObject.Field),
+                                    nameof(ChildObject.Property)
+                                }
+                            });
+        }
 
-        protected override IComparer<ChildObject> ReferenceComparer { get; } =
-            ChildObject.ChildObjectComparer;
+        protected override IComparer<ChildObject> ReferenceComparer { get; } = ChildObject.ChildObjectComparer;
     }
 }

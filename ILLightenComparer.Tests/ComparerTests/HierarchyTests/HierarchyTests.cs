@@ -7,10 +7,23 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public HierarchyTests()
         {
             ComparersBuilder.For<NestedObject>()
-                            .SetConfiguration(new CompareConfiguration
+                            .DefineConfiguration(new ComparerSettings
                             {
-                                MembersOrder = 
+                                MembersOrder = new[]
+                                {
+                                    nameof(NestedObject.DeepNestedField),
+                                    nameof(NestedObject.DeepNestedProperty)
+                                }
                             })
+                            .For<ContainerObject>()
+                            .DefineConfiguration(new ComparerSettings
+                            {
+                                MembersOrder = new[]
+                                {
+                                    nameof(ContainerObject.Comparable),
+                                    nameof(ContainerObject.Value)
+                                }
+                            });
         }
         protected override IComparer<ContainerObject> ReferenceComparer { get; } = ContainerObject.Comparer;
     }

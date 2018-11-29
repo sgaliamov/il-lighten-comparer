@@ -17,7 +17,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         private static readonly IComparer<TestObject> ILLightenComparer =
             new ComparersBuilder()
-                .SetDefaultConfiguration(new CompareConfiguration
+                .DefineDefaultConfiguration(new ComparerSettings
                 {
                     IncludeFields = true
                 })

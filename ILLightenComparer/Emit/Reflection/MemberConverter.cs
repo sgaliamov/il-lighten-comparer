@@ -35,7 +35,8 @@ namespace ILLightenComparer.Emit.Reflection
         {
             var acceptor = Convert(memberInfo, GetPropertyType(memberInfo), PropertyConverters);
 
-            if (acceptor == null && _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields)
+            var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
+            if (acceptor == null && includeFields)
             {
                 acceptor = Convert(memberInfo, GetFieldType(memberInfo), FieldConverters);
             }

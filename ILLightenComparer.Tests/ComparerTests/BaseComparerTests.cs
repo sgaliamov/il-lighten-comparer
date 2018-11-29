@@ -40,13 +40,13 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         protected IComparer BasicComparer => ComparersBuilder.GetComparer(typeof(T));
 
-        protected virtual CompareConfiguration CompareConfiguration { get; } =
-            new CompareConfiguration { IncludeFields = true };
-
         protected IContextBuilder ComparersBuilder =>
             _comparersBuilder
             ?? (_comparersBuilder = new ComparersBuilder()
-                .SetDefaultConfiguration(CompareConfiguration));
+                .DefineDefaultConfiguration(new ComparerSettings
+                {
+                    IncludeFields = true
+                }));
 
         protected abstract IComparer<T> ReferenceComparer { get; }
 

@@ -44,6 +44,7 @@
 ## Phase 4 Settings
 
 - [x] separate settings for each comparable type
+- [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
 - [ ] string options (case, culture)

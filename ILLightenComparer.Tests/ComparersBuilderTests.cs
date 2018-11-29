@@ -8,13 +8,13 @@ namespace ILLightenComparer.Tests
     {
         public ComparersBuilderTests()
         {
-            var configuration = new CompareConfiguration
+            var configuration = new ComparerSettings
             {
                 IncludeFields = false
             };
 
             _builder = new ComparersBuilder()
-                .SetDefaultConfiguration(configuration);
+                .DefineDefaultConfiguration(configuration);
         }
 
         [Fact]
