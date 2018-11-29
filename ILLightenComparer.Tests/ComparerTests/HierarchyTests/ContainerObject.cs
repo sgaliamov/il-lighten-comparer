@@ -30,7 +30,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     return -1;
                 }
 
-                var comparableComparison = Comparer<ComparableNestedObject>.Default.Compare(x.Comparable, y.Comparable);
+                var comparableComparison = Comparer<ComparableNestedObject>.Default.Compare(
+                    x.Comparable,
+                    y.Comparable);
                 if (comparableComparison != 0)
                 {
                     return comparableComparison;

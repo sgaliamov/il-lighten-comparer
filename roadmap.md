@@ -17,20 +17,22 @@
 - [x] compare enums
 - [x] optimization for integral types
 - [x] refactor MembersProvider
-- [x] ~~normalize result to -1, 0. 1~~ - no need to do it
 - [x] refactor visitors, introduce interfaces for member classes
 - [x] refactor MemberConverter
 - [x] fixture generates Max and Min values
 - [X] fixture generates nulls
-- [x] ~~try to implement auto visitor~~ - moved to a separate project, to mush extra complexity
 - [x] compare nullable
+- [x] ~~normalize result to -1, 0. 1~~ - no need to do it
+- [x] ~~try to implement auto visitor~~ - moved to a separate project, to mush extra complexity
 
 ## Phase 2 Hierarchical objects
 
 - [x] FlattenHierarchy
+- [x] nested members sort configuration
+- [ ] use existing *Compare* method
+- [ ] compare fields
 - [ ] nested object
 - [ ] nested structure
-- [ ] nested members sort configuration
 - [ ] detect cycles (check graph theory)
 - [ ] abstract member comparison
 - [ ] object member comparison?
