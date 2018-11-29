@@ -10,6 +10,9 @@ namespace ILLightenComparer.Emit.Emitters
     {
         private readonly StringBuilder _debugger = new StringBuilder();
         private readonly List<Label> _debugLabels = new List<Label>();
+        private readonly string _name;
+
+        public ILEmitter(string name, ILGenerator il) : this(il) => _name = name;
 
         partial void DebugLine(string message)
         {
@@ -33,7 +36,8 @@ namespace ILLightenComparer.Emit.Emitters
 
         partial void DebugOutput()
         {
-            Debug.WriteLine(_debugger.ToString());
+            Debug.WriteLine(_name);
+
             var locals = _localBuckets.Values.SelectMany(x => x.Values).ToArray();
             if (locals.Length != 0)
             {
@@ -45,6 +49,8 @@ namespace ILLightenComparer.Emit.Emitters
 
                 Debug.WriteLine("\t)");
             }
+
+            Debug.WriteLine(_debugger.ToString().TrimEnd());
         }
     }
 }
