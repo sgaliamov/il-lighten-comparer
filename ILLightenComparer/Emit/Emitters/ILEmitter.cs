@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
-#if DEBUG
-using System.Linq;
-
-#endif
 
 namespace ILLightenComparer.Emit.Emitters
 {
     using Locals = Dictionary<byte, Dictionary<Type, LocalBuilder>>;
 
-    internal sealed class ILEmitter : IDisposable
+    // ReSharper disable once PartialTypeWithSinglePart
+    internal sealed partial class ILEmitter : IDisposable
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
 
-#if DEBUG
-        private readonly List<Label> _debugLabels = new List<Label>();
-#endif
         private ILGenerator _il;
 
         private Locals _localBuckets = new Locals
@@ -31,27 +24,14 @@ namespace ILLightenComparer.Emit.Emitters
 
         public void Dispose()
         {
-#if DEBUG
-            var locals = _localBuckets.Values.SelectMany(x => x.Values).ToArray();
-            if (locals.Length != 0)
-            {
-                Debug.WriteLine("\t.locals init (");
-                foreach (var item in locals)
-                {
-                    Debug.WriteLine($"\t\t[{item.LocalIndex}] {item.LocalType}");
-                }
-
-                Debug.WriteLine("\t)");
-            }
-#endif
+            DebugOutput();
             _il = null;
             _localBuckets = null;
         }
 
         public ILEmitter Emit(OpCode opCode)
         {
-            Debug.WriteLine($"\t\t{opCode}");
-
+            DebugLine($"\t\t{opCode}");
             _il.Emit(opCode);
 
             return this;
@@ -59,8 +39,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Emit(OpCode opCode, int arg)
         {
-            Debug.WriteLine($"\t\t{opCode} {arg}");
-
+            DebugLine($"\t\t{opCode} {arg}");
             _il.Emit(opCode, arg);
 
             return this;
@@ -69,17 +48,14 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter DefineLabel(out Label label)
         {
             label = _il.DefineLabel();
-#if DEBUG
-            _debugLabels.Add(label);
-#endif
+            AddDebugLabel(label);
+
             return this;
         }
 
         public ILEmitter MarkLabel(Label label)
         {
-#if DEBUG
-            Debug.WriteLine($"\tLabel_{_debugLabels.IndexOf(label)}:");
-#endif
+            DebugMarkLabel(label);
             _il.MarkLabel(label);
 
             return this;
@@ -87,9 +63,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Emit(OpCode opCode, Label label)
         {
-#if DEBUG
-            Debug.WriteLine($"\t\t{opCode} Label_{_debugLabels.IndexOf(label)}");
-#endif
+            DebugEmitLabel(opCode, label);
             _il.Emit(opCode, label);
 
             return this;
@@ -97,8 +71,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Emit(OpCode opCode, MethodInfo methodInfo)
         {
-            Debug.WriteLine($"\t\t{opCode} {methodInfo.DisplayName()}");
-
+            DebugLine($"\t\t{opCode} {methodInfo.DisplayName()}");
             _il.Emit(opCode, methodInfo);
 
             return this;
@@ -106,8 +79,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Emit(OpCode opCode, FieldInfo field)
         {
-            Debug.WriteLine($"\t\t{opCode} {field.DisplayName()}");
-
+            DebugLine($"\t\t{opCode} {field.DisplayName()}");
             _il.Emit(opCode, field);
 
             return this;
@@ -116,8 +88,13 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Call(MethodInfo methodInfo)
         {
             var owner = methodInfo.DeclaringType;
+            if (owner == null)
+            {
+                throw new InvalidOperationException(
+                    $"It's not expected that {methodInfo.DisplayName()} doesn't have a declaring type.");
+            }
 
-            var opCode = owner == null || owner.IsValueType || owner.IsSealed
+            var opCode = methodInfo.IsStatic || owner.IsValueType || owner.IsSealed
                 ? OpCodes.Call
                 : OpCodes.Callvirt;
 
@@ -130,8 +107,7 @@ namespace ILLightenComparer.Emit.Emitters
                 ? OpCodes.Unbox_Any
                 : OpCodes.Castclass;
 
-            Debug.WriteLine($"\t\t{castOp} {objectType.Name}");
-
+            DebugLine($"\t\t{castOp} {objectType.Name}");
             _il.Emit(castOp, objectType);
 
             return this;
@@ -139,8 +115,8 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter EmitCtorCall(ConstructorInfo constructor)
         {
+            DebugLine($"\t\t{OpCodes.Newobj} {constructor.DisplayName()}");
             _il.Emit(OpCodes.Newobj, constructor);
-            Debug.WriteLine($"\t\t{OpCodes.Newobj} {constructor.DisplayName()}");
 
             return Emit(OpCodes.Ret);
         }
@@ -194,9 +170,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter LoadAddress(LocalBuilder local)
         {
             var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
-
-            Debug.WriteLine($"\t\t{opCode} {local.LocalIndex}");
-
+            DebugLine($"\t\t{opCode} {local.LocalIndex}");
             _il.Emit(opCode, local);
 
             return this;
@@ -213,7 +187,7 @@ namespace ILLightenComparer.Emit.Emitters
 
                 default:
                     var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Stloc_S : OpCodes.Stloc;
-                    Debug.WriteLine($"\t\t{opCode} {local.LocalIndex}");
+                    DebugLine($"\t\t{opCode} {local.LocalIndex}");
                     _il.Emit(opCode, local);
                     return this;
             }
@@ -236,5 +210,13 @@ namespace ILLightenComparer.Emit.Emitters
 
             return this;
         }
+
+        // ReSharper disable PartialMethodWithSinglePart
+        partial void DebugEmitLabel(OpCode opCode, Label label);
+        partial void DebugMarkLabel(Label label);
+        partial void DebugLine(string message);
+        partial void AddDebugLabel(Label label);
+        partial void DebugOutput();
+        // ReSharper restore PartialMethodWithSinglePart
     }
 }
