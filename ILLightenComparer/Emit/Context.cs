@@ -76,12 +76,7 @@ namespace ILLightenComparer.Emit
 
             return comparerType.GetMethod(
                 MethodName.Compare,
-                new[]
-                {
-                    typeof(HashSet<object>),
-                    memberType,
-                    memberType
-                });
+                Method.StaticCompareMethodParameters(memberType));
         }
 
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>

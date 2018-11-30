@@ -85,6 +85,14 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
+        public ILEmitter Emit(OpCode opCode, ConstructorInfo constructorInfo)
+        {
+            DebugLine($"\t\t{opCode} {constructorInfo.DisplayName()}");
+            _il.Emit(opCode, constructorInfo);
+
+            return this;
+        }
+
         public ILEmitter Call(MethodInfo methodInfo)
         {
             var owner = methodInfo.DeclaringType;
@@ -115,13 +123,7 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter EmitCtorCall(ConstructorInfo constructor)
-        {
-            DebugLine($"\t\t{OpCodes.Newobj} {constructor.DisplayName()}");
-            _il.Emit(OpCodes.Newobj, constructor);
-
-            return Emit(OpCodes.Ret);
-        }
+        public ILEmitter EmitCtorCall(ConstructorInfo constructor) => Emit(OpCodes.Newobj, constructor).Emit(OpCodes.Ret);
 
         public ILEmitter Branch(OpCode opCode, out Label label)
         {

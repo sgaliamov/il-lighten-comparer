@@ -117,8 +117,9 @@ namespace ILLightenComparer.Emit.Emitters
 
             if (memberType.IsValueType || memberType.IsSealed)
             {
-                il.Emit(OpCodes.Ldarg_0); // todo: hash set will be hare
-                member.LoadMembers(_stackEmitter, il);
+                il.LoadArgument(0); // todo: hash set will be hare
+                member.LoadMembers(_stackEmitter, il)
+                      .LoadArgument(3);
 
                 var compareMethod = _context.GetStaticCompareMethod(memberType);
                 return il.Call(compareMethod)
