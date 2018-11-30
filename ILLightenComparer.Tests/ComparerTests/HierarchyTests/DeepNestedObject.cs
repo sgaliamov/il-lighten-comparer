@@ -6,8 +6,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     {
         public float FloatField;
 
-        public static IComparer<DeepNestedObject> Comparer { get; } =
-            new FloatFieldFloatPropertyRelationalComparer();
+        public static IComparer<DeepNestedObject> Comparer { get; } = new FloatFieldFloatPropertyRelationalComparer();
 
         public float FloatProperty { get; set; }
 

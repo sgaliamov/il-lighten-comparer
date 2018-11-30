@@ -39,9 +39,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Custom_Comparable_Implementation_Should_Be_Used()
         {
-            TypedComparer.Compare(
-                             Fixture.Create<ContainerObject>(),
-                             Fixture.Create<ContainerObject>())
+            var other = Fixture.Create<ContainerObject>();
+            var one = other.DeepClone();
+            one.ComparableProperty.Value = other.ComparableProperty.Value + 1;
+
+            TypedComparer.Compare(one, other)
                          .Should()
                          .NotBe(0);
 

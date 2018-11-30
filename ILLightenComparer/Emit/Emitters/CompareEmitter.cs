@@ -100,18 +100,19 @@ namespace ILLightenComparer.Emit.Emitters
             var compareToMethod = memberType.GetCompareToMethod(); // todo: member could implement not generic IComparable
             if (compareToMethod != null)
             {
-                return member.LoadArguments(_stackEmitter, il)
-                             .Store(memberType, 1, out var n2) // todo: possible optimization: load first arg2, then test arg1, no need to declare n2
-                             .Store(memberType, 0, out var n1)
-                             // check n1 for null
-                             .LoadLocal(n1)
-                             .Branch(OpCodes.Brtrue_S, out var next)
-                             .Emit(OpCodes.Ldc_I4_M1)
-                             .Emit(OpCodes.Ret)
-                             .MarkLabel(next)
-                             // call compare
-                             .LoadAddress(n1)
-                             .LoadLocal(n2)
+                return member.LoadMembers(_stackEmitter, il)
+                             .Store(memberType, 1, out var l2)
+                             .Store(memberType, 0, out var l1)
+                             .LoadLocal(l1)
+                             .Branch(OpCodes.Brtrue_S, out var call)
+                             .LoadLocal(l2)
+                             .Branch(OpCodes.Brtrue_S, out var returnM1)
+                             .Return(0)
+                             .MarkLabel(returnM1)
+                             .Return(-1)
+                             .MarkLabel(call)
+                             .LoadLocal(l1)
+                             .LoadLocal(l2)
                              .Call(compareToMethod)
                              .EmitReturnNotZero();
             }
