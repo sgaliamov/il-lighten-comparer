@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
-using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
@@ -12,7 +11,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     {
         private const int N = 10000;
 
-        private static readonly IComparer<SampleObject> Native = SampleObject.TestObjectComparer;
+        private static readonly IComparer<SampleObject> Native = SampleObject.Comparer;
 
         private static readonly IComparer<SampleObject> ILLightenComparer =
             new ComparersBuilder()
@@ -55,7 +54,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         //                                                             .ThenBy(x => x.UInt32Property)
         //                                                             .ThenBy(x => x.UInt64Property);
 
-        private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
+        private static readonly Fixture Fixture = new Fixture();
 
         private readonly SampleObject[] _one = new SampleObject[N];
         private readonly SampleObject[] _other = new SampleObject[N];

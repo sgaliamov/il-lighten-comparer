@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;net472</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ILLightenComparer.Tests\ILLightenComparer.Tests.csproj" />
+    <ProjectReference Include="..\ILLightenComparer\ILLightenComparer.csproj" />
   </ItemGroup>
 
 </Project>
