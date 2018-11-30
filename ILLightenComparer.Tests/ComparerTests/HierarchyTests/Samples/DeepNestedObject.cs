@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
+namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
-    public sealed class DeepNestedObject
+    public class DeepNestedObject
     {
         public float FloatField;
 

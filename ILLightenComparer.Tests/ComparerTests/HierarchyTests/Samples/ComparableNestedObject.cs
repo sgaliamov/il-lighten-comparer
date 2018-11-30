@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
+namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
     public sealed class ComparableNestedObject : IComparable<ComparableNestedObject>
     {

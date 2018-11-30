@@ -2,6 +2,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
+using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
