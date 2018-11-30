@@ -1,4 +1,4 @@
 ﻿namespace ILLightenComparer.Tests.Samples
 {
-    internal sealed class DummyObject { }
+    public sealed class DummyObject { }
 }

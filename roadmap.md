@@ -30,19 +30,20 @@
 - [x] FlattenHierarchy
 - [x] nested members sort configuration
 - [x] compare fields
-- [ ] use existing *Compare* method
-- [ ] compare nullable complex structs
+- [ ] use existing *CompareTo* method
 - [ ] nested object
-- [ ] nested structure
-- [ ] detect cycles (check graph theory)
 - [ ] abstract member comparison
-- [ ] object member comparison?
-- [ ] test when abstract class is replaced after a comparer is created
+- [ ] test when abstract class or not sealed is replaced after a comparer is created
+- [ ] object member comparison
+- [ ] detect cycles
+- [ ] compare nullable complex structs
+- [ ] nested structure
 
 ## Phase 3 Collections
 
 - [ ] compare collection, do not iterate IEnumerable
 - [ ] IgnoreCollectionOrder setting
+- [ ] refactor tests - ensure all branch execution
 
 ## Phase 4 Settings
 
