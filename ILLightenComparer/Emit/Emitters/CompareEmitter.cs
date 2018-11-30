@@ -88,7 +88,7 @@ namespace ILLightenComparer.Emit.Emitters
             var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
 
             return member.LoadMembers(_stackEmitter, il)
-                         .Emit(OpCodes.Ldc_I4_S, comparisonType) // todo: use short form for constants
+                         .LoadConstant(comparisonType)
                          .Call(Method.StringCompare)
                          .EmitReturnNotZero();
         }

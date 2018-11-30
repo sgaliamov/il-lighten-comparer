@@ -101,25 +101,7 @@ namespace ILLightenComparer.Emit.Emitters
             return Emit(opCode, methodInfo);
         }
 
-        public ILEmitter Return(int value)
-        {
-            switch (value)
-            {
-                case -1: return Emit(OpCodes.Ldc_I4_M1).Emit(OpCodes.Ret);
-                case 0: return Emit(OpCodes.Ldc_I4_0).Emit(OpCodes.Ret);
-                case 1: return Emit(OpCodes.Ldc_I4_1).Emit(OpCodes.Ret);
-                case 2: return Emit(OpCodes.Ldc_I4_2).Emit(OpCodes.Ret);
-                case 3: return Emit(OpCodes.Ldc_I4_3).Emit(OpCodes.Ret);
-                case 4: return Emit(OpCodes.Ldc_I4_4).Emit(OpCodes.Ret);
-                case 5: return Emit(OpCodes.Ldc_I4_5).Emit(OpCodes.Ret);
-                case 6: return Emit(OpCodes.Ldc_I4_6).Emit(OpCodes.Ret);
-                case 7: return Emit(OpCodes.Ldc_I4_7).Emit(OpCodes.Ret);
-                case 8: return Emit(OpCodes.Ldc_I4_8).Emit(OpCodes.Ret);
-                default:
-                    var opCode = value <= ShortFormLimit ? OpCodes.Ldc_I4_S : OpCodes.Ldc_I4;
-                    return Emit(opCode, value).Emit(OpCodes.Ret);
-            }
-        }
+        public ILEmitter Return(int value) => LoadConstant(value).Emit(OpCodes.Ret);
 
         public ILEmitter EmitCast(Type objectType)
         {
@@ -139,6 +121,18 @@ namespace ILLightenComparer.Emit.Emitters
             _il.Emit(OpCodes.Newobj, constructor);
 
             return Emit(OpCodes.Ret);
+        }
+
+        public ILEmitter Branch(OpCode opCode, out Label label)
+        {
+            if (opCode.FlowControl != FlowControl.Branch
+                && opCode.FlowControl != FlowControl.Cond_Branch)
+            {
+                throw new ArgumentOutOfRangeException(nameof(opCode),
+                    $"Only a branch instruction is allowed. OpCode: {opCode}.");
+            }
+
+            return DefineLabel(out label).Emit(opCode, label);
         }
 
         public ILEmitter LoadArgument(ushort argumentIndex)
@@ -161,16 +155,24 @@ namespace ILLightenComparer.Emit.Emitters
             return Emit(opCode, argumentIndex);
         }
 
-        public ILEmitter Branch(OpCode opCode, out Label label)
+        public ILEmitter LoadConstant(int value)
         {
-            if (opCode.FlowControl != FlowControl.Branch
-                && opCode.FlowControl != FlowControl.Cond_Branch)
+            switch (value)
             {
-                throw new ArgumentOutOfRangeException(nameof(opCode),
-                    $"Only a branch instruction is allowed. OpCode: {opCode}.");
+                case -1: return Emit(OpCodes.Ldc_I4_M1);
+                case 0: return Emit(OpCodes.Ldc_I4_0);
+                case 1: return Emit(OpCodes.Ldc_I4_1);
+                case 2: return Emit(OpCodes.Ldc_I4_2);
+                case 3: return Emit(OpCodes.Ldc_I4_3);
+                case 4: return Emit(OpCodes.Ldc_I4_4);
+                case 5: return Emit(OpCodes.Ldc_I4_5);
+                case 6: return Emit(OpCodes.Ldc_I4_6);
+                case 7: return Emit(OpCodes.Ldc_I4_7);
+                case 8: return Emit(OpCodes.Ldc_I4_8);
+                default:
+                    var opCode = value <= ShortFormLimit ? OpCodes.Ldc_I4_S : OpCodes.Ldc_I4;
+                    return Emit(opCode, value);
             }
-
-            return DefineLabel(out label).Emit(opCode, label);
         }
 
         public ILEmitter LoadLocal(LocalBuilder local)
