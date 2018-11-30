@@ -106,15 +106,13 @@ namespace ILLightenComparer.Emit.Emitters
                              .LoadLocal(l1)
                              .Branch(OpCodes.Brtrue_S, out var call)
                              .LoadLocal(l2)
-                             .Branch(OpCodes.Brtrue_S, out var returnM1)
-                             .Return(0)
-                             .MarkLabel(returnM1)
+                             .Branch(OpCodes.Brfalse_S, out var next)
                              .Return(-1)
                              .MarkLabel(call)
                              .LoadLocal(l1)
                              .LoadLocal(l2)
                              .Call(compareToMethod)
-                             .EmitReturnNotZero();
+                             .EmitReturnNotZero(next);
             }
 
             if (memberType.IsValueType || memberType.IsSealed)
