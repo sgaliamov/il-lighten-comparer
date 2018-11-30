@@ -33,7 +33,12 @@ namespace ILLightenComparer.Emit
                 genericInterface
             );
 
-            var contextField = BuildFactoryMethod(typeBuilder);
+            var contextField = typeBuilder.DefineField(
+                "_context",
+                typeof(IContext),
+                FieldAttributes.InitOnly | FieldAttributes.Private);
+
+            BuildFactory(typeBuilder, contextField);
 
             var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
 
@@ -53,25 +58,22 @@ namespace ILLightenComparer.Emit
             return typeBuilder.CreateTypeInfo();
         }
 
-        private static FieldBuilder BuildFactoryMethod(TypeBuilder typeBuilder)
+        private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)
         {
             var parameters = new[] { typeof(IContext) };
 
-            var contextField = typeBuilder.DefineField(
-                "_context",
-                typeof(IContext),
-                FieldAttributes.InitOnly | FieldAttributes.Private);
-
             var constructorInfo = typeBuilder.DefineConstructor(
                 MethodAttributes.Public,
-                CallingConventions.Standard,
+                CallingConventions.HasThis,
                 parameters);
 
             using (var il = constructorInfo.CreateILEmitter())
             {
                 il.LoadArgument(0)
-                  .LoadArgument(1)
-                  .Emit(OpCodes.Stfld, contextField)
+                  .Emit(OpCodes.Call, typeof(object).GetConstructor(Type.EmptyTypes))
+                  //.LoadArgument(0)
+                  //.LoadArgument(1)
+                  //.Emit(OpCodes.Stfld, contextField)
                   .Emit(OpCodes.Ret);
             }
 
@@ -85,8 +87,6 @@ namespace ILLightenComparer.Emit
                 il.LoadArgument(0)
                   .EmitCtorCall(constructorInfo);
             }
-
-            return contextField;
         }
 
         private MethodBuilder BuildStaticCompareMethod(TypeBuilder typeBuilder, Type objectType)
@@ -94,12 +94,7 @@ namespace ILLightenComparer.Emit
             var staticMethodBuilder = typeBuilder.DefineStaticMethod(
                 MethodName.Compare,
                 typeof(int),
-                new[]
-                {
-                    typeof(HashSet<object>),
-                    objectType, // x
-                    objectType // y
-                });
+                Method.StaticCompareMethodParameters(objectType));
 
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
@@ -163,7 +158,7 @@ namespace ILLightenComparer.Emit
             TypeBuilder typeBuilder,
             MethodInfo interfaceMethod,
             MethodInfo staticCompareMethod,
-            FieldBuilder contextField,
+            FieldInfo contextField,
             Type objectType)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
@@ -175,11 +170,13 @@ namespace ILLightenComparer.Emit
                     EmitReferenceComparision(il);
                 }
 
-                il.Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
+                il.LoadArgument(0)
+                  .Emit(OpCodes.Ldfld, contextField)
                   .Emit(OpCodes.Ldarg_1)
                   .EmitCast(objectType)
                   .Emit(OpCodes.Ldarg_2)
                   .EmitCast(objectType)
+                  .Emit(OpCodes.Newobj, Method.HashSetConstructor)
                   .Call(staticCompareMethod)
                   .Emit(OpCodes.Ret);
             }
@@ -189,15 +186,17 @@ namespace ILLightenComparer.Emit
             TypeBuilder typeBuilder,
             MethodInfo interfaceMethod,
             MethodInfo staticCompareMethod,
-            FieldBuilder contextField)
+            FieldInfo contextField)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
             using (var il = methodBuilder.CreateILEmitter())
             {
-                il.Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
+                il.LoadArgument(0)
+                  .Emit(OpCodes.Ldfld, contextField)
                   .Emit(OpCodes.Ldarg_1)
                   .Emit(OpCodes.Ldarg_2)
+                  .Emit(OpCodes.Newobj, Method.HashSetConstructor)
                   .Call(staticCompareMethod)
                   .Emit(OpCodes.Ret);
             }
