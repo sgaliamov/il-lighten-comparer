@@ -20,13 +20,13 @@ namespace ILLightenComparer.Emit.Emitters
                          ?? throw new ArgumentException(
                              $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
-            return member.LoadArguments(_stackEmitter, il)
+            return member.LoadMembers(_stackEmitter, il)
                          .Call(method)
                          .EmitReturnNotZero();
         }
 
         public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il) =>
-            member.LoadArguments(_stackEmitter, il)
+            member.LoadMembers(_stackEmitter, il)
                   .Emit(OpCodes.Sub)
                   .EmitReturnNotZero();
 
@@ -34,7 +34,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var memberType = member.MemberType;
 
-            member.LoadArguments(_stackEmitter, il)
+            member.LoadMembers(_stackEmitter, il)
                   .DefineLabel(out var next)
                   .Store(memberType, 1, out var n2)
                   .Store(memberType, 0, out var n1);
@@ -87,7 +87,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
 
-            return member.LoadArguments(_stackEmitter, il)
+            return member.LoadMembers(_stackEmitter, il)
                          .Emit(OpCodes.Ldc_I4_S, comparisonType) // todo: use short form for constants
                          .Call(Method.StringCompare)
                          .EmitReturnNotZero();
@@ -119,7 +119,7 @@ namespace ILLightenComparer.Emit.Emitters
             if (memberType.IsValueType || memberType.IsSealed)
             {
                 il.Emit(OpCodes.Ldarg_0); // todo: hash set will be hare
-                member.LoadArguments(_stackEmitter, il);
+                member.LoadMembers(_stackEmitter, il);
 
                 var compareMethod = _context.GetStaticCompareMethod(memberType);
                 return il.Call(compareMethod)

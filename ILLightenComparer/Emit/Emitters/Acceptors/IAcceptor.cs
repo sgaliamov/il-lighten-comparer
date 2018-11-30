@@ -2,7 +2,7 @@
 {
     internal interface IAcceptor
     {
-        ILEmitter LoadArguments(StackEmitter visitor, ILEmitter il);
+        ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il);
         ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
     }
 }

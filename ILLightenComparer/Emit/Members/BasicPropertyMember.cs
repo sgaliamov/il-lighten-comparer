@@ -9,7 +9,7 @@ namespace ILLightenComparer.Emit.Members
     {
         public BasicPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadArguments(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
     }
 }
