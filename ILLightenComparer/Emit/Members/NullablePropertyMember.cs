@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit.Members
         public MethodInfo GetValueMethod { get; }
         public MethodInfo HasValueMethod { get; }
 
-        public ILEmitter Accept(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter LoadArguments(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
     }
 }
