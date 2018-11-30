@@ -176,8 +176,15 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter Store(LocalBuilder local)
+        public ILEmitter Store(Type localType, out LocalBuilder local)
         {
+            return Store(localType, 0, out local);
+        }
+
+        public ILEmitter Store(Type localType, byte bucket, out LocalBuilder local)
+        {
+            DeclareLocal(localType, bucket, out local);
+
             switch (local.LocalIndex)
             {
                 case 0: return Emit(OpCodes.Stloc_0);
@@ -193,10 +200,7 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
-        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local) =>
-            DeclareLocal(localType, out local, 0);
-
-        public ILEmitter DeclareLocal(Type localType, out LocalBuilder local, byte bucket)
+        public void DeclareLocal(Type localType, byte bucket, out LocalBuilder local)
         {
             if (!_localBuckets.TryGetValue(bucket, out var locals))
             {
@@ -207,8 +211,6 @@ namespace ILLightenComparer.Emit.Emitters
             {
                 local = locals[localType] = _il.DeclareLocal(localType);
             }
-
-            return this;
         }
 
         #region debug

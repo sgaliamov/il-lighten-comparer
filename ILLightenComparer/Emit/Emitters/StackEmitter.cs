@@ -11,8 +11,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(ICallableProperty member, ILEmitter il) =>
             il.LoadProperty(member, 1)
-              .DeclareLocal(member.MemberType.GetUnderlyingType(), out var local)
-              .Store(local)
+              .Store(member.MemberType.GetUnderlyingType(), out var local)
               .LoadAddress(local)
               .LoadProperty(member, 2);
 

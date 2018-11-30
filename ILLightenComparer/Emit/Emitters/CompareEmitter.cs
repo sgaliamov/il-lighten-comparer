@@ -35,9 +35,9 @@ namespace ILLightenComparer.Emit.Emitters
             var memberType = member.MemberType;
 
             member.Accept(_stackEmitter, il)
-                  .DeclareLocal(memberType, out var n1, 0)
-                  .DeclareLocal(memberType, out var n2, 1)
-                  .DefineLabel(out var next);
+                  .DefineLabel(out var next)
+                  .Store(memberType, 0,out var n1)
+                  .Store(memberType, 1, out var n2);
 
             CheckValuesForNull(il, member, n1, n2, next);
 
@@ -51,16 +51,15 @@ namespace ILLightenComparer.Emit.Emitters
             }
             else
             {
-                var method = GetCompareToMethod(memberType);
+                var compareToMethod = GetCompareToMethod(memberType);
 
                 il.LoadAddress(n1)
                   .Call(member.GetValueMethod)
-                  .DeclareLocal(memberType.GetUnderlyingType(), out var local)
-                  .Store(local)
+                  .Store(memberType.GetUnderlyingType(), out var local)
                   .LoadAddress(local)
                   .LoadAddress(n2)
                   .Call(member.GetValueMethod)
-                  .Call(method);
+                  .Call(compareToMethod);
             }
 
             // todo: nullable can be also complex struct, not only primitive types, so it can be considered as hierarchical
@@ -123,14 +122,10 @@ namespace ILLightenComparer.Emit.Emitters
             LocalBuilder n2,
             Label next)
         {
-            il.Store(n2)
-              .LoadAddress(n2)
+            il.LoadAddress(n2)
               // var secondHasValue = n2->HasValue
               .Call(member.HasValueMethod)
-              .DeclareLocal(typeof(bool), out var secondHasValue)
-              .Store(secondHasValue)
-              // var n1 = &arg1
-              .Store(n1)
+              .Store(typeof(bool), out var secondHasValue)
               .LoadAddress(n1)
               // if n1->HasValue goto firstHasValue
               .Call(member.HasValueMethod)
