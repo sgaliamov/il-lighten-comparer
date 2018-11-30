@@ -13,6 +13,30 @@ namespace ILLightenComparer.Tests.ComparerTests
     public abstract class BaseComparerTests<T>
     {
         [Fact]
+        public void Comparison_Of_Null_With_Object_Produces_Negative_Value()
+        {
+            var obj = Fixture.Create<T>();
+
+            BasicComparer.Compare(null, obj).Should().BeNegative();
+            if (typeof(T).IsClass)
+            {
+                TypedComparer.Compare(default, obj).Should().BeNegative();
+            }
+        }
+
+        [Fact]
+        public void Comparison_Of_Object_With_Null_Produces_Positive_Value()
+        {
+            var obj = Fixture.Create<T>();
+
+            BasicComparer.Compare(obj, null).Should().BePositive();
+            if (typeof(T).IsClass)
+            {
+                TypedComparer.Compare(obj, default).Should().BePositive();
+            }
+        }
+
+        [Fact]
         public void Comparison_With_Itself_Produces_0()
         {
             var obj = Fixture.Create<T>();

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
@@ -18,7 +16,9 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {
             var memberType = member.MemberType;
-            var method = GetCompareToMethod(memberType);
+            var method = memberType.GetCompareToMethod()
+                         ?? throw new ArgumentException(
+                             $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
             return member.Accept(_stackEmitter, il)
                          .Call(method)
@@ -36,37 +36,51 @@ namespace ILLightenComparer.Emit.Emitters
 
             member.Accept(_stackEmitter, il)
                   .DefineLabel(out var next)
-                  .Store(memberType, 0,out var n1)
-                  .Store(memberType, 1, out var n2);
+                  .Store(memberType, 1, out var n2)
+                  .Store(memberType, 0, out var n1);
 
-            CheckValuesForNull(il, member, n1, n2, next);
+            CheckNullableValuesForNull(il, member, n1, n2, next);
 
             if (memberType.GetUnderlyingType().IsSmallIntegral())
             {
-                il.LoadAddress(n1)
-                  .Call(member.GetValueMethod)
-                  .LoadAddress(n2)
-                  .Call(member.GetValueMethod)
-                  .Emit(OpCodes.Sub);
+                return il.LoadAddress(n1)
+                         .Call(member.GetValueMethod)
+                         .LoadAddress(n2)
+                         .Call(member.GetValueMethod)
+                         .Emit(OpCodes.Sub)
+                         .EmitReturnNotZero(next);
             }
-            else
-            {
-                var compareToMethod = GetCompareToMethod(memberType);
 
-                il.LoadAddress(n1)
-                  .Call(member.GetValueMethod)
-                  .Store(memberType.GetUnderlyingType(), out var local)
-                  .LoadAddress(local)
-                  .LoadAddress(n2)
-                  .Call(member.GetValueMethod)
-                  .Call(compareToMethod);
+            var compareToMethod = memberType.GetCompareToMethod();
+            if (compareToMethod != null)
+            {
+                return il.LoadAddress(n1)
+                         .Call(member.GetValueMethod)
+                         .Store(memberType.GetUnderlyingType(), out var local)
+                         .LoadAddress(local)
+                         .LoadAddress(n2)
+                         .Call(member.GetValueMethod)
+                         .Call(compareToMethod)
+                         .EmitReturnNotZero(next);
             }
+
+            //if (memberType.IsValueType || memberType.IsSealed)
+            //{
+            //    il.Emit(OpCodes.Ldarg_0); // todo: hash set will be hare
+            //    member.Accept(_stackEmitter, il);
+
+            //    var compareMethod = _context.GetStaticCompareMethod(memberType);
+
+            //    il.Call(compareMethod).EmitReturnNotZero();
+            //}
+            //else
+            //{
+            //    throw new NotImplementedException();
+            //}
 
             // todo: nullable can be also complex struct, not only primitive types, so it can be considered as hierarchical
 
-            il.EmitReturnNotZero(next);
-
-            return il;
+            throw new NotImplementedException();
         }
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
@@ -83,24 +97,15 @@ namespace ILLightenComparer.Emit.Emitters
         {
             // todo: IComparable can be null
 
-            il.Emit(OpCodes.Ldarg_0); // todo: hash set will be hare
-            member.Accept(_stackEmitter, il);
-
             var memberType = member.MemberType;
             if (memberType.IsValueType || memberType.IsSealed)
             {
-                var comparerType = _context.GetComparerType(memberType);
+                il.Emit(OpCodes.Ldarg_0); // todo: hash set will be hare
+                member.Accept(_stackEmitter, il);
 
-                var method = comparerType.GetMethod(
-                    MethodName.Compare,
-                    new[]
-                    {
-                        typeof(HashSet<object>),
-                        memberType,
-                        memberType
-                    });
+                var compareMethod = _context.GetStaticCompareMethod(memberType);
 
-                il.Call(method).EmitReturnNotZero();
+                il.Call(compareMethod).EmitReturnNotZero();
             }
             else
             {
@@ -110,12 +115,7 @@ namespace ILLightenComparer.Emit.Emitters
             return il;
         }
 
-        private static MethodInfo GetCompareToMethod(Type memberType) =>
-            memberType.GetCompareToMethod()
-            ?? throw new ArgumentException(
-                $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
-
-        private static void CheckValuesForNull(
+        private static void CheckNullableValuesForNull(
             ILEmitter il,
             INullableAcceptor member,
             LocalBuilder n1,

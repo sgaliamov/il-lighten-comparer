@@ -60,6 +60,20 @@ namespace ILLightenComparer.Emit
             return lazy.Value;
         }
 
+        public MethodInfo GetStaticCompareMethod(Type memberType)
+        {
+            var comparerType = GetComparerType(memberType);
+
+            return comparerType.GetMethod(
+                MethodName.Compare,
+                new[]
+                {
+                    typeof(HashSet<object>),
+                    memberType,
+                    memberType
+                });
+        }
+
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
             _moduleBuilder.DefineType(name, interfaceTypes);
 

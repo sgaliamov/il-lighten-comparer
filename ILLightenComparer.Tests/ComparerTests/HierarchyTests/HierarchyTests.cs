@@ -10,16 +10,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public HierarchyTests()
         {
             ComparersBuilder
-                .For<NestedObject>()
-                .DefineConfiguration(new ComparerSettings
-                {
-                    MembersOrder = new[]
+                .DefineConfiguration(typeof(NestedObject),
+                    new ComparerSettings
                     {
-                        nameof(NestedObject.DeepNestedField),
-                        nameof(NestedObject.Key),
-                        nameof(NestedObject.DeepNestedProperty)
-                    }
-                })
+                        MembersOrder = new[]
+                        {
+                            nameof(NestedObject.DeepNestedField),
+                            nameof(NestedObject.Key),
+                            nameof(NestedObject.DeepNestedProperty)
+                        }
+                    })
                 .For<ContainerObject>()
                 .DefineConfiguration(new ComparerSettings
                 {
@@ -44,6 +44,22 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                          .NotBe(0);
 
             ComparableNestedObject.UsedCompareTo.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
+        {
+            var one = Fixture.Build<ContainerObject>()
+                             .Without(x => x.Comparable)
+                             .Create();
+
+            var other = Fixture.Build<ContainerObject>()
+                               .With(x => x.Comparable, new ComparableNestedObject())
+                               .Create();
+
+            TypedComparer.Compare(one, other)
+                         .Should()
+                         .BeNegative();
         }
 
         protected override IComparer<ContainerObject> ReferenceComparer { get; } = ContainerObject.Comparer;

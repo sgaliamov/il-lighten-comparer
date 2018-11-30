@@ -38,7 +38,11 @@ namespace ILLightenComparer.Emit.Emitters
         {
             Debug.WriteLine(_name);
 
-            var locals = _localBuckets.Values.SelectMany(x => x.Values).ToArray();
+            var locals = _localBuckets
+                         .Values.SelectMany(x => x.Values)
+                         .OrderBy(x => x.LocalIndex)
+                         .ToArray();
+
             if (locals.Length != 0)
             {
                 Debug.WriteLine("\t.locals init (");
