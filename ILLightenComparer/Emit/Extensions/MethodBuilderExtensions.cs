@@ -13,5 +13,14 @@ namespace ILLightenComparer.Emit.Extensions
             return new ILEmitter(methodBuilder.GetILGenerator());
 #endif
         }
+
+        public static ILEmitter CreateILEmitter(this ConstructorBuilder constructorBuilder)
+        {
+#if DEBUG
+            return new ILEmitter($"\n{constructorBuilder.DisplayName()}", constructorBuilder.GetILGenerator());
+#else
+            return new ILEmitter(constructorBuilder.GetILGenerator());
+#endif
+        }
     }
 }

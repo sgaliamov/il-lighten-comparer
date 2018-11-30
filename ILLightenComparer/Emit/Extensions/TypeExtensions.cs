@@ -16,9 +16,10 @@ namespace ILLightenComparer.Emit.Extensions
             typeof(ushort)
         });
 
-        public static TReturnType CreateInstance<TReturnType>(this Type type) =>
+        // todo: cache delegates
+        public static TReturnType CreateInstance<T, TReturnType>(this Type type, T arg) =>
             type.GetMethod(MethodName.Factory)
-                .CreateDelegate<Func<TReturnType>>()();
+                .CreateDelegate<Func<T, TReturnType>>()(arg);
 
         public static MethodInfo GetCompareToMethod(this Type type)
         {

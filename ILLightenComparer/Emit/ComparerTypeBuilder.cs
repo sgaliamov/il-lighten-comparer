@@ -33,22 +33,60 @@ namespace ILLightenComparer.Emit
                 genericInterface
             );
 
+            var contextField = BuildFactoryMethod(typeBuilder);
+
             var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
 
             BuildBasicCompareMethod(
                 typeBuilder,
-                staticCompare,
                 basicInterface.GetMethod(MethodName.Compare),
+                staticCompare,
+                contextField,
                 objectType);
 
             BuildTypedCompareMethod(
                 typeBuilder,
+                genericInterface.GetMethod(MethodName.Compare),
                 staticCompare,
-                genericInterface.GetMethod(MethodName.Compare));
+                contextField);
 
-            return typeBuilder
-                   .BuildFactoryMethod()
-                   .CreateTypeInfo();
+            return typeBuilder.CreateTypeInfo();
+        }
+
+        private static FieldBuilder BuildFactoryMethod(TypeBuilder typeBuilder)
+        {
+            var parameters = new[] { typeof(IContext) };
+
+            var contextField = typeBuilder.DefineField(
+                "_context",
+                typeof(IContext),
+                FieldAttributes.InitOnly | FieldAttributes.Private);
+
+            var constructorInfo = typeBuilder.DefineConstructor(
+                MethodAttributes.Public,
+                CallingConventions.Standard,
+                parameters);
+
+            using (var il = constructorInfo.CreateILEmitter())
+            {
+                il.LoadArgument(0)
+                  .LoadArgument(1)
+                  .Emit(OpCodes.Stfld, contextField)
+                  .Emit(OpCodes.Ret);
+            }
+
+            var methodBuilder = typeBuilder.DefineStaticMethod(
+                MethodName.Factory,
+                typeBuilder,
+                parameters);
+
+            using (var il = methodBuilder.CreateILEmitter())
+            {
+                il.LoadArgument(0)
+                  .EmitCtorCall(constructorInfo);
+            }
+
+            return contextField;
         }
 
         private MethodBuilder BuildStaticCompareMethod(TypeBuilder typeBuilder, Type objectType)
@@ -123,8 +161,9 @@ namespace ILLightenComparer.Emit
 
         private static void BuildBasicCompareMethod(
             TypeBuilder typeBuilder,
-            MethodInfo staticCompareMethod,
             MethodInfo interfaceMethod,
+            MethodInfo staticCompareMethod,
+            FieldBuilder contextField,
             Type objectType)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
@@ -148,8 +187,9 @@ namespace ILLightenComparer.Emit
 
         private static void BuildTypedCompareMethod(
             TypeBuilder typeBuilder,
+            MethodInfo interfaceMethod,
             MethodInfo staticCompareMethod,
-            MethodInfo interfaceMethod)
+            FieldBuilder contextField)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
