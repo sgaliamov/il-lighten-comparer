@@ -95,8 +95,7 @@ namespace ILLightenComparer.Emit
 
         private static void EmitDefaultResult(ILEmitter il)
         {
-            il.Emit(OpCodes.Ldc_I4_0)
-              .Emit(OpCodes.Ret);
+            il.Return(0);
         }
 
         private static void EmitReferenceComparision(ILEmitter il)
@@ -106,22 +105,19 @@ namespace ILLightenComparer.Emit
               .Emit(OpCodes.Ldarg_2)
               .DefineLabel(out var else0)
               .Emit(OpCodes.Bne_Un_S, else0)
-              .Emit(OpCodes.Ldc_I4_0) // return 0
-              .Emit(OpCodes.Ret)
+              .Return(0)
               .MarkLabel(else0)
               // y != null
               .Emit(OpCodes.Ldarg_2)
               .DefineLabel(out var else1)
               .Emit(OpCodes.Brtrue_S, else1)
-              .Emit(OpCodes.Ldc_I4_1) // return 1
-              .Emit(OpCodes.Ret)
+              .Return(1)
               .MarkLabel(else1)
               // x != null
               .Emit(OpCodes.Ldarg_1)
               .DefineLabel(out var else2)
               .Emit(OpCodes.Brtrue_S, else2)
-              .Emit(OpCodes.Ldc_I4_M1) // return -1
-              .Emit(OpCodes.Ret)
+              .Return(-1)
               .MarkLabel(else2);
         }
 

@@ -147,16 +147,12 @@ namespace ILLightenComparer.Emit.Emitters
               // if n2->HasValue goto returnZero
               .LoadLocal(secondHasValue)
               .Emit(OpCodes.Brfalse_S, next)
-              // else return -1
-              .Emit(OpCodes.Ldc_I4_M1)
-              .Emit(OpCodes.Ret)
+              .Return(-1)
               // firstHasValue:
               .MarkLabel(firstHasValue)
               .LoadLocal(secondHasValue)
               .Branch(OpCodes.Brtrue_S, out var getValues)
-              // return 1
-              .Emit(OpCodes.Ldc_I4_1)
-              .Emit(OpCodes.Ret)
+              .Return(1)
               // getValues: load values
               .MarkLabel(getValues);
         }

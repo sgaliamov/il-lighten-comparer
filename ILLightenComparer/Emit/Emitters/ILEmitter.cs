@@ -101,6 +101,26 @@ namespace ILLightenComparer.Emit.Emitters
             return Emit(opCode, methodInfo);
         }
 
+        public ILEmitter Return(int value)
+        {
+            switch (value)
+            {
+                case -1: return Emit(OpCodes.Ldc_I4_M1).Emit(OpCodes.Ret);
+                case 0: return Emit(OpCodes.Ldc_I4_0).Emit(OpCodes.Ret);
+                case 1: return Emit(OpCodes.Ldc_I4_1).Emit(OpCodes.Ret);
+                case 2: return Emit(OpCodes.Ldc_I4_2).Emit(OpCodes.Ret);
+                case 3: return Emit(OpCodes.Ldc_I4_3).Emit(OpCodes.Ret);
+                case 4: return Emit(OpCodes.Ldc_I4_4).Emit(OpCodes.Ret);
+                case 5: return Emit(OpCodes.Ldc_I4_5).Emit(OpCodes.Ret);
+                case 6: return Emit(OpCodes.Ldc_I4_6).Emit(OpCodes.Ret);
+                case 7: return Emit(OpCodes.Ldc_I4_7).Emit(OpCodes.Ret);
+                case 8: return Emit(OpCodes.Ldc_I4_8).Emit(OpCodes.Ret);
+                default:
+                    var opCode = value <= ShortFormLimit ? OpCodes.Ldc_I4_S : OpCodes.Ldc_I4;
+                    return Emit(opCode, value).Emit(OpCodes.Ret);
+            }
+        }
+
         public ILEmitter EmitCast(Type objectType)
         {
             var castOp = objectType.IsValueType
@@ -176,10 +196,7 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter Store(Type localType, out LocalBuilder local)
-        {
-            return Store(localType, 0, out local);
-        }
+        public ILEmitter Store(Type localType, out LocalBuilder local) => Store(localType, 0, out local);
 
         public ILEmitter Store(Type localType, byte bucket, out LocalBuilder local)
         {
@@ -216,7 +233,7 @@ namespace ILLightenComparer.Emit.Emitters
         #region debug
 
         // ReSharper disable PartialMethodWithSinglePart
-        
+
         partial void DebugOutput();
         partial void DebugEmitLabel(OpCode opCode, Label label);
         partial void DebugMarkLabel(Label label);
