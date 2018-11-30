@@ -9,8 +9,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         public int CompareTo(ComparableNestedObject other)
         {
-            UsedCompareTo = true;
-
             if (ReferenceEquals(this, other))
             {
                 return 0;
@@ -20,6 +18,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             {
                 return 1;
             }
+
+            UsedCompareTo = true;
 
             return Value.CompareTo(other.Value);
         }

@@ -20,7 +20,7 @@ namespace ILLightenComparer.Tests
         [Fact]
         public void Create_Generic_Comparer()
         {
-            var comparer = _builder.For<TestObject>().GetComparer();
+            var comparer = _builder.For<DummyObject>().GetComparer();
 
             comparer.Should().NotBeNull();
         }
@@ -28,7 +28,7 @@ namespace ILLightenComparer.Tests
         [Fact(Skip = "Not implemented yet")]
         public void Create_Generic_EqualityComparer()
         {
-            var comparer = _builder.For<TestObject>().GetEqualityComparer();
+            var comparer = _builder.For<DummyObject>().GetEqualityComparer();
 
             comparer.Should().NotBeNull();
         }
@@ -36,7 +36,7 @@ namespace ILLightenComparer.Tests
         [Fact]
         public void Create_Not_Generic_Comparer()
         {
-            var comparer = _builder.GetComparer(typeof(TestObject));
+            var comparer = _builder.GetComparer(typeof(DummyObject));
 
             comparer.Should().NotBeNull();
         }
@@ -44,7 +44,7 @@ namespace ILLightenComparer.Tests
         [Fact(Skip = "Not implemented yet")]
         public void Create_Not_Generic_EqualityComparer()
         {
-            var comparer = _builder.GetEqualityComparer(typeof(TestObject));
+            var comparer = _builder.GetEqualityComparer(typeof(DummyObject));
 
             comparer.Should().NotBeNull();
         }
@@ -58,8 +58,8 @@ namespace ILLightenComparer.Tests
                 other.Should().BeSameAs(one);
             }
 
-            Test(_builder.GetComparer(typeof(TestObject)), _builder.GetComparer<TestObject>());
-            Test(_builder.GetComparer<TestObject>(), _builder.GetComparer(typeof(TestObject)));
+            Test(_builder.GetComparer(typeof(DummyObject)), _builder.GetComparer<DummyObject>());
+            Test(_builder.GetComparer<DummyObject>(), _builder.GetComparer(typeof(DummyObject)));
         }
 
         private readonly IContextBuilder _builder;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
-using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
@@ -13,15 +12,15 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     {
         private const int N = 10000;
 
-        private static readonly IComparer<TestObject> Native = TestObject.TestObjectComparer;
+        private static readonly IComparer<SampleObject> Native = SampleObject.TestObjectComparer;
 
-        private static readonly IComparer<TestObject> ILLightenComparer =
+        private static readonly IComparer<SampleObject> ILLightenComparer =
             new ComparersBuilder()
                 .DefineDefaultConfiguration(new ComparerSettings
                 {
                     IncludeFields = true
                 })
-                .GetComparer<TestObject>();
+                .GetComparer<SampleObject>();
 
         //private static readonly IComparer<TestObject> NitoComparer = ComparerBuilder
         //                                                             .For<TestObject>()
@@ -58,8 +57,8 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
 
-        private readonly TestObject[] _one = new TestObject[N];
-        private readonly TestObject[] _other = new TestObject[N];
+        private readonly SampleObject[] _one = new SampleObject[N];
+        private readonly SampleObject[] _other = new SampleObject[N];
 
         // ReSharper disable once NotAccessedField.Local
         private int _out;
@@ -69,8 +68,8 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         {
             for (var i = 0; i < N; i++)
             {
-                _one[i] = Fixture.Create<TestObject>();
-                _other[i] = Fixture.Create<TestObject>();
+                _one[i] = Fixture.Create<SampleObject>();
+                _other[i] = Fixture.Create<SampleObject>();
 
                 var compare = Normalize(Native.Compare(_one[i], _other[i]));
 

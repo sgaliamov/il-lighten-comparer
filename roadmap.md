@@ -31,6 +31,7 @@
 - [x] nested members sort configuration
 - [x] compare fields
 - [ ] use existing *Compare* method
+- [ ] compare nullable complex structs
 - [ ] nested object
 - [ ] nested structure
 - [ ] detect cycles (check graph theory)
