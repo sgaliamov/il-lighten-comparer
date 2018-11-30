@@ -20,5 +20,7 @@ namespace ILLightenComparer.Emit.Reflection
             objectType,
             typeof(HashSet<object>)
         };
+
+        public delegate int StaticMethodDelegate<in T>(IContext context, T x, T y, HashSet<object> hash);
     }
 }

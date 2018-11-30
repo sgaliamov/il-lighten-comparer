@@ -117,7 +117,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             if (memberType.IsValueType || memberType.IsSealed)
             {
-                il.LoadArgument(0); // todo: hash set will be hare
+                il.LoadArgument(0);
                 member.LoadMembers(_stackEmitter, il)
                       .LoadArgument(3);
 
@@ -126,7 +126,15 @@ namespace ILLightenComparer.Emit.Emitters
                          .EmitReturnNotZero();
             }
 
-            throw new NotSupportedException($"Unknown hierarchical case for {memberType.DisplayName()}.");
+            var lazyCompare = typeof(Context)
+                              .GetMethod(nameof(Context.LazyCompare))
+                              .MakeGenericMethod(memberType);
+
+            il.LoadArgument(0);
+            return member.LoadMembers(_stackEmitter, il)
+                         .LoadArgument(3)
+                         .Call(lazyCompare)
+                         .EmitReturnNotZero();
         }
 
         private static void CheckNullableValuesForNull(

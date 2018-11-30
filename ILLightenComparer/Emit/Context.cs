@@ -9,7 +9,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    internal sealed class Context : IContext
+    public sealed class Context : IContext
     {
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
 
@@ -35,13 +35,13 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: cache delegates
-        public int LazyCompare<T>(HashSet<object> hash, T x, T y)
+        public int LazyCompare<T>(T x, T y, HashSet<object> hash)
         {
             var compareMethod = GetStaticCompareMethod(typeof(T));
 
-            var compare = compareMethod.CreateDelegate<Func<HashSet<object>, T, T, int>>();
+            var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
 
-            return compare(hash, x, y);
+            return compare(this, x, y, hash);
         }
 
         public void DefineConfiguration(Type type, ComparerSettings settings)
@@ -56,10 +56,6 @@ namespace ILLightenComparer.Emit
         {
             _defaultConfiguration = _defaultConfiguration.Mutate(settings);
         }
-
-        public Configuration GetConfiguration(Type type) => _configurations.TryGetValue(type, out var configuration)
-            ? configuration
-            : _defaultConfiguration;
 
         public TypeInfo GetComparerType(Type objectType)
         {
@@ -81,6 +77,10 @@ namespace ILLightenComparer.Emit
 
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
             _moduleBuilder.DefineType(name, interfaceTypes);
+
+        internal Configuration GetConfiguration(Type type) => _configurations.TryGetValue(type, out var configuration)
+            ? configuration
+            : _defaultConfiguration;
 
         internal struct Configuration
         {
@@ -115,6 +115,6 @@ namespace ILLightenComparer.Emit
 
     internal interface IContext
     {
-        int LazyCompare<T>(HashSet<object> hash,T x, T y);
+        int LazyCompare<T>(T x, T y, HashSet<object> hash);
     }
 }

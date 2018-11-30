@@ -71,9 +71,9 @@ namespace ILLightenComparer.Emit
             {
                 il.LoadArgument(0)
                   .Emit(OpCodes.Call, typeof(object).GetConstructor(Type.EmptyTypes))
-                  //.LoadArgument(0)
-                  //.LoadArgument(1)
-                  //.Emit(OpCodes.Stfld, contextField)
+                  .LoadArgument(0)
+                  .LoadArgument(1)
+                  .Emit(OpCodes.Stfld, contextField)
                   .Emit(OpCodes.Ret);
             }
 
