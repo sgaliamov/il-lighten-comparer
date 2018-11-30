@@ -136,23 +136,18 @@ namespace ILLightenComparer.Emit.Emitters
             Label next)
         {
             il.LoadAddress(n2)
-              // var secondHasValue = n2->HasValue
               .Call(member.HasValueMethod)
               .Store(typeof(bool), out var secondHasValue)
               .LoadAddress(n1)
-              // if n1->HasValue goto firstHasValue
               .Call(member.HasValueMethod)
               .Branch(OpCodes.Brtrue_S, out var firstHasValue)
-              // if n2->HasValue goto returnZero
               .LoadLocal(secondHasValue)
               .Emit(OpCodes.Brfalse_S, next)
               .Return(-1)
-              // firstHasValue:
               .MarkLabel(firstHasValue)
               .LoadLocal(secondHasValue)
               .Branch(OpCodes.Brtrue_S, out var getValues)
               .Return(1)
-              // getValues: load values
               .MarkLabel(getValues);
         }
     }

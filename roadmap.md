@@ -30,7 +30,7 @@
 - [x] FlattenHierarchy
 - [x] nested members sort configuration
 - [x] compare fields
-- [ ] use existing *CompareTo* method
+- [x] use existing *CompareTo* method
 - [ ] nested object
 - [ ] abstract member comparison
 - [ ] test when abstract class or not sealed is replaced after a comparer is created
