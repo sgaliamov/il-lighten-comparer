@@ -80,7 +80,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             // todo: nullable can be also complex struct, not only primitive types, so it can be considered as hierarchical
 
-            throw new NotImplementedException();
+            throw new NotSupportedException($"Unknown nullable case for {memberType.DisplayName()}.");
         }
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
@@ -95,24 +95,38 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
-            // todo: IComparable can be null
-
             var memberType = member.MemberType;
+
+            var compareToMethod = memberType.GetCompareToMethod(); // todo: member could implement not generic IComparable
+            if (compareToMethod != null)
+            {
+                return member.Accept(_stackEmitter, il)
+                             .Store(memberType, 1, out var n2) // todo: possible optimization: load first arg2, then test arg1, no need to declare n2
+                             .Store(memberType, 0, out var n1)
+                             // check n1 for null
+                             .LoadLocal(n1)
+                             .Branch(OpCodes.Brtrue_S, out var next)
+                             .Emit(OpCodes.Ldc_I4_M1)
+                             .Emit(OpCodes.Ret)
+                             .MarkLabel(next)
+                             // call compare
+                             .LoadAddress(n1)
+                             .LoadLocal(n2)
+                             .Call(compareToMethod)
+                             .EmitReturnNotZero();
+            }
+
             if (memberType.IsValueType || memberType.IsSealed)
             {
                 il.Emit(OpCodes.Ldarg_0); // todo: hash set will be hare
                 member.Accept(_stackEmitter, il);
 
                 var compareMethod = _context.GetStaticCompareMethod(memberType);
-
-                il.Call(compareMethod).EmitReturnNotZero();
-            }
-            else
-            {
-                throw new NotImplementedException();
+                return il.Call(compareMethod)
+                         .EmitReturnNotZero();
             }
 
-            return il;
+            throw new NotSupportedException($"Unknown hierarchical case for {memberType.DisplayName()}.");
         }
 
         private static void CheckNullableValuesForNull(

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
+using Force.DeepCloner;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
@@ -25,7 +26,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 {
                     MembersOrder = new[]
                     {
-                        nameof(ContainerObject.Comparable),
+                        nameof(ContainerObject.ComparableProperty),
+                        nameof(ContainerObject.ComparableField),
                         nameof(ContainerObject.Value),
                         nameof(ContainerObject.FirstProperty),
                         nameof(ContainerObject.SecondProperty),
@@ -49,13 +51,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
         {
-            var one = Fixture.Build<ContainerObject>()
-                             .Without(x => x.Comparable)
-                             .Create();
-
-            var other = Fixture.Build<ContainerObject>()
-                               .With(x => x.Comparable, new ComparableNestedObject())
-                               .Create();
+            var other = Fixture.Create<ContainerObject>();
+            var one = other.DeepClone();
+            one.ComparableProperty = null;
 
             TypedComparer.Compare(one, other)
                          .Should()

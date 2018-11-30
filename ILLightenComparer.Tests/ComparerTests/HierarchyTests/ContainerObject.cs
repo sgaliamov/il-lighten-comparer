@@ -8,7 +8,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         public static IComparer<ContainerObject> Comparer { get; } = new ValueRelationalComparer();
 
-        public ComparableNestedObject Comparable { get; set; }
+        public ComparableNestedObject ComparableProperty { get; set; }
+        public ComparableNestedObject ComparableField;
         public NestedObject FirstProperty { get; set; }
         public NestedObject SecondProperty { get; set; }
         public int Value { get; set; }
@@ -33,8 +34,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 }
 
                 var compare = Comparer<ComparableNestedObject>.Default.Compare(
-                    x.Comparable,
-                    y.Comparable);
+                    x.ComparableProperty,
+                    y.ComparableProperty);
+                if (compare != 0)
+                {
+                    return compare;
+                }
+
+                compare = Comparer<ComparableNestedObject>.Default.Compare(
+                    x.ComparableField,
+                    y.ComparableField);
                 if (compare != 0)
                 {
                     return compare;
