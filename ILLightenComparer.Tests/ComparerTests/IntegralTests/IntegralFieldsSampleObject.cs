@@ -3,7 +3,7 @@ using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
 {
-    public class IntegralSampleObject
+    public class IntegralFieldsSampleObject
     {
         public byte ByteField;
         public char CharField;
@@ -12,19 +12,12 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
         public short ShortField;
         public ushort UShortField;
 
-        public static IComparer<IntegralSampleObject> Comparer { get; } =
-            new IntegralSampleObjectRelationalComparer();
+        public static IComparer<IntegralFieldsSampleObject> Comparer { get; } =
+            new RelationalComparer();
 
-        public byte ByteProperty { get; set; }
-        public char CharProperty { get; set; }
-        public EnumSmall EnumProperty { get; set; }
-        public sbyte SByteProperty { get; set; }
-        public short ShortProperty { get; set; }
-        public ushort UShortProperty { get; set; }
-
-        private sealed class IntegralSampleObjectRelationalComparer : IComparer<IntegralSampleObject>
+        private sealed class RelationalComparer : IComparer<IntegralFieldsSampleObject>
         {
-            public int Compare(IntegralSampleObject x, IntegralSampleObject y)
+            public int Compare(IntegralFieldsSampleObject x, IntegralFieldsSampleObject y)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -77,37 +70,7 @@ namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
                     return uShortFieldComparison;
                 }
 
-                var bytePropertyComparison = x.ByteProperty.CompareTo(y.ByteProperty);
-                if (bytePropertyComparison != 0)
-                {
-                    return bytePropertyComparison;
-                }
-
-                var charPropertyComparison = x.CharProperty.CompareTo(y.CharProperty);
-                if (charPropertyComparison != 0)
-                {
-                    return charPropertyComparison;
-                }
-
-                var enumPropertyComparison = x.EnumProperty.CompareTo(y.EnumProperty);
-                if (enumPropertyComparison != 0)
-                {
-                    return enumPropertyComparison;
-                }
-
-                var sBytePropertyComparison = x.SByteProperty.CompareTo(y.SByteProperty);
-                if (sBytePropertyComparison != 0)
-                {
-                    return sBytePropertyComparison;
-                }
-
-                var shortPropertyComparison = x.ShortProperty.CompareTo(y.ShortProperty);
-                if (shortPropertyComparison != 0)
-                {
-                    return shortPropertyComparison;
-                }
-
-                return x.UShortProperty.CompareTo(y.UShortProperty);
+                return 0;
             }
         }
     }
