@@ -5,19 +5,29 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringFiledMember : FieldMember, IStringAcceptor, ITwoArgumentsField
+    internal sealed class StringFieldMember : FieldMember, IStringAcceptor, ITwoArgumentsField
     {
-        public StringFiledMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+        private StringFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
         public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+
+        public static StringFieldMember Create(MemberInfo memberInfo) =>
+            memberInfo is FieldInfo info && info.FieldType == typeof(string)
+                ? new StringFieldMember(info)
+                : null;
     }
 
     internal sealed class StringPropertyMember : PropertyMember, IStringAcceptor, ITwoArgumentsProperty
     {
-        public StringPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        private StringPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+
+        public static StringPropertyMember Create(MemberInfo memberInfo) =>
+            memberInfo is PropertyInfo info && info.PropertyType == typeof(string)
+                ? new StringPropertyMember(info)
+                : null;
     }
 }

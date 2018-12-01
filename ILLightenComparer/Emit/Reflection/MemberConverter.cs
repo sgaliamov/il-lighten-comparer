@@ -10,40 +10,22 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private static readonly Converter[] PropertyConverters =
+        private static readonly Func<MemberInfo, IAcceptor>[] PropertyFactories =
         {
-            new Converter(IsString, info => new StringPropertyMember((PropertyInfo)info)),
-
-            new Converter(
-                TypeExtensions.IsSmallIntegral,
-                info => new IntegralPropertyMember((PropertyInfo)info)),
-
-            new Converter(
-                TypeExtensions.IsNullable,
-                info => new NullablePropertyMember((PropertyInfo)info)),
-
-            new Converter(
-                TypeExtensions.IsBasic,
-                info => new BasicPropertyMember((PropertyInfo)info)),
-
-            new Converter(_ => true, info => new HierarchicalPropertyMember((PropertyInfo)info))
+            StringPropertyMember.Create,
+            IntegralPropertyMember.Create,
+            NullablePropertyMember.Create,
+            BasicPropertyMember.Create,
+            HierarchicalPropertyMember.Create
         };
 
-        private static readonly Converter[] FieldConverters =
+        private static readonly Func<MemberInfo, IAcceptor>[] FieldFactories =
         {
-            new Converter(IsString, info => new StringFiledMember((FieldInfo)info)),
-
-            new Converter(
-                TypeExtensions.IsSmallIntegral,
-                info => new IntegralFiledMember((FieldInfo)info)),
-
-            new Converter(
-                TypeExtensions.IsNullable,
-                info => new NullableFieldMember((FieldInfo)info)),
-
-            new Converter(TypeExtensions.IsBasic, info => new BasicFieldMember((FieldInfo)info)),
-
-            new Converter(_ => true, info => new HierarchicalFieldMember((FieldInfo)info))
+            StringFieldMember.Create,
+            IntegralFieldMember.Create,
+            NullableFieldMember.Create,
+            BasicFieldMember.Create,
+            HierarchicalFieldMember.Create
         };
 
         private readonly Context _context;
@@ -52,53 +34,33 @@ namespace ILLightenComparer.Emit.Reflection
 
         public IAcceptor Convert(MemberInfo memberInfo)
         {
-            var acceptor = Convert(memberInfo, GetPropertyType(memberInfo), PropertyConverters);
-
-            var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
-            if (acceptor == null && includeFields)
+            if (memberInfo is PropertyInfo)
             {
-                acceptor = Convert(memberInfo, GetFieldType(memberInfo), FieldConverters);
+                var acceptor = Convert(memberInfo, PropertyFactories);
+                if (acceptor != null)
+                {
+                    return acceptor;
+                }
             }
 
-            return acceptor ?? throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
+            var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
+            if (includeFields && memberInfo is FieldInfo)
+            {
+                var acceptor = Convert(memberInfo, FieldFactories);
+                if (acceptor != null)
+                {
+                    return acceptor;
+                }
+            }
+
+            throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
         }
 
         private static IAcceptor Convert(
             MemberInfo memberInfo,
-            Type memberType,
-            IEnumerable<Converter> converters)
-        {
-            if (memberType == null)
-            {
-                return null;
-            }
-
-            return converters
-                   .Where(converter => converter.Condition(memberType))
-                   .Select(converter => converter.Factory(memberInfo))
-                   .FirstOrDefault();
-        }
-
-        private static Type GetPropertyType(MemberInfo memberInfo) =>
-            memberInfo is PropertyInfo propertyInfo ? propertyInfo.PropertyType : default;
-
-        private static Type GetFieldType(MemberInfo memberInfo) =>
-            memberInfo is FieldInfo fieldInfo ? fieldInfo.FieldType : default;
-
-        private static bool IsString(Type type) => type == typeof(string);
-
-        private sealed class Converter
-        {
-            public Converter(
-                Func<Type, bool> condition,
-                Func<MemberInfo, IAcceptor> factory)
-            {
-                Condition = condition;
-                Factory = factory;
-            }
-
-            public Func<Type, bool> Condition { get; }
-            public Func<MemberInfo, IAcceptor> Factory { get; }
-        }
+            IEnumerable<Func<MemberInfo, IAcceptor>> factories) =>
+            factories
+                .Select(factory => factory(memberInfo))
+                .FirstOrDefault(acceptor => acceptor != null);
     }
 }

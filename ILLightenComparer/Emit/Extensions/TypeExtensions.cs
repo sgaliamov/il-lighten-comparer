@@ -28,6 +28,11 @@ namespace ILLightenComparer.Emit.Extensions
             return underlyingType.GetMethod(MethodName.CompareTo, new[] { underlyingType });
         }
 
+        public static MethodInfo GetPropertyGetter(this Type type, string name) =>
+            type.GetProperty(name)?.GetGetMethod()
+            ?? throw new ArgumentException(
+                $"{type.DeclaringType.DisplayName()} does not have {name} property.");
+
         public static Type GetUnderlyingType(this Type type)
         {
             while (true)

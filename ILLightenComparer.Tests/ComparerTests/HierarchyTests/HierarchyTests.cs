@@ -40,7 +40,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Custom_Comparable_Implementation_Should_Be_Used()
         {
+            var nestedObject = Fixture.Create<ComparableNestedObject>();
             var other = Fixture.Create<ContainerObject>();
+            other.ComparableProperty = nestedObject;
             var one = other.DeepClone();
             one.ComparableProperty.Value = other.ComparableProperty.Value + 1;
 
@@ -54,7 +56,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
         {
+            var nestedObject = Fixture.Create<ComparableNestedObject>();
             var other = Fixture.Create<ContainerObject>();
+            other.ComparableProperty = nestedObject;
             var one = other.DeepClone();
             one.ComparableProperty = null;
 
