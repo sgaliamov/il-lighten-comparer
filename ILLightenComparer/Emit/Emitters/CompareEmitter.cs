@@ -115,26 +115,20 @@ namespace ILLightenComparer.Emit.Emitters
                              .EmitReturnNotZero(next);
             }
 
+            member.LoadMembers(_stackEmitter, il.LoadArgument(0))
+                  .LoadArgument(3);
+
             if (memberType.IsValueType || memberType.IsSealed)
             {
-                il.LoadArgument(0);
-                member.LoadMembers(_stackEmitter, il)
-                      .LoadArgument(3);
-
                 var compareMethod = _context.GetStaticCompareMethod(memberType);
                 return il.Call(compareMethod)
                          .EmitReturnNotZero();
             }
+            
+            var lazyCompare = Method.ContextCompare.MakeGenericMethod(memberType);
 
-            var lazyCompare = typeof(Context)
-                              .GetMethod(nameof(Context.LazyCompare))
-                              .MakeGenericMethod(memberType);
-
-            il.LoadArgument(0);
-            return member.LoadMembers(_stackEmitter, il)
-                         .LoadArgument(3)
-                         .Call(lazyCompare)
-                         .EmitReturnNotZero();
+            return il.Emit(OpCodes.Call, lazyCompare)
+                     .EmitReturnNotZero();
         }
 
         private static void CheckNullableValuesForNull(

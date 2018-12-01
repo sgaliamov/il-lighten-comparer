@@ -9,7 +9,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    public sealed class Context : IContext
+    internal sealed class Context : IContext
     {
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
 
@@ -35,7 +35,7 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: cache delegates
-        public int LazyCompare<T>(T x, T y, HashSet<object> hash)
+        public int Compare<T>(T x, T y, HashSet<object> hash)
         {
             var compareMethod = GetStaticCompareMethod(typeof(T));
 
@@ -78,11 +78,11 @@ namespace ILLightenComparer.Emit
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
             _moduleBuilder.DefineType(name, interfaceTypes);
 
-        internal Configuration GetConfiguration(Type type) => _configurations.TryGetValue(type, out var configuration)
+        public Configuration GetConfiguration(Type type) => _configurations.TryGetValue(type, out var configuration)
             ? configuration
             : _defaultConfiguration;
 
-        internal struct Configuration
+        public struct Configuration
         {
             public readonly HashSet<string> IgnoredMembers;
             public readonly bool IncludeFields;
@@ -113,8 +113,8 @@ namespace ILLightenComparer.Emit
         }
     }
 
-    internal interface IContext
+    public interface IContext
     {
-        int LazyCompare<T>(T x, T y, HashSet<object> hash);
+        int Compare<T>(T x, T y, HashSet<object> hash);
     }
 }
