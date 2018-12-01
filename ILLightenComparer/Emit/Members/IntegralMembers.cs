@@ -12,4 +12,12 @@ namespace ILLightenComparer.Emit.Members
         public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
     }
+
+    internal sealed class IntegralFiledMember : FieldMember, ITwoArgumentsField, IIntegralAcceptor
+    {
+        public IntegralFiledMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+
+        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+    }
 }

@@ -14,4 +14,13 @@ namespace ILLightenComparer.Emit.Members
         public MethodInfo GetterMethod => _propertyInfo.GetMethod;
         public Type DeclaringType => _propertyInfo.DeclaringType;
     }
+
+    internal abstract class FieldMember : IFieldMember
+    {
+        protected FieldMember(FieldInfo fieldInfo) => FieldInfo = fieldInfo;
+
+        public Type MemberType => FieldInfo.FieldType;
+        public FieldInfo FieldInfo { get; }
+        public Type DeclaringType => FieldInfo.DeclaringType;
+    }
 }

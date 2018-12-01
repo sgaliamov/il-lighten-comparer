@@ -5,6 +5,14 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
+    internal sealed class HierarchicalPropertyMember : PropertyMember, IHierarchicalAcceptor, ITwoArgumentsProperty
+    {
+        public HierarchicalPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+
+        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+    }
+
     internal sealed class HierarchicalFieldMember : FieldMember, IHierarchicalAcceptor, ITwoArgumentsField
     {
         public HierarchicalFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
