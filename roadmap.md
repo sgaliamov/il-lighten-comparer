@@ -33,8 +33,8 @@
 - [x] use existing *CompareTo* method
 - [x] nested object
 - [ ] abstract member comparison
-- [ ] test when abstract class or not sealed is replaced after a comparer is created
 - [ ] object type member comparison
+- [ ] test when abstract class or not sealed is replaced after a comparer is created
 - [ ] detect cycles for objects
 - [ ] detect cycles for nested structs?
 - [ ] compare nullable complex structs
@@ -65,19 +65,19 @@
 
 - [x] reuse local variables for same types
 - [x] caching for assembly
+- [x] use short versions of opt codes when possible
+- [x] use call instead callvirt when possible
 - [ ] create unified interface *IComparer<>: IComparer<>, IComparer*
 - [ ] cache instances by type and configuration in *Context.GetComparerType*
-- [ ] support internal classes to compare
-- [ ] use short versions of opt codes when possible
-- [ ] use call instead callvirt when possible
-- [ ] test class with more than 256 properties
 - [ ] optimization for a last member - just return its result
+- [ ] test class with more than 256 properties?
+- [ ] support internal classes to compare?
 
 ## Phase 6
 
+- [x] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
 - [ ] setup CI/CD
 - [ ] add documentation comments
 - [ ] prepare presentation
-- [ ] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
 - [ ] compared dynamic?
 - [ ] compare private and protected members?

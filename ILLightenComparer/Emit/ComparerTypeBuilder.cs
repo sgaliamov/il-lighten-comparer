@@ -134,24 +134,21 @@ namespace ILLightenComparer.Emit
         private static void EmitReferenceComparision(ILEmitter il)
         {
             // x == y
-            il.Emit(OpCodes.Ldarg_1)
-              .Emit(OpCodes.Ldarg_2)
-              .DefineLabel(out var else0)
-              .Emit(OpCodes.Bne_Un_S, else0)
+            il.LoadArgument(1)
+              .LoadArgument(2)
+              .Branch(OpCodes.Bne_Un_S, out var checkY)
               .Return(0)
-              .MarkLabel(else0)
+              .MarkLabel(checkY)
               // y != null
-              .Emit(OpCodes.Ldarg_2)
-              .DefineLabel(out var else1)
-              .Emit(OpCodes.Brtrue_S, else1)
+              .LoadArgument(2)
+              .Branch(OpCodes.Brtrue_S, out var checkX)
               .Return(1)
-              .MarkLabel(else1)
+              .MarkLabel(checkX)
               // x != null
-              .Emit(OpCodes.Ldarg_1)
-              .DefineLabel(out var else2)
-              .Emit(OpCodes.Brtrue_S, else2)
+              .LoadArgument(1)
+              .Branch(OpCodes.Brtrue_S, out var next)
               .Return(-1)
-              .MarkLabel(else2);
+              .MarkLabel(next);
         }
 
         private static void BuildBasicCompareMethod(
@@ -172,9 +169,9 @@ namespace ILLightenComparer.Emit
 
                 il.LoadArgument(0)
                   .Emit(OpCodes.Ldfld, contextField)
-                  .Emit(OpCodes.Ldarg_1)
+                  .LoadArgument(1)
                   .EmitCast(objectType)
-                  .Emit(OpCodes.Ldarg_2)
+                  .LoadArgument(2)
                   .EmitCast(objectType)
                   .Emit(OpCodes.Newobj, Method.HashSetConstructor)
                   .Call(staticCompareMethod)
@@ -194,8 +191,8 @@ namespace ILLightenComparer.Emit
             {
                 il.LoadArgument(0)
                   .Emit(OpCodes.Ldfld, contextField)
-                  .Emit(OpCodes.Ldarg_1)
-                  .Emit(OpCodes.Ldarg_2)
+                  .LoadArgument(1)
+                  .LoadArgument(2)
                   .Emit(OpCodes.Newobj, Method.HashSetConstructor)
                   .Call(staticCompareMethod)
                   .Emit(OpCodes.Ret);
