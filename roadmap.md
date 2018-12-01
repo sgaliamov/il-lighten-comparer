@@ -31,10 +31,10 @@
 - [x] nested members sort configuration
 - [x] compare fields
 - [x] use existing *CompareTo* method
-- [ ] nested object
+- [x] nested object
 - [ ] abstract member comparison
 - [ ] test when abstract class or not sealed is replaced after a comparer is created
-- [ ] object member comparison
+- [ ] object type member comparison
 - [ ] detect cycles for objects
 - [ ] detect cycles for nested structs?
 - [ ] compare nullable complex structs
