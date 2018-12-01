@@ -9,3 +9,4 @@
 1. *GenericProxy* is not cached because it do almost nothing and have no state.
 1. Configurations collection is *ConcurrentDictionary* because while one thread may build a type, another can try to update the collection.
 1. *ComparersBuilder* does not use *Lazy* to cache instances because creation is relatively cheap. But *Context* uses it because the code emission is slow.
+1. *GetCompareToMethod* will not support typeless *IComparable*.

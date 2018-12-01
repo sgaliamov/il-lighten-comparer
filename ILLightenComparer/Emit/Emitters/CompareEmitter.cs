@@ -64,23 +64,13 @@ namespace ILLightenComparer.Emit.Emitters
                          .EmitReturnNotZero(next);
             }
 
-            //if (memberType.IsValueType || memberType.IsSealed)
-            //{
-            //    il.Emit(OpCodes.Ldarg_0); // todo: hash set will be hare
-            //    member.Accept(_stackEmitter, il);
+            // todo: test
+            il.LoadArgument(0)
+              .LoadAddress(n1)
+              .LoadAddress(n2)
+              .LoadArgument(3);
 
-            //    var compareMethod = _context.GetStaticCompareMethod(memberType);
-
-            //    il.Call(compareMethod).EmitReturnNotZero();
-            //}
-            //else
-            //{
-            //    throw new NotImplementedException();
-            //}
-
-            // todo: nullable can be also complex struct, not only primitive types, so it can be considered as hierarchical
-
-            throw new NotSupportedException($"Unknown nullable case for {memberType.DisplayName()}.");
+            return CompareComplex(il, memberType);
         }
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
@@ -97,7 +87,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var memberType = member.MemberType;
 
-            var compareToMethod = memberType.GetCompareToMethod(); // todo: member could implement not generic IComparable
+            var compareToMethod = memberType.GetCompareToMethod();
             if (compareToMethod != null)
             {
                 return member.LoadMembers(_stackEmitter, il)
@@ -118,16 +108,23 @@ namespace ILLightenComparer.Emit.Emitters
             member.LoadMembers(_stackEmitter, il.LoadArgument(0))
                   .LoadArgument(3);
 
+            return CompareComplex(il, memberType);
+        }
+
+        private ILEmitter CompareComplex(ILEmitter il, Type memberType)
+        {
             if (memberType.IsValueType || memberType.IsSealed)
             {
                 var compareMethod = _context.GetStaticCompareMethod(memberType);
                 return il.Call(compareMethod)
                          .EmitReturnNotZero();
             }
-            
-            var lazyCompare = Method.ContextCompare.MakeGenericMethod(memberType);
 
-            return il.Emit(OpCodes.Call, lazyCompare)
+            var compare = Method.ContextCompare.MakeGenericMethod(memberType);
+
+            // todo: case for abstracts and not sealed
+
+            return il.Emit(OpCodes.Call, compare)
                      .EmitReturnNotZero();
         }
 
