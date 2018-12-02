@@ -24,9 +24,9 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static Fixture GetInstance() => Fixture.Value;
 
-        public static IEnumerable<T> CreateMutants<T>(T prototype)
+        public static IEnumerable<T> CreateMutants<T>(this Fixture fixture, T prototype)
         {
-            var context = new SpecimenContext(Fixture.Value);
+            var context = new SpecimenContext(fixture);
 
             var clone = prototype.DeepClone();
             foreach (var member in new ObjectWalker(new Member(clone)))
@@ -36,24 +36,25 @@ namespace ILLightenComparer.Tests.Utilities
                     continue;
                 }
 
-                switch (member.MemberInfo)
-                {
-                    case FieldInfo fieldInfo:
-                        fieldInfo.SetValue(
-                            member.Parent,
-                            GetNewValue(context, fieldInfo.FieldType, member.Value));
-                        yield return clone.DeepClone();
-                        fieldInfo.SetValue(member.Parent, member.Value);
-                        break;
+                var setValue = GetSetValueAction(member);
 
-                    case PropertyInfo propertyInfo:
-                        propertyInfo.SetValue(
-                            member.Parent,
-                            GetNewValue(context, propertyInfo.PropertyType, member.Value));
-                        yield return clone.DeepClone();
-                        propertyInfo.SetValue(member.Parent, member.Value);
-                        break;
-                }
+                setValue(
+                    member.Parent,
+                    GetNewValue(context, member.ValueType, member.Value));
+
+                yield return clone.DeepClone();
+
+                setValue(member.Parent, member.Value);
+            }
+        }
+
+        private static Action<object, object> GetSetValueAction(Member member)
+        {
+            switch (member.MemberInfo)
+            {
+                case FieldInfo fieldInfo: return fieldInfo.SetValue;
+                case PropertyInfo propertyInfo: return propertyInfo.SetValue;
+                default: throw new InvalidOperationException();
             }
         }
 

@@ -22,11 +22,15 @@ namespace ILLightenComparer.Tests.Utilities
         {
             var property = request as PropertyInfo;
             var field = request as FieldInfo;
+
             var owner = property?.DeclaringType ?? field?.DeclaringType;
             var type = property?.PropertyType ?? field?.FieldType;
+            if (type == null || owner == null)
+            {
+                return new NoSpecimen();
+            }
 
-            if ((type.IsNullable() || type != null && type.IsClass)
-                && owner != null
+            if ((type.IsNullable() || type.IsClass)
                 && !_exclude.Contains(owner)
                 && _random.NextDouble() < _probability)
             {

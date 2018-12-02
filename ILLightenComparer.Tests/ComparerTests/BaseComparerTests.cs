@@ -46,6 +46,27 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
+        public void Mutate_Class_Members_And_Test_Comparision()
+        {
+            if (typeof(T).IsValueType)
+            {
+                return;
+            }
+
+            for (var i = 0; i < 10; i++)
+            {
+                var original = Fixture.Create<T>();
+
+                foreach (var mutant in Fixture.CreateMutants(original))
+                {
+                    ReferenceComparer.Compare(mutant, original).Should().NotBe(0);
+                    BasicComparer.Compare(mutant, original).Should().NotBe(0);
+                    TypedComparer.Compare(mutant, original).Should().NotBe(0);
+                }
+            }
+        }
+
+        [Fact]
         public void Sorting_Must_Work_The_Same_As_For_Reference_Comparer()
         {
             var original = Fixture.CreateMany<T>(Count).ToArray();
@@ -77,7 +98,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         protected IComparer<T> TypedComparer => ComparersBuilder.GetComparer<T>();
 
-        private const int Count = 10000;
+        private const int Count = 1000;
 
         private IContextBuilder _comparersBuilder;
 

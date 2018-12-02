@@ -28,7 +28,7 @@ namespace ILLightenComparer.Tests.Utilities
             }
 
             Current = _toWalk.Pop();
-            if (Current.Value == null || Current.ValueType.IsPrimitive())
+            if (Current.Value == null || Current.ValueType.IsPrimitive() || Current.ValueType.IsNullable())
             {
                 return true;
             }
