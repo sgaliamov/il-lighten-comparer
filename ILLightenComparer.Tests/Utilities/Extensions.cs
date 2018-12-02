@@ -9,5 +9,11 @@ namespace ILLightenComparer.Tests.Utilities
             && type.IsGenericType
             && !type.IsGenericTypeDefinition
             && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
+
+        public static bool IsPrimitive(this Type type) =>
+            type.IsPrimitive
+            || type.IsEnum
+            || ReferenceEquals(type, typeof(string))
+            || ReferenceEquals(type, typeof(decimal));
     }
 }
