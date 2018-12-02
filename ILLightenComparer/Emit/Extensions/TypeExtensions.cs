@@ -61,7 +61,7 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static bool IsSmallIntegral(this Type type) => SmallIntegralTypes.Contains(type);
 
-        public static bool IsBasic(this Type type) =>
+        public static bool IsPrimitive(this Type type) =>
             type.IsPrimitive
             || type.IsEnum
             || ReferenceEquals(type, typeof(string))

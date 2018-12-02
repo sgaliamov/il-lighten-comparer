@@ -101,7 +101,7 @@ namespace ILLightenComparer.Emit.Emitters
                              .MarkLabel(call)
                              .LoadLocal(l1)
                              .LoadLocal(l2)
-                             .Call(compareToMethod)
+                             .Call(compareToMethod) // todo: test for not sealed comparable member
                              .EmitReturnNotZero(next);
             }
 

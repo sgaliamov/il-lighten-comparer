@@ -14,7 +14,7 @@ namespace ILLightenComparer.Emit.Members
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static BasicFieldMember Create(MemberInfo memberInfo) =>
-            memberInfo is FieldInfo info && info.FieldType.IsBasic()
+            memberInfo is FieldInfo info && info.FieldType.IsPrimitive()
                 ? new BasicFieldMember(info)
                 : null;
     }
@@ -27,7 +27,7 @@ namespace ILLightenComparer.Emit.Members
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static BasicPropertyMember Create(MemberInfo memberInfo) =>
-            memberInfo is PropertyInfo info && info.PropertyType.IsBasic()
+            memberInfo is PropertyInfo info && info.PropertyType.IsPrimitive()
                 ? new BasicPropertyMember(info)
                 : null;
     }
