@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
@@ -19,6 +21,9 @@ namespace ILLightenComparer.Emit
         private readonly ConcurrentDictionary<Type, Configuration> _configurations =
             new ConcurrentDictionary<Type, Configuration>();
 
+        // ReSharper disable once NotAccessedField.Local // todo: remove the comment
+        private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
+
         private readonly ModuleBuilder _moduleBuilder;
 
         private Configuration _defaultConfiguration = new Configuration(
@@ -30,16 +35,18 @@ namespace ILLightenComparer.Emit
         public Context(ModuleBuilder moduleBuilder)
         {
             _moduleBuilder = moduleBuilder;
-            var membersProvider = new MembersProvider(this);
-            _comparerTypeBuilder = new ComparerTypeBuilder(this, membersProvider);
+            _comparerTypeBuilder = CreateComparerTypeBuilder(this);
+            _equalityComparerTypeBuilder = new EqualityComparerTypeBuilder(this, null);
         }
 
         // todo: cache delegates
         public int Compare<T>(T x, T y, HashSet<object> hash)
         {
-            var compareMethod = GetStaticCompareMethod(typeof(T));
+            var type = x?.GetType() ?? y?.GetType() ?? typeof(T); // todo: test with structs
 
-            var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
+            var compareMethod = GetStaticCompareMethod(type);
+
+            var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>(); // todo: test with abstract class
 
             return compare(this, x, y, hash);
         }
@@ -78,9 +85,34 @@ namespace ILLightenComparer.Emit
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
             _moduleBuilder.DefineType(name, interfaceTypes);
 
-        public Configuration GetConfiguration(Type type) => _configurations.TryGetValue(type, out var configuration)
-            ? configuration
-            : _defaultConfiguration;
+        public Configuration GetConfiguration(Type type) =>
+            _configurations.TryGetValue(type, out var configuration)
+                ? configuration
+                : _defaultConfiguration;
+
+        private static ComparerTypeBuilder CreateComparerTypeBuilder(Context context)
+        {
+            Func<MemberInfo, IAcceptor>[] propertyFactories =
+            {
+                StringPropertyMember.Create,
+                IntegralPropertyMember.Create,
+                NullablePropertyMember.Create,
+                BasicPropertyMember.Create,
+                HierarchicalPropertyMember.Create
+            };
+
+            Func<MemberInfo, IAcceptor>[] fieldFactories =
+            {
+                StringFieldMember.Create,
+                IntegralFieldMember.Create,
+                NullableFieldMember.Create,
+                BasicFieldMember.Create,
+                HierarchicalFieldMember.Create
+            };
+            var converter = new MemberConverter(context, propertyFactories, fieldFactories);
+
+            return new ComparerTypeBuilder(context, new MembersProvider(context, converter));
+        }
 
         public struct Configuration
         {

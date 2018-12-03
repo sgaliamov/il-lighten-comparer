@@ -11,10 +11,10 @@ namespace ILLightenComparer.Emit.Reflection
         private readonly Context _context;
         private readonly MemberConverter _converter;
 
-        public MembersProvider(Context context)
+        public MembersProvider(Context context, MemberConverter memberConverter)
         {
             _context = context;
-            _converter = new MemberConverter(_context);
+            _converter = memberConverter;
         }
 
         public IAcceptor[] GetMembers(Type type)

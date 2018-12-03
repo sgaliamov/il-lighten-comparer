@@ -4,39 +4,30 @@ using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Members;
 
 namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private static readonly Func<MemberInfo, IAcceptor>[] PropertyFactories =
-        {
-            StringPropertyMember.Create,
-            IntegralPropertyMember.Create,
-            NullablePropertyMember.Create,
-            BasicPropertyMember.Create,
-            HierarchicalPropertyMember.Create
-        };
-
-        private static readonly Func<MemberInfo, IAcceptor>[] FieldFactories =
-        {
-            StringFieldMember.Create,
-            IntegralFieldMember.Create,
-            NullableFieldMember.Create,
-            BasicFieldMember.Create,
-            HierarchicalFieldMember.Create
-        };
-
         private readonly Context _context;
+        private readonly Func<MemberInfo, IAcceptor>[] _fieldFactories;
+        private readonly Func<MemberInfo, IAcceptor>[] _propertyFactories;
 
-        public MemberConverter(Context context) => _context = context;
+        public MemberConverter(
+            Context context,
+            Func<MemberInfo, IAcceptor>[] propertyFactories,
+            Func<MemberInfo, IAcceptor>[] fieldFactories)
+        {
+            _context = context;
+            _propertyFactories = propertyFactories;
+            _fieldFactories = fieldFactories;
+        }
 
         public IAcceptor Convert(MemberInfo memberInfo)
         {
             if (memberInfo is PropertyInfo)
             {
-                var acceptor = Convert(memberInfo, PropertyFactories);
+                var acceptor = Convert(memberInfo, _propertyFactories);
                 if (acceptor != null)
                 {
                     return acceptor;
@@ -46,7 +37,7 @@ namespace ILLightenComparer.Emit.Reflection
             var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
             if (includeFields && memberInfo is FieldInfo)
             {
-                var acceptor = Convert(memberInfo, FieldFactories);
+                var acceptor = Convert(memberInfo, _fieldFactories);
                 if (acceptor != null)
                 {
                     return acceptor;
