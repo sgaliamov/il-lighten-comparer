@@ -1,4 +1,6 @@
-﻿namespace ILLightenComparer
+﻿using ILLightenComparer.Config;
+
+namespace ILLightenComparer
 {
     public interface IContextBuilder : IConfigurationBuilder, IComparerProvider
     {

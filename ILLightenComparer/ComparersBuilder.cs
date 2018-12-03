@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Config;
 using ILLightenComparer.Emit;
 using ILLightenComparer.Emit.Extensions;
 
@@ -12,6 +13,7 @@ namespace ILLightenComparer
     public sealed class ComparersBuilder : IComparersBuilder
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
+        private readonly ConfigurationBuilder _configurations = new ConfigurationBuilder();
         private readonly Context _context;
 
         public ComparersBuilder()
@@ -22,18 +24,18 @@ namespace ILLightenComparer
 
             var moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
 
-            _context = new Context(moduleBuilder);
+            _context = new Context(moduleBuilder, _configurations);
         }
 
         public IContextBuilder DefineDefaultConfiguration(ComparerSettings settings)
         {
-            _context.DefineDefaultConfiguration(settings);
+            _configurations.DefineDefaultConfiguration(settings);
             return this;
         }
 
         public IContextBuilder DefineConfiguration(Type type, ComparerSettings settings)
         {
-            _context.DefineConfiguration(type, settings);
+            _configurations.DefineConfiguration(type, settings);
             return this;
         }
 
