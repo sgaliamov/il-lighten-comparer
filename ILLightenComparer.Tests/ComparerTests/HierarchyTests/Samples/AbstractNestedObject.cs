@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
-    public abstract class AbstractNestedObject
+    public abstract class AbstractNestedObject : IAbstractNestedObject
     {
         public static IComparer<AbstractNestedObject> Comparer { get; } = new RelationalComparer();
         public string Text { get; set; }
@@ -30,5 +30,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                 return string.Compare(x.Text, y.Text, StringComparison.Ordinal);
             }
         }
+    }
+
+    public interface IAbstractNestedObject
+    {
+        string Text { get; set; }
     }
 }

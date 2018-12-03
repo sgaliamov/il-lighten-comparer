@@ -2,21 +2,21 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
-    public sealed class ContainerObject
+    public sealed class HierarchicalObject
     {
         public NestedObject NestedField;
 
-        public static IComparer<ContainerObject> Comparer { get; } = new ValueRelationalComparer();
+        public static IComparer<HierarchicalObject> Comparer { get; } = new ValueRelationalComparer();
 
-        public ComparableNestedObject ComparableProperty { get; set; }
-        public ComparableNestedObject ComparableField;
+        public ComparableObject ComparableProperty { get; set; }
+        public ComparableObject ComparableField;
         public NestedObject FirstProperty { get; set; }
         public NestedObject SecondProperty { get; set; }
         public int Value { get; set; }
 
-        private sealed class ValueRelationalComparer : IComparer<ContainerObject>
+        private sealed class ValueRelationalComparer : IComparer<HierarchicalObject>
         {
-            public int Compare(ContainerObject x, ContainerObject y)
+            public int Compare(HierarchicalObject x, HierarchicalObject y)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -33,7 +33,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return -1;
                 }
 
-                var compare = Comparer<ComparableNestedObject>.Default.Compare(
+                var compare = Comparer<ComparableObject>.Default.Compare(
                     x.ComparableProperty,
                     y.ComparableProperty);
                 if (compare != 0)
@@ -41,7 +41,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return compare;
                 }
 
-                compare = Comparer<ComparableNestedObject>.Default.Compare(
+                compare = Comparer<ComparableObject>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0)

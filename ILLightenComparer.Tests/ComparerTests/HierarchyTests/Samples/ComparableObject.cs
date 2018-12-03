@@ -2,12 +2,12 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
-    public sealed class ComparableNestedObject : IComparable<ComparableNestedObject>
+    public class ComparableObject : IComparable<ComparableObject>
     {
         public static bool UsedCompareTo { get; private set; }
         public int Value { get; set; }
 
-        public int CompareTo(ComparableNestedObject other)
+        public int CompareTo(ComparableObject other)
         {
             if (ReferenceEquals(this, other))
             {

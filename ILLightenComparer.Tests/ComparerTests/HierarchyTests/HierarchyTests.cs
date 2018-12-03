@@ -7,7 +7,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
-    public sealed class HierarchyTests : BaseComparerTests<ContainerObject>
+    public sealed class HierarchyTests : BaseComparerTests<HierarchicalObject>
     {
         public HierarchyTests()
         {
@@ -23,17 +23,17 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                             nameof(NestedObject.Text)
                         }
                     })
-                .For<ContainerObject>()
+                .For<HierarchicalObject>()
                 .DefineConfiguration(new ComparerSettings
                 {
                     MembersOrder = new[]
                     {
-                        nameof(ContainerObject.ComparableProperty),
-                        nameof(ContainerObject.ComparableField),
-                        nameof(ContainerObject.Value),
-                        nameof(ContainerObject.FirstProperty),
-                        nameof(ContainerObject.SecondProperty),
-                        nameof(ContainerObject.NestedField)
+                        nameof(HierarchicalObject.ComparableProperty),
+                        nameof(HierarchicalObject.ComparableField),
+                        nameof(HierarchicalObject.Value),
+                        nameof(HierarchicalObject.FirstProperty),
+                        nameof(HierarchicalObject.SecondProperty),
+                        nameof(HierarchicalObject.NestedField)
                     }
                 });
         }
@@ -41,8 +41,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Custom_Comparable_Implementation_Should_Be_Used()
         {
-            var nestedObject = Fixture.Create<ComparableNestedObject>();
-            var other = Fixture.Create<ContainerObject>();
+            var nestedObject = Fixture.Create<ComparableObject>();
+            var other = Fixture.Create<HierarchicalObject>();
             other.ComparableProperty = nestedObject;
             var one = other.DeepClone();
             one.ComparableProperty.Value = other.ComparableProperty.Value + 1;
@@ -51,14 +51,14 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                          .Should()
                          .NotBe(0);
 
-            ComparableNestedObject.UsedCompareTo.Should().BeTrue();
+            ComparableObject.UsedCompareTo.Should().BeTrue();
         }
 
         [Fact]
         public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
         {
-            var nestedObject = Fixture.Create<ComparableNestedObject>();
-            var other = Fixture.Create<ContainerObject>();
+            var nestedObject = Fixture.Create<ComparableObject>();
+            var other = Fixture.Create<HierarchicalObject>();
             other.ComparableProperty = nestedObject;
             var one = other.DeepClone();
             one.ComparableProperty = null;
@@ -68,6 +68,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                          .BeNegative();
         }
 
-        protected override IComparer<ContainerObject> ReferenceComparer { get; } = ContainerObject.Comparer;
+        protected override IComparer<HierarchicalObject> ReferenceComparer { get; } = HierarchicalObject.Comparer;
     }
 }
