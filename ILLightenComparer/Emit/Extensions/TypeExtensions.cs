@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Emit.Reflection;
 
@@ -66,5 +67,9 @@ namespace ILLightenComparer.Emit.Extensions
             || type.IsEnum
             || ReferenceEquals(type, typeof(string))
             || ReferenceEquals(type, typeof(decimal));
+
+        public static bool ImplementsGeneric(this Type type, Type generic, params Type[] typeArguments) =>
+            type.GetInterfaces()
+                .Any(t => t == generic.MakeGenericType(typeArguments));
     }
 }

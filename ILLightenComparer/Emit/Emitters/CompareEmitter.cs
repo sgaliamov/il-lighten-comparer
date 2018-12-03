@@ -87,28 +87,30 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var memberType = member.MemberType;
 
-            var compareToMethod = memberType.GetCompareToMethod();
-            if (compareToMethod != null)
-            {
-                return member.LoadMembers(_stackEmitter, il)
-                             .Store(memberType, 1, out var l2)
-                             .Store(memberType, 0, out var l1)
-                             .LoadLocal(l1)
-                             .Branch(OpCodes.Brtrue_S, out var call)
-                             .LoadLocal(l2)
-                             .Branch(OpCodes.Brfalse_S, out var next)
-                             .Return(-1)
-                             .MarkLabel(call)
-                             .LoadLocal(l1)
-                             .LoadLocal(l2)
-                             .Call(compareToMethod) // todo: test for not sealed comparable member
-                             .EmitReturnNotZero(next);
-            }
-
             member.LoadMembers(_stackEmitter, il.LoadArgument(0))
                   .LoadArgument(3);
 
             return CompareComplex(il, memberType);
+        }
+
+        public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
+        {
+            var memberType = member.MemberType;
+            var compareToMethod = memberType.GetCompareToMethod();
+
+            return member.LoadMembers(_stackEmitter, il)
+                         .Store(memberType, 1, out var l2)
+                         .Store(memberType, 0, out var l1)
+                         .LoadLocal(l1)
+                         .Branch(OpCodes.Brtrue_S, out var call)
+                         .LoadLocal(l2)
+                         .Branch(OpCodes.Brfalse_S, out var next)
+                         .Return(-1)
+                         .MarkLabel(call)
+                         .LoadLocal(l1)
+                         .LoadLocal(l2)
+                         .Call(compareToMethod) // todo: test for not sealed comparable member
+                         .EmitReturnNotZero(next);
         }
 
         private ILEmitter CompareComplex(ILEmitter il, Type memberType)

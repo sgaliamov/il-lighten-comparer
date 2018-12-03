@@ -74,6 +74,7 @@ namespace ILLightenComparer.Emit
                 IntegralPropertyMember.Create,
                 NullablePropertyMember.Create,
                 BasicPropertyMember.Create,
+                ComparablePropertyMember.Create,
                 HierarchicalPropertyMember.Create
             };
 
@@ -83,6 +84,7 @@ namespace ILLightenComparer.Emit
                 IntegralFieldMember.Create,
                 NullableFieldMember.Create,
                 BasicFieldMember.Create,
+                ComparableFieldMember.Create,
                 HierarchicalFieldMember.Create
             };
             var converter = new MemberConverter(context, propertyFactories, fieldFactories);
