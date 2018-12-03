@@ -25,9 +25,4 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 
         private int CompareTo(INestedObject other) => string.Compare(Text, other.Text, StringComparison.Ordinal);
     }
-
-    public interface INestedObject : IComparable
-    {
-        string Text { get; set; }
-    }
 }

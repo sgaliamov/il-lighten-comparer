@@ -6,13 +6,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
     public sealed class HierarchicalObject
     {
         public ComparableObject ComparableField;
-        public NestedObject NestedField;
+        public SealedNestedObject NestedField;
 
         public static IComparer<HierarchicalObject> Comparer { get; } = new ValueRelationalComparer();
 
         public ComparableObject ComparableProperty { get; set; }
-        public NestedObject FirstProperty { get; set; }
-        public NestedObject SecondProperty { get; set; }
+        public SealedNestedObject FirstProperty { get; set; }
+        public SealedNestedObject SecondProperty { get; set; }
         public int Value { get; set; }
 
         private sealed class ValueRelationalComparer : IComparer<HierarchicalObject>
@@ -56,19 +56,19 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return compare;
                 }
 
-                compare = Comparer<NestedObject>.Default.Compare(x.FirstProperty, y.FirstProperty);
+                compare = Comparer<SealedNestedObject>.Default.Compare(x.FirstProperty, y.FirstProperty);
                 if (compare != 0)
                 {
                     return compare;
                 }
 
-                compare = Comparer<NestedObject>.Default.Compare(x.SecondProperty, y.SecondProperty);
+                compare = Comparer<SealedNestedObject>.Default.Compare(x.SecondProperty, y.SecondProperty);
                 if (compare != 0)
                 {
                     return compare;
                 }
 
-                compare = Comparer<NestedObject>.Default.Compare(x.NestedField, y.NestedField);
+                compare = Comparer<SealedNestedObject>.Default.Compare(x.NestedField, y.NestedField);
                 if (compare != 0)
                 {
                     return compare;

@@ -48,10 +48,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             });
         }
 
-        private void Test(Func<NestedObject, AbstractProperties> selector)
+        private void Test(Func<SealedNestedObject, AbstractProperties> selector)
         {
             var original = _fixture
-                           .Build<NestedObject>()
+                           .Build<SealedNestedObject>()
                            .Without(x => x.DeepNestedField)
                            .Without(x => x.DeepNestedProperty)
                            .CreateMany(1000)
@@ -74,18 +74,18 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 {
                     IncludeFields = true
                 })
-                .For<NestedObject>()
+                .For<SealedNestedObject>()
                 .DefineConfiguration(new ComparerSettings
                 {
                     IgnoredMembers = new[]
                     {
-                        nameof(NestedObject.DeepNestedField),
-                        nameof(NestedObject.DeepNestedProperty)
+                        nameof(SealedNestedObject.DeepNestedField),
+                        nameof(SealedNestedObject.DeepNestedProperty)
                     },
                     MembersOrder = new[]
                     {
-                        nameof(NestedObject.Key),
-                        nameof(NestedObject.Text)
+                        nameof(SealedNestedObject.Key),
+                        nameof(SealedNestedObject.Text)
                     }
                 })
                 .For<AbstractProperties>()

@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 {
-    public sealed class NestedObject : BaseNestedObject
+    public sealed class SealedNestedObject : BaseNestedObject
     {
         public DeepNestedObject DeepNestedField;
         public DeepNestedObject DeepNestedProperty { get; set; }
@@ -19,12 +19,12 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
                 return 0;
             }
 
-            return obj is NestedObject other
+            return obj is SealedNestedObject other
                 ? CompareTo(other)
-                : throw new ArgumentException($"Object must be of type {nameof(NestedObject)}.");
+                : throw new ArgumentException($"Object must be of type {nameof(SealedNestedObject)}.");
         }
 
-        private int CompareTo(NestedObject other)
+        private int CompareTo(SealedNestedObject other)
         {
             var compare = DeepNestedObject.Comparer.Compare(DeepNestedField, other.DeepNestedField);
             if (compare != 0)

@@ -13,15 +13,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public HierarchyTests()
         {
             ComparersBuilder
-                .DefineConfiguration(typeof(NestedObject),
+                .DefineConfiguration(typeof(SealedNestedObject),
                     new ComparerSettings
                     {
                         MembersOrder = new[]
                         {
-                            nameof(NestedObject.DeepNestedField),
-                            nameof(NestedObject.DeepNestedProperty),
-                            nameof(NestedObject.Key),
-                            nameof(NestedObject.Text)
+                            nameof(SealedNestedObject.DeepNestedField),
+                            nameof(SealedNestedObject.DeepNestedProperty),
+                            nameof(SealedNestedObject.Key),
+                            nameof(SealedNestedObject.Text)
                         }
                     })
                 .For<HierarchicalObject>()
