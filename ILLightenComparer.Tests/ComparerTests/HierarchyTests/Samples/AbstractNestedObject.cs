@@ -1,40 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
-    public abstract class AbstractNestedObject : IAbstractNestedObject
+    public abstract class AbstractNestedObject : INestedObject
     {
-        public static IComparer<AbstractNestedObject> Comparer { get; } = new RelationalComparer();
         public string Text { get; set; }
 
-        private sealed class RelationalComparer : IComparer<AbstractNestedObject>
+        public virtual int CompareTo(object obj)
         {
-            public int Compare(AbstractNestedObject x, AbstractNestedObject y)
+            if (ReferenceEquals(null, obj))
             {
-                if (ReferenceEquals(x, y))
-                {
-                    return 0;
-                }
-
-                if (ReferenceEquals(null, y))
-                {
-                    return 1;
-                }
-
-                if (ReferenceEquals(null, x))
-                {
-                    return -1;
-                }
-
-                return string.Compare(x.Text, y.Text, StringComparison.Ordinal);
+                return 1;
             }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return 0;
+            }
+
+            return obj is AbstractNestedObject other
+                ? CompareTo(other)
+                : throw new ArgumentException($"Object must be of type {nameof(AbstractNestedObject)}.");
         }
 
-        public virtual int CompareTo(object obj) => Comparer.Compare(this, obj as AbstractNestedObject);
+        private int CompareTo(INestedObject other) => string.Compare(Text, other.Text, StringComparison.Ordinal);
     }
 
-    public interface IAbstractNestedObject : IComparable
+    public interface INestedObject : IComparable
     {
         string Text { get; set; }
     }

@@ -7,7 +7,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
     {
         public static IComparer<AbstractProperties> Comparer { get; } = new AbstractPropertiesRelationalComparer();
         public AbstractNestedObject AbstractProperty { get; set; }
-        public IAbstractNestedObject InterfaceProperty { get; set; }
+        public INestedObject InterfaceProperty { get; set; }
         public BaseNestedObject NotSealedProperty { get; set; }
         public object ObjectProperty { get; set; }
 
@@ -36,12 +36,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return abstractPropertyComparison;
                 }
 
-                var interfacePropertyComparison = Comparer<IAbstractNestedObject>.Default.Compare(x.InterfaceProperty, y.InterfaceProperty);
+                var interfacePropertyComparison = Comparer<INestedObject>.Default.Compare(x.InterfaceProperty, y.InterfaceProperty);
                 if (interfacePropertyComparison != 0)
                 {
                     return interfacePropertyComparison;
                 }
-
 
                 var compare = Comparer<BaseNestedObject>.Default.Compare(x.NotSealedProperty, y.NotSealedProperty);
                 if (compare != 0)
@@ -70,7 +69,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return comparable.CompareTo(y.ObjectProperty);
                 }
 
-                throw new InvalidOperationException("ObjectProperty is not comparable");
+                throw new InvalidOperationException("ObjectProperty is not comparable.");
             }
         }
     }

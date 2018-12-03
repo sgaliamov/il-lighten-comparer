@@ -53,7 +53,6 @@ namespace ILLightenComparer.Emit
                 // - DynamicMethod;
                 // - generate static class wrapper.
                 return (int)compareMethod.Invoke(null, new object[] { this, x, y, hash });
-                
             }
 
             var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();

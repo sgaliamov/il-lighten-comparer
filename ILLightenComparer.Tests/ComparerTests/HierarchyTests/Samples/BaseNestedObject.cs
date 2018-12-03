@@ -1,43 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
 using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
     public class BaseNestedObject : AbstractNestedObject
     {
-        public new static IComparer<BaseNestedObject> Comparer { get; } = new RelationalComparer();
         public EnumSmall? Key { get; set; }
 
-        public override int CompareTo(object obj) => Comparer.Compare(this, obj as BaseNestedObject);
-
-        private sealed class RelationalComparer : IComparer<BaseNestedObject>
+        public override int CompareTo(object obj)
         {
-            public int Compare(BaseNestedObject x, BaseNestedObject y)
+            if (ReferenceEquals(null, obj))
             {
-                if (ReferenceEquals(x, y))
-                {
-                    return 0;
-                }
-
-                if (ReferenceEquals(null, y))
-                {
-                    return 1;
-                }
-
-                if (ReferenceEquals(null, x))
-                {
-                    return -1;
-                }
-
-                var compare = Nullable.Compare(x.Key, y.Key);
-                if (compare != 0)
-                {
-                    return compare;
-                }
-
-                return AbstractNestedObject.Comparer.Compare(x, y);
+                return 1;
             }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return 0;
+            }
+
+            return obj is BaseNestedObject other
+                ? CompareTo(other)
+                : throw new ArgumentException($"Object must be of type {nameof(BaseNestedObject)}");
+        }
+
+        private int CompareTo(BaseNestedObject other)
+        {
+            if (ReferenceEquals(this, other))
+            {
+                return 0;
+            }
+
+            if (ReferenceEquals(null, other))
+            {
+                return 1;
+            }
+
+            var result = Nullable.Compare(Key, other.Key);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            return base.CompareTo(other);
         }
     }
 }
