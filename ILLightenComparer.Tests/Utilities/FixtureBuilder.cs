@@ -36,6 +36,7 @@ namespace ILLightenComparer.Tests.Utilities
                     continue;
                 }
 
+                // todo: test with struct fields
                 var setValue = GetSetValueAction(member);
 
                 setValue(
