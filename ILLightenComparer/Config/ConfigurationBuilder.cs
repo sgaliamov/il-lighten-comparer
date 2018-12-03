@@ -13,7 +13,8 @@ namespace ILLightenComparer.Config
             new HashSet<string>(),
             false,
             new string[0],
-            StringComparison.Ordinal);
+            StringComparison.Ordinal,
+            false);
 
         public void DefineConfiguration(Type type, ComparerSettings settings)
         {

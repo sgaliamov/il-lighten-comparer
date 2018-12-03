@@ -36,7 +36,7 @@
 - [x] object type member comparison
 - [x] test when abstract class or not sealed is replaced after a comparer is created
 - [ ] detect cycles for objects
-- [ ] detect cycles for nested structs?
+- [ ] detect cycles for nested objects in structs
 - [ ] compare nullable complex structs
 - [ ] nested structure
 
@@ -49,10 +49,10 @@
 ## Phase 4 Settings
 
 - [x] separate settings for each comparable type
+- [x] string options (case, culture)
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
-- [ ] string options (case, culture)
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
 - [ ] customization setting to override comparer with specific implementation
