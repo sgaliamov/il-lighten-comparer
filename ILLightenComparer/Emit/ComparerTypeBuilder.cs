@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
@@ -59,8 +57,6 @@ namespace ILLightenComparer.Emit
 
             return typeBuilder.CreateTypeInfo();
         }
-
-        
 
         private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)
         {
