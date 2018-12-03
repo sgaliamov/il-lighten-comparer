@@ -9,6 +9,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
         public new static IComparer<BaseNestedObject> Comparer { get; } = new RelationalComparer();
         public EnumSmall? Key { get; set; }
 
+        public override int CompareTo(object obj) => Comparer.Compare(this, obj as BaseNestedObject);
+
         private sealed class RelationalComparer : IComparer<BaseNestedObject>
         {
             public int Compare(BaseNestedObject x, BaseNestedObject y)

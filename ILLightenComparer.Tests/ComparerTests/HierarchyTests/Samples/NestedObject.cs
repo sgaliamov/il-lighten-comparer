@@ -10,6 +10,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 
         public DeepNestedObject DeepNestedProperty { get; set; }
 
+        public override int CompareTo(object obj) => Comparer.Compare(this, obj as NestedObject);
+
         private sealed class NestedObjectComparer : IComparer<NestedObject>
         {
             public int Compare(NestedObject x, NestedObject y)

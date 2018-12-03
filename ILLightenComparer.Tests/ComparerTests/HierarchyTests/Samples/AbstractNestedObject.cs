@@ -30,9 +30,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                 return string.Compare(x.Text, y.Text, StringComparison.Ordinal);
             }
         }
+
+        public virtual int CompareTo(object obj) => Comparer.Compare(this, obj as AbstractNestedObject);
     }
 
-    public interface IAbstractNestedObject
+    public interface IAbstractNestedObject : IComparable
     {
         string Text { get; set; }
     }
