@@ -32,8 +32,8 @@
 - [x] compare fields
 - [x] use existing *CompareTo* method
 - [x] nested object
-- [ ] abstract member comparison
-- [ ] object type member comparison
+- [x] abstract member comparison
+- [x] object type member comparison
 - [ ] test when abstract class or not sealed is replaced after a comparer is created
 - [ ] detect cycles for objects
 - [ ] detect cycles for nested structs?

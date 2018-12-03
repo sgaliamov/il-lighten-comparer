@@ -31,7 +31,7 @@ namespace ILLightenComparer.Emit
             _equalityComparerTypeBuilder = new EqualityComparerTypeBuilder(this, null);
         }
 
-        // todo: cache delegates
+        // todo: cache delegates and benchmark ways
         public int Compare<T>(T x, T y, HashSet<object> hash)
         {
             var type = x?.GetType() ?? y?.GetType(); // todo: test with structs
@@ -44,11 +44,16 @@ namespace ILLightenComparer.Emit
 
             if (typeof(T) != type)
             {
-                //return (int)compareMethod.Invoke(null, new object[] { this, x, y, hash });
-                var genericType = typeof(Method.StaticMethodDelegate<>).MakeGenericType(type);
-                var @delegate = compareMethod.CreateDelegate(genericType);
-
-                return (int)@delegate.DynamicInvoke(this, x, y, hash);
+                // todo: benchmarks:
+                // - direct Invoke;
+                // - DynamicInvoke;
+                // var genericType = typeof(Method.StaticMethodDelegate<>).MakeGenericType(type);
+                // var @delegate = compareMethod.CreateDelegate(genericType);
+                // return (int)@delegate.DynamicInvoke(this, x, y, hash);
+                // - DynamicMethod;
+                // - generate static class wrapper.
+                return (int)compareMethod.Invoke(null, new object[] { this, x, y, hash });
+                
             }
 
             var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
