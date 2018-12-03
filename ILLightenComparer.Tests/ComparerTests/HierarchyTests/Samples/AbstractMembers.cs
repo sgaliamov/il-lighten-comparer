@@ -10,7 +10,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
         public object ObjectField;
 
         public static IComparer<AbstractMembers> Comparer { get; } = new RelationalComparer();
-        
+
         public AbstractNestedObject AbstractProperty { get; set; }
         public BaseNestedObject NotSealedProperty { get; set; }
 
@@ -33,19 +33,22 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return -1;
                 }
 
-                var abstractPropertyComparison = Comparer<AbstractNestedObject>.Default.Compare(x.AbstractProperty, y.AbstractProperty);
+                var abstractPropertyComparison = Comparer<AbstractNestedObject>
+                                                 .Default.Compare(x.AbstractProperty, y.AbstractProperty);
                 if (abstractPropertyComparison != 0)
                 {
                     return abstractPropertyComparison;
                 }
 
-                var interfacePropertyComparison = Comparer<INestedObject>.Default.Compare(x.InterfaceField, y.InterfaceField);
+                var interfacePropertyComparison = Comparer<INestedObject>
+                                                  .Default.Compare(x.InterfaceField, y.InterfaceField);
                 if (interfacePropertyComparison != 0)
                 {
                     return interfacePropertyComparison;
                 }
 
-                var compare = Comparer<BaseNestedObject>.Default.Compare(x.NotSealedProperty, y.NotSealedProperty);
+                var compare = Comparer<BaseNestedObject>
+                              .Default.Compare(x.NotSealedProperty, y.NotSealedProperty);
                 if (compare != 0)
                 {
                     return compare;
@@ -72,7 +75,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return comparable.CompareTo(y.ObjectField);
                 }
 
-                throw new InvalidOperationException("ObjectProperty is not comparable.");
+                throw new InvalidOperationException($"{nameof(ObjectField)} is not comparable.");
             }
         }
     }

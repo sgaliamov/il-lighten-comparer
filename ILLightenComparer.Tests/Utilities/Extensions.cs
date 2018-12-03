@@ -37,5 +37,20 @@ namespace ILLightenComparer.Tests.Utilities
                 enumeratorOther.MoveNext().Should().BeFalse();
             }
         }
+
+        public static int Normalize(this int value)
+        {
+            if (value <= -1)
+            {
+                return -1;
+            }
+
+            if (value >= 1)
+            {
+                return 1;
+            }
+
+            return value;
+        }
     }
 }

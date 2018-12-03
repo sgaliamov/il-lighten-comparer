@@ -122,11 +122,9 @@ namespace ILLightenComparer.Emit.Emitters
                          .EmitReturnNotZero();
             }
 
-            var compare = Method.ContextCompare.MakeGenericMethod(memberType);
+            var contextCompare = Method.ContextCompare.MakeGenericMethod(memberType);
 
-            // todo: case for abstracts and not sealed
-
-            return il.Emit(OpCodes.Call, compare)
+            return il.Emit(OpCodes.Call, contextCompare)
                      .EmitReturnNotZero();
         }
 

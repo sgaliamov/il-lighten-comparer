@@ -34,15 +34,31 @@ namespace ILLightenComparer.Emit
         // todo: cache delegates and benchmark ways
         public int Compare<T>(T x, T y, HashSet<object> hash)
         {
-            var type = x?.GetType() ?? y?.GetType(); // todo: test with structs
-            if (type == null)
+            if (x == null)
             {
-                return 0;
+                if (y == null)
+                {
+                    return 0;
+                }
+
+                return -1;
             }
 
-            var compareMethod = GetStaticCompareMethod(type);
+            if (y == null)
+            {
+                return 1;
+            }
 
-            if (typeof(T) != type)
+            var xType = x.GetType(); // todo: test with structs
+            var yType = y.GetType();
+            if (xType != yType)
+            {
+                throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
+            }
+
+            var compareMethod = GetStaticCompareMethod(xType);
+
+            if (typeof(T) != xType)
             {
                 // todo: benchmarks:
                 // - direct Invoke;

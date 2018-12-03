@@ -46,7 +46,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Mutate_Class_Members_And_Test_Comparision()
+        public void Mutate_Class_Members_And_Test_Comparison()
         {
             if (typeof(T).IsValueType)
             {

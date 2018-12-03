@@ -34,7 +34,7 @@
 - [x] nested object
 - [x] abstract member comparison
 - [x] object type member comparison
-- [ ] test when abstract class or not sealed is replaced after a comparer is created
+- [x] test when abstract class or not sealed is replaced after a comparer is created
 - [ ] detect cycles for objects
 - [ ] detect cycles for nested structs?
 - [ ] compare nullable complex structs

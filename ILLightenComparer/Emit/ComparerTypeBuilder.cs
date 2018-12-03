@@ -100,16 +100,16 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsClass)
                 {
-                    EmitReferenceComparision(il);
+                    EmitReferenceComparison(il);
                 }
 
-                EmitMembersComparision(il, objectType);
+                EmitMembersComparison(il, objectType);
             }
 
             return staticMethodBuilder;
         }
 
-        private void EmitMembersComparision(ILEmitter il, Type objectType)
+        private void EmitMembersComparison(ILEmitter il, Type objectType)
         {
             var members = _membersProvider.GetMembers(objectType);
 
@@ -132,7 +132,7 @@ namespace ILLightenComparer.Emit
             il.Return(0);
         }
 
-        private static void EmitReferenceComparision(ILEmitter il)
+        private static void EmitReferenceComparison(ILEmitter il)
         {
             // x == y
             il.LoadArgument(1)
@@ -165,7 +165,7 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsValueType)
                 {
-                    EmitReferenceComparision(il);
+                    EmitReferenceComparison(il);
                 }
 
                 il.LoadArgument(0)

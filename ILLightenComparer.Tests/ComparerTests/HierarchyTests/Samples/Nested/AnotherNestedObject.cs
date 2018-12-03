@@ -2,9 +2,11 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 {
-    public sealed class AnotherNestedObject : INestedObject
+    public sealed class AnotherNestedObject : BaseNestedObject
     {
-        public int CompareTo(object obj)
+        public string Value { get; set; }
+
+        public override int CompareTo(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -21,8 +23,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
                 : throw new ArgumentException($"Object must be of type {nameof(AnotherNestedObject)}.");
         }
 
-        public string Text { get; set; }
-
-        private int CompareTo(INestedObject other) => string.Compare(Text, other.Text, StringComparison.Ordinal);
+        private int CompareTo(AnotherNestedObject other) =>
+            string.Compare(Value, other.Value, StringComparison.Ordinal);
     }
 }
