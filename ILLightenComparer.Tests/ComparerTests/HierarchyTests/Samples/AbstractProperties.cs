@@ -5,7 +5,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
     public class AbstractProperties
     {
-        public static IComparer<AbstractProperties> AbstractPropertiesComparer { get; } = new AbstractPropertiesRelationalComparer();
+        public static IComparer<AbstractProperties> Comparer { get; } = new AbstractPropertiesRelationalComparer();
         public AbstractNestedObject AbstractProperty { get; set; }
         public IAbstractNestedObject InterfaceProperty { get; set; }
         public BaseNestedObject NotSealedProperty { get; set; }

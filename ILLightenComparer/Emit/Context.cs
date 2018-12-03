@@ -34,11 +34,24 @@ namespace ILLightenComparer.Emit
         // todo: cache delegates
         public int Compare<T>(T x, T y, HashSet<object> hash)
         {
-            var type = x?.GetType() ?? y?.GetType() ?? typeof(T); // todo: test with structs
+            var type = x?.GetType() ?? y?.GetType(); // todo: test with structs
+            if (type == null)
+            {
+                return 0;
+            }
 
             var compareMethod = GetStaticCompareMethod(type);
 
-            var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>(); // todo: test with abstract class
+            if (typeof(T) != type)
+            {
+                //return (int)compareMethod.Invoke(null, new object[] { this, x, y, hash });
+                var genericType = typeof(Method.StaticMethodDelegate<>).MakeGenericType(type);
+                var @delegate = compareMethod.CreateDelegate(genericType);
+
+                return (int)@delegate.DynamicInvoke(this, x, y, hash);
+            }
+
+            var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
 
             return compare(this, x, y, hash);
         }

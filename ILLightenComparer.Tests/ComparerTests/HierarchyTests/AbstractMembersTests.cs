@@ -1,5 +1,8 @@
-﻿using AutoFixture;
-using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoFixture;
+using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
@@ -11,34 +14,80 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void AbstractProperty_Comparison()
         {
-            var comparer = _contextBuilder.GetComparer<AbstractProperties>();
-
-            for (var i = 0; i < 1000; i++)
+            Test(x => new AbstractProperties
             {
-                var one = _fixture
-                          .Build<AbstractProperties>()
-                          .WithAutoProperties()
-                          .With(x => x.AbstractProperty, _fixture.Create<NestedObject>())
-                          .Create();
+                AbstractProperty = x
+            });
+        }
 
-                var another = _fixture
-                              .Build<AbstractProperties>()
-                              .WithAutoProperties()
-                              .With(x => x.AbstractProperty, _fixture.Create<NestedObject>())
-                              .Create();
+        [Fact]
+        public void InterfaceProperty_Comparison()
+        {
+            Test(x => new AbstractProperties
+            {
+                InterfaceProperty = x
+            });
+        }
 
-                var expected = AbstractProperties.AbstractPropertiesComparer.Compare(one, another);
+        [Fact]
+        public void NotSealedProperty_Comparison()
+        {
+            Test(x => new AbstractProperties
+            {
+                NotSealedProperty = x
+            });
+        }
 
-                comparer.Compare(one, another).Should().Be(expected);
-            }
+        [Fact]
+        public void ObjectProperty_Comparison()
+        {
+            Test(x => new AbstractProperties
+            {
+                ObjectProperty = x
+            });
+        }
+
+        private void Test(Func<NestedObject, AbstractProperties> selector)
+        {
+            var original = _fixture
+                           .Build<NestedObject>()
+                           .Without(x => x.DeepNestedField)
+                           .Without(x => x.DeepNestedProperty)
+                           .CreateMany(1000)
+                           .Select(selector)
+                           .ToArray();
+
+            var clone = original.DeepClone();
+
+            Array.Sort(original, AbstractProperties.Comparer);
+            Array.Sort(clone, _comparer);
+
+            original.ShouldBeSameOrder(clone);
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 
-        private readonly IContextBuilder _contextBuilder =
-            new ComparersBuilder().DefineDefaultConfiguration(new ComparerSettings
-            {
-                IncludeFields = true
-            });
+        private readonly IComparer<AbstractProperties> _comparer =
+            new ComparersBuilder()
+                .DefineDefaultConfiguration(new ComparerSettings
+                {
+                    IncludeFields = true
+                })
+                .For<NestedObject>()
+                .DefineConfiguration(new ComparerSettings
+                {
+                    IgnoredMembers = new[]
+                    {
+                        nameof(NestedObject.DeepNestedField),
+                        nameof(NestedObject.DeepNestedProperty)
+                    },
+                    MembersOrder = new[]
+                    {
+                        nameof(NestedObject.Key),
+                        nameof(NestedObject.Text)
+                    }
+                })
+                .For<AbstractProperties>()
+                .GetComparer();
     }
 }

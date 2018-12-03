@@ -78,8 +78,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             Array.Sort(copy1, BasicComparer);
             Array.Sort(copy2, TypedComparer);
 
-            Compare(copy0, copy1);
-            Compare(copy0, copy2);
+            copy0.ShouldBeSameOrder(copy1);
+            copy0.ShouldBeSameOrder(copy2);
         }
 
         protected readonly Fixture Fixture = FixtureBuilder.GetInstance();
@@ -101,25 +101,5 @@ namespace ILLightenComparer.Tests.ComparerTests
         private const int Count = 10000;
 
         private IContextBuilder _comparersBuilder;
-
-        private static void Compare(IEnumerable<T> one, IEnumerable<T> other)
-        {
-            using (var enumeratorOne = one.GetEnumerator())
-            using (var enumeratorOther = other.GetEnumerator())
-            {
-                while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext())
-                {
-                    var oneCurrent = enumeratorOne.Current;
-                    var otherCurrent = enumeratorOther.Current;
-
-                    oneCurrent
-                        .Should()
-                        .BeEquivalentTo(otherCurrent);
-                }
-
-                enumeratorOne.MoveNext().Should().BeFalse();
-                enumeratorOther.MoveNext().Should().BeFalse();
-            }
-        }
     }
 }
