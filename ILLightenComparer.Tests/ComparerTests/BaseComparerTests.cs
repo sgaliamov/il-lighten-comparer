@@ -98,7 +98,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         protected IComparer<T> TypedComparer => ComparersBuilder.GetComparer<T>();
 
-        private const int Count = 1000;
+        private const int Count = 10000;
 
         private IContextBuilder _comparersBuilder;
 

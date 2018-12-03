@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using ILLightenComparer.Tests.Samples;
+﻿using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
-    public sealed class NestedObject
+    public sealed class NestedObject : BaseNestedObject
     {
         public DeepNestedObject DeepNestedField;
 
-        public static IComparer<NestedObject> Comparer { get; } = new NestedObjectComparer();
-        
+        public new static IComparer<NestedObject> Comparer { get; } = new NestedObjectComparer();
+
         public DeepNestedObject DeepNestedProperty { get; set; }
-        public EnumSmall? Key { get; set; }
-        public string Text { get; set; }
 
         private sealed class NestedObjectComparer : IComparer<NestedObject>
         {
@@ -39,19 +35,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return compare;
                 }
 
-                compare = Nullable.Compare(x.Key, y.Key);
-                if (compare != 0)
-                {
-                    return compare;
-                }
-
                 compare = DeepNestedObject.Comparer.Compare(x.DeepNestedProperty, y.DeepNestedProperty);
                 if (compare != 0)
                 {
                     return compare;
                 }
 
-                return string.Compare(x.Text, y.Text, StringComparison.Ordinal);
+                return BaseNestedObject.Comparer.Compare(x, y);
             }
         }
     }

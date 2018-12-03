@@ -18,8 +18,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                         MembersOrder = new[]
                         {
                             nameof(NestedObject.DeepNestedField),
+                            nameof(NestedObject.DeepNestedProperty),
                             nameof(NestedObject.Key),
-                            nameof(NestedObject.DeepNestedProperty)
+                            nameof(NestedObject.Text)
                         }
                     })
                 .For<ContainerObject>()
