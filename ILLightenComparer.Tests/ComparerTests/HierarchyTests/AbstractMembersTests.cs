@@ -15,40 +15,40 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void AbstractProperty_Comparison()
         {
-            Test(x => new AbstractProperties
+            Test(x => new AbstractMembers
             {
                 AbstractProperty = x
             });
         }
 
         [Fact]
-        public void InterfaceProperty_Comparison()
+        public void InterfaceField_Comparison()
         {
-            Test(x => new AbstractProperties
+            Test(x => new AbstractMembers
             {
-                InterfaceProperty = x
+                InterfaceField = x
             });
         }
 
         [Fact]
         public void NotSealedProperty_Comparison()
         {
-            Test(x => new AbstractProperties
+            Test(x => new AbstractMembers
             {
                 NotSealedProperty = x
             });
         }
 
         [Fact]
-        public void ObjectProperty_Comparison()
+        public void ObjectField_Comparison()
         {
-            Test(x => new AbstractProperties
+            Test(x => new AbstractMembers
             {
-                ObjectProperty = x
+                ObjectField = x
             });
         }
 
-        private void Test(Func<SealedNestedObject, AbstractProperties> selector)
+        private void Test(Func<SealedNestedObject, AbstractMembers> selector)
         {
             var original = _fixture
                            .Build<SealedNestedObject>()
@@ -60,7 +60,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
             var clone = original.DeepClone();
 
-            Array.Sort(original, AbstractProperties.Comparer);
+            Array.Sort(original, AbstractMembers.Comparer);
             Array.Sort(clone, _comparer);
 
             original.ShouldBeSameOrder(clone);
@@ -68,7 +68,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 
-        private readonly IComparer<AbstractProperties> _comparer =
+        private readonly IComparer<AbstractMembers> _comparer =
             new ComparersBuilder()
                 .DefineDefaultConfiguration(new ComparerSettings
                 {
@@ -88,7 +88,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                         nameof(SealedNestedObject.Text)
                     }
                 })
-                .For<AbstractProperties>()
+                .For<AbstractMembers>()
                 .GetComparer();
     }
 }

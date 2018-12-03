@@ -4,17 +4,19 @@ using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
-    public class AbstractProperties
+    public class AbstractMembers
     {
-        public static IComparer<AbstractProperties> Comparer { get; } = new AbstractPropertiesRelationalComparer();
-        public AbstractNestedObject AbstractProperty { get; set; }
-        public INestedObject InterfaceProperty { get; set; }
-        public BaseNestedObject NotSealedProperty { get; set; }
-        public object ObjectProperty { get; set; }
+        public INestedObject InterfaceField;
+        public object ObjectField;
 
-        private sealed class AbstractPropertiesRelationalComparer : IComparer<AbstractProperties>
+        public static IComparer<AbstractMembers> Comparer { get; } = new RelationalComparer();
+        
+        public AbstractNestedObject AbstractProperty { get; set; }
+        public BaseNestedObject NotSealedProperty { get; set; }
+
+        private sealed class RelationalComparer : IComparer<AbstractMembers>
         {
-            public int Compare(AbstractProperties x, AbstractProperties y)
+            public int Compare(AbstractMembers x, AbstractMembers y)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -37,7 +39,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return abstractPropertyComparison;
                 }
 
-                var interfacePropertyComparison = Comparer<INestedObject>.Default.Compare(x.InterfaceProperty, y.InterfaceProperty);
+                var interfacePropertyComparison = Comparer<INestedObject>.Default.Compare(x.InterfaceField, y.InterfaceField);
                 if (interfacePropertyComparison != 0)
                 {
                     return interfacePropertyComparison;
@@ -49,9 +51,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return compare;
                 }
 
-                if (x.ObjectProperty == null)
+                if (x.ObjectField == null)
                 {
-                    if (y.ObjectProperty == null)
+                    if (y.ObjectField == null)
                     {
                         return 0;
                     }
@@ -59,15 +61,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return -1;
                 }
 
-                if (y.ObjectProperty == null)
+                if (y.ObjectField == null)
                 {
                     return 1;
                 }
 
-                if (x.ObjectProperty is IComparable comparable
-                    && y.ObjectProperty.GetType() == x.ObjectProperty.GetType())
+                if (x.ObjectField is IComparable comparable
+                    && y.ObjectField.GetType() == x.ObjectField.GetType())
                 {
-                    return comparable.CompareTo(y.ObjectProperty);
+                    return comparable.CompareTo(y.ObjectField);
                 }
 
                 throw new InvalidOperationException("ObjectProperty is not comparable.");
