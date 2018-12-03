@@ -1,7 +1,7 @@
 ﻿using System;
 using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
+namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 {
     public class BaseNestedObject : AbstractNestedObject
     {

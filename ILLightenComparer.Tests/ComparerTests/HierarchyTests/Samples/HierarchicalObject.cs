@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {

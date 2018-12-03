@@ -4,6 +4,7 @@ using System.Linq;
 using AutoFixture;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
+using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
