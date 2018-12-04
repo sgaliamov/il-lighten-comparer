@@ -10,3 +10,9 @@
 1. Configurations collection is *ConcurrentDictionary* because while one thread may build a type, another can try to update the collection.
 1. *ComparersBuilder* does not use *Lazy* to cache instances because creation is relatively cheap. But *Context* uses it because the code emission is slow.
 1. *GetCompareToMethod* will not support typeless *IComparable*.
+
+## Cycle detection
+
+1. Use *HashSet* instead *ObjectIDGenerator* to detect member cycles because users may want to override the way how to compare a member.
+1. Check for *null* before add to a cycle detections set because *null* is kind a value and should be compared on a next iteration.
+1. We need two separate sets to be able to go as deep as we can to behave same way when we don't have a cycle.

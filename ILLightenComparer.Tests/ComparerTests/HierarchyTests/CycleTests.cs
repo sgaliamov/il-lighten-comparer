@@ -106,6 +106,20 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
+        public void Opened_Class_Comparer_Uses_Context_Compare_Method()
+        {
+            var one = _fixture.Create<SelfOpened>();
+            one.Self = one;
+            var other = _fixture.Create<SelfOpened>();
+            other.Self = other;
+
+            var expected = one.Value.CompareTo(other.Value);
+            var actual = ComparerSelfOpened.Compare(one, other);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
         public void Self_Sealed_Comparison_Should_Not_Fail()
         {
             var one = new SelfSealed();
@@ -142,6 +156,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                         IgnoredMembers = new[] { nameof(SelfSealed.Id) }
                     })
                     .GetComparer();
+
+        private IComparer<SelfOpened> ComparerSelfOpened =>
+            _builder.For<SelfOpened>().GetComparer();
 
         //private IComparer<OneSealed> ComparerOneSealed =>
         //    _builder.For<OneSealed>()
