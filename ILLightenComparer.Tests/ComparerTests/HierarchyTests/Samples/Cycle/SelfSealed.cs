@@ -1,21 +1,18 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
 {
     public sealed class SelfSealed
     {
-        private static int _counter;
-
-        public SelfSealed Self;
-
-        public SelfSealed() => Id = Interlocked.Increment(ref _counter);
+        public SelfSealed First;
 
         public static RelationalComparer Comparer { get; } = new RelationalComparer();
 
-        public int Id { get; }
+        public SelfSealed Second { get; set; }
+        public int Value { get; set; }
 
-        public override string ToString() => Id.ToString();
+        public override string ToString() => this.GetObjectId().ToString();
 
         public sealed class RelationalComparer : IComparer<SelfSealed>
         {
@@ -24,10 +21,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
                 var setX = new HashSet<object> { x };
                 var setY = new HashSet<object> { y };
 
-                return Compare(setX, setY, x, y);
+                return Compare(x, y, setX, setY);
             }
 
-            private static int Compare(ISet<object> setX, ISet<object> setY, SelfSealed x, SelfSealed y)
+            private static int Compare(SelfSealed x, SelfSealed y, ISet<object> xSet, ISet<object> ySet)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -44,30 +41,48 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
                     return -1;
                 }
 
-                if (!setX.Contains(x.Self) || !setY.Contains(y.Self))
+                var compareFirst = TryCompare(x.First, y.First, xSet, ySet);
+                if (compareFirst != 0)
                 {
-                    if (x.Self != null)
-                    {
-                        setX.Add(x.Self);
-                    }
-
-                    if (y.Self != null)
-                    {
-                        setY.Add(y.Self);
-                    }
-
-                    var compare = Compare(setX, setY, x.Self, y.Self);
-                    
-                    setX.Remove(x.Self);
-                    setY.Remove(y.Self);
-
-                    if (compare != 0)
-                    {
-                        return compare;
-                    }
+                    return compareFirst;
                 }
 
-                return x.Id.CompareTo(y.Id);
+                var compareSecond = TryCompare(x.Second, y.Second, xSet, ySet);
+                if (compareSecond != 0)
+                {
+                    return compareSecond;
+                }
+
+                var compareValue = x.Value.CompareTo(y.Value);
+                if (compareValue != 0)
+                {
+                    return compareValue;
+                }
+
+                return xSet.Count - ySet.Count;
+            }
+
+            private static int TryCompare(
+                SelfSealed x,
+                SelfSealed y,
+                ISet<object> xSet,
+                ISet<object> ySet)
+            {
+                if (xSet.Contains(x) && ySet.Contains(y))
+                {
+                    return 0;
+                }
+
+                xSet.Add(x);
+                ySet.Add(y);
+
+                var compare = Compare(x, y, xSet, ySet);
+
+                xSet.Remove(x);
+                ySet.Remove(y);
+
+                return compare;
+
             }
         }
     }

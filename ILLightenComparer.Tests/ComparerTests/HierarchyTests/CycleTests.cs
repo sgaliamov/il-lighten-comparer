@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Collections.Generic;
+using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle;
@@ -9,44 +10,97 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public class CycleTests
     {
-        [Fact]
-        public void Nested_Sealed_Should_Not_Fail()
+        [Fact(Skip = "Not implemented yet")]
+        public void Cycle_In_Struct()
         {
-            var one = _fixture.Create<OneSealed>();
-
-            var other = _fixture.Create<AnotherSealed>();
-
-            //var comparer = _builder.GetComparer<SelfSealed>();
+            var nestedObject = new ObjectWithCycledStruct
+            {
+                Value = new CycledStruct
+                {
+                    Object = new ObjectWithCycledStruct()
+                }
+            };
+            var cycledStruct = new CycledStruct
+            {
+                Object = nestedObject
+            };
+            nestedObject.Value.Object.Value = cycledStruct;
 
             //var expected = SelfSealed.Comparer.Compare(one, other);
-            //var actual = comparer.Compare(one, other);
+            //var actual = ComparerSelfSealed.Compare(one, other);
 
             //actual.Should().Be(expected);
         }
 
         [Fact]
-        public void Self_Sealed_Should_Not_Fail()
+        public void Detects_Cycle_On_Second_Loop()
         {
             var one = new SelfSealed();
-            one.Self = new SelfSealed
+            one.Second = new SelfSealed
             {
-                Self = new SelfSealed
+                First = one
+            };
+            var other = _fixture.Create<SelfSealed>();
+            other.Second = new SelfSealed
+            {
+                First = new SelfSealed()
+            };
+
+            var expected = SelfSealed.Comparer.Compare(one, other);
+            var actual = ComparerSelfSealed.Compare(one, other);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact(Skip = "Not implemented yet")]
+        public void Nested_Sealed_Comparison_Should_Not_Fail()
+        {
+            var one = _fixture.Create<OneSealed>();
+
+            var other = _fixture.Create<OneSealed>();
+
+            //var expected = OneSealed.Comparer.Compare(one, other);
+            //var actual = ComparerOneSealed.Compare(one, other);
+
+            //actual.Should().Be(expected);
+        }
+
+        [Fact(Skip = "Not implemented yet")]
+        public void Not_Cycle_When_Second_Property_Is_Same()
+        {
+            var other = new SelfSealed
+            {
+                First = new SelfSealed(),
+                Second = new SelfSealed()
+            };
+            var one = new SelfSealed
+            {
+                First = other,
+                Second = other
+            };
+
+            var expected = SelfSealed.Comparer.Compare(one, other);
+            var actual = ComparerSelfSealed.Compare(one, other);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void Self_Sealed_Comparison_Should_Not_Fail()
+        {
+            var one = new SelfSealed();
+            one.First = new SelfSealed
+            {
+                First = new SelfSealed
                 {
-                    Self = one
+                    First = one
                 }
             };
             var other = _fixture.Create<SelfSealed>();
-            other.Self = one;
-
-            SelfSealed.Comparer.Compare(one, one.DeepClone()).Should().Be(0);
+            other.First = one;
 
             var expected = SelfSealed.Comparer.Compare(one, other);
-
-            var comparer = _builder
-                           .For<SelfSealed>()
-                           .GetComparer();
-
-            var actual = comparer.Compare(one, other);
+            var actual = ComparerSelfSealed.Compare(one, other);
 
             actual.Should().Be(expected);
         }
@@ -60,5 +114,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     IncludeFields = true,
                     DetectCycles = true
                 });
+
+        private IComparer<SelfSealed> ComparerSelfSealed =>
+            _builder.For<SelfSealed>()
+                    .DefineConfiguration(new ComparerSettings())
+                    .GetComparer();
+
+        private IComparer<OneSealed> ComparerOneSealed =>
+            _builder.For<OneSealed>()
+                    .DefineConfiguration(new ComparerSettings())
+                    .GetComparer();
     }
 }

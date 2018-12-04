@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using FluentAssertions;
 
 namespace ILLightenComparer.Tests.Utilities
 {
     internal static class Extensions
     {
-        private static readonly ConditionalWeakTable<object, object> VisitedObjects =
+        private static int _counter;
+
+        private static readonly ConditionalWeakTable<object, object> ObjectIds =
             new ConditionalWeakTable<object, object>();
 
         public static bool IsNullable(this Type type) =>
@@ -57,14 +60,9 @@ namespace ILLightenComparer.Tests.Utilities
             return value;
         }
 
-        public static bool NotVisited<T>(this T obj) where T : class
+        public static int GetObjectId<T>(this T target) where T : class
         {
-            return VisitedObjects.GetValue(obj, _ => null) == null;
-        }
-
-        public static void SetProcessing<T>(this T obj, bool value) where T : class
-        {
-            VisitedObjects.AddOrUpdate(obj, value ? new object() : null);
+            return (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
         }
     }
 }
