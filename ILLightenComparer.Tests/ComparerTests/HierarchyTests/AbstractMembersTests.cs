@@ -95,17 +95,24 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Replaced_Member_Does_Not_Break_Comparison()
         {
+            void Warmup(AbstractMembers obj) => _comparer.Compare(obj, obj.DeepClone()).Should().Be(0);
+
             var one = new AbstractMembers
             {
                 NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
+            Warmup(one);
 
-            _comparer.Compare(one, one.DeepClone()).Should().Be(0);
+            one.NotSealedProperty = _fixture.Create<AnotherNestedObject>();
+            var other = new AbstractMembers
+            {
+                NotSealedProperty = _fixture.Create<AnotherNestedObject>()
+            };
 
-            var anotherNestedObject = _fixture.Create<AnotherNestedObject>();
-            one.NotSealedProperty = anotherNestedObject;
+            var expected = AbstractMembers.Comparer.Compare(one, other);
+            var actual = _comparer.Compare(one, other);
 
-            _comparer.Compare(one, one.DeepClone()).Should().Be(0);
+            actual.Should().Be(expected);
         }
 
         [Fact]
