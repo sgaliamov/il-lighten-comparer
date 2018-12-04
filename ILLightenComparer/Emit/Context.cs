@@ -22,6 +22,7 @@ namespace ILLightenComparer.Emit
         // ReSharper disable once NotAccessedField.Local // todo: remove the comment
         private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
         private readonly ModuleBuilder _moduleBuilder;
+        private readonly ConcurrentStack<Type> _typesStack = new ConcurrentStack<Type>(); // todo: is stack enough?
 
         public Context(ModuleBuilder moduleBuilder, ConfigurationBuilder configurations)
         {
@@ -56,9 +57,14 @@ namespace ILLightenComparer.Emit
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
-            var compareMethod = GetStaticCompareMethod(xType);
+            return Compare(xType, x, y, hash);
+        }
 
-            if (typeof(T) != xType)
+        private int Compare<T>(Type type, T x, T y, HashSet<object> hash)
+        {
+            var compareMethod = GetStaticCompareMethod(type);
+
+            if (typeof(T) != type)
             {
                 // todo: benchmarks:
                 // - direct Invoke;
@@ -78,11 +84,23 @@ namespace ILLightenComparer.Emit
 
         public TypeInfo GetComparerType(Type objectType)
         {
+            if (_typesStack.TryPeek(out var peeked) && peeked == objectType)
+            {
+                return null;
+            }
+
+            _typesStack.Push(objectType);
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
-                type => new Lazy<TypeInfo>(() => _comparerTypeBuilder.Build(type)));
+                t => new Lazy<TypeInfo>(() => _comparerTypeBuilder.Build(t)));
 
-            return lazy.Value;
+            var comparerType = lazy.Value;
+            if (_typesStack.TryPop(out var type) && type == objectType)
+            {
+                return comparerType;
+            }
+
+            throw new InvalidOperationException("Context is not valid.");
         }
 
         public Configuration GetConfiguration(Type type) => _configurations.GetConfiguration(type);
@@ -91,7 +109,7 @@ namespace ILLightenComparer.Emit
         {
             var comparerType = GetComparerType(memberType);
 
-            return comparerType.GetMethod(
+            return comparerType?.GetMethod(
                 MethodName.Compare,
                 Method.StaticCompareMethodParameters(memberType));
         }

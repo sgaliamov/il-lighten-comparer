@@ -118,8 +118,10 @@ namespace ILLightenComparer.Emit.Emitters
             if (memberType.IsValueType || memberType.IsSealed)
             {
                 var compareMethod = _context.GetStaticCompareMethod(memberType);
-                return il.Call(compareMethod)
-                         .EmitReturnNotZero();
+                if (compareMethod != null)
+                {
+                    return il.Call(compareMethod).EmitReturnNotZero();
+                }
             }
 
             var contextCompare = Method.ContextCompare.MakeGenericMethod(memberType);

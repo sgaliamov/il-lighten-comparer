@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
-using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
@@ -10,7 +9,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public class CycleTests
     {
-        [Fact(Skip = "Not implemented yet")]
+        [Fact(Skip = "Implement structs comparison first.")]
         public void Cycle_In_Struct()
         {
             var nestedObject = new ObjectWithCycledStruct
@@ -120,9 +119,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     .DefineConfiguration(new ComparerSettings())
                     .GetComparer();
 
-        private IComparer<OneSealed> ComparerOneSealed =>
-            _builder.For<OneSealed>()
-                    .DefineConfiguration(new ComparerSettings())
-                    .GetComparer();
+        //private IComparer<OneSealed> ComparerOneSealed =>
+        //    _builder.For<OneSealed>()
+        //            .DefineConfiguration(new ComparerSettings())
+        //            .GetComparer();
     }
 }
