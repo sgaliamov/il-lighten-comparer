@@ -58,13 +58,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
                 ISet<object> xSet,
                 ISet<object> ySet)
             {
-                if (xSet.Contains(x) && ySet.Contains(y))
-                {
-                    return 0;
-                }
+                if (xSet.Contains(x) && ySet.Contains(y)) { return 0; }
 
-                xSet.Add(x);
-                ySet.Add(y);
+                if (x != null) { xSet.Add(x); }
+
+                if (y != null) { ySet.Add(y); }
 
                 return Compare(x, y, xSet, ySet);
             }
