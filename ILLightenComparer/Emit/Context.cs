@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
@@ -12,6 +13,7 @@ using ILLightenComparer.Emit.Reflection;
 namespace ILLightenComparer.Emit
 {
     using ComparerTypes = ConcurrentDictionary<Type, Lazy<TypeInfo>>;
+    using TypeHeap = ConcurrentDictionary<Type, byte>;
 
     internal sealed class Context : IContext
     {
@@ -19,10 +21,10 @@ namespace ILLightenComparer.Emit
         private readonly ComparerTypes _comparerTypes = new ComparerTypes();
         private readonly ConfigurationBuilder _configurations;
 
-        // ReSharper disable once NotAccessedField.Local // todo: remove the comment
+        // ReSharper disable once NotAccessedField.Local // todo: implement EqualityComparerTypeBuilder
         private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
         private readonly ModuleBuilder _moduleBuilder;
-        private readonly ConcurrentStack<Type> _typesStack = new ConcurrentStack<Type>(); // todo: is stack enough?
+        private readonly TypeHeap _typeHeap = new TypeHeap();
 
         public Context(ModuleBuilder moduleBuilder, ConfigurationBuilder configurations)
         {
@@ -56,21 +58,14 @@ namespace ILLightenComparer.Emit
 
         public TypeInfo GetComparerType(Type objectType)
         {
-            if (_typesStack.TryPeek(out var peeked) && peeked == objectType)
-            {
-                return null;
-            }
+            if (!_typeHeap.TryAdd(objectType, 0)) { return null; }
 
-            _typesStack.Push(objectType);
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
                 t => new Lazy<TypeInfo>(() => _comparerTypeBuilder.Build(t)));
 
             var comparerType = lazy.Value;
-            if (_typesStack.TryPop(out var type) && type == objectType)
-            {
-                return comparerType;
-            }
+            if (_typeHeap.TryRemove(objectType, out _)) { return comparerType; }
 
             throw new InvalidOperationException("Comparison context is not valid.");
         }
@@ -92,6 +87,7 @@ namespace ILLightenComparer.Emit
         private int Compare<T>(Type type, T x, T y, HashSet<object> hash)
         {
             var compareMethod = GetStaticCompareMethod(type);
+            Debug.Assert(compareMethod != null, "At this stage at least lazy compare method must exist.");
 
             if (typeof(T) != type)
             {

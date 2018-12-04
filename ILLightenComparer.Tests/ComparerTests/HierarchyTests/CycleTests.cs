@@ -1,14 +1,65 @@
 ﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
+using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle;
-using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public class CycleTests
     {
+        public CycleTests()
+        {
+            _fixture = new Fixture();
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+            var builder = new ComparersBuilder()
+                .DefineDefaultConfiguration(new ComparerSettings
+                {
+                    IncludeFields = true,
+                    DetectCycles = true
+                });
+
+            _comparerOneSealed = builder.For<OneSealed>().GetComparer();
+            _comparerSelfOpened = builder.For<SelfOpened>().GetComparer();
+            _comparerSelfSealed = builder.For<SelfSealed>()
+                                         .DefineConfiguration(new ComparerSettings
+                                         {
+                                             IgnoredMembers = new[] { nameof(SelfSealed.Id) }
+                                         })
+                                         .GetComparer();
+        }
+
+        [Fact]
+        public void Comparison_Should_Not_Fail_Because_Of_Generating_Comparers_For_Two_Dependent_Classes()
+        {
+            var one = _fixture.Create<OneSealed>();
+            var other = _fixture.Create<OneSealed>();
+            one.Another.One = one;
+            other.Another.One = other;
+
+            var expected = one.Value.CompareTo(other.Value);
+            var actual = _comparerOneSealed.Compare(one, other);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void Comparison_With_Cycle_On_Types_Level_Only()
+        {
+            var one = _fixture.Create<OneSealed>();
+            var other = one.DeepClone();
+            other.Value = (sbyte)(one.Value + 1);
+            one.Another.One = _fixture.Build<OneSealed>().Without(x => x.Another).Create();
+            other.Another.One = _fixture.Build<OneSealed>().Without(x => x.Another).Create();
+
+            var expected = one.Another.One.Value.CompareTo(other.Another.One.Value);
+            var actual = _comparerOneSealed.Compare(one, other);
+
+            actual.Should().Be(expected);
+        }
+
         [Fact]
         public void Cross_Reference_Should_Not_Fail()
         {
@@ -22,7 +73,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             other.Second = one;
 
             var expected = SelfSealed.Comparer.Compare(one, other);
-            var actual = ComparerSelfSealed.Compare(one, other);
+            var actual = _comparerSelfSealed.Compare(one, other);
 
             expected.Should().Be(0);
             actual.Should().Be(expected);
@@ -86,23 +137,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             */
 
             var expected = SelfSealed.Comparer.Compare(one, other);
-            var actual = ComparerSelfSealed.Compare(one, other);
+            var actual = _comparerSelfSealed.Compare(one, other);
 
             expected.Should().Be(1);
             actual.Should().Be(expected);
-        }
-
-        [Fact(Skip = "Not implemented yet")]
-        public void Nested_Sealed_Comparison_Should_Not_Fail()
-        {
-            var one = _fixture.Create<OneSealed>();
-
-            var other = _fixture.Create<OneSealed>();
-
-            //var expected = OneSealed.Comparer.Compare(one, other);
-            //var actual = ComparerOneSealed.Compare(one, other);
-
-            //actual.Should().Be(expected);
         }
 
         [Fact]
@@ -114,7 +152,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             other.Self = other;
 
             var expected = one.Value.CompareTo(other.Value);
-            var actual = ComparerSelfOpened.Compare(one, other);
+            var actual = _comparerSelfOpened.Compare(one, other);
 
             actual.Should().Be(expected);
         }
@@ -134,35 +172,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             other.First = one;
 
             var expected = SelfSealed.Comparer.Compare(one, other);
-            var actual = ComparerSelfSealed.Compare(one, other);
+            var actual = _comparerSelfSealed.Compare(one, other);
 
             actual.Should().Be(expected);
         }
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly Fixture _fixture;
 
-        private readonly IContextBuilder _builder =
-            new ComparersBuilder()
-                .DefineDefaultConfiguration(new ComparerSettings
-                {
-                    IncludeFields = true,
-                    DetectCycles = true
-                });
-
-        private IComparer<SelfSealed> ComparerSelfSealed =>
-            _builder.For<SelfSealed>()
-                    .DefineConfiguration(new ComparerSettings
-                    {
-                        IgnoredMembers = new[] { nameof(SelfSealed.Id) }
-                    })
-                    .GetComparer();
-
-        private IComparer<SelfOpened> ComparerSelfOpened =>
-            _builder.For<SelfOpened>().GetComparer();
-
-        //private IComparer<OneSealed> ComparerOneSealed =>
-        //    _builder.For<OneSealed>()
-        //            .DefineConfiguration(new ComparerSettings())
-        //            .GetComparer();
+        private readonly IComparer<SelfSealed> _comparerSelfSealed;
+        private readonly IComparer<SelfOpened> _comparerSelfOpened;
+        private readonly IComparer<OneSealed> _comparerOneSealed;
     }
 }
