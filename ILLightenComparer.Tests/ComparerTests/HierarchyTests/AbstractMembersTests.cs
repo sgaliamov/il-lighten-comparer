@@ -111,28 +111,22 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void When_Left_Member_Is_Null_Comparison_Produces_Negative_Value()
         {
-            var sealedNestedObject = _fixture.Create<BaseNestedObject>();
-
-            var one = new AbstractMembers
+            var one = new AbstractMembers();
+            var other = new AbstractMembers
             {
-                NotSealedProperty = sealedNestedObject
+                NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
 
-            var another = new AbstractMembers();
-
-            _comparer.Compare(another, one).Should().BeNegative();
+            _comparer.Compare(one, other).Should().BeNegative();
         }
 
         [Fact]
         public void When_Right_Member_Is_Null_Comparison_Produces_Positive_Value()
         {
-            var sealedNestedObject = _fixture.Create<BaseNestedObject>();
-
             var one = new AbstractMembers
             {
-                NotSealedProperty = sealedNestedObject
+                NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
-
             var another = new AbstractMembers();
 
             _comparer.Compare(one, another).Should().BePositive();

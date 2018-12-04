@@ -5,14 +5,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
 {
     public sealed class SelfSealed
     {
+        public readonly int Id;
         public SelfSealed First;
 
-        public static RelationalComparer Comparer { get; } = new RelationalComparer();
+        public SelfSealed() => Id = this.GetObjectId();
 
+        public static RelationalComparer Comparer { get; } = new RelationalComparer();
         public SelfSealed Second { get; set; }
         public int Value { get; set; }
 
-        public override string ToString() => this.GetObjectId().ToString();
+        public override string ToString() => Id.ToString();
 
         public sealed class RelationalComparer : IComparer<SelfSealed>
         {
@@ -22,30 +24,18 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
                 var setY = new HashSet<object>();
 
                 var compare = TryCompare(x, y, setX, setY);
-                if (compare != 0)
-                {
-                    return compare;
-                }
+                if (compare != 0) { return compare; }
 
                 return setX.Count - setY.Count;
             }
 
             private static int Compare(SelfSealed x, SelfSealed y, ISet<object> xSet, ISet<object> ySet)
             {
-                if (ReferenceEquals(x, y))
-                {
-                    return 0;
-                }
+                if (ReferenceEquals(x, y)) { return 0; }
 
-                if (ReferenceEquals(null, y))
-                {
-                    return 1;
-                }
+                if (ReferenceEquals(null, y)) { return 1; }
 
-                if (ReferenceEquals(null, x))
-                {
-                    return -1;
-                }
+                if (ReferenceEquals(null, x)) { return -1; }
 
                 var compareFirst = TryCompare(x.First, y.First, xSet, ySet);
                 if (compareFirst != 0)
@@ -54,16 +44,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
                 }
 
                 var compareSecond = TryCompare(x.Second, y.Second, xSet, ySet);
-                if (compareSecond != 0)
-                {
-                    return compareSecond;
-                }
+                if (compareSecond != 0) { return compareSecond; }
 
                 var compareValue = x.Value.CompareTo(y.Value);
-                if (compareValue != 0)
-                {
-                    return compareValue;
-                }
+                if (compareValue != 0) { return compareValue; }
 
                 return 0;
             }

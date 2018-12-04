@@ -58,6 +58,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             {
                 First = one
             };
+            /*
+                  1
+                 / \
+                N   2
+            cycle: / \
+                  1   N
+                 / \ 
+                N   2
+            */
+
             var other = new SelfSealed
             {
                 Second = new SelfSealed
@@ -65,11 +75,20 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     First = new SelfSealed()
                 }
             };
+            /*
+                  3
+                 / \
+                N   4
+                   / \
+                  5   N
+                 / \
+                N   N difference here: 2 > N
+            */
 
             var expected = SelfSealed.Comparer.Compare(one, other);
             var actual = ComparerSelfSealed.Compare(one, other);
 
-            expected.Should().Be(-1);
+            expected.Should().Be(1);
             actual.Should().Be(expected);
         }
 
@@ -118,7 +137,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         private IComparer<SelfSealed> ComparerSelfSealed =>
             _builder.For<SelfSealed>()
-                    .DefineConfiguration(new ComparerSettings())
+                    .DefineConfiguration(new ComparerSettings
+                    {
+                        IgnoredMembers = new[] { nameof(SelfSealed.Id) }
+                    })
                     .GetComparer();
 
         //private IComparer<OneSealed> ComparerOneSealed =>
