@@ -37,18 +37,12 @@ namespace ILLightenComparer.Emit
         {
             if (x == null)
             {
-                if (y == null)
-                {
-                    return 0;
-                }
+                if (y == null) { return 0; }
 
                 return -1;
             }
 
-            if (y == null)
-            {
-                return 1;
-            }
+            if (y == null) { return 1; }
 
             var xType = x.GetType(); // todo: test with structs
             var yType = y.GetType();
@@ -59,6 +53,41 @@ namespace ILLightenComparer.Emit
 
             return Compare(xType, x, y, hash);
         }
+
+        public TypeInfo GetComparerType(Type objectType)
+        {
+            if (_typesStack.TryPeek(out var peeked) && peeked == objectType)
+            {
+                return null;
+            }
+
+            _typesStack.Push(objectType);
+            var lazy = _comparerTypes.GetOrAdd(
+                objectType,
+                t => new Lazy<TypeInfo>(() => _comparerTypeBuilder.Build(t)));
+
+            var comparerType = lazy.Value;
+            if (_typesStack.TryPop(out var type) && type == objectType)
+            {
+                return comparerType;
+            }
+
+            throw new InvalidOperationException("Comparison context is not valid.");
+        }
+
+        public Configuration GetConfiguration(Type type) => _configurations.GetConfiguration(type);
+
+        public MethodInfo GetStaticCompareMethod(Type memberType)
+        {
+            var comparerType = GetComparerType(memberType);
+
+            return comparerType?.GetMethod(
+                MethodName.Compare,
+                Method.StaticCompareMethodParameters(memberType));
+        }
+
+        public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
+            _moduleBuilder.DefineType(name, interfaceTypes);
 
         private int Compare<T>(Type type, T x, T y, HashSet<object> hash)
         {
@@ -81,41 +110,6 @@ namespace ILLightenComparer.Emit
 
             return compare(this, x, y, hash);
         }
-
-        public TypeInfo GetComparerType(Type objectType)
-        {
-            if (_typesStack.TryPeek(out var peeked) && peeked == objectType)
-            {
-                return null;
-            }
-
-            _typesStack.Push(objectType);
-            var lazy = _comparerTypes.GetOrAdd(
-                objectType,
-                t => new Lazy<TypeInfo>(() => _comparerTypeBuilder.Build(t)));
-
-            var comparerType = lazy.Value;
-            if (_typesStack.TryPop(out var type) && type == objectType)
-            {
-                return comparerType;
-            }
-
-            throw new InvalidOperationException("Context is not valid.");
-        }
-
-        public Configuration GetConfiguration(Type type) => _configurations.GetConfiguration(type);
-
-        public MethodInfo GetStaticCompareMethod(Type memberType)
-        {
-            var comparerType = GetComparerType(memberType);
-
-            return comparerType?.GetMethod(
-                MethodName.Compare,
-                Method.StaticCompareMethodParameters(memberType));
-        }
-
-        public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
-            _moduleBuilder.DefineType(name, interfaceTypes);
 
         private static ComparerTypeBuilder CreateComparerTypeBuilder(Context context)
         {

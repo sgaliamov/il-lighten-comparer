@@ -82,7 +82,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
                 ySet.Remove(y);
 
                 return compare;
-
             }
         }
     }
