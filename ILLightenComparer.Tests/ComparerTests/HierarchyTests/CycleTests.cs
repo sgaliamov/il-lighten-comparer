@@ -9,6 +9,25 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public class CycleTests
     {
+        [Fact]
+        public void Cross_Reference_Should_Not_Fail()
+        {
+            var other = new SelfSealed();
+            var one = new SelfSealed
+            {
+                First = other,
+                Second = other
+            };
+            other.First = one;
+            other.Second = one;
+
+            var expected = SelfSealed.Comparer.Compare(one, other);
+            var actual = ComparerSelfSealed.Compare(one, other);
+
+            expected.Should().Be(0);
+            actual.Should().Be(expected);
+        }
+
         [Fact(Skip = "Implement structs comparison first.")]
         public void Cycle_In_Struct()
         {
@@ -32,22 +51,25 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Detects_Cycle_On_Second_Loop()
+        public void Detects_Cycle_On_Second_Member_Loop()
         {
             var one = new SelfSealed();
             one.Second = new SelfSealed
             {
                 First = one
             };
-            var other = _fixture.Create<SelfSealed>();
-            other.Second = new SelfSealed
+            var other = new SelfSealed
             {
-                First = new SelfSealed()
+                Second = new SelfSealed
+                {
+                    First = new SelfSealed()
+                }
             };
 
             var expected = SelfSealed.Comparer.Compare(one, other);
             var actual = ComparerSelfSealed.Compare(one, other);
 
+            expected.Should().Be(-1);
             actual.Should().Be(expected);
         }
 
@@ -62,26 +84,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             //var actual = ComparerOneSealed.Compare(one, other);
 
             //actual.Should().Be(expected);
-        }
-
-        [Fact(Skip = "Not implemented yet")]
-        public void Not_Cycle_When_Second_Property_Is_Same()
-        {
-            var other = new SelfSealed
-            {
-                First = new SelfSealed(),
-                Second = new SelfSealed()
-            };
-            var one = new SelfSealed
-            {
-                First = other,
-                Second = other
-            };
-
-            var expected = SelfSealed.Comparer.Compare(one, other);
-            var actual = ComparerSelfSealed.Compare(one, other);
-
-            actual.Should().Be(expected);
         }
 
         [Fact]

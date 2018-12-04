@@ -18,10 +18,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
         {
             public int Compare(SelfSealed x, SelfSealed y)
             {
-                var setX = new HashSet<object> { x };
-                var setY = new HashSet<object> { y };
+                var setX = new HashSet<object>();
+                var setY = new HashSet<object>();
 
-                return Compare(x, y, setX, setY);
+                var compare = TryCompare(x, y, setX, setY);
+                if (compare != 0)
+                {
+                    return compare;
+                }
+
+                return setX.Count - setY.Count;
             }
 
             private static int Compare(SelfSealed x, SelfSealed y, ISet<object> xSet, ISet<object> ySet)
@@ -59,7 +65,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
                     return compareValue;
                 }
 
-                return xSet.Count - ySet.Count;
+                return 0;
             }
 
             private static int TryCompare(
@@ -76,12 +82,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
                 xSet.Add(x);
                 ySet.Add(y);
 
-                var compare = Compare(x, y, xSet, ySet);
-
-                xSet.Remove(x);
-                ySet.Remove(y);
-
-                return compare;
+                return Compare(x, y, xSet, ySet);
             }
         }
     }
