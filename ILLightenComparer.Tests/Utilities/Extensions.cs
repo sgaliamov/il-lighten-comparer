@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using FluentAssertions;
 
 namespace ILLightenComparer.Tests.Utilities
 {
     internal static class Extensions
     {
+        private static readonly ConditionalWeakTable<object, object> VisitedObjects =
+            new ConditionalWeakTable<object, object>();
+
         public static bool IsNullable(this Type type) =>
             type.IsValueType
             && type.IsGenericType
@@ -51,6 +55,16 @@ namespace ILLightenComparer.Tests.Utilities
             }
 
             return value;
+        }
+
+        public static bool NotVisited<T>(this T obj) where T : class
+        {
+            return VisitedObjects.GetValue(obj, _ => null) == null;
+        }
+
+        public static void SetProcessing<T>(this T obj, bool value) where T : class
+        {
+            VisitedObjects.AddOrUpdate(obj, value ? new object() : null);
         }
     }
 }
