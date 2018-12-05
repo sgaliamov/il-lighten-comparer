@@ -36,7 +36,7 @@
 - [x] object type member comparison
 - [x] test when abstract class or not sealed is replaced after a comparer is created
 - [x] multi-threading for `GetComparerType` method
-- [ ] detect cycles for objects
+- [x] detect cycles for objects
 - [ ] detect cycles for nested objects in structs
 - [ ] compare nullable complex structs
 - [ ] nested structure

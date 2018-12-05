@@ -1,11 +1,12 @@
 # IL Lighten Comparer
 
-**ILLightenComparer** is a library that can generate implementation for *IComparer\<T\>*, *IComparer*, *IEqualityComparer\<T\>* and *IEqualityComparer* on runtime using advantages of IL code emission.
+**ILLightenComparer** is a library that can generate implementation for `IComparer\<T\>`, `IComparer`, `IEqualityComparer\<T\>` and `IEqualityComparer` on runtime using advantages of IL code emission.
 
 ## Features
 
 * High performance.
 * Support for complex classes and structures.
+* Configurable.
 * Cycle detection.
 * Collections comparison.
 * 100% code coverage.
@@ -28,7 +29,7 @@ Frequency=2531248 Hz, Resolution=395.0620 ns, Timer=TSC
 | Native_Comparer | 343.2 us | 3.218 us | 2.853 us | 343.7 us |  1.00 |    2 |
 ```
 
-## Limitations
+## Remarks
 
 * *protected* and *private* members are ignored during comparison.
 

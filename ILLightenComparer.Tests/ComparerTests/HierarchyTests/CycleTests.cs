@@ -144,21 +144,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Opened_Class_Comparer_Uses_Context_Compare_Method()
-        {
-            var one = _fixture.Create<SelfOpened>();
-            one.Self = one;
-            var other = _fixture.Create<SelfOpened>();
-            other.Self = other;
-
-            var expected = one.Value.CompareTo(other.Value);
-            var actual = _comparerSelfOpened.Compare(one, other);
-
-            actual.Should().Be(expected);
-        }
-
-        [Fact]
-        public void Self_Sealed_Comparison_Should_Not_Fail()
+        public void Object_With_Bigger_Cycle_Is_Bigger()
         {
             var one = new SelfSealed();
             one.First = new SelfSealed
@@ -168,11 +154,24 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     First = one
                 }
             };
-            var other = _fixture.Create<SelfSealed>();
-            other.First = one;
+            var other = new SelfSealed { First = one };
 
             var expected = SelfSealed.Comparer.Compare(one, other);
             var actual = _comparerSelfSealed.Compare(one, other);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void Opened_Class_Comparer_Uses_Context_Compare_Method()
+        {
+            var one = _fixture.Create<SelfOpened>();
+            one.Self = one;
+            var other = _fixture.Create<SelfOpened>();
+            other.Self = other;
+
+            var expected = one.Value.CompareTo(other.Value);
+            var actual = _comparerSelfOpened.Compare(one, other);
 
             actual.Should().Be(expected);
         }
