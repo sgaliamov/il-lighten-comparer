@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 {
     public sealed class CycledStructObject
     {
+        public readonly int Id;
         public CycledStruct FirstStruct;
         public string Text;
+
+        public CycledStructObject() => Id = this.GetObjectId();
         public static IComparer<CycledStructObject> Comparer { get; } = new RelationalComparer();
+        
         public CycledStruct SecondStruct { get; set; } // todo: test with nullable
+        
+        public override string ToString() => Id.ToString();
 
         public sealed class RelationalComparer : IComparer<CycledStructObject>
         {

@@ -80,7 +80,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Detects_Cycle_On_Second_Member_Loop()
+        public void Detects_Cycle_On_Second_Member()
         {
             var one = new SelfSealed();
             one.Second = new SelfSealed
