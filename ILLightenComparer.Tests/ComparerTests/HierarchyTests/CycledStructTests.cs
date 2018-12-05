@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoFixture;
+using FluentAssertions;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled;
 using Xunit;
 
@@ -26,23 +27,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Cycle_In_Struct()
         {
-            var nestedObject = new CycledStructObject
-            {
-                Value = new CycledStruct
-                {
-                    Object = new CycledStructObject()
-                }
-            };
-            var cycledStruct = new CycledStruct
-            {
-                Object = nestedObject
-            };
-            nestedObject.Value.Object.Value = cycledStruct;
+            var one = new CycledStruct();
+            var other = new CycledStruct();
 
-            //var expected = SelfSealed.Comparer.Compare(one, other);
-            //var actual = ComparerSelfSealed.Compare(one, other);
+            var expected = CycledStruct.Comparer.Compare(one, other);
+            var actual = _comparerStruct.Compare(one, other);
 
-            //actual.Should().Be(expected);
+            actual.Should().Be(expected);
         }
 
         private readonly Fixture _fixture;

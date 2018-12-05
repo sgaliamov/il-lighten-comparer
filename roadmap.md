@@ -80,6 +80,7 @@
 ## Phase 6
 
 - [x] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
+- [ ] compare `IntPtr`
 - [ ] setup CI/CD
 - [ ] add documentation comments
 - [ ] prepare presentation
