@@ -53,6 +53,11 @@ namespace ILLightenComparer.Emit
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
+            if (xSet.Contains(x) && ySet.Contains(y)) { return 0; }
+
+            xSet.Add(x);
+            ySet.Add(y);
+
             return Compare(xType, x, y, xSet, ySet);
         }
 

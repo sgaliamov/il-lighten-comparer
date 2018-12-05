@@ -22,7 +22,7 @@
 - [x] fixture generates Max and Min values
 - [X] fixture generates nulls
 - [x] compare nullable
-- [x] ~~normalize result to -1, 0. 1~~ - no need to do it
+- [x] ~~normalize result to -1, 0, 1~~ - no need to do it
 - [x] ~~try to implement auto visitor~~ - moved to a separate project, to mush extra complexity
 
 ## Phase 2 Hierarchical objects
@@ -30,12 +30,12 @@
 - [x] FlattenHierarchy
 - [x] nested members sort configuration
 - [x] compare fields
-- [x] use existing *CompareTo* method
+- [x] use existing `CompareTo` method
 - [x] nested object
 - [x] abstract member comparison
 - [x] object type member comparison
 - [x] test when abstract class or not sealed is replaced after a comparer is created
-- [x] multi-threading for GetComparerType method
+- [x] multi-threading for `GetComparerType` method
 - [ ] detect cycles for objects
 - [ ] detect cycles for nested objects in structs
 - [ ] compare nullable complex structs
@@ -43,8 +43,8 @@
 
 ## Phase 3 Collections
 
-- [ ] compare collection, do not iterate IEnumerable
-- [ ] IgnoreCollectionOrder setting
+- [ ] compare collection, do not iterate `IEnumerable`
+- [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
 
 ## Phase 4 Settings
@@ -57,7 +57,8 @@
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
 - [ ] customization setting to override comparer with specific implementation
-- [ ] ignore existing *IComparable* implementation
+- [ ] ignore existing `IComparable` implementation
+- [ ] use `DetectCycles` setting
 - [ ] compare references and the end?
 - [ ] how to rebuild after set new configuration?
 - [ ] include protected (BindingFlags.NonPublic)?
@@ -68,10 +69,11 @@
 - [x] caching for assembly
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
-- [ ] create unified interface *IComparer<>: IComparer<>, IComparer*
-- [ ] cache instances by type and configuration in *Context.GetComparerType*
+- [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
+- [ ] cache instances by type and configuration in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
-- [ ] change behavior then types are not matched but castable.
+- [ ] change behavior then types are not matched but castable
+- [ ] do reference comparison only once in case sealed classes with cycle
 - [ ] test class with more than 256 properties?
 - [ ] support internal classes to compare?
 

@@ -14,7 +14,7 @@ namespace ILLightenComparer.Config
             false,
             new string[0],
             StringComparison.Ordinal,
-            false);
+            true);
 
         public void DefineConfiguration(Type type, ComparerSettings settings)
         {
