@@ -7,9 +7,9 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
-    public class CycleTests
+    public class CycledObjectsTests
     {
-        public CycleTests()
+        public CycledObjectsTests()
         {
             _fixture = new Fixture();
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
@@ -77,28 +77,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
             expected.Should().Be(0);
             actual.Should().Be(expected);
-        }
-
-        [Fact(Skip = "Implement structs comparison first.")]
-        public void Cycle_In_Struct()
-        {
-            var nestedObject = new ObjectWithCycledStruct
-            {
-                Value = new CycledStruct
-                {
-                    Object = new ObjectWithCycledStruct()
-                }
-            };
-            var cycledStruct = new CycledStruct
-            {
-                Object = nestedObject
-            };
-            nestedObject.Value.Object.Value = cycledStruct;
-
-            //var expected = SelfSealed.Comparer.Compare(one, other);
-            //var actual = ComparerSelfSealed.Compare(one, other);
-
-            //actual.Should().Be(expected);
         }
 
         [Fact]
@@ -177,7 +155,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         private readonly Fixture _fixture;
-
         private readonly IComparer<SelfSealed> _comparerSelfSealed;
         private readonly IComparer<SelfOpened> _comparerSelfOpened;
         private readonly IComparer<OneSealed> _comparerOneSealed;

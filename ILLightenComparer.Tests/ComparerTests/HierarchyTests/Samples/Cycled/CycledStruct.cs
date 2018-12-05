@@ -1,12 +1,12 @@
 ﻿namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 {
-    public sealed class ObjectWithCycledStruct
+    public sealed class CycledStructObject
     {
-        public CycledStruct Value { get; set; }
+        public CycledStruct Value { get; set; } // todo: test with nullable
     }
 
     public struct CycledStruct
     {
-        public ObjectWithCycledStruct Object { get; set; }
+        public CycledStructObject Object { get; set; }
     }
 }
