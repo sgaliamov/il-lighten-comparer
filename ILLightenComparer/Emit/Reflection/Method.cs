@@ -6,7 +6,12 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal static class Method
     {
-        public delegate int StaticMethodDelegate<in T>(IContext context, T x, T y, HashSet<object> hash);
+        public delegate int StaticMethodDelegate<in T>(
+            IContext context,
+            T x,
+            T y,
+            HashSet<object> xSet,
+            HashSet<object> ySet);
 
         public static readonly MethodInfo StringCompare = typeof(string).GetMethod(
             nameof(string.Compare),
@@ -23,6 +28,7 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(IContext),
             objectType,
             objectType,
+            typeof(HashSet<object>),
             typeof(HashSet<object>)
         };
     }

@@ -174,9 +174,10 @@ namespace ILLightenComparer.Emit
                   .EmitCast(objectType)
                   .LoadArgument(2)
                   .EmitCast(objectType)
+                  .Emit(OpCodes.Newobj, Method.HashSetConstructor) // todo: do not emit hash set if cycle detection is disabled
                   .Emit(OpCodes.Newobj, Method.HashSetConstructor)
                   .Call(staticCompareMethod)
-                  .Emit(OpCodes.Ret);
+                  .Emit(OpCodes.Ret); // todo: return hash sets difference?
             }
         }
 
@@ -194,6 +195,7 @@ namespace ILLightenComparer.Emit
                   .Emit(OpCodes.Ldfld, contextField)
                   .LoadArgument(1)
                   .LoadArgument(2)
+                  .Emit(OpCodes.Newobj, Method.HashSetConstructor)
                   .Emit(OpCodes.Newobj, Method.HashSetConstructor)
                   .Call(staticCompareMethod)
                   .Emit(OpCodes.Ret);

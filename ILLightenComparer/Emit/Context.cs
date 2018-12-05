@@ -35,7 +35,7 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: cache delegates and benchmark ways
-        public int Compare<T>(T x, T y, HashSet<object> hash)
+        public int Compare<T>(T x, T y, HashSet<object> xSet, HashSet<object> ySet)
         {
             if (x == null)
             {
@@ -53,7 +53,7 @@ namespace ILLightenComparer.Emit
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
-            return Compare(xType, x, y, hash);
+            return Compare(xType, x, y, xSet, ySet);
         }
 
         public TypeInfo GetComparerType(Type objectType)
@@ -83,7 +83,7 @@ namespace ILLightenComparer.Emit
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
             _moduleBuilder.DefineType(name, interfaceTypes);
 
-        private int Compare<T>(Type type, T x, T y, HashSet<object> hash)
+        private int Compare<T>(Type type, T x, T y, HashSet<object> xSet, HashSet<object> ySet)
         {
             var compareMethod = EnsureStaticCompareMethod(type);
 
@@ -97,12 +97,12 @@ namespace ILLightenComparer.Emit
                 // return (int)@delegate.DynamicInvoke(this, x, y, hash);
                 // - DynamicMethod;
                 // - generate static class wrapper.
-                return (int)compareMethod.Invoke(null, new object[] { this, x, y, hash });
+                return (int)compareMethod.Invoke(null, new object[] { this, x, y, xSet, ySet });
             }
 
             var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
 
-            return compare(this, x, y, hash);
+            return compare(this, x, y, xSet, ySet);
         }
 
         private MethodInfo EnsureStaticCompareMethod(Type type)
@@ -149,6 +149,6 @@ namespace ILLightenComparer.Emit
 
     public interface IContext
     {
-        int Compare<T>(T x, T y, HashSet<object> hash);
+        int Compare<T>(T x, T y, HashSet<object> xSet, HashSet<object> ySet);
     }
 }

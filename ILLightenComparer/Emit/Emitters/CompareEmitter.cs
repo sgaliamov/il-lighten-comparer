@@ -68,7 +68,8 @@ namespace ILLightenComparer.Emit.Emitters
             il.LoadArgument(0)
               .LoadAddress(n1)
               .LoadAddress(n2)
-              .LoadArgument(3);
+              .LoadArgument(3)
+              .LoadArgument(4);
 
             return CompareComplex(il, memberType);
         }
@@ -88,7 +89,8 @@ namespace ILLightenComparer.Emit.Emitters
             var memberType = member.MemberType;
 
             member.LoadMembers(_stackEmitter, il.LoadArgument(0))
-                  .LoadArgument(3);
+                  .LoadArgument(3)
+                  .LoadArgument(4);
 
             return CompareComplex(il, memberType);
         }
