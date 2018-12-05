@@ -109,14 +109,16 @@ namespace ILLightenComparer.Emit
         private MethodInfo EnsureStaticCompareMethod(Type type)
         {
             // todo: find smart way to ensure compare method exists
-            MethodInfo compareMethod = null;
-            while (compareMethod == null)
+            while (true)
             {
-                compareMethod = GetStaticCompareMethod(type);
+                var compareMethod = GetStaticCompareMethod(type);
+                if (compareMethod != null)
+                {
+                    return compareMethod;
+                }
+
                 Thread.Yield();
             }
-
-            return compareMethod;
         }
 
         private static ComparerTypeBuilder CreateComparerTypeBuilder(Context context)

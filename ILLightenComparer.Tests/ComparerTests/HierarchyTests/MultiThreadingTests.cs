@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
 using ILLightenComparer.Tests.Utilities;
@@ -28,27 +27,43 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 NotSealedProperty = _fixture.Create<AnotherNestedObject>()
             };
 
-            void Run(int _)
+            for (var j = 0; j < 10; j++)
             {
-                var comparer = CreateComparer();
-
-                var other = new AbstractMembers
+                Parallel(() =>
                 {
-                    NotSealedProperty = _fixture.Create<AnotherNestedObject>()
-                };
+                    var comparer = CreateComparer();
 
-                var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
+                    var other = new AbstractMembers
+                    {
+                        NotSealedProperty = _fixture.Create<AnotherNestedObject>()
+                    };
 
-                void Test(int i)
+                    var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
+
+                    Parallel(() =>
+                    {
+                        var actual = comparer.Compare(one, other).Normalize();
+                        actual.Should().Be(expected);
+                    });
+                });
+            }
+        }
+
+        private static void Parallel(Action action)
+        {
+            var barrier = new Barrier(Environment.ProcessorCount + 1);
+
+            Enumerable
+                .Range(0, Environment.ProcessorCount)
+                .Select(x => new Thread(() =>
                 {
-                    var actual = comparer.Compare(one, other).Normalize();
-                    actual.Should().Be(expected);
-                }
+                    action();
+                    barrier.SignalAndWait();
+                }))
+                .ToList()
+                .ForEach(thread => thread.Start());
 
-                Parallel.For(0, Environment.ProcessorCount, Test);
-            } 
-
-            Parallel.For(0, Environment.ProcessorCount, Run);
+            barrier.SignalAndWait();
         }
 
         private static IComparer<AbstractMembers> CreateComparer() =>
