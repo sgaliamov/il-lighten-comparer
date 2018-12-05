@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ILLightenComparer.Tests.Utilities;
 
-namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycle
+namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 {
     public sealed class SelfSealed
     {
