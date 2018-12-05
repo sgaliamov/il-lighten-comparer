@@ -27,9 +27,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 NotSealedProperty = _fixture.Create<AnotherNestedObject>()
             };
 
-            for (var j = 0; j < 10; j++)
-            {
-                Parallel(() =>
+            Parallel(() =>
                 {
                     var comparer = CreateComparer();
 
@@ -41,29 +39,25 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
 
                     Parallel(() =>
-                    {
-                        var actual = comparer.Compare(one, other).Normalize();
-                        actual.Should().Be(expected);
-                    });
-                });
-            }
+                        {
+                            var actual = comparer.Compare(one, other).Normalize();
+                            actual.Should().Be(expected);
+                        },
+                        Environment.ProcessorCount);
+                },
+                Environment.ProcessorCount * 10);
         }
 
-        private static void Parallel(Action action)
+        private static void Parallel(ThreadStart action, int count)
         {
-            var barrier = new Barrier(Environment.ProcessorCount + 1);
+            var threads = Enumerable
+                          .Range(0, count)
+                          .Select(x => new Thread(action))
+                          .ToArray();
 
-            Enumerable
-                .Range(0, Environment.ProcessorCount)
-                .Select(x => new Thread(() =>
-                {
-                    action();
-                    barrier.SignalAndWait();
-                }))
-                .ToList()
-                .ForEach(thread => thread.Start());
+            foreach (var thread in threads) { thread.Start(); }
 
-            barrier.SignalAndWait();
+            foreach (var thread in threads) { thread.Join(); }
         }
 
         private static IComparer<AbstractMembers> CreateComparer() =>

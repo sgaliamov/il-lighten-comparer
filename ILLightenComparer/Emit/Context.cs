@@ -12,7 +12,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    using ComparerTypes = ConcurrentDictionary<Type, Lazy<TypeInfo>>;
+    using ComparerTypes = ConcurrentDictionary<Type, TypeInfo>;
     using TypeHeap = ConcurrentDictionary<Type, byte>;
 
     internal sealed class Context : IContext
@@ -60,11 +60,10 @@ namespace ILLightenComparer.Emit
         {
             if (!_typeHeap.TryAdd(objectType, 0)) { return null; }
 
-            var lazy = _comparerTypes.GetOrAdd(
+            var comparerType = _comparerTypes.GetOrAdd(
                 objectType,
-                t => new Lazy<TypeInfo>(() => _comparerTypeBuilder.Build(t)));
+                t => _comparerTypeBuilder.Build(t));
 
-            var comparerType = lazy.Value;
             if (_typeHeap.TryRemove(objectType, out _)) { return comparerType; }
 
             throw new InvalidOperationException("Comparison context is not valid.");

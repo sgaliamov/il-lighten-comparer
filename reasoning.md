@@ -19,3 +19,4 @@
 1. Use *HashSet* instead *ObjectIDGenerator* to detect member cycles because users may want to override the way how to compare a member.
 1. Check for *null* before add to a cycle detections set because *null* is kind a value and should be compared on a next iteration.
 1. We need two separate sets to be able to go as deep as we can to behave same way when we don't have a cycle.
+1. *ComparerTypes* does not use *Lazy* because *TypeHeap* ensure that only one thread can work with specific type. But we still need *ConcurrentDictionary* for *ComparerTypes* because multiple threads could request comparers for different types.
