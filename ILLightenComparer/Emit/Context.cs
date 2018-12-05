@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
@@ -86,8 +87,12 @@ namespace ILLightenComparer.Emit
 
         private int Compare<T>(Type type, T x, T y, HashSet<object> hash)
         {
-            var compareMethod = GetStaticCompareMethod(type);
-            Debug.Assert(compareMethod != null, "At this stage at least lazy compare method must exist.");
+            MethodInfo compareMethod = null;
+            while (compareMethod == null)
+            {
+                compareMethod = GetStaticCompareMethod(type);
+                Thread.Sleep(1); // todo: find smart way to ensure compare method exists
+            }
 
             if (typeof(T) != type)
             {
