@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -87,12 +86,7 @@ namespace ILLightenComparer.Emit
 
         private int Compare<T>(Type type, T x, T y, HashSet<object> hash)
         {
-            MethodInfo compareMethod = null;
-            while (compareMethod == null)
-            {
-                compareMethod = GetStaticCompareMethod(type);
-                Thread.Sleep(1); // todo: find smart way to ensure compare method exists
-            }
+            var compareMethod = EnsureStaticCompareMethod(type);
 
             if (typeof(T) != type)
             {
@@ -110,6 +104,19 @@ namespace ILLightenComparer.Emit
             var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
 
             return compare(this, x, y, hash);
+        }
+
+        private MethodInfo EnsureStaticCompareMethod(Type type)
+        {
+            // todo: find smart way to ensure compare method exists
+            MethodInfo compareMethod = null;
+            while (compareMethod == null)
+            {
+                compareMethod = GetStaticCompareMethod(type);
+                Thread.Yield();
+            }
+
+            return compareMethod;
         }
 
         private static ComparerTypeBuilder CreateComparerTypeBuilder(Context context)
