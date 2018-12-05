@@ -58,7 +58,10 @@ namespace ILLightenComparer.Emit
             xSet.Add(x);
             ySet.Add(y);
 
-            return Compare(xType, x, y, xSet, ySet);
+            var compare = Compare(xType, x, y, xSet, ySet);
+            if (compare != 0) { return compare; }
+
+            return xSet.Count - ySet.Count;
         }
 
         public TypeInfo GetComparerType(Type objectType)

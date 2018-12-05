@@ -23,7 +23,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
                 var setX = new HashSet<object>();
                 var setY = new HashSet<object>();
 
-                var compare = TryCompare(x, y, setX, setY);
+                var compare = Compare(x, y, setX, setY);
                 if (compare != 0) { return compare; }
 
                 return setX.Count - setY.Count;
@@ -37,34 +37,21 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 
                 if (ReferenceEquals(null, x)) { return -1; }
 
-                var compareFirst = TryCompare(x.First, y.First, xSet, ySet);
-                if (compareFirst != 0)
-                {
-                    return compareFirst;
-                }
+                if (xSet.Contains(x) && ySet.Contains(y)) { return 0; }
 
-                var compareSecond = TryCompare(x.Second, y.Second, xSet, ySet);
+                xSet.Add(x);
+                ySet.Add(y);
+
+                var compareFirst = Compare(x.First, y.First, xSet, ySet);
+                if (compareFirst != 0) { return compareFirst; }
+
+                var compareSecond = Compare(x.Second, y.Second, xSet, ySet);
                 if (compareSecond != 0) { return compareSecond; }
 
                 var compareValue = x.Value.CompareTo(y.Value);
                 if (compareValue != 0) { return compareValue; }
 
                 return 0;
-            }
-
-            private static int TryCompare(
-                SelfSealed x,
-                SelfSealed y,
-                ISet<object> xSet,
-                ISet<object> ySet)
-            {
-                if (xSet.Contains(x) && ySet.Contains(y)) { return 0; }
-
-                if (x != null) { xSet.Add(x); }
-
-                if (y != null) { ySet.Add(y); }
-
-                return Compare(x, y, xSet, ySet);
             }
         }
     }
