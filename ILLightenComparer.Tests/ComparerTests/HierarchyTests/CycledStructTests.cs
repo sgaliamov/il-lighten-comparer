@@ -20,15 +20,68 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     DetectCycles = true
                 });
 
-            _comparerStruct = builder.For<CycledStruct>().GetComparer();
-            _comparerObject = builder.For<CycledStructObject>().GetComparer();
+            _comparerStruct = builder
+                              .For<CycledStruct>()
+                              .DefineConfiguration(new ComparerSettings
+                              {
+                                  MembersOrder = new[]
+                                  {
+                                      nameof(CycledStruct.Value),
+                                      nameof(CycledStruct.FirstObject),
+                                      nameof(CycledStruct.SecondObject)
+                                  }
+                              })
+                              .GetComparer();
+
+            _comparerObject = builder
+                              .For<CycledStructObject>()
+                              .DefineConfiguration(new ComparerSettings
+                              {
+                                  MembersOrder = new[]
+                                  {
+                                      nameof(CycledStructObject.Text),
+                                      nameof(CycledStructObject.FirstStruct),
+                                      nameof(CycledStructObject.SecondStruct)
+                                  }
+                              })
+                              .GetComparer();
+        }
+
+        [Fact]
+        public void Cycle_In_Object()
+        {
+            var one = new CycledStructObject
+            {
+                FirstStruct = new CycledStruct()
+            };
+            one.FirstStruct.SecondObject = one;
+
+            var other = new CycledStructObject
+            {
+                FirstStruct = new CycledStruct()
+            };
+            other.FirstStruct.SecondObject = other;
+
+            var expected = CycledStructObject.Comparer.Compare(one, other);
+            var actual = _comparerObject.Compare(one, other);
+
+            actual.Should().Be(expected);
         }
 
         [Fact]
         public void Cycle_In_Struct()
         {
-            var one = new CycledStruct();
-            var other = new CycledStruct();
+            var one = new CycledStruct
+            {
+                FirstObject = new CycledStructObject()
+            };
+            one.FirstObject.SecondStruct = one;
+
+            var other = new CycledStruct
+            {
+                FirstObject = new CycledStructObject()
+            };
+            other.FirstObject.SecondStruct = other;
 
             var expected = CycledStruct.Comparer.Compare(one, other);
             var actual = _comparerStruct.Compare(one, other);

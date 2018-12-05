@@ -20,3 +20,4 @@
 1. Check for *null* before add to a cycle detections set because *null* is kind a value and should be compared on a next iteration.
 1. We need two separate sets to be able to go as deep as we can to behave same way when we don't have a cycle.
 1. *ComparerTypes* does not use *Lazy* because *TypeHeap* ensure that only one thread can work with specific type. But we still need *ConcurrentDictionary* for *ComparerTypes* because multiple threads could request comparers for different types.
+1. Cycle detection is not applied on value types because it does not have a sense. Nested value could be equal to an owner object only because of wrong equality implementation, but it can not be considered as a cycle.

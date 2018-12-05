@@ -5,13 +5,29 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 {
     public sealed class CycledStructObject
     {
+        public CycledStruct FirstStruct;
         public string Text;
         public static IComparer<CycledStructObject> Comparer { get; } = new RelationalComparer();
-        public CycledStruct Struct { get; set; } // todo: test with nullable
+        public CycledStruct SecondStruct { get; set; } // todo: test with nullable
 
-        private sealed class RelationalComparer : IComparer<CycledStructObject>
+        public sealed class RelationalComparer : IComparer<CycledStructObject>
         {
             public int Compare(CycledStructObject x, CycledStructObject y)
+            {
+                var setX = new HashSet<object>();
+                var setY = new HashSet<object>();
+
+                var compare = Compare(x, y, setX, setY);
+                if (compare != 0) { return compare; }
+
+                return setX.Count - setY.Count;
+            }
+
+            public static int Compare(
+                CycledStructObject x,
+                CycledStructObject y,
+                ISet<object> xSet,
+                ISet<object> ySet)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -28,13 +44,18 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
                     return -1;
                 }
 
+                if (xSet.Contains(x) && ySet.Contains(y)) { return 0; }
+
+                xSet.Add(x);
+                ySet.Add(y);
+
                 var compare = string.Compare(x.Text, y.Text, StringComparison.Ordinal);
                 if (compare != 0) { return compare; }
 
-                compare = CycledStruct.Comparer.Compare(x.Struct, y.Struct);
+                compare = CycledStruct.RelationalComparer.Compare(x.FirstStruct, y.FirstStruct, xSet, ySet);
                 if (compare != 0) { return compare; }
 
-                return compare;
+                return CycledStruct.RelationalComparer.Compare(x.SecondStruct, y.SecondStruct, xSet, ySet);
             }
         }
     }
