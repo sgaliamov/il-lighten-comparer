@@ -95,24 +95,25 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Replaced_Member_Does_Not_Break_Comparison()
         {
-            void Warmup(AbstractMembers obj) => _comparer.Compare(obj, obj.DeepClone()).Should().Be(0);
-
             var one = new AbstractMembers
             {
                 NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
-            Warmup(one);
+            _comparer.Compare(one, one.DeepClone()).Should().Be(0);
 
-            one.NotSealedProperty = _fixture.Create<AnotherNestedObject>();
-            var other = new AbstractMembers
+            for (var i = 0; i < 100; i++)
             {
-                NotSealedProperty = _fixture.Create<AnotherNestedObject>()
-            };
+                one.NotSealedProperty = _fixture.Create<AnotherNestedObject>();
+                var other = new AbstractMembers
+                {
+                    NotSealedProperty = _fixture.Create<AnotherNestedObject>()
+                };
 
-            var expected = AbstractMembers.Comparer.Compare(one, other);
-            var actual = _comparer.Compare(one, other);
+                var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
+                var actual = _comparer.Compare(one, other).Normalize();
 
-            actual.Should().Be(expected);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -177,6 +178,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     {
                         nameof(SealedNestedObject.Key),
                         nameof(SealedNestedObject.Text)
+                    }
+                })
+                .For<AnotherNestedObject>()
+                .DefineConfiguration(new ComparerSettings
+                {
+                    MembersOrder = new[]
+                    {
+                        nameof(AnotherNestedObject.Value),
+                        nameof(AnotherNestedObject.Key),
+                        nameof(AnotherNestedObject.Text)
                     }
                 })
                 .For<AbstractMembers>()
