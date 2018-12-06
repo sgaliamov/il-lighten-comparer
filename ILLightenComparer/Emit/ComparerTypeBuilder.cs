@@ -149,34 +149,36 @@ namespace ILLightenComparer.Emit
 
         private void EmitCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
-            if (DetectCycles(objectType))
+            if (!DetectCycles(objectType))
             {
-                il.Emit(OpCodes.Newobj, Method.SetConstructor)
-                  .Store(typeof(Set), 0, out var xSet)
-                  .Emit(OpCodes.Newobj, Method.SetConstructor)
-                  .Store(typeof(Set), 1, out var ySet)
-                  .LoadLocal(xSet)
-                  .LoadLocal(ySet)
+                il.Emit(OpCodes.Ldnull)
+                  .Emit(OpCodes.Ldnull)
                   .Call(staticCompareMethod)
-                  // if (compare != 0) return compare;
-                  .Store(typeof(int), out var result)
-                  .LoadLocal(result)
-                  .Branch(OpCodes.Brfalse_S, out var setsDiff)
-                  .LoadLocal(result)
-                  .Return()
-                  .MarkLabel(setsDiff)
-                  // else: return setX.Count - setY.Count;
-                  .LoadLocal(xSet)
-                  .Emit(OpCodes.Call,Method.SetGetCount)
-                  .LoadLocal(ySet)
-                  .Emit(OpCodes.Call,Method.SetGetCount)
-                  .Emit(OpCodes.Sub)
                   .Return();
+
+                return;
             }
 
-            il.Emit(OpCodes.Ldnull)
-              .Emit(OpCodes.Ldnull)
+            il.Emit(OpCodes.Newobj, Method.SetConstructor)
+              .Store(typeof(Set), 0, out var xSet)
+              .Emit(OpCodes.Newobj, Method.SetConstructor)
+              .Store(typeof(Set), 1, out var ySet)
+              .LoadLocal(xSet)
+              .LoadLocal(ySet)
               .Call(staticCompareMethod)
+              // if (compare != 0) return compare;
+              .Store(typeof(int), out var result)
+              .LoadLocal(result)
+              .Branch(OpCodes.Brfalse_S, out var setsDiff)
+              .LoadLocal(result)
+              .Return()
+              .MarkLabel(setsDiff)
+              // else: return setX.Count - setY.Count;
+              .LoadLocal(xSet)
+              .Emit(OpCodes.Call, Method.SetGetCount)
+              .LoadLocal(ySet)
+              .Emit(OpCodes.Call, Method.SetGetCount)
+              .Emit(OpCodes.Sub)
               .Return();
         }
 
