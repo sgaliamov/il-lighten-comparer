@@ -44,17 +44,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Detects_Cycle_In_Object()
         {
-            var one = new CycledStructObject
-            {
-                FirstStruct = new CycledStruct()
-            };
-            one.FirstStruct.SecondObject = one;
+            var one = new CycledStructObject { FirstStruct = new CycledStruct() };
+            one.FirstStruct = new CycledStruct { SecondObject = one };
 
-            var other = new CycledStructObject
-            {
-                FirstStruct = new CycledStruct()
-            };
-            other.FirstStruct.SecondObject = other;
+            var other = new CycledStructObject { FirstStruct = new CycledStruct() };
+            other.FirstStruct = new CycledStruct { SecondObject = other };
 
             var expected = CycledStructObject.Comparer.Compare(one, other);
             var actual = _comparerObject.Compare(one, other);
@@ -96,7 +90,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             */
 
             var other = new CycledStructObject();
-            other.FirstStruct.FirstObject = other;
+            other.FirstStruct = new CycledStruct
+            {
+                FirstObject = other
+            };
             /*
                       2
                      / \

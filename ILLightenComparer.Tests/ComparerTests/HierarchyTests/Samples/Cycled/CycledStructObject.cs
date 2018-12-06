@@ -10,13 +10,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
     public sealed class CycledStructObject
     {
         public readonly int Id;
-        public CycledStruct FirstStruct;
+        public CycledStruct? FirstStruct;
         public string Text;
 
         public CycledStructObject() => Id = this.GetObjectId();
         public static IComparer<CycledStructObject> Comparer { get; } = new RelationalComparer();
 
-        public CycledStruct SecondStruct { get; set; } // todo: test with nullable
+        public CycledStruct SecondStruct { get; set; }
 
         public override string ToString() => Id.ToString();
 

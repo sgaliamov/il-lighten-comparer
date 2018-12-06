@@ -26,6 +26,26 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
                 return setX.Count - setY.Count;
             }
 
+            public static int Compare(CycledStruct? x, CycledStruct? y, Set xSet, Set ySet)
+            {
+                if (x.HasValue)
+                {
+                    if (y.HasValue)
+                    {
+                        return Compare(x.Value, y.Value, xSet, ySet);
+                    }
+
+                    return 1;
+                }
+
+                if (y.HasValue)
+                {
+                    return -1;
+                }
+
+                return 0;
+            }
+
             public static int Compare(CycledStruct x, CycledStruct y, Set xSet, Set ySet)
             {
                 var compare = x.Value.CompareTo(y.Value);
