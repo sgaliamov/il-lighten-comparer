@@ -34,9 +34,65 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                         nameof(HierarchicalObject.Value),
                         nameof(HierarchicalObject.FirstProperty),
                         nameof(HierarchicalObject.SecondProperty),
-                        nameof(HierarchicalObject.NestedField)
+                        nameof(HierarchicalObject.NestedField),
+                        nameof(HierarchicalObject.NestedStructField),
+                        nameof(HierarchicalObject.NestedNullableStructProperty)
                     }
                 });
+
+            _nestedStructComparer = ComparersBuilder
+                                    .For<HierarchicalObject>()
+                                    .DefineConfiguration(new ComparerSettings
+                                    {
+                                        IgnoredMembers = new[]
+                                        {
+                                            nameof(HierarchicalObject.ComparableProperty),
+                                            nameof(HierarchicalObject.ComparableField),
+                                            nameof(HierarchicalObject.Value),
+                                            nameof(HierarchicalObject.FirstProperty),
+                                            nameof(HierarchicalObject.SecondProperty),
+                                            nameof(HierarchicalObject.NestedField)
+                                        }
+                                    })
+                                    .GetComparer();
+        }
+
+        [Fact]
+        public void Compare_Nested_Null_Structs()
+        {
+            var one = new HierarchicalObject();
+
+            var other = new HierarchicalObject
+            {
+                NestedNullableStructProperty = Fixture.Create<NestedStruct>()
+            };
+
+            var expected = HierarchicalObject.Comparer.Compare(one, other);
+            expected.Should().Be(-1);
+            var actual = _nestedStructComparer.Compare(one, other);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void Compare_Nested_Structs()
+        {
+            var one = new HierarchicalObject
+            {
+                NestedStructField = Fixture.Create<NestedStruct>(),
+                NestedNullableStructProperty = Fixture.Create<NestedStruct>()
+            };
+
+            var other = new HierarchicalObject
+            {
+                NestedStructField = Fixture.Create<NestedStruct>(),
+                NestedNullableStructProperty = Fixture.Create<NestedStruct>()
+            };
+
+            var expected = HierarchicalObject.Comparer.Compare(one, other);
+            var actual = _nestedStructComparer.Compare(one, other);
+
+            actual.Should().Be(expected);
         }
 
         [Fact]
@@ -68,6 +124,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                          .Should()
                          .BeNegative();
         }
+
+        private readonly IComparer<HierarchicalObject> _nestedStructComparer;
 
         protected override IComparer<HierarchicalObject> ReferenceComparer { get; } = HierarchicalObject.Comparer;
     }
