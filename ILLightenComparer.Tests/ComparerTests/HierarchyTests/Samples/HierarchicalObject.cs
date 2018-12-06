@@ -76,13 +76,17 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return compare;
                 }
 
-                compare = NestedStruct.Comparer.Compare(x.NestedStructField, x.NestedStructField);
+                compare = NestedStruct.Comparer.Compare(
+                    x.NestedStructField, 
+                    y.NestedStructField);
                 if (compare != 0)
                 {
                     return compare;
                 }
 
-                compare = NestedStruct.Comparer.Compare(x.NestedNullableStructProperty, x.NestedNullableStructProperty);
+                compare = NestedStruct.Comparer.Compare(
+                    x.NestedNullableStructProperty, 
+                    y.NestedNullableStructProperty);
                 if (compare != 0)
                 {
                     return compare;

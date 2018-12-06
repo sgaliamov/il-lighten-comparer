@@ -40,7 +40,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                     }
                 });
 
-            _nestedStructComparer = ComparersBuilder
+            _nestedStructComparer = new ComparersBuilder()
+                                    .DefineDefaultConfiguration(new ComparerSettings
+                                    {
+                                        IncludeFields = true
+                                    })
                                     .For<HierarchicalObject>()
                                     .DefineConfiguration(new ComparerSettings
                                     {
@@ -98,15 +102,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Custom_Comparable_Implementation_Should_Be_Used()
         {
-            var nestedObject = Fixture.Create<ComparableObject>();
             var other = Fixture.Create<HierarchicalObject>();
-            other.ComparableProperty = nestedObject;
+
             var one = other.DeepClone();
             one.ComparableProperty.Value = other.ComparableProperty.Value + 1;
 
-            TypedComparer.Compare(one, other)
-                         .Should()
-                         .NotBe(0);
+            var expected = HierarchicalObject.Comparer.Compare(one, other);
+            var actual = TypedComparer.Compare(one, other);
+
+            expected.Should().Be(1);
+            actual.Should().Be(expected);
 
             ComparableObject.UsedCompareTo.Should().BeTrue();
         }
