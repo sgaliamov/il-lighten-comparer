@@ -27,10 +27,10 @@ namespace ILLightenComparer.Emit
 
         public Type Build(Type objectType)
         {
-            if (objectType.IsPrimitive())
+            if (objectType.GetUnderlyingType().IsPrimitive())
             {
-                // todo: test for primitive and for nullable
-                return typeof(Comparer<>).MakeGenericType(objectType);
+                throw new NotSupportedException(
+                    $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
             }
 
             var basicInterface = typeof(IComparer);
