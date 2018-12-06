@@ -25,8 +25,14 @@ namespace ILLightenComparer.Emit
             _compareEmitter = new CompareEmitter(_context);
         }
 
-        public TypeInfo Build(Type objectType)
+        public Type Build(Type objectType)
         {
+            if (objectType.IsPrimitive())
+            {
+                // todo: test for primitive and for nullable
+                return typeof(Comparer<>).MakeGenericType(objectType);
+            }
+
             var basicInterface = typeof(IComparer);
             var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
 

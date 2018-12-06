@@ -35,20 +35,21 @@ namespace ILLightenComparer.Emit.Emitters
             var memberType = member.MemberType;
 
             member.LoadMembers(_stackEmitter, il)
-                  .DefineLabel(out var next)
+                  .DefineLabel(out var gotoNextMember)
                   .Store(memberType, 1, out var n2)
                   .Store(memberType, 0, out var n1);
 
-            CheckNullableValuesForNull(il, member, n1, n2, next);
+            CheckNullableValuesForNull(il, member, n1, n2, gotoNextMember);
 
-            if (memberType.GetUnderlyingType().IsSmallIntegral())
+            var underlyingType = memberType.GetUnderlyingType();
+            if (underlyingType.IsSmallIntegral())
             {
                 return il.LoadAddress(n1)
                          .Call(member.GetValueMethod)
                          .LoadAddress(n2)
                          .Call(member.GetValueMethod)
                          .Emit(OpCodes.Sub)
-                         .EmitReturnNotZero(next);
+                         .EmitReturnNotZero(gotoNextMember);
             }
 
             var compareToMethod = memberType.GetCompareToMethod();
@@ -56,22 +57,22 @@ namespace ILLightenComparer.Emit.Emitters
             {
                 return il.LoadAddress(n1)
                          .Call(member.GetValueMethod)
-                         .Store(memberType.GetUnderlyingType(), out var local)
+                         .Store(underlyingType, out var local)
                          .LoadAddress(local)
                          .LoadAddress(n2)
                          .Call(member.GetValueMethod)
                          .Call(compareToMethod)
-                         .EmitReturnNotZero(next);
+                         .EmitReturnNotZero(gotoNextMember);
             }
 
-            // todo: test
             il.LoadArgument(Arg.Context)
               .LoadAddress(n1)
               .LoadAddress(n2)
               .LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 
-            return CompareComplex(il, memberType);
+            return CompareComplex(il, underlyingType)
+                .EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
@@ -92,7 +93,7 @@ namespace ILLightenComparer.Emit.Emitters
                   .LoadArgument(Arg.SetX)
                   .LoadArgument(Arg.SetY);
 
-            return CompareComplex(il, memberType);
+            return CompareComplex(il, memberType).EmitReturnNotZero();
         }
 
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
@@ -141,14 +142,13 @@ namespace ILLightenComparer.Emit.Emitters
                 var compareMethod = _context.GetStaticCompareMethod(memberType);
                 if (compareMethod != null)
                 {
-                    return il.Call(compareMethod).EmitReturnNotZero();
+                    return il.Call(compareMethod);
                 }
             }
 
             var contextCompare = Method.ContextCompare.MakeGenericMethod(memberType);
 
-            return il.Emit(OpCodes.Call, contextCompare)
-                     .EmitReturnNotZero();
+            return il.Emit(OpCodes.Call, contextCompare);
         }
 
         private static void CheckNullableValuesForNull(
@@ -156,18 +156,18 @@ namespace ILLightenComparer.Emit.Emitters
             INullableAcceptor member,
             LocalBuilder n1,
             LocalBuilder n2,
-            Label next)
+            Label ifBothNull)
         {
             il.LoadAddress(n2)
               .Call(member.HasValueMethod)
               .Store(typeof(bool), out var secondHasValue)
               .LoadAddress(n1)
               .Call(member.HasValueMethod)
-              .Branch(OpCodes.Brtrue_S, out var firstHasValue)
+              .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
               .LoadLocal(secondHasValue)
-              .Emit(OpCodes.Brfalse_S, next)
+              .Emit(OpCodes.Brfalse_S, ifBothNull)
               .Return(-1)
-              .MarkLabel(firstHasValue)
+              .MarkLabel(ifFirstHasValue)
               .LoadLocal(secondHasValue)
               .Branch(OpCodes.Brtrue_S, out var getValues)
               .Return(1)

@@ -11,7 +11,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    using ComparerTypes = ConcurrentDictionary<Type, TypeInfo>;
+    using ComparerTypes = ConcurrentDictionary<Type, Type>;
     using TypeHeap = ConcurrentDictionary<Type, byte>;
     using Set = ConcurrentDictionary<object, byte>;
 
@@ -56,7 +56,7 @@ namespace ILLightenComparer.Emit
             return Compare(xType, x, y, xSet, ySet);
         }
 
-        public TypeInfo GetComparerType(Type objectType)
+        public Type GetComparerType(Type objectType)
         {
             if (!_typeHeap.TryAdd(objectType, 0)) { return null; }
 

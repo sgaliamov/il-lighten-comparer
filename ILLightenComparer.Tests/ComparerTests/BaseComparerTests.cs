@@ -37,6 +37,13 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
+        public void Comparison_When_Both_Null_Produces_0()
+        {
+            BasicComparer.Compare(null, null).Should().Be(0);
+            TypedComparer.Compare(default, default).Should().Be(0);
+        }
+
+        [Fact]
         public void Comparison_With_Itself_Produces_0()
         {
             var obj = Fixture.Create<T>();
