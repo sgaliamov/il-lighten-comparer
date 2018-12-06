@@ -76,7 +76,7 @@ namespace ILLightenComparer.Emit
                     EmitReferenceComparison(il);
                 }
 
-                if (DetectCycles(objectType))
+                if (IsDetectCyclesEnabled(objectType))
                 {
                     EmitCycleDetection(il);
                 }
@@ -110,7 +110,7 @@ namespace ILLightenComparer.Emit
                   .LoadArgument(Arg.Y)
                   .EmitCast(objectType);
 
-                EmitCall(il, staticCompareMethod, objectType);
+                EmitStaticCompareMethod(il, staticCompareMethod, objectType);
             }
         }
 
@@ -130,7 +130,7 @@ namespace ILLightenComparer.Emit
                   .LoadArgument(Arg.X)
                   .LoadArgument(Arg.Y);
 
-                EmitCall(il, staticCompareMethod, objectType);
+                EmitStaticCompareMethod(il, staticCompareMethod, objectType);
             }
         }
 
@@ -147,9 +147,9 @@ namespace ILLightenComparer.Emit
             il.Return(0);
         }
 
-        private void EmitCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
+        private void EmitStaticCompareMethod(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
-            if (!DetectCycles(objectType))
+            if (!_context.GetConfiguration(objectType).DetectCycles)
             {
                 il.Emit(OpCodes.Ldnull)
                   .Emit(OpCodes.Ldnull)
@@ -182,7 +182,7 @@ namespace ILLightenComparer.Emit
               .Return();
         }
 
-        private bool DetectCycles(Type objectType) =>
+        private bool IsDetectCyclesEnabled(Type objectType) =>
             objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
 
         private static void EmitReferenceComparison(ILEmitter il)

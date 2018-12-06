@@ -10,15 +10,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public CycledStructTests()
         {
             var builder = new ComparersBuilder()
-                .DefineDefaultConfiguration(new ComparerSettings
-                {
-                    IncludeFields = true,
-                    DetectCycles = true
-                });
-
-            _comparerStruct = builder
-                              .For<CycledStruct>()
-                              .DefineConfiguration(new ComparerSettings
+                          .DefineDefaultConfiguration(new ComparerSettings
+                          {
+                              IncludeFields = true,
+                              DetectCycles = true
+                          })
+                          .DefineConfiguration(typeof(CycledStruct),
+                              new ComparerSettings
                               {
                                   MembersOrder = new[]
                                   {
@@ -27,11 +25,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                                       nameof(CycledStruct.SecondObject)
                                   }
                               })
-                              .GetComparer();
-
-            _comparerObject = builder
-                              .For<CycledStructObject>()
-                              .DefineConfiguration(new ComparerSettings
+                          .DefineConfiguration(typeof(CycledStructObject),
+                              new ComparerSettings
                               {
                                   MembersOrder = new[]
                                   {
@@ -40,8 +35,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                                       nameof(CycledStructObject.SecondStruct)
                                   },
                                   IgnoredMembers = new[] { nameof(CycledStructObject.Id) }
-                              })
-                              .GetComparer();
+                              });
+
+            _comparerStruct = builder.GetComparer<CycledStruct>();
+            _comparerObject = builder.GetComparer<CycledStructObject>();
         }
 
         [Fact]

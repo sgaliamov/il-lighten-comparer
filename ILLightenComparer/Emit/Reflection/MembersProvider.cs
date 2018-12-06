@@ -33,8 +33,8 @@ namespace ILLightenComparer.Emit.Reflection
             type.GetMembers(BindingFlags.Instance
                             | BindingFlags.FlattenHierarchy
                             | BindingFlags.Public)
-                .Where(IgnoredMembers)
-                .Where(IncludeFields);
+                .Where(IncludeFields)
+                .Where(IgnoredMembers);
 
         private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members)
         {
