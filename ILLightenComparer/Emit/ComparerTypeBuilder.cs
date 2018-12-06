@@ -167,9 +167,9 @@ namespace ILLightenComparer.Emit
                   .MarkLabel(setsDiff)
                   // else: return setX.Count - setY.Count;
                   .LoadLocal(xSet)
-                  .Call(Method.SetGetCount)
+                  .Emit(OpCodes.Call,Method.SetGetCount)
                   .LoadLocal(ySet)
-                  .Call(Method.SetGetCount)
+                  .Emit(OpCodes.Call,Method.SetGetCount)
                   .Emit(OpCodes.Sub)
                   .Return();
             }
@@ -208,13 +208,13 @@ namespace ILLightenComparer.Emit
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.X)
               .LoadConstant(0)
-              .Call(Method.SetAdd) // todo: check call op
+              .Emit(OpCodes.Call, Method.SetAdd) // todo: check call op
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
               .LoadArgument(Arg.SetY)
               .LoadArgument(Arg.Y)
               .LoadConstant(0)
-              .Call(Method.SetAdd)
+              .Emit(OpCodes.Call, Method.SetAdd)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
               .Emit(OpCodes.And)
