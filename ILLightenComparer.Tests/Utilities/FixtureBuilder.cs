@@ -36,6 +36,11 @@ namespace ILLightenComparer.Tests.Utilities
             var clone = prototype.DeepClone();
             foreach (var member in new ObjectWalker(new Member(clone)))
             {
+                if (member.Parent?.GetType().IsValueType ?? false)
+                {
+                    continue;
+                }
+
                 if (!member.ValueType.IsPrimitive() && member.Value != null)
                 {
                     continue;
