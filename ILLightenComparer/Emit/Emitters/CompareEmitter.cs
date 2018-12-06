@@ -115,6 +115,25 @@ namespace ILLightenComparer.Emit.Emitters
                          .EmitReturnNotZero(next);
         }
 
+        public void EmitReferenceComparison(ILEmitter il)
+        {
+            il.LoadArgument(Arg.X) // x == y
+              .LoadArgument(Arg.Y)
+              .Branch(OpCodes.Bne_Un_S, out var checkY)
+              .Return(0)
+              .MarkLabel(checkY)
+              // y != null
+              .LoadArgument(Arg.Y)
+              .Branch(OpCodes.Brtrue_S, out var checkX)
+              .Return(1)
+              .MarkLabel(checkX)
+              // x != null
+              .LoadArgument(Arg.X)
+              .Branch(OpCodes.Brtrue_S, out var next)
+              .Return(-1)
+              .MarkLabel(next);
+        }
+
         private ILEmitter CompareComplex(ILEmitter il, Type memberType)
         {
             if (memberType.IsValueType || memberType.IsSealed)
@@ -127,6 +146,11 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             var contextCompare = Method.ContextCompare.MakeGenericMethod(memberType);
+
+            //if (memberType.IsClass)
+            //{
+            //    EmitReferenceComparison(il);
+            //}
 
             return il.Emit(OpCodes.Call, contextCompare)
                      .EmitReturnNotZero();

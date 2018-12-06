@@ -73,7 +73,7 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsClass)
                 {
-                    EmitReferenceComparison(il);
+                    _compareEmitter.EmitReferenceComparison(il);
                 }
 
                 if (IsDetectCyclesEnabled(objectType))
@@ -100,7 +100,7 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsValueType)
                 {
-                    EmitReferenceComparison(il);
+                    _compareEmitter.EmitReferenceComparison(il);
                 }
 
                 il.LoadArgument(Arg.This)
@@ -185,32 +185,12 @@ namespace ILLightenComparer.Emit
         private bool IsDetectCyclesEnabled(Type objectType) =>
             objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
 
-        private static void EmitReferenceComparison(ILEmitter il)
-        {
-            // x == y
-            il.LoadArgument(Arg.X)
-              .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Bne_Un_S, out var checkY)
-              .Return(0)
-              .MarkLabel(checkY)
-              // y != null
-              .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Brtrue_S, out var checkX)
-              .Return(1)
-              .MarkLabel(checkX)
-              // x != null
-              .LoadArgument(Arg.X)
-              .Branch(OpCodes.Brtrue_S, out var next)
-              .Return(-1)
-              .MarkLabel(next);
-        }
-
         private static void EmitCycleDetection(ILEmitter il)
         {
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.X)
               .LoadConstant(0)
-              .Emit(OpCodes.Call, Method.SetAdd) // todo: check call op
+              .Emit(OpCodes.Call, Method.SetAdd)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
               .LoadArgument(Arg.SetY)
@@ -218,7 +198,7 @@ namespace ILLightenComparer.Emit
               .LoadConstant(0)
               .Emit(OpCodes.Call, Method.SetAdd)
               .LoadConstant(0)
-              .Emit(OpCodes.Ceq)
+              .Emit(OpCodes.Ceq) // todo: optimize
               .Emit(OpCodes.And)
               .Branch(OpCodes.Brfalse_S, out var next)
               .Return(0)

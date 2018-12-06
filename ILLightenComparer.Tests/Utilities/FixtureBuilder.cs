@@ -26,6 +26,11 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static IEnumerable<T> CreateMutants<T>(this Fixture fixture, T prototype)
         {
+            if (typeof(T).IsValueType)
+            {
+                throw new ArgumentException("T should be a class.", nameof(T));
+            }
+
             var context = new SpecimenContext(fixture);
 
             var clone = prototype.DeepClone();
@@ -36,7 +41,6 @@ namespace ILLightenComparer.Tests.Utilities
                     continue;
                 }
 
-                // todo: test with struct fields
                 var setValue = GetSetValueAction(member);
 
                 setValue(
