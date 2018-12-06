@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 {
+    using Set = ConcurrentDictionary<object, byte>;
+
     public struct CycledStruct
     {
         public int Value { get; set; }
@@ -14,8 +17,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
         {
             public int Compare(CycledStruct x, CycledStruct y)
             {
-                var setX = new HashSet<object>();
-                var setY = new HashSet<object>();
+                var setX = new Set();
+                var setY = new Set();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0) { return compare; }
@@ -23,7 +26,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
                 return setX.Count - setY.Count;
             }
 
-            public static int Compare(CycledStruct x, CycledStruct y, ISet<object> xSet, ISet<object> ySet)
+            public static int Compare(CycledStruct x, CycledStruct y, Set xSet, Set ySet)
             {
                 var compare = x.Value.CompareTo(y.Value);
                 if (compare != 0) { return compare; }

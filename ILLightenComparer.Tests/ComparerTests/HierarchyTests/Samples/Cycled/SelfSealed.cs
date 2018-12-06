@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 {
+    using Set = ConcurrentDictionary<object, byte>;
+
     public sealed class SelfSealed
     {
         public readonly int Id;
@@ -20,8 +23,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
         {
             public int Compare(SelfSealed x, SelfSealed y)
             {
-                var setX = new HashSet<object>();
-                var setY = new HashSet<object>();
+                var setX = new Set();
+                var setY = new Set();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0) { return compare; }
@@ -29,7 +32,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
                 return setX.Count - setY.Count;
             }
 
-            private static int Compare(SelfSealed x, SelfSealed y, ISet<object> xSet, ISet<object> ySet)
+            private static int Compare(SelfSealed x, SelfSealed y, Set xSet, Set ySet)
             {
                 if (ReferenceEquals(x, y)) { return 0; }
 
@@ -37,10 +40,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 
                 if (ReferenceEquals(null, x)) { return -1; }
 
-                if (xSet.Contains(x) && ySet.Contains(y)) { return 0; }
-
-                xSet.Add(x);
-                ySet.Add(y);
+                if (!xSet.TryAdd(x, 0) & !ySet.TryAdd(y, 0)) { return 0; }
 
                 var compareFirst = Compare(x.First, y.First, xSet, ySet);
                 if (compareFirst != 0) { return compareFirst; }

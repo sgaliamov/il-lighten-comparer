@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 {
+    using Set = ConcurrentDictionary<object, byte>;
+
     public sealed class CycledStructObject
     {
         public readonly int Id;
@@ -12,17 +15,17 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 
         public CycledStructObject() => Id = this.GetObjectId();
         public static IComparer<CycledStructObject> Comparer { get; } = new RelationalComparer();
-        
+
         public CycledStruct SecondStruct { get; set; } // todo: test with nullable
-        
+
         public override string ToString() => Id.ToString();
 
         public sealed class RelationalComparer : IComparer<CycledStructObject>
         {
             public int Compare(CycledStructObject x, CycledStructObject y)
             {
-                var setX = new HashSet<object>();
-                var setY = new HashSet<object>();
+                var setX = new Set();
+                var setY = new Set();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0) { return compare; }
@@ -33,8 +36,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
             public static int Compare(
                 CycledStructObject x,
                 CycledStructObject y,
-                ISet<object> xSet,
-                ISet<object> ySet)
+                Set xSet,
+                Set ySet)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -51,10 +54,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
                     return -1;
                 }
 
-                if (xSet.Contains(x) && ySet.Contains(y)) { return 0; }
-
-                xSet.Add(x);
-                ySet.Add(y);
+                if (!xSet.TryAdd(x, 0) & !ySet.TryAdd(y, 0)) { return 0; }
 
                 var compare = string.Compare(x.Text, y.Text, StringComparison.Ordinal);
                 if (compare != 0) { return compare; }

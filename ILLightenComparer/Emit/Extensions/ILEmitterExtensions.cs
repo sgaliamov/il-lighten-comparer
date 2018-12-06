@@ -47,7 +47,7 @@ namespace ILLightenComparer.Emit.Extensions
               .Emit(OpCodes.Ldloc_0)
               .Emit(OpCodes.Brfalse_S, next)
               .Emit(OpCodes.Ldloc_0)
-              .Emit(OpCodes.Ret)
+              .Return()
               .MarkLabel(next);
     }
 }

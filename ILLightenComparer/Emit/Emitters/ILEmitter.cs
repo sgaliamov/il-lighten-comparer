@@ -109,7 +109,9 @@ namespace ILLightenComparer.Emit.Emitters
             return Emit(opCode, methodInfo);
         }
 
-        public ILEmitter Return(int value) => LoadConstant(value).Emit(OpCodes.Ret);
+        public ILEmitter Return() => Emit(OpCodes.Ret);
+
+        public ILEmitter Return(int value) => LoadConstant(value).Return();
 
         public ILEmitter EmitCast(Type objectType)
         {
@@ -122,8 +124,6 @@ namespace ILLightenComparer.Emit.Emitters
 
             return this;
         }
-
-        public ILEmitter EmitCtorCall(ConstructorInfo constructor) => Emit(OpCodes.Newobj, constructor).Emit(OpCodes.Ret);
 
         public ILEmitter Branch(OpCode opCode, out Label label)
         {

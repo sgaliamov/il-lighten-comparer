@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -14,6 +13,7 @@ namespace ILLightenComparer.Emit
 {
     using ComparerTypes = ConcurrentDictionary<Type, TypeInfo>;
     using TypeHeap = ConcurrentDictionary<Type, byte>;
+    using Set = ConcurrentDictionary<object, byte>;
 
     internal sealed class Context : IContext
     {
@@ -35,7 +35,7 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: cache delegates and benchmark ways
-        public int Compare<T>(T x, T y, HashSet<object> xSet, HashSet<object> ySet)
+        public int Compare<T>(T x, T y, Set xSet, Set ySet)
         {
             if (x == null)
             {
@@ -53,15 +53,7 @@ namespace ILLightenComparer.Emit
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
-            if (xSet.Contains(x) && ySet.Contains(y)) { return 0; }
-
-            xSet.Add(x);
-            ySet.Add(y);
-
-            var compare = Compare(xType, x, y, xSet, ySet);
-            if (compare != 0) { return compare; }
-
-            return xSet.Count - ySet.Count;
+            return Compare(xType, x, y, xSet, ySet);
         }
 
         public TypeInfo GetComparerType(Type objectType)
@@ -91,7 +83,7 @@ namespace ILLightenComparer.Emit
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
             _moduleBuilder.DefineType(name, interfaceTypes);
 
-        private int Compare<T>(Type type, T x, T y, HashSet<object> xSet, HashSet<object> ySet)
+        private int Compare<T>(Type type, T x, T y, Set xSet, Set ySet)
         {
             var compareMethod = EnsureStaticCompareMethod(type);
 
@@ -157,6 +149,6 @@ namespace ILLightenComparer.Emit
 
     public interface IContext
     {
-        int Compare<T>(T x, T y, HashSet<object> xSet, HashSet<object> ySet);
+        int Compare<T>(T x, T y, Set xSet, Set ySet);
     }
 }

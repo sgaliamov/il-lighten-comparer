@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Reflection;
 
 namespace ILLightenComparer.Emit.Reflection
 {
-    using Set = HashSet<object>;
+    using Set = ConcurrentDictionary<object, byte>;
 
     internal static class Method
     {
@@ -19,11 +19,14 @@ namespace ILLightenComparer.Emit.Reflection
             nameof(string.Compare),
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
-        public static readonly ConstructorInfo HashSetConstructor =
+        public static readonly ConstructorInfo SetConstructor =
             typeof(Set).GetConstructor(Type.EmptyTypes);
 
-        public static readonly MethodInfo HashSetAdd =
-            typeof(Set).GetMethod(nameof(Set.Add), new[] { typeof(object) });
+        public static readonly MethodInfo SetAdd =
+            typeof(Set).GetMethod(nameof(Set.TryAdd), new[] { typeof(object), typeof(byte) });
+
+        public static readonly MethodInfo SetGetCount =
+            typeof(Set).GetProperty(nameof(Set.Count))?.GetGetMethod();
 
         public static MethodInfo ContextCompare =
             typeof(IContext).GetMethod(nameof(IContext.Compare));
