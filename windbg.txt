@@ -1,3 +1,6 @@
+sxe ld:clr
+g
+
 .loadby sos clr
 .load sosex
 .load psscor4.dll

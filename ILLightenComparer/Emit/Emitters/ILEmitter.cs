@@ -236,6 +236,22 @@ namespace ILLightenComparer.Emit.Emitters
 
         #region debug
 
+        public ILEmitter EmitWriteLine(LocalBuilder local)
+        {
+            DebugLine($"\t\tWrite: {local.LocalIndex}");
+            _il.EmitWriteLine(local);
+
+            return this;
+        }
+
+        public ILEmitter EmitWriteLine(string message)
+        {
+            DebugLine($"\t\tWrite: {message}");
+            _il.EmitWriteLine(message);
+
+            return this;
+        }
+
         // ReSharper disable PartialMethodWithSinglePart
 
         partial void DebugOutput();
