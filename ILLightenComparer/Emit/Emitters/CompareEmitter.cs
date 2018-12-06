@@ -36,17 +36,17 @@ namespace ILLightenComparer.Emit.Emitters
 
             member.LoadMembers(_stackEmitter, il)
                   .DefineLabel(out var gotoNextMember)
-                  .Store(memberType, 1, out var n2)
-                  .Store(memberType, 0, out var n1);
+                  .Store(memberType, 1, out var nullableY)
+                  .Store(memberType, 0, out var nullableX);
 
-            CheckNullableValuesForNull(il, member, n1, n2, gotoNextMember);
+            CheckNullableValuesForNull(il, member, nullableX, nullableY, gotoNextMember);
 
             var underlyingType = memberType.GetUnderlyingType();
             if (underlyingType.IsSmallIntegral())
             {
-                return il.LoadAddress(n1)
+                return il.LoadAddress(nullableX)
                          .Call(member.GetValueMethod)
-                         .LoadAddress(n2)
+                         .LoadAddress(nullableY)
                          .Call(member.GetValueMethod)
                          .Emit(OpCodes.Sub)
                          .EmitReturnNotZero(gotoNextMember);
@@ -55,24 +55,25 @@ namespace ILLightenComparer.Emit.Emitters
             var compareToMethod = memberType.GetCompareToMethod();
             if (compareToMethod != null)
             {
-                return il.LoadAddress(n1)
+                return il.LoadAddress(nullableX)
                          .Call(member.GetValueMethod)
                          .Store(underlyingType, out var local)
                          .LoadAddress(local)
-                         .LoadAddress(n2)
+                         .LoadAddress(nullableY)
                          .Call(member.GetValueMethod)
                          .Call(compareToMethod)
                          .EmitReturnNotZero(gotoNextMember);
             }
 
             il.LoadArgument(Arg.Context)
-              .LoadAddress(n1)
-              .LoadAddress(n2)
+              .LoadAddress(nullableX)
+              .Call(member.GetValueMethod)
+              .LoadAddress(nullableY)
+              .Call(member.GetValueMethod)
               .LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 
-            return CompareComplex(il, underlyingType)
-                .EmitReturnNotZero(gotoNextMember);
+            return CompareComplex(il, underlyingType).EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)

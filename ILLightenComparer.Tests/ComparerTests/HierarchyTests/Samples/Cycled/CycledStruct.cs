@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
@@ -7,7 +8,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 
     public struct CycledStruct
     {
-        public int Value { get; set; }
+        public sbyte? Value { get; set; }
         public CycledStructObject FirstObject { get; set; }
         public CycledStructObject SecondObject;
 
@@ -48,7 +49,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 
             public static int Compare(CycledStruct x, CycledStruct y, Set xSet, Set ySet)
             {
-                var compare = x.Value.CompareTo(y.Value);
+                var compare = Nullable.Compare(x.Value, y.Value);
                 if (compare != 0) { return compare; }
 
                 compare = CycledStructObject.RelationalComparer.Compare(x.FirstObject, y.FirstObject, xSet, ySet);
