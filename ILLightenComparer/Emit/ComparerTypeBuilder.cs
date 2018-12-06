@@ -103,11 +103,11 @@ namespace ILLightenComparer.Emit
                     EmitReferenceComparison(il);
                 }
 
-                il.LoadArgument(0)
+                il.LoadArgument(Arg.This)
                   .Emit(OpCodes.Ldfld, contextField)
-                  .LoadArgument(1)
+                  .LoadArgument(Arg.X)
                   .EmitCast(objectType)
-                  .LoadArgument(2)
+                  .LoadArgument(Arg.Y)
                   .EmitCast(objectType);
 
                 EmitCall(il, staticCompareMethod, objectType);
@@ -125,10 +125,10 @@ namespace ILLightenComparer.Emit
 
             using (var il = methodBuilder.CreateILEmitter())
             {
-                il.LoadArgument(0)
+                il.LoadArgument(Arg.This)
                   .Emit(OpCodes.Ldfld, contextField)
-                  .LoadArgument(1)
-                  .LoadArgument(2);
+                  .LoadArgument(Arg.X)
+                  .LoadArgument(Arg.Y);
 
                 EmitCall(il, staticCompareMethod, objectType);
             }
@@ -157,7 +157,6 @@ namespace ILLightenComparer.Emit
                   .Store(typeof(Set), 1, out var ySet)
                   .LoadLocal(xSet)
                   .LoadLocal(ySet)
-                  // call
                   .Call(staticCompareMethod)
                   // if (compare != 0) return compare;
                   .Store(typeof(int), out var result)
@@ -187,18 +186,18 @@ namespace ILLightenComparer.Emit
         private static void EmitReferenceComparison(ILEmitter il)
         {
             // x == y
-            il.LoadArgument(1)
-              .LoadArgument(2)
+            il.LoadArgument(Arg.X)
+              .LoadArgument(Arg.Y)
               .Branch(OpCodes.Bne_Un_S, out var checkY)
               .Return(0)
               .MarkLabel(checkY)
               // y != null
-              .LoadArgument(2)
+              .LoadArgument(Arg.Y)
               .Branch(OpCodes.Brtrue_S, out var checkX)
               .Return(1)
               .MarkLabel(checkX)
               // x != null
-              .LoadArgument(1)
+              .LoadArgument(Arg.X)
               .Branch(OpCodes.Brtrue_S, out var next)
               .Return(-1)
               .MarkLabel(next);
@@ -206,14 +205,14 @@ namespace ILLightenComparer.Emit
 
         private static void EmitCycleDetection(ILEmitter il)
         {
-            il.LoadArgument(2)
-              .LoadArgument(0)
+            il.LoadArgument(Arg.SetX)
+              .LoadArgument(Arg.X)
               .LoadConstant(0)
               .Call(Method.SetAdd) // todo: check call op
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
-              .LoadArgument(3)
-              .LoadArgument(1)
+              .LoadArgument(Arg.SetY)
+              .LoadArgument(Arg.Y)
               .LoadConstant(0)
               .Call(Method.SetAdd)
               .LoadConstant(0)
@@ -235,9 +234,9 @@ namespace ILLightenComparer.Emit
 
             using (var il = constructorInfo.CreateILEmitter())
             {
-                il.LoadArgument(0)
+                il.LoadArgument(Arg.This)
                   .Emit(OpCodes.Call, typeof(object).GetConstructor(Type.EmptyTypes))
-                  .LoadArgument(0)
+                  .LoadArgument(Arg.This)
                   .LoadArgument(1)
                   .Emit(OpCodes.Stfld, contextField)
                   .Return();
@@ -250,7 +249,7 @@ namespace ILLightenComparer.Emit
 
             using (var il = methodBuilder.CreateILEmitter())
             {
-                il.LoadArgument(0)
+                il.LoadArgument(Arg.This)
                   .Emit(OpCodes.Newobj, constructorInfo)
                   .Return();
             }
