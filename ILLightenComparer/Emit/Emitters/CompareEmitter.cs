@@ -147,11 +147,6 @@ namespace ILLightenComparer.Emit.Emitters
 
             var contextCompare = Method.ContextCompare.MakeGenericMethod(memberType);
 
-            //if (memberType.IsClass)
-            //{
-            //    EmitReferenceComparison(il);
-            //}
-
             return il.Emit(OpCodes.Call, contextCompare)
                      .EmitReturnNotZero();
         }

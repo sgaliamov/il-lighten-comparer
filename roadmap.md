@@ -73,7 +73,7 @@
 - [ ] cache instances by type and configuration in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
 - [ ] change behavior then types are not matched but castable
-- [ ] do reference comparison only once in case sealed classes with cycle
+- [ ] do reference comparison only once
 - [ ] test class with more than 256 properties?
 - [ ] support internal classes to compare?
 

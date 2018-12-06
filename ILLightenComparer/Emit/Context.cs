@@ -46,7 +46,7 @@ namespace ILLightenComparer.Emit
 
             if (y == null) { return 1; }
 
-            var xType = x.GetType(); // todo: test with structs
+            var xType = x.GetType();
             var yType = y.GetType();
             if (xType != yType)
             {
