@@ -191,15 +191,13 @@ namespace ILLightenComparer.Emit
               .LoadArgument(Arg.X)
               .LoadConstant(0)
               .Emit(OpCodes.Call, Method.SetAdd)
-              .LoadConstant(0)
-              .Emit(OpCodes.Ceq)
               .LoadArgument(Arg.SetY)
               .LoadArgument(Arg.Y)
               .LoadConstant(0)
               .Emit(OpCodes.Call, Method.SetAdd)
+              .Emit(OpCodes.Or)
               .LoadConstant(0)
-              .Emit(OpCodes.Ceq) // todo: optimize
-              .Emit(OpCodes.And)
+              .Emit(OpCodes.Ceq)
               .Branch(OpCodes.Brfalse_S, out var next)
               .Return(0)
               .MarkLabel(next);
