@@ -49,6 +49,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
+            il.LoadArgument(Arg.Context);
 
             var underlyingType = member.MemberType.GetUnderlyingType();
             if (underlyingType.IsValueType || underlyingType.IsSealed)
@@ -56,8 +57,6 @@ namespace ILLightenComparer.Emit.Emitters
                 var compareMethod = _context.GetStaticCompareMethod(underlyingType);
                 if (compareMethod != null)
                 {
-                    il.LoadArgument(Arg.Context);
-
                     return member
                            .LoadMembers(_stackEmitter, gotoNextMember, il)
                            .LoadArgument(Arg.SetX)
