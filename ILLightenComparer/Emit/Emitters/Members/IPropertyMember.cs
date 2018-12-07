@@ -1,11 +1,9 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IPropertyMember
+    internal interface IPropertyMember : IMember
     {
-        Type DeclaringType { get; }
         MethodInfo GetterMethod { get; }
     }
 }
