@@ -73,32 +73,46 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
         {
             var memberType = member.MemberType;
+            var underlyingType = memberType.GetUnderlyingType();
             var compareToMethod = memberType.GetUnderlyingCompareToMethod();
 
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                  .Store(memberType, 1, out var y)
+                  .Store(memberType, 1, out var y) // todo: not optimal local variables
                   .Store(memberType, 0, out var x);
 
-            if (memberType.IsValueType)
+            if (underlyingType.IsValueType || underlyingType.IsSealed)
             {
-                il.LoadAddress(x)
-                  .LoadLocal(y);
-            }
-            else
-            {
-                il.LoadLocal(x)
-                  .Branch(OpCodes.Brtrue_S, out var call)
-                  .LoadLocal(y)
-                  .Emit(OpCodes.Brfalse_S, gotoNextMember)
-                  .Return(-1)
-                  .MarkLabel(call)
-                  .LoadLocal(x)
-                  .LoadLocal(y);
+                if (memberType.IsValueType)
+                {
+                    il.LoadAddress(x)
+                      .LoadLocal(y);
+                }
+                else
+                {
+                    il.LoadLocal(x)
+                      .Branch(OpCodes.Brtrue_S, out var call)
+                      .LoadLocal(y)
+                      .Emit(OpCodes.Brfalse_S, gotoNextMember)
+                      .Return(-1)
+                      .MarkLabel(call)
+                      .LoadLocal(x)
+                      .LoadLocal(y);
+                }
+
+                return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
             }
 
+            il.LoadArgument(Arg.Context)
+              .LoadLocal(x)
+              .LoadLocal(y)
+              .LoadArgument(Arg.SetX)
+              .LoadArgument(Arg.SetY);
 
-            return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
+            var contextCompare = Method.ContextCompare.MakeGenericMethod(underlyingType);
+
+            return il.Emit(OpCodes.Call, contextCompare)
+                     .EmitReturnNotZero(gotoNextMember);
         }
 
         public void EmitReferenceComparison(ILEmitter il)
