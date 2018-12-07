@@ -38,8 +38,12 @@
 - [x] multi-threading for `GetComparerType` method
 - [x] detect cycles for objects
 - [x] detect cycles for nested objects in structs
-- [ ] compare nullable complex structs
-- [ ] nested structure
+- [x] compare nullable complex structs
+- [x] nested structure
+- [ ] how to split visiting `INullableAcceptor`?
+- [ ] comparable nullable struct
+- [ ] replace not sealed comparable
+- [ ] test with interface member
 
 ## Phase 3 Collections
 
