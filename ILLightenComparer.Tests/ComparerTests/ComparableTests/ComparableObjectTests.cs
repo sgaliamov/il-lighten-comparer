@@ -27,11 +27,25 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         }
 
         [Fact]
+        public void Replaced_Comparable_Object_Is_Compared()
+        {
+            var other = Fixture.Create<ContainerObject>();
+
+            var one = other.DeepClone();
+            one.ComparableProperty = Fixture.Create<ChildComparableObject>();
+
+            var expected = ContainerObject.Comparer.Compare(one, other);
+            var actual = TypedComparer.Compare(one, other);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
         public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
         {
-            var nestedObject = Fixture.Create<ComparableObject>();
             var other = Fixture.Create<ContainerObject>();
-            other.ComparableProperty = nestedObject;
+            other.ComparableProperty = Fixture.Create<ComparableObject>();
+
             var one = other.DeepClone();
             one.ComparableProperty = null;
 
