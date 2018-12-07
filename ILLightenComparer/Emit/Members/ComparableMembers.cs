@@ -17,14 +17,22 @@ namespace ILLightenComparer.Emit.Members
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static ComparableFieldMember Create(MemberInfo memberInfo) =>
-            memberInfo is FieldInfo info
-            && info
-               .FieldType
-               .GetUnderlyingType()
-               .ImplementsGeneric(typeof(IComparable<>), info.FieldType)
+        public static ComparableFieldMember Create(MemberInfo memberInfo)
+        {
+            var info = memberInfo as FieldInfo;
+            if (info == null)
+            {
+                return null;
+            }
+
+            var underlyingType = info.FieldType.GetUnderlyingType();
+
+            var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>), underlyingType);
+
+            return isComparable
                 ? new ComparableFieldMember(info)
                 : null;
+        }
     }
 
     internal sealed class ComparablePropertyMember : PropertyMember, IComparableAcceptor, ICallableProperty
@@ -36,13 +44,21 @@ namespace ILLightenComparer.Emit.Members
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static ComparablePropertyMember Create(MemberInfo memberInfo) =>
-            memberInfo is PropertyInfo info
-            && info
-               .PropertyType
-               .GetUnderlyingType()
-               .ImplementsGeneric(typeof(IComparable<>), info.PropertyType)
+        public static ComparablePropertyMember Create(MemberInfo memberInfo)
+        {
+            var info = memberInfo as PropertyInfo;
+            if (info == null)
+            {
+                return null;
+            }
+
+            var underlyingType = info.PropertyType.GetUnderlyingType();
+
+            var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>), underlyingType);
+
+            return isComparable
                 ? new ComparablePropertyMember(info)
                 : null;
+        }
     }
 }

@@ -78,7 +78,7 @@ namespace ILLightenComparer.Emit.Emitters
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
-            if (!memberType.IsNullable() && !memberType.IsValueType)
+            if (!memberType.IsValueType)
             {
                 il.Store(memberType, 1, out var y)
                   .Store(memberType, 0, out var x)
