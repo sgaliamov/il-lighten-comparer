@@ -73,6 +73,8 @@ namespace ILLightenComparer.Emit
 
         public MethodInfo GetStaticCompareMethod(Type memberType)
         {
+            // todo: technically we need only compare method, no need to build the type first.
+            // it will help to eliminate in context compare method and generate more effective code.
             var comparerType = GetComparerType(memberType);
 
             return comparerType?.GetMethod(

@@ -55,7 +55,7 @@ namespace ILLightenComparer.Emit.Emitters
                   .LoadArgument(Arg.SetX)
                   .LoadArgument(Arg.SetY);
 
-            return  CompareComplex(il, member.MemberType).EmitReturnNotZero(gotoNextMember);
+            return CompareComplex(il, member.MemberType.GetUnderlyingType()).EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)

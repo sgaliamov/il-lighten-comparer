@@ -73,6 +73,7 @@
 - [x] caching for assembly
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
+- [ ] create type only at the end, use builders when cycle is possible
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
 - [ ] cache instances by type and configuration in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
