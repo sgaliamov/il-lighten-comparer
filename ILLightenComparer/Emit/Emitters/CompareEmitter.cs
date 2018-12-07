@@ -48,14 +48,33 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNextMember)
-              .LoadArgument(Arg.Context);
+            il.DefineLabel(out var gotoNextMember);
 
-            member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                  .LoadArgument(Arg.SetX)
-                  .LoadArgument(Arg.SetY);
+            var underlyingType = member.MemberType.GetUnderlyingType();
+            if (underlyingType.IsValueType || underlyingType.IsSealed)
+            {
+                var compareMethod = _context.GetStaticCompareMethod(underlyingType);
+                if (compareMethod != null)
+                {
+                    il.LoadArgument(Arg.Context);
 
-            return CompareComplex(il, member.MemberType.GetUnderlyingType()).EmitReturnNotZero(gotoNextMember);
+                    return member
+                           .LoadMembers(_stackEmitter, gotoNextMember, il)
+                           .LoadArgument(Arg.SetX)
+                           .LoadArgument(Arg.SetY)
+                           .Emit(OpCodes.Call, compareMethod)
+                           .EmitReturnNotZero(gotoNextMember);
+                }
+            }
+
+            var contextCompare = Method.ContextCompare.MakeGenericMethod(underlyingType);
+
+            return member
+                   .LoadMembers(_stackEmitter, gotoNextMember, il)
+                   .LoadArgument(Arg.SetX)
+                   .LoadArgument(Arg.SetY)
+                   .Emit(OpCodes.Call, contextCompare)
+                   .EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
@@ -97,22 +116,6 @@ namespace ILLightenComparer.Emit.Emitters
               .Branch(OpCodes.Brtrue_S, out var next)
               .Return(-1)
               .MarkLabel(next);
-        }
-
-        private ILEmitter CompareComplex(ILEmitter il, Type memberType)
-        {
-            if (memberType.IsValueType || memberType.IsSealed)
-            {
-                var compareMethod = _context.GetStaticCompareMethod(memberType);
-                if (compareMethod != null)
-                {
-                    return il.Call(compareMethod);
-                }
-            }
-
-            var contextCompare = Method.ContextCompare.MakeGenericMethod(memberType);
-
-            return il.Emit(OpCodes.Call, contextCompare);
         }
     }
 }

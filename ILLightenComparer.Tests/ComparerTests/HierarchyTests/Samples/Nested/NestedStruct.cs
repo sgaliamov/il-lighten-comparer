@@ -5,8 +5,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 {
     public struct NestedStruct
     {
-        public ulong Value { get; set; }
-        public ulong? NullableValue { get; set; }
+        public ulong Property { get; set; }
+        public ulong? NullableProperty { get; set; }
 
         public static RelationalComparer Comparer { get; } = new RelationalComparer();
 
@@ -14,13 +14,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
         {
             public int Compare(NestedStruct x, NestedStruct y)
             {
-                var valueComparison = x.Value.CompareTo(y.Value);
+                var valueComparison = x.Property.CompareTo(y.Property);
                 if (valueComparison != 0)
                 {
                     return valueComparison;
                 }
 
-                return Nullable.Compare(x.NullableValue, y.NullableValue);
+                return Nullable.Compare(x.NullableProperty, y.NullableProperty);
             }
 
             public int Compare(NestedStruct? x, NestedStruct? y)

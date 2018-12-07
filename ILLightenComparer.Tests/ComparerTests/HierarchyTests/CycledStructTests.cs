@@ -7,33 +7,34 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public class CycledStructTests
     {
-        public CycledStructTests() => _builder = new ComparersBuilder()
-                                                 .DefineDefaultConfiguration(new ComparerSettings
-                                                 {
-                                                     IncludeFields = true,
-                                                     DetectCycles = true
-                                                 })
-                                                 .DefineConfiguration(typeof(CycledStruct),
-                                                     new ComparerSettings
-                                                     {
-                                                         MembersOrder = new[]
-                                                         {
-                                                             nameof(CycledStruct.Value),
-                                                             nameof(CycledStruct.FirstObject),
-                                                             nameof(CycledStruct.SecondObject)
-                                                         }
-                                                     })
-                                                 .DefineConfiguration(typeof(CycledStructObject),
-                                                     new ComparerSettings
-                                                     {
-                                                         MembersOrder = new[]
-                                                         {
-                                                             nameof(CycledStructObject.Text),
-                                                             nameof(CycledStructObject.FirstStruct),
-                                                             nameof(CycledStructObject.SecondStruct)
-                                                         },
-                                                         IgnoredMembers = new[] { nameof(CycledStructObject.Id) }
-                                                     });
+        public CycledStructTests() =>
+            _builder = new ComparersBuilder()
+                       .DefineDefaultConfiguration(new ComparerSettings
+                       {
+                           IncludeFields = true,
+                           DetectCycles = true
+                       })
+                       .DefineConfiguration(typeof(CycledStruct),
+                           new ComparerSettings
+                           {
+                               MembersOrder = new[]
+                               {
+                                   nameof(CycledStruct.Property),
+                                   nameof(CycledStruct.FirstObject),
+                                   nameof(CycledStruct.SecondObject)
+                               }
+                           })
+                       .DefineConfiguration(typeof(CycledStructObject),
+                           new ComparerSettings
+                           {
+                               MembersOrder = new[]
+                               {
+                                   nameof(CycledStructObject.TextField),
+                                   nameof(CycledStructObject.FirstStruct),
+                                   nameof(CycledStructObject.SecondStruct)
+                               },
+                               IgnoredMembers = new[] { nameof(CycledStructObject.Id) }
+                           });
 
         [Fact]
         public void Detects_Cycle_In_Object()

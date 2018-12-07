@@ -11,7 +11,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
     {
         public readonly int Id;
         public CycledStruct? FirstStruct;
-        public string Text;
+        public string TextField;
 
         public CycledStructObject() => Id = this.GetObjectId();
         public static IComparer<CycledStructObject> Comparer { get; } = new RelationalComparer();
@@ -56,7 +56,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 
                 if (!xSet.TryAdd(x, 0) & !ySet.TryAdd(y, 0)) { return 0; }
 
-                var compare = string.Compare(x.Text, y.Text, StringComparison.Ordinal);
+                var compare = string.Compare(x.TextField, y.TextField, StringComparison.Ordinal);
                 if (compare != 0) { return compare; }
 
                 compare = CycledStruct.RelationalComparer.Compare(x.FirstStruct, y.FirstStruct, xSet, ySet);

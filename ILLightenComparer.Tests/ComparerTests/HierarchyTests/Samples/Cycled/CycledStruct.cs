@@ -8,7 +8,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 
     public struct CycledStruct
     {
-        public sbyte? Value { get; set; }
+        public sbyte? Property { get; set; }
         public CycledStructObject FirstObject { get; set; }
         public CycledStructObject SecondObject;
 
@@ -49,7 +49,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
 
             public static int Compare(CycledStruct x, CycledStruct y, Set xSet, Set ySet)
             {
-                var compare = Nullable.Compare(x.Value, y.Value);
+                var compare = Nullable.Compare(x.Property, y.Property);
                 if (compare != 0) { return compare; }
 
                 compare = CycledStructObject.RelationalComparer.Compare(x.FirstObject, y.FirstObject, xSet, ySet);
