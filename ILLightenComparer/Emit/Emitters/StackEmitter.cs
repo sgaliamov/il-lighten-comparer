@@ -127,8 +127,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             if (callable)
             {
-                il.Store(underlyingType, out var xAddress)
-                  .LoadAddress(xAddress);
+                il.Store(underlyingType, out var xAddress).LoadAddress(xAddress);
             }
 
             return il.LoadAddress(nullableY).Call(getValueMethod);

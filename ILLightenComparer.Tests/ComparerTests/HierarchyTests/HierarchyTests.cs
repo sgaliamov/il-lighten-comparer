@@ -24,6 +24,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                             nameof(SealedNestedObject.Text)
                         }
                     })
+                .For<NestedStruct>()
+                .DefineConfiguration(new ComparerSettings
+                {
+                    MembersOrder = new[]
+                    {
+                        nameof(NestedStruct.Property),
+                        nameof(NestedStruct.NullableProperty)
+                    }
+                })
                 .For<HierarchicalObject>()
                 .DefineConfiguration(new ComparerSettings
                 {
@@ -44,6 +53,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                                     .DefineDefaultConfiguration(new ComparerSettings
                                     {
                                         IncludeFields = true
+                                    })
+                                    .For<NestedStruct>()
+                                    .DefineConfiguration(new ComparerSettings
+                                    {
+                                        MembersOrder = new[]
+                                        {
+                                            nameof(NestedStruct.Property),
+                                            nameof(NestedStruct.NullableProperty)
+                                        }
                                     })
                                     .For<HierarchicalObject>()
                                     .DefineConfiguration(new ComparerSettings
@@ -81,22 +99,25 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Compare_Nested_Structs()
         {
-            var one = new HierarchicalObject
+            for (var i = 0; i < 10; i++)
             {
-                NestedStructField = Fixture.Create<NestedStruct>(),
-                NestedNullableStructProperty = Fixture.Create<NestedStruct>()
-            };
+                var one = new HierarchicalObject
+                {
+                    NestedStructField = Fixture.Create<NestedStruct>(),
+                    NestedNullableStructProperty = Fixture.Create<NestedStruct>()
+                };
 
-            var other = new HierarchicalObject
-            {
-                NestedStructField = Fixture.Create<NestedStruct>(),
-                NestedNullableStructProperty = Fixture.Create<NestedStruct>()
-            };
+                var other = new HierarchicalObject
+                {
+                    NestedStructField = Fixture.Create<NestedStruct>(),
+                    NestedNullableStructProperty = Fixture.Create<NestedStruct>()
+                };
 
-            var expected = HierarchicalObject.Comparer.Compare(one, other);
-            var actual = _nestedStructComparer.Compare(one, other);
+                var expected = HierarchicalObject.Comparer.Compare(one, other);
+                var actual = _nestedStructComparer.Compare(one, other);
 
-            actual.Should().Be(expected);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]

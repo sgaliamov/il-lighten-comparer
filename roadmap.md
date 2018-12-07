@@ -40,10 +40,10 @@
 - [x] detect cycles for nested objects in structs
 - [x] compare nullable complex structs
 - [x] nested structure
-- [ ] how to split visiting `INullableAcceptor`?
+- [x] split visiting `INullableAcceptor`
+- [x] test with interface member
 - [ ] comparable nullable struct
 - [ ] replace not sealed comparable
-- [ ] test with interface member
 
 ## Phase 3 Collections
 
