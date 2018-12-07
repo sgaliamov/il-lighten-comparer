@@ -88,7 +88,7 @@ namespace ILLightenComparer.Emit.Emitters
                   .Emit(OpCodes.Brfalse_S, gotoNextMember)
                   .Return(-1)
                   .MarkLabel(call)
-                  .LoadLocal(x)
+                  .LoadAddress(x)
                   .LoadLocal(y);
             }
 

@@ -30,7 +30,6 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
         {
             var other = Fixture.Create<ContainerObject>();
-            other.ComparableProperty = Fixture.Create<ComparableObject>();
 
             var one = other.DeepClone();
             one.ComparableProperty = null;
