@@ -126,7 +126,6 @@ namespace ILLightenComparer.Emit
             {
                 StringPropertyMember.Create,
                 IntegralPropertyMember.Create,
-                NullablePropertyMember.Create,
                 BasicPropertyMember.Create,
                 ComparablePropertyMember.Create,
                 HierarchicalPropertyMember.Create
@@ -136,7 +135,6 @@ namespace ILLightenComparer.Emit
             {
                 StringFieldMember.Create,
                 IntegralFieldMember.Create,
-                NullableFieldMember.Create,
                 BasicFieldMember.Create,
                 ComparableFieldMember.Create,
                 HierarchicalFieldMember.Create

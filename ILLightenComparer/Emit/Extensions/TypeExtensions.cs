@@ -65,6 +65,8 @@ namespace ILLightenComparer.Emit.Extensions
         public static bool IsPrimitive(this Type type) =>
             type.IsPrimitive
             || type.IsEnum
+            //|| ReferenceEquals(type, typeof(IntPtr)) // todo: implement comparison for native ints
+            //|| ReferenceEquals(type, typeof(UIntPtr))
             || ReferenceEquals(type, typeof(string))
             || ReferenceEquals(type, typeof(decimal));
 

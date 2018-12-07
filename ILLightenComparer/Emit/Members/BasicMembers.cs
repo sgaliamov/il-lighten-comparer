@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Emitters.Members;
@@ -10,11 +11,17 @@ namespace ILLightenComparer.Emit.Members
     {
         private BasicFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
+            visitor.Visit(this, il, gotoNextMember);
+
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static BasicFieldMember Create(MemberInfo memberInfo) =>
-            memberInfo is FieldInfo info && info.FieldType.IsPrimitive()
+            memberInfo is FieldInfo info
+            && info
+               .FieldType
+               .GetUnderlyingType()
+               .IsPrimitive()
                 ? new BasicFieldMember(info)
                 : null;
     }
@@ -23,11 +30,17 @@ namespace ILLightenComparer.Emit.Members
     {
         private BasicPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
+            visitor.Visit(this, il, gotoNextMember);
+
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static BasicPropertyMember Create(MemberInfo memberInfo) =>
-            memberInfo is PropertyInfo info && info.PropertyType.IsPrimitive()
+            memberInfo is PropertyInfo info
+            && info
+               .PropertyType
+               .GetUnderlyingType()
+               .IsPrimitive()
                 ? new BasicPropertyMember(info)
                 : null;
     }

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Emitters.Members;
@@ -10,11 +11,17 @@ namespace ILLightenComparer.Emit.Members
     {
         private IntegralFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
+            visitor.Visit(this, il, gotoNextMember);
+
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static IntegralFieldMember Create(MemberInfo memberInfo) =>
-            memberInfo is FieldInfo info && info.FieldType.IsSmallIntegral()
+            memberInfo is FieldInfo info
+            && info
+               .FieldType
+               .GetUnderlyingType()
+               .IsSmallIntegral()
                 ? new IntegralFieldMember(info)
                 : null;
     }
@@ -23,11 +30,16 @@ namespace ILLightenComparer.Emit.Members
     {
         private IntegralPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) => visitor.Visit(this, il, gotoNextMember);
+
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static IntegralPropertyMember Create(MemberInfo memberInfo) =>
-            memberInfo is PropertyInfo info && info.PropertyType.IsSmallIntegral()
+            memberInfo is PropertyInfo info
+            && info
+               .PropertyType
+               .GetUnderlyingType()
+               .IsSmallIntegral()
                 ? new IntegralPropertyMember(info)
                 : null;
     }

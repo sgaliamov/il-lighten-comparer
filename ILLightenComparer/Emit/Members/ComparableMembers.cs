@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Emitters.Members;
@@ -11,11 +12,17 @@ namespace ILLightenComparer.Emit.Members
     {
         private ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
+            visitor.Visit(this, il, gotoNextMember);
+
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static ComparableFieldMember Create(MemberInfo memberInfo) =>
-            memberInfo is FieldInfo info && info.FieldType.ImplementsGeneric(typeof(IComparable<>), info.FieldType)
+            memberInfo is FieldInfo info
+            && info
+               .FieldType
+               .GetUnderlyingType()
+               .ImplementsGeneric(typeof(IComparable<>), info.FieldType)
                 ? new ComparableFieldMember(info)
                 : null;
     }
@@ -24,21 +31,18 @@ namespace ILLightenComparer.Emit.Members
     {
         private ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
+            visitor.Visit(this, il, gotoNextMember);
+
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static ComparablePropertyMember Create(MemberInfo memberInfo)
-        {
-            if (!(memberInfo is PropertyInfo info))
-            {
-                return null;
-            }
-
-            var isComparable = info.PropertyType.ImplementsGeneric(typeof(IComparable<>), info.PropertyType);
-
-            return isComparable
+        public static ComparablePropertyMember Create(MemberInfo memberInfo) =>
+            memberInfo is PropertyInfo info
+            && info
+               .PropertyType
+               .GetUnderlyingType()
+               .ImplementsGeneric(typeof(IComparable<>), info.PropertyType)
                 ? new ComparablePropertyMember(info)
                 : null;
-        }
     }
 }

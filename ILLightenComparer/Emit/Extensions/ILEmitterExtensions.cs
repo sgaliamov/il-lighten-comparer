@@ -38,10 +38,6 @@ namespace ILLightenComparer.Emit.Extensions
             return il.Emit(OpCodes.Ldflda, member.FieldInfo);
         }
 
-        public static ILEmitter EmitReturnNotZero(this ILEmitter il) =>
-            il.DefineLabel(out var next)
-              .EmitReturnNotZero(next);
-
         public static ILEmitter EmitReturnNotZero(this ILEmitter il, Label next) =>
             il.Emit(OpCodes.Stloc_0)
               .Emit(OpCodes.Ldloc_0)

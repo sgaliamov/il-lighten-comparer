@@ -15,108 +15,69 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {
+            il.DefineLabel(out var gotoNextMember);
             var memberType = member.MemberType;
-            var method = memberType.GetCompareToMethod()
-                         ?? throw new ArgumentException(
-                             $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
+            var compareToMethod = memberType.GetCompareToMethod()
+                                  ?? throw new ArgumentException(
+                                      $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
-            return member.LoadMembers(_stackEmitter, il)
-                         .Call(method)
-                         .EmitReturnNotZero();
-        }
-
-        public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il) =>
-            member.LoadMembers(_stackEmitter, il)
-                  .Emit(OpCodes.Sub)
-                  .EmitReturnNotZero();
-
-        public ILEmitter Visit(INullableAcceptor member, ILEmitter il)
-        {
-            var memberType = member.MemberType;
-
-            member.LoadMembers(_stackEmitter, il)
-                  .DefineLabel(out var gotoNextMember)
-                  .Store(memberType, 1, out var nullableY)
-                  .Store(memberType, 0, out var nullableX);
-
-            CheckNullableValuesForNull(il, member, nullableX, nullableY, gotoNextMember);
-
-            var underlyingType = memberType.GetUnderlyingType();
-            if (underlyingType.IsSmallIntegral())
-            {
-                return il.LoadAddress(nullableX)
-                         .Call(member.GetValueMethod)
-                         .LoadAddress(nullableY)
-                         .Call(member.GetValueMethod)
-                         .Emit(OpCodes.Sub)
-                         .EmitReturnNotZero(gotoNextMember);
-            }
-
-            // todo: test with comparable struct
-            var compareToMethod = memberType.GetCompareToMethod();
-            if (compareToMethod != null)
-            {
-                return il.LoadAddress(nullableX)
-                         .Call(member.GetValueMethod)
-                         .Store(underlyingType, out var local)
-                         .LoadAddress(local)
-                         .LoadAddress(nullableY)
-                         .Call(member.GetValueMethod)
+            return member.LoadMembers(_stackEmitter, gotoNextMember, il)
                          .Call(compareToMethod)
                          .EmitReturnNotZero(gotoNextMember);
-            }
+        }
 
-            il.LoadArgument(Arg.Context)
-              .LoadAddress(nullableX)
-              .Call(member.GetValueMethod)
-              .LoadAddress(nullableY)
-              .Call(member.GetValueMethod)
-              .LoadArgument(Arg.SetX)
-              .LoadArgument(Arg.SetY);
+        public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il)
+        {
+            il.DefineLabel(out var gotoNextMember);
 
-            return CompareComplex(il, underlyingType).EmitReturnNotZero(gotoNextMember);
+            return member.LoadMembers(_stackEmitter, gotoNextMember, il)
+                         .Emit(OpCodes.Sub)
+                         .EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
         {
             var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
+            il.DefineLabel(out var gotoNextMember);
 
-            return member.LoadMembers(_stackEmitter, il)
+            return member.LoadMembers(_stackEmitter, gotoNextMember, il)
                          .LoadConstant(comparisonType)
                          .Call(Method.StringCompare)
-                         .EmitReturnNotZero();
+                         .EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
-            var memberType = member.MemberType;
+            il.DefineLabel(out var gotoNextMember)
+              .LoadArgument(Arg.Context);
 
-            il.LoadArgument(Arg.Context);
-            member.LoadMembers(_stackEmitter, il)
+            member.LoadMembers(_stackEmitter, gotoNextMember, il)
                   .LoadArgument(Arg.SetX)
                   .LoadArgument(Arg.SetY);
 
-            return CompareComplex(il, memberType).EmitReturnNotZero();
+            return  CompareComplex(il, member.MemberType).EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
         {
             var memberType = member.MemberType;
             var compareToMethod = memberType.GetCompareToMethod();
+            il.DefineLabel(out var gotoNextMember);
 
-            return member.LoadMembers(_stackEmitter, il)
-                         .Store(memberType, 1, out var l2)
-                         .Store(memberType, 0, out var l1)
-                         .LoadLocal(l1)
+            // todo: test with comparable struct
+            return member.LoadMembers(_stackEmitter, gotoNextMember, il)
+                         .Store(memberType, 1, out var y)
+                         .Store(memberType, 0, out var x)
+                         .LoadLocal(x)
                          .Branch(OpCodes.Brtrue_S, out var call)
-                         .LoadLocal(l2)
-                         .Branch(OpCodes.Brfalse_S, out var next)
+                         .LoadLocal(y)
+                         .Emit(OpCodes.Brfalse_S, gotoNextMember)
                          .Return(-1)
                          .MarkLabel(call)
-                         .LoadLocal(l1)
-                         .LoadLocal(l2)
+                         .LoadLocal(x)
+                         .LoadLocal(y)
                          .Call(compareToMethod) // todo: test for replacing not sealed comparable member
-                         .EmitReturnNotZero(next);
+                         .EmitReturnNotZero(gotoNextMember);
         }
 
         public void EmitReferenceComparison(ILEmitter il)
@@ -152,29 +113,6 @@ namespace ILLightenComparer.Emit.Emitters
             var contextCompare = Method.ContextCompare.MakeGenericMethod(memberType);
 
             return il.Emit(OpCodes.Call, contextCompare);
-        }
-
-        private static void CheckNullableValuesForNull(
-            ILEmitter il,
-            INullableAcceptor member,
-            LocalBuilder n1,
-            LocalBuilder n2,
-            Label ifBothNull)
-        {
-            il.LoadAddress(n2)
-              .Call(member.HasValueMethod)
-              .Store(typeof(bool), out var secondHasValue)
-              .LoadAddress(n1)
-              .Call(member.HasValueMethod)
-              .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Emit(OpCodes.Brfalse_S, ifBothNull)
-              .Return(-1)
-              .MarkLabel(ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Branch(OpCodes.Brtrue_S, out var getValues)
-              .Return(1)
-              .MarkLabel(getValues);
         }
     }
 }
