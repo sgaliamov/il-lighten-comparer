@@ -74,10 +74,11 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var memberType = member.MemberType;
             var compareToMethod = memberType.GetCompareToMethod();
+
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
-            if (!memberType.IsNullable())
+            if (!memberType.IsNullable() && !memberType.IsValueType)
             {
                 il.Store(memberType, 1, out var y)
                   .Store(memberType, 0, out var x)
@@ -91,9 +92,7 @@ namespace ILLightenComparer.Emit.Emitters
                   .LoadLocal(y);
             }
 
-            // todo: test with comparable struct
-            return il.Call(compareToMethod) // todo: test for replacing not sealed comparable member
-                     .EmitReturnNotZero(gotoNextMember);
+            return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
         }
 
         public void EmitReferenceComparison(ILEmitter il)
