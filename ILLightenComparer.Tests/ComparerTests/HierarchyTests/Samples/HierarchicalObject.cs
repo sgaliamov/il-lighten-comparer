@@ -77,7 +77,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                 }
 
                 compare = NestedStruct.Comparer.Compare(
-                    x.NestedStructField, 
+                    x.NestedStructField,
                     y.NestedStructField);
                 if (compare != 0)
                 {
@@ -85,7 +85,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                 }
 
                 compare = NestedStruct.Comparer.Compare(
-                    x.NestedNullableStructProperty, 
+                    x.NestedNullableStructProperty,
                     y.NestedNullableStructProperty);
                 if (compare != 0)
                 {

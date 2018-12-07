@@ -39,12 +39,18 @@ namespace ILLightenComparer.Emit
         {
             if (x == null)
             {
-                if (y == null) { return 0; }
+                if (y == null)
+                {
+                    return 0;
+                }
 
                 return -1;
             }
 
-            if (y == null) { return 1; }
+            if (y == null)
+            {
+                return 1;
+            }
 
             var xType = x.GetType();
             var yType = y.GetType();
@@ -58,13 +64,19 @@ namespace ILLightenComparer.Emit
 
         public Type GetComparerType(Type objectType)
         {
-            if (!_typeHeap.TryAdd(objectType, 0)) { return null; }
+            if (!_typeHeap.TryAdd(objectType, 0))
+            {
+                return null;
+            }
 
             var comparerType = _comparerTypes.GetOrAdd(
                 objectType,
                 t => _comparerTypeBuilder.Build(t));
 
-            if (_typeHeap.TryRemove(objectType, out _)) { return comparerType; }
+            if (_typeHeap.TryRemove(objectType, out _))
+            {
+                return comparerType;
+            }
 
             throw new InvalidOperationException("Comparison context is not valid.");
         }

@@ -42,11 +42,12 @@
 - [x] nested structure
 - [x] split visiting `INullableAcceptor`
 - [x] test with interface member
-- [ ] comparable nullable struct
 - [ ] replace not sealed comparable
+- [ ] comparable nullable struct
 
 ## Phase 3 Collections
 
+- [ ] create type only at the end, use builders when cycle is possible
 - [ ] compare collection, do not iterate `IEnumerable`
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
@@ -73,7 +74,6 @@
 - [x] caching for assembly
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
-- [ ] create type only at the end, use builders when cycle is possible
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
 - [ ] cache instances by type and configuration in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result

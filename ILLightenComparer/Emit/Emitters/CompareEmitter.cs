@@ -49,6 +49,9 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
+            member.LoadMembers(_stackEmitter, gotoNextMember, il)
+                  .LoadArgument(Arg.SetX)
+                  .LoadArgument(Arg.SetY);
 
             var underlyingType = member.MemberType.GetUnderlyingType();
             if (underlyingType.IsValueType || underlyingType.IsSealed)
@@ -56,23 +59,15 @@ namespace ILLightenComparer.Emit.Emitters
                 var compareMethod = _context.GetStaticCompareMethod(underlyingType);
                 if (compareMethod != null)
                 {
-                    return member
-                           .LoadMembers(_stackEmitter, gotoNextMember, il)
-                           .LoadArgument(Arg.SetX)
-                           .LoadArgument(Arg.SetY)
-                           .Emit(OpCodes.Call, compareMethod)
-                           .EmitReturnNotZero(gotoNextMember);
+                    return il.Emit(OpCodes.Call, compareMethod)
+                             .EmitReturnNotZero(gotoNextMember);
                 }
             }
 
             var contextCompare = Method.ContextCompare.MakeGenericMethod(underlyingType);
 
-            return member
-                   .LoadMembers(_stackEmitter, gotoNextMember, il)
-                   .LoadArgument(Arg.SetX)
-                   .LoadArgument(Arg.SetY)
-                   .Emit(OpCodes.Call, contextCompare)
-                   .EmitReturnNotZero(gotoNextMember);
+            return il.Emit(OpCodes.Call, contextCompare)
+                     .EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
@@ -80,21 +75,25 @@ namespace ILLightenComparer.Emit.Emitters
             var memberType = member.MemberType;
             var compareToMethod = memberType.GetCompareToMethod();
             il.DefineLabel(out var gotoNextMember);
+            member.LoadMembers(_stackEmitter, gotoNextMember, il);
+
+            if (!memberType.IsNullable())
+            {
+                il.Store(memberType, 1, out var y)
+                  .Store(memberType, 0, out var x)
+                  .LoadLocal(x)
+                  .Branch(OpCodes.Brtrue_S, out var call)
+                  .LoadLocal(y)
+                  .Emit(OpCodes.Brfalse_S, gotoNextMember)
+                  .Return(-1)
+                  .MarkLabel(call)
+                  .LoadLocal(x)
+                  .LoadLocal(y);
+            }
 
             // todo: test with comparable struct
-            return member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                         .Store(memberType, 1, out var y)
-                         .Store(memberType, 0, out var x)
-                         .LoadLocal(x)
-                         .Branch(OpCodes.Brtrue_S, out var call)
-                         .LoadLocal(y)
-                         .Emit(OpCodes.Brfalse_S, gotoNextMember)
-                         .Return(-1)
-                         .MarkLabel(call)
-                         .LoadLocal(x)
-                         .LoadLocal(y)
-                         .Call(compareToMethod) // todo: test for replacing not sealed comparable member
-                         .EmitReturnNotZero(gotoNextMember);
+            return il.Call(compareToMethod) // todo: test for replacing not sealed comparable member
+                     .EmitReturnNotZero(gotoNextMember);
         }
 
         public void EmitReferenceComparison(ILEmitter il)

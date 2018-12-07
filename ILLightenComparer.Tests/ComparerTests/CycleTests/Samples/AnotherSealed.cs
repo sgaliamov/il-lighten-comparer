@@ -1,4 +1,4 @@
-﻿namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
+﻿namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {
     public sealed class AnotherSealed
     {

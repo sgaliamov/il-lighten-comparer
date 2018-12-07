@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ILLightenComparer.Emit.Emitters
+﻿namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class Arg
     {

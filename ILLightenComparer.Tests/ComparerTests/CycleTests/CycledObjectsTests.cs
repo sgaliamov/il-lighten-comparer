@@ -2,10 +2,10 @@
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
-using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled;
+using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
 using Xunit;
 
-namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
+namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 {
     public class CycledObjectsTests
     {

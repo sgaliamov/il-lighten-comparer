@@ -55,9 +55,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                           .Select(x => new Thread(action))
                           .ToArray();
 
-            foreach (var thread in threads) { thread.Start(); }
+            foreach (var thread in threads)
+            {
+                thread.Start();
+            }
 
-            foreach (var thread in threads) { thread.Join(); }
+            foreach (var thread in threads)
+            {
+                thread.Join();
+            }
         }
 
         private static IComparer<AbstractMembers> CreateComparer() =>

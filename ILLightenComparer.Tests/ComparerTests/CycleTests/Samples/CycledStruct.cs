@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
+namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {
     using Set = ConcurrentDictionary<object, byte>;
 
@@ -22,7 +22,10 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
                 var setY = new Set();
 
                 var compare = Compare(x, y, setX, setY);
-                if (compare != 0) { return compare; }
+                if (compare != 0)
+                {
+                    return compare;
+                }
 
                 return setX.Count - setY.Count;
             }
@@ -50,10 +53,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Cycled
             public static int Compare(CycledStruct x, CycledStruct y, Set xSet, Set ySet)
             {
                 var compare = Nullable.Compare(x.Property, y.Property);
-                if (compare != 0) { return compare; }
+                if (compare != 0)
+                {
+                    return compare;
+                }
 
                 compare = CycledStructObject.RelationalComparer.Compare(x.FirstObject, y.FirstObject, xSet, ySet);
-                if (compare != 0) { return compare; }
+                if (compare != 0)
+                {
+                    return compare;
+                }
 
                 return CycledStructObject.RelationalComparer.Compare(x.SecondObject, y.SecondObject, xSet, ySet);
             }
