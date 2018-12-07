@@ -60,9 +60,9 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             il.LoadField(member, Arg.X)
+              .Store(memberType, 0, out var nullableX)
               .LoadField(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY)
-              .Store(memberType, 0, out var nullableX);
+              .Store(memberType, 1, out var nullableY);
 
             return LoadNullableMembers(
                 il,
@@ -89,9 +89,9 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             il.LoadProperty(member, Arg.X)
+              .Store(memberType, 0, out var nullableX)
               .LoadProperty(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY)
-              .Store(memberType, 0, out var nullableX);
+              .Store(memberType, 1, out var nullableY);
 
             return LoadNullableMembers(
                 il,
