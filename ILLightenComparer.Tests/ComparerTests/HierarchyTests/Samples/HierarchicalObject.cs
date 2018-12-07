@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
@@ -11,7 +12,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 
         public static IComparer<HierarchicalObject> Comparer { get; } = new ValueRelationalComparer();
 
-        public ComparableObject ComparableProperty { get; set; }
         public SealedNestedObject FirstProperty { get; set; }
         public NestedStruct? NestedNullableStructProperty { get; set; }
         public SealedNestedObject SecondProperty { get; set; }
@@ -37,14 +37,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                 }
 
                 var compare = Comparer<ComparableObject>.Default.Compare(
-                    x.ComparableProperty,
-                    y.ComparableProperty);
-                if (compare != 0)
-                {
-                    return compare;
-                }
-
-                compare = Comparer<ComparableObject>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0)

@@ -1,11 +1,12 @@
 ﻿using System;
 
-namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
+namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
     public class ComparableObject : IComparable<ComparableObject>
     {
         public static bool UsedCompareTo { get; private set; }
-        public int Value { get; set; }
+
+        public int Property { get; set; }
 
         public int CompareTo(ComparableObject other)
         {
@@ -21,7 +22,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 
             UsedCompareTo = true;
 
-            return Value.CompareTo(other.Value);
+            return Property.CompareTo(other.Property);
         }
     }
 }

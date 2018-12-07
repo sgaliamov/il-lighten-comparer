@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
-using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
 using Xunit;
@@ -38,7 +37,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 {
                     MembersOrder = new[]
                     {
-                        nameof(HierarchicalObject.ComparableProperty),
                         nameof(HierarchicalObject.ComparableField),
                         nameof(HierarchicalObject.Value),
                         nameof(HierarchicalObject.FirstProperty),
@@ -68,7 +66,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                                     {
                                         IgnoredMembers = new[]
                                         {
-                                            nameof(HierarchicalObject.ComparableProperty),
                                             nameof(HierarchicalObject.ComparableField),
                                             nameof(HierarchicalObject.Value),
                                             nameof(HierarchicalObject.FirstProperty),
@@ -118,37 +115,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
                 actual.Should().Be(expected);
             }
-        }
-
-        [Fact]
-        public void Custom_Comparable_Implementation_Should_Be_Used()
-        {
-            var other = Fixture.Create<HierarchicalObject>();
-
-            var one = other.DeepClone();
-            one.ComparableProperty.Value = other.ComparableProperty.Value + 1;
-
-            var expected = HierarchicalObject.Comparer.Compare(one, other);
-            var actual = TypedComparer.Compare(one, other);
-
-            expected.Should().Be(1);
-            actual.Should().Be(expected);
-
-            ComparableObject.UsedCompareTo.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
-        {
-            var nestedObject = Fixture.Create<ComparableObject>();
-            var other = Fixture.Create<HierarchicalObject>();
-            other.ComparableProperty = nestedObject;
-            var one = other.DeepClone();
-            one.ComparableProperty = null;
-
-            TypedComparer.Compare(one, other)
-                         .Should()
-                         .BeNegative();
         }
 
         private readonly IComparer<HierarchicalObject> _nestedStructComparer;
