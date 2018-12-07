@@ -44,6 +44,7 @@
 - [x] test with interface member
 - [ ] replace not sealed comparable
 - [ ] comparable nullable struct
+- [ ] generate simplified comparer if root object implements `IComparable`?
 
 ## Phase 3 Collections
 
