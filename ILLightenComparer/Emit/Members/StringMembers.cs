@@ -6,9 +6,11 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringFieldMember : FieldMember, IStringAcceptor, ITwoArgumentsField
+    internal sealed class StringFieldMember : FieldMember, IStringAcceptor, IArgumentsField
     {
         private StringFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+
+        public bool LoadContext => false;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
@@ -22,9 +24,11 @@ namespace ILLightenComparer.Emit.Members
                 : null;
     }
 
-    internal sealed class StringPropertyMember : PropertyMember, IStringAcceptor, ITwoArgumentsProperty
+    internal sealed class StringPropertyMember : PropertyMember, IStringAcceptor, IArgumentsProperty
     {
         private StringPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+
+        public bool LoadContext => false;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);

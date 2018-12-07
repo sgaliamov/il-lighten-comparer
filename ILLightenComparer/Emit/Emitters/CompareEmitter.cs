@@ -49,7 +49,6 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            il.LoadArgument(Arg.Context);
 
             var underlyingType = member.MemberType.GetUnderlyingType();
             if (underlyingType.IsValueType || underlyingType.IsSealed)

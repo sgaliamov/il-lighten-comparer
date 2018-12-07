@@ -23,7 +23,7 @@ namespace ILLightenComparer.Emit.Emitters
               .LoadField(member, Arg.Y)
               .Store(memberType, 1, out var nullableY);
 
-            return LoadNullableMembers(il, true, memberType, nullableX, nullableY, gotoNextMember);
+            return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
         }
 
         public ILEmitter Visit(ICallableProperty member, ILEmitter il, Label gotoNextMember)
@@ -42,46 +42,71 @@ namespace ILLightenComparer.Emit.Emitters
               .LoadProperty(member, Arg.Y)
               .Store(memberType, 1, out var nullableY);
 
-            return LoadNullableMembers(il, true, memberType, nullableX, nullableY, gotoNextMember);
+            return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
         }
 
-        public ILEmitter Visit(ITwoArgumentsField member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IArgumentsField member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
             if (!memberType.IsNullable())
             {
+                if (member.LoadContext)
+                {
+                    il.LoadArgument(Arg.Context);
+                }
+
                 return il.LoadField(member, Arg.X)
                          .LoadField(member, Arg.Y);
             }
 
             il.LoadField(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
               .LoadField(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
+              .Store(memberType, 1, out var nullableY)
+              .Store(memberType, 0, out var nullableX);
 
-            return LoadNullableMembers(il, false, memberType, nullableX, nullableY, gotoNextMember);
+            return LoadNullableMembers(
+                il,
+                false,
+                member.LoadContext,
+                memberType,
+                nullableX,
+                nullableY,
+                gotoNextMember);
         }
 
-        public ILEmitter Visit(ITwoArgumentsProperty member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IArgumentsProperty member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
             if (!memberType.IsNullable())
             {
+                if (member.LoadContext)
+                {
+                    il.LoadArgument(Arg.Context);
+                }
+
                 return il.LoadProperty(member, Arg.X)
                          .LoadProperty(member, Arg.Y);
             }
 
             il.LoadProperty(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
               .LoadProperty(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
+              .Store(memberType, 1, out var nullableY)
+              .Store(memberType, 0, out var nullableX);
 
-            return LoadNullableMembers(il, false, memberType, nullableX, nullableY, gotoNextMember);
+            return LoadNullableMembers(
+                il,
+                false,
+                member.LoadContext,
+                memberType,
+                nullableX,
+                nullableY,
+                gotoNextMember);
         }
 
         private static ILEmitter LoadNullableMembers(
             ILEmitter il,
             bool callable,
+            bool loadContext,
             Type memberType,
             LocalBuilder nullableX,
             LocalBuilder nullableY,
@@ -93,8 +118,12 @@ namespace ILLightenComparer.Emit.Emitters
 
             CheckNullableValuesForNull(il, nullableX, nullableY, hasValueMethod, gotoNextMember);
 
-            il.LoadAddress(nullableX)
-              .Call(getValueMethod);
+            if (loadContext)
+            {
+                il.LoadArgument(Arg.Context);
+            }
+
+            il.LoadAddress(nullableX).Call(getValueMethod);
 
             if (callable)
             {
@@ -102,8 +131,7 @@ namespace ILLightenComparer.Emit.Emitters
                   .LoadAddress(xAddress);
             }
 
-            return il.LoadAddress(nullableY)
-                     .Call(getValueMethod);
+            return il.LoadAddress(nullableY).Call(getValueMethod);
         }
 
         private static void CheckNullableValuesForNull(

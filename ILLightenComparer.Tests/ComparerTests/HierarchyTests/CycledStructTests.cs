@@ -39,6 +39,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Detects_Cycle_In_Object()
         {
+            var comparerStruct = ComparerStruct;
+
+
             var one = new CycledStructObject();
             one.FirstStruct = new CycledStruct { SecondObject = one };
 

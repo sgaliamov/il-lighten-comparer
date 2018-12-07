@@ -7,9 +7,11 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class HierarchicalFieldMember : FieldMember, IHierarchicalAcceptor, ITwoArgumentsField
+    internal sealed class HierarchicalFieldMember : FieldMember, IHierarchicalAcceptor, IArgumentsField
     {
         private HierarchicalFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+
+        public bool LoadContext => true;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
@@ -26,9 +28,11 @@ namespace ILLightenComparer.Emit.Members
                 : null;
     }
 
-    internal sealed class HierarchicalPropertyMember : PropertyMember, IHierarchicalAcceptor, ITwoArgumentsProperty
+    internal sealed class HierarchicalPropertyMember : PropertyMember, IHierarchicalAcceptor, IArgumentsProperty
     {
         private HierarchicalPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+
+        public bool LoadContext => true;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);

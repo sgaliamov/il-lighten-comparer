@@ -7,9 +7,11 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class IntegralFieldMember : FieldMember, ITwoArgumentsField, IIntegralAcceptor
+    internal sealed class IntegralFieldMember : FieldMember, IArgumentsField, IIntegralAcceptor
     {
         private IntegralFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+
+        public bool LoadContext => false;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
@@ -26,9 +28,11 @@ namespace ILLightenComparer.Emit.Members
                 : null;
     }
 
-    internal sealed class IntegralPropertyMember : PropertyMember, ITwoArgumentsProperty, IIntegralAcceptor
+    internal sealed class IntegralPropertyMember : PropertyMember, IArgumentsProperty, IIntegralAcceptor
     {
         private IntegralPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+
+        public bool LoadContext => false;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) => visitor.Visit(this, il, gotoNextMember);
 
