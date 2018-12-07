@@ -76,21 +76,27 @@ namespace ILLightenComparer.Emit.Emitters
             var compareToMethod = memberType.GetUnderlyingCompareToMethod();
 
             il.DefineLabel(out var gotoNextMember);
-            member.LoadMembers(_stackEmitter, gotoNextMember, il);
+            member.LoadMembers(_stackEmitter, gotoNextMember, il)
+                  .Store(memberType, 1, out var y)
+                  .Store(memberType, 0, out var x);
 
-            if (!memberType.IsValueType)
+            if (memberType.IsValueType)
             {
-                il.Store(memberType, 1, out var y)
-                  .Store(memberType, 0, out var x)
-                  .LoadLocal(x)
+                il.LoadAddress(x)
+                  .LoadLocal(y);
+            }
+            else
+            {
+                il.LoadLocal(x)
                   .Branch(OpCodes.Brtrue_S, out var call)
                   .LoadLocal(y)
                   .Emit(OpCodes.Brfalse_S, gotoNextMember)
                   .Return(-1)
                   .MarkLabel(call)
-                  .LoadAddress(x)
+                  .LoadLocal(x)
                   .LoadLocal(y);
             }
+
 
             return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
         }

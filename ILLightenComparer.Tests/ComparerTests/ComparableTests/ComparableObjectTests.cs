@@ -12,16 +12,19 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         [Fact]
         public void Custom_Comparable_Implementation_Should_Be_Used()
         {
-            var other = Fixture.Create<ContainerObject>();
+            for (var i = 0; i < 100; i++)
+            {
+                var other = Fixture.Create<ContainerObject>();
+                other.ComparableProperty = Fixture.Create<ComparableObject>(); // to prevent casual null
 
-            var one = other.DeepClone();
-            one.ComparableProperty.Property = other.ComparableProperty.Property + 1;
+                var one = other.DeepClone();
+                one.ComparableProperty.Property = other.ComparableProperty.Property + 1;
 
-            var expected = ContainerObject.Comparer.Compare(one, other);
-            var actual = TypedComparer.Compare(one, other);
+                var expected = ContainerObject.Comparer.Compare(one, other);
+                var actual = TypedComparer.Compare(one, other);
 
-            expected.Should().Be(1);
-            actual.Should().Be(expected);
+                actual.Should().Be(expected);
+            }
 
             ComparableObject.UsedCompareTo.Should().BeTrue();
         }

@@ -8,9 +8,11 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class ComparableFieldMember : FieldMember, IComparableAcceptor, ICallableField
+    internal sealed class ComparableFieldMember : FieldMember, IComparableAcceptor, IArgumentsField
     {
         private ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+
+        public bool LoadContext => false;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
@@ -35,9 +37,11 @@ namespace ILLightenComparer.Emit.Members
         }
     }
 
-    internal sealed class ComparablePropertyMember : PropertyMember, IComparableAcceptor, ICallableProperty
+    internal sealed class ComparablePropertyMember : PropertyMember, IComparableAcceptor, IArgumentsProperty
     {
         private ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+
+        public bool LoadContext => false;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
