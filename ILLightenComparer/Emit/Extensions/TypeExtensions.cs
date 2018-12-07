@@ -22,7 +22,7 @@ namespace ILLightenComparer.Emit.Extensions
             type.GetMethod(MethodName.Factory)
                 .CreateDelegate<Func<T, TReturnType>>()(arg);
 
-        public static MethodInfo GetCompareToMethod(this Type type)
+        public static MethodInfo GetUnderlyingCompareToMethod(this Type type)
         {
             var underlyingType = type.GetUnderlyingType();
 

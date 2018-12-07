@@ -15,12 +15,12 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNextMember);
             var memberType = member.MemberType;
-            var compareToMethod = memberType.GetCompareToMethod()
+            var compareToMethod = memberType.GetUnderlyingCompareToMethod()
                                   ?? throw new ArgumentException(
                                       $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
+            il.DefineLabel(out var gotoNextMember);
             return member.LoadMembers(_stackEmitter, gotoNextMember, il)
                          .Call(compareToMethod)
                          .EmitReturnNotZero(gotoNextMember);
@@ -73,7 +73,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
         {
             var memberType = member.MemberType;
-            var compareToMethod = memberType.GetCompareToMethod();
+            var compareToMethod = memberType.GetUnderlyingCompareToMethod();
 
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, gotoNextMember, il);
