@@ -7,7 +7,6 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
     {
         public ComparableChildObject ComparableField;
         public ComparableStruct ComparableStructField;
-
         public ComparableStruct? ComparableStructNullableField;
 
         public static IComparer<ContainerObject> Comparer { get; } = new RelationalComparer();
@@ -38,7 +37,6 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
                     x.ComparableStructNullableField,
                     y.ComparableStructNullableField);
                 if (compare != 0) { return compare; }
-
 
                 compare = Comparer<ComparableObject>.Default.Compare(
                     x.ComparableProperty,

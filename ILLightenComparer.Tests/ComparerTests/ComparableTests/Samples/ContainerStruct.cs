@@ -19,7 +19,9 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
         {
             public int Compare(ContainerStruct x, ContainerStruct y)
             {
-                var compare = x.ComparableField.CompareTo(y.ComparableField);
+                var compare = Comparer<ComparableObject>.Default.Compare(
+                    x.ComparableField,
+                    y.ComparableField);
                 if (compare != 0) { return compare; }
 
                 compare = x.ComparableStructField.CompareTo(y.ComparableStructField);
@@ -30,7 +32,9 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
                     y.ComparableStructNullableField);
                 if (compare != 0) { return compare; }
 
-                compare = x.ComparableProperty.CompareTo(y.ComparableProperty);
+                compare = Comparer<ComparableObject>.Default.Compare(
+                    x.ComparableProperty,
+                    y.ComparableProperty);
                 if (compare != 0) { return compare; }
 
                 compare = Nullable.Compare(
