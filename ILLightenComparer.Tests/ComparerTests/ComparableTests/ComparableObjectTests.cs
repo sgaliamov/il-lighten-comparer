@@ -24,66 +24,66 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
                             });
         }
 
-        [Fact]
-        public void Custom_Comparable_Implementation_Should_Be_Used()
-        {
-            var other = new ContainerObject
-            {
-                ComparableProperty = Fixture.Create<ComparableObject>()
-            };
+        //[Fact]
+        //public void Custom_Comparable_Implementation_Should_Be_Used()
+        //{
+        //    var other = new ContainerObject
+        //    {
+        //        ComparableProperty = Fixture.Create<ComparableObject>()
+        //    };
 
-            var one = other.DeepClone();
-            one.ComparableProperty.Property = other.ComparableProperty.Property + 1;
+        //    var one = other.DeepClone();
+        //    one.ComparableProperty.Property = other.ComparableProperty.Property + 1;
 
-            var expected = ContainerObject.Comparer.Compare(one, other);
-            var actual = TypedComparer.Compare(one, other);
+        //    var expected = ContainerObject.Comparer.Compare(one, other);
+        //    var actual = TypedComparer.Compare(one, other);
 
-            actual.Should().Be(expected);
+        //    actual.Should().Be(expected);
 
-            ComparableObject.UsedCompareTo.Should().BeTrue();
-        }
+        //    ComparableObject.UsedCompareTo.Should().BeTrue();
+        //}
 
-        [Fact]
-        public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
-        {
-            var other = new ContainerObject
-            {
-                ComparableProperty = Fixture.Create<ComparableObject>()
-            };
+        //[Fact]
+        //public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
+        //{
+        //    var other = new ContainerObject
+        //    {
+        //        ComparableProperty = Fixture.Create<ComparableObject>()
+        //    };
 
-            var one = other.DeepClone();
-            one.ComparableProperty = null;
+        //    var one = other.DeepClone();
+        //    one.ComparableProperty = null;
 
-            TypedComparer.Compare(one, other)
-                         .Should()
-                         .BeNegative();
-        }
+        //    TypedComparer.Compare(one, other)
+        //                 .Should()
+        //                 .BeNegative();
+        //}
 
-        [Fact]
-        public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
-        {
-            var one = new ContainerObject
-            {
-                ComparableProperty = Fixture.Create<ComparableObject>()
-            };
-            TypedComparer.Compare(one, one.DeepClone()).Should().Be(0);
+        //[Fact]
+        //public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
+        //{
+        //    var one = new ContainerObject
+        //    {
+        //        ComparableProperty = Fixture.Create<ComparableObject>()
+        //    };
+        //    TypedComparer.Compare(one, one.DeepClone()).Should().Be(0);
 
-            for (var i = 0; i < 100; i++)
-            {
-                one.ComparableProperty = Fixture.Create<ChildComparableObject>();
-                var other = new ContainerObject
-                {
-                    ComparableProperty = Fixture.Create<ChildComparableObject>()
-                };
+        //    for (var i = 0; i < 100; i++)
+        //    {
+        //        one.ComparableProperty = Fixture.Create<ChildComparableObject>();
+        //        var other = new ContainerObject
+        //        {
+        //            ComparableProperty = Fixture.Create<ChildComparableObject>()
+        //        };
 
-                var expected = ContainerObject.Comparer.Compare(one, other).Normalize();
-                var actual = TypedComparer.Compare(one, other).Normalize();
+        //        var expected = ContainerObject.Comparer.Compare(one, other).Normalize();
+        //        var actual = TypedComparer.Compare(one, other).Normalize();
 
-                actual.Should().Be(expected);
-            }
+        //        actual.Should().Be(expected);
+        //    }
 
-            ComparableObject.UsedCompareTo.Should().BeTrue();
-        }
+        //    ComparableObject.UsedCompareTo.Should().BeTrue();
+        //}
 
         protected override IComparer<ContainerObject> ReferenceComparer => ContainerObject.Comparer;
     }
