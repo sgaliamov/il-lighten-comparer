@@ -32,9 +32,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
                     y.ComparableStructNullableField);
                 if (compare != 0) { return compare; }
 
-                compare = Comparer<ComparableObject>.Default.Compare(
-                    x.ComparableProperty,
-                    y.ComparableProperty);
+                compare = x.ComparableProperty.CompareTo(y.ComparableProperty);
                 if (compare != 0) { return compare; }
 
                 compare = Nullable.Compare(
