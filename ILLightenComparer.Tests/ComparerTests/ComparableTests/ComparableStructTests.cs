@@ -10,8 +10,22 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 {
     public class ComparableStructTests : BaseComparerTests<ContainerStruct>
     {
+        public ComparableStructTests()
+        {
+            ComparersBuilder.For<ComparableChildObject>()
+                            .DefineConfiguration(new ComparerSettings
+                            {
+                                // todo: remove this configuration when simplified comparer will be implemented
+                                MembersOrder = new[]
+                                {
+                                    nameof(ComparableChildObject.Property),
+                                    nameof(ComparableChildObject.Field)
+                                }
+                            });
+        }
+
         [Fact]
-        public void Replaced_Comparable_Object_Is_Compared()
+        public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
         {
             var one = new ContainerStruct
             {

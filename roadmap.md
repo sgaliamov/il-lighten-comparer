@@ -42,7 +42,7 @@
 - [x] nested structure
 - [x] split visiting `INullableAcceptor`
 - [x] test with interface member
-- [ ] replace not sealed comparable
+- [x] replace not sealed comparable
 - [ ] comparable nullable struct
 - [ ] generate simplified comparer if root object implements `IComparable`?
 
