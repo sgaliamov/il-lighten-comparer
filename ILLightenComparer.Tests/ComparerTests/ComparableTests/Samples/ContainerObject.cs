@@ -4,16 +4,16 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
     public class ContainerObject
     {
-        public ChildComparableObject ComparableField;
-        public ComparableStruct ComparableStructField;
+        //public ChildComparableObject ComparableField;
+        //public ComparableStruct ComparableStructField;
 
         //public ComparableStruct? ComparableStructNullableField;
 
         public static IComparer<ContainerObject> Comparer { get; } = new RelationalComparer();
 
-        //public ComparableObject ComparableProperty { get; set; }
+        public ComparableObject ComparableProperty { get; set; }
         //public ComparableStruct? ComparableStructNullableProperty { get; set; }
-        public ComparableStruct ComparableStructProperty { get; set; }
+        //public ComparableStruct ComparableStructProperty { get; set; }
 
         private sealed class RelationalComparer : IComparer<ContainerObject>
         {
@@ -25,31 +25,33 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 
                 if (ReferenceEquals(null, x)) { return -1; }
 
-                var compare = Comparer<ComparableObject>.Default.Compare(
-                    x.ComparableField,
-                    y.ComparableField);
-                if (compare != 0) { return compare; }
+                //var compare = Comparer<ComparableObject>.Default.Compare(
+                //    x.ComparableField,
+                //    y.ComparableField);
+                //if (compare != 0) { return compare; }
 
-                compare = x.ComparableStructField.CompareTo(y.ComparableStructField);
-                if (compare != 0) { return compare; }
+                //compare = x.ComparableStructField.CompareTo(y.ComparableStructField);
+                //if (compare != 0) { return compare; }
 
                 //compare = Nullable.Compare(
                 //    x.ComparableStructNullableField,
                 //    y.ComparableStructNullableField);
                 //if (compare != 0) { return compare; }
 
-                //compare = x.ComparableProperty.CompareTo(y.ComparableProperty);
-                //if (compare != 0) { return compare; }
+                var compare = Comparer<ComparableObject>.Default.Compare(
+                    x.ComparableProperty,
+                    y.ComparableProperty);
+                if (compare != 0) { return compare; }
 
                 //compare = Nullable.Compare(
                 //    x.ComparableStructNullableProperty,
                 //    y.ComparableStructNullableProperty);
                 //if (compare != 0) { return compare; }
 
-                compare = Comparer<ComparableStruct>.Default.Compare(
-                    x.ComparableStructProperty,
-                    y.ComparableStructProperty);
-                if (compare != 0) { return compare; }
+                //compare = Comparer<ComparableStruct>.Default.Compare(
+                //    x.ComparableStructProperty,
+                //    y.ComparableStructProperty);
+                //if (compare != 0) { return compare; }
 
                 return 0;
             }
