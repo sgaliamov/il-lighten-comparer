@@ -43,7 +43,7 @@
 - [x] split visiting `INullableAcceptor`
 - [x] test with interface member
 - [x] replace not sealed comparable
-- [ ] comparable nullable struct
+- [x] comparable nullable struct
 - [ ] generate simplified comparer if root object implements `IComparable`?
 
 ## Phase 3 Collections

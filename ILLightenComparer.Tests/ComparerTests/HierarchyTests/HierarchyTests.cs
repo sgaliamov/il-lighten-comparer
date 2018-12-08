@@ -43,6 +43,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                         nameof(HierarchicalObject.SecondProperty),
                         nameof(HierarchicalObject.NestedField),
                         nameof(HierarchicalObject.NestedStructField),
+                        nameof(HierarchicalObject.NestedNullableStructField),
+                        nameof(HierarchicalObject.NestedStructProperty),
                         nameof(HierarchicalObject.NestedNullableStructProperty)
                     }
                 });
