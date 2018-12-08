@@ -100,7 +100,7 @@ namespace ILLightenComparer.Emit.Emitters
                       .LoadLocal(y);
                 }
 
-                return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
+                return il.Emit(OpCodes.Call, compareToMethod).EmitReturnNotZero(gotoNextMember);
             }
 
             il.LoadArgument(Arg.Context)

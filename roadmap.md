@@ -65,6 +65,7 @@
 - [ ] customization setting to override comparer with specific implementation
 - [ ] ignore existing `IComparable` implementation
 - [ ] use `DetectCycles` setting
+- [ ] `checked` subs
 - [ ] compare references and the end?
 - [ ] how to rebuild after set new configuration?
 - [ ] include protected (BindingFlags.NonPublic)?

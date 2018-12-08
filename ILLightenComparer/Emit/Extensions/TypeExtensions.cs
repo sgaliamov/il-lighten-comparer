@@ -8,6 +8,7 @@ namespace ILLightenComparer.Emit.Extensions
 {
     internal static class TypeExtensions
     {
+        // todo: if https://stackoverflow.com/questions/23833999/why-int-maxvalue-int-minvalue-1 then include int
         private static readonly HashSet<Type> SmallIntegralTypes = new HashSet<Type>(new[]
         {
             typeof(sbyte),
