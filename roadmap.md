@@ -44,11 +44,11 @@
 - [x] test with interface member
 - [x] replace not sealed comparable
 - [x] comparable nullable struct
-- [ ] generate simplified comparer if root object implements `IComparable`?
 
 ## Phase 3 Collections
 
 - [ ] create type only at the end, use builders when cycle is possible
+- [ ] refacotor visiting `IComparableAcceptor`
 - [ ] compare collection, do not iterate `IEnumerable`
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
@@ -63,6 +63,7 @@
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
 - [ ] customization setting to override comparer with specific implementation
+- [ ] generate simplified comparer if root object implements `IComparable`?
 - [ ] ignore existing `IComparable` implementation
 - [ ] use `DetectCycles` setting
 - [ ] `checked` subs
