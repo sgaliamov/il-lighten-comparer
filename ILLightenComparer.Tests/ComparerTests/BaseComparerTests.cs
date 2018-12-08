@@ -82,8 +82,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             var copy2 = original.DeepClone();
 
             Array.Sort(copy0, ReferenceComparer);
-            Array.Sort(copy1, BasicComparer);
-            Array.Sort(copy2, TypedComparer);
+            Array.Sort(copy1, TypedComparer);
+            Array.Sort(copy2, BasicComparer);
 
             copy0.ShouldBeSameOrder(copy1);
             copy0.ShouldBeSameOrder(copy2);

@@ -15,7 +15,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
             ComparersBuilder.For<ChildComparableObject>()
                             .DefineConfiguration(new ComparerSettings
                             {
-                                 // todo: remove this configuration when simplified comparer will be implemented
+                                // todo: remove this configuration when simplified comparer will be implemented
                                 MembersOrder = new[]
                                 {
                                     nameof(ChildComparableObject.Property),

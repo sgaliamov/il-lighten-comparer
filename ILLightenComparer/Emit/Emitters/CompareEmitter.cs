@@ -78,8 +78,8 @@ namespace ILLightenComparer.Emit.Emitters
 
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                  .Store(memberType, 1, out var y) // todo: not optimal local variables
-                  .Store(memberType, 0, out var x);
+                  .Store(underlyingType, 1, out var y) // todo: not optimal local variables
+                  .Store(underlyingType, 0, out var x);
 
             if (underlyingType.IsValueType || underlyingType.IsSealed)
             {
