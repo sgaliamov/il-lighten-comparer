@@ -37,7 +37,7 @@ namespace ILLightenComparer.Tests.Utilities
 
                     oneCurrent
                         .Should()
-                        .BeEquivalentTo(otherCurrent);
+                        .BeEquivalentTo(otherCurrent, options => options.ComparingByMembers<T>());
                 }
 
                 enumeratorOne.MoveNext().Should().BeFalse();
