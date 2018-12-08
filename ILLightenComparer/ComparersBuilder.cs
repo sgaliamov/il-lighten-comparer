@@ -2,44 +2,73 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
+using ILLightenComparer.Config;
 using ILLightenComparer.Emit;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer
 {
-    // todo: cache instances by type and configuration
     public sealed class ComparersBuilder : IComparersBuilder
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
-        private readonly ComparerTypeBuilder _comparerTypeBuilder;
-        private readonly TypeBuilderContext _context = new TypeBuilderContext();
-        private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
-        private readonly MembersProvider _membersProvider = new MembersProvider();
+        private readonly ConfigurationBuilder _configurations = new ConfigurationBuilder();
+        private readonly Context _context;
 
         public ComparersBuilder()
         {
-            _equalityComparerTypeBuilder = new EqualityComparerTypeBuilder(_context, _membersProvider);
-            _comparerTypeBuilder = new ComparerTypeBuilder(_context, _membersProvider);
+            var assembly = AssemblyBuilder.DefineDynamicAssembly(
+                new AssemblyName("ILLightenComparer"),
+                AssemblyBuilderAccess.RunAndCollect);
+
+            var moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
+
+            _context = new Context(moduleBuilder, _configurations);
         }
 
-        public IComparer<T> CreateComparer<T>() => (IComparer<T>)CreateComparer(typeof(T));
+        public IContextBuilder DefineDefaultConfiguration(ComparerSettings settings)
+        {
+            _configurations.DefineDefaultConfiguration(settings);
+            return this;
+        }
 
-        public IComparer CreateComparer(Type objectType) =>
+        public IContextBuilder DefineConfiguration(Type type, ComparerSettings settings)
+        {
+            _configurations.DefineConfiguration(type, settings);
+            return this;
+        }
+
+        public IComparer<T> GetComparer<T>() => (IComparer<T>)GetComparer(typeof(T));
+
+        public IComparer GetComparer(Type objectType) =>
             _comparers.GetOrAdd(
                 objectType,
-                key => _comparerTypeBuilder.Build(key).CreateInstance<IComparer>());
+                key => _context.GetComparerType(key).CreateInstance<IContext, IComparer>(_context));
 
-        public IEqualityComparer<T> CreateEqualityComparer<T>() =>
-            _equalityComparerTypeBuilder.Build<T>();
+        public IEqualityComparer<T> GetEqualityComparer<T>() => throw new NotImplementedException();
 
-        public IEqualityComparer CreateEqualityComparer(Type objectType) =>
-            _equalityComparerTypeBuilder.Build(objectType);
+        public IEqualityComparer GetEqualityComparer(Type objectType) => throw new NotImplementedException();
 
-        public ComparersBuilder SetConfiguration(CompareConfiguration configuration)
+        public IContextBuilder<T> For<T>() => new GenericProxy<T>(this);
+
+        private sealed class GenericProxy<T> : IContextBuilder<T>, IComparerProviderOrBuilderContext<T>
         {
-            _context.SetConfiguration(configuration);
-            return this;
+            private readonly ComparersBuilder _owner;
+
+            public GenericProxy(ComparersBuilder comparersBuilder) => _owner = comparersBuilder;
+
+            public IContextBuilder<TOther> For<TOther>() => _owner.For<TOther>();
+
+            public IComparerProviderOrBuilderContext<T> DefineConfiguration(ComparerSettings settings)
+            {
+                _owner.DefineConfiguration(typeof(T), settings);
+                return this;
+            }
+
+            public IComparer<T> GetComparer() => _owner.GetComparer<T>();
+
+            public IEqualityComparer<T> GetEqualityComparer() => _owner.GetEqualityComparer<T>();
         }
     }
 }

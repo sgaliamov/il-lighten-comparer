@@ -8,18 +8,19 @@ namespace ILLightenComparer.Tests
     {
         public ComparersBuilderTests()
         {
-            var configuration = new CompareConfiguration
+            var configuration = new ComparerSettings
             {
                 IncludeFields = false
             };
 
-            _builder = new ComparersBuilder().SetConfiguration(configuration);
+            _builder = new ComparersBuilder()
+                .DefineDefaultConfiguration(configuration);
         }
 
         [Fact]
         public void Create_Generic_Comparer()
         {
-            var comparer = _builder.CreateComparer<TestObject>();
+            var comparer = _builder.For<DummyObject>().GetComparer();
 
             comparer.Should().NotBeNull();
         }
@@ -27,7 +28,7 @@ namespace ILLightenComparer.Tests
         [Fact(Skip = "Not implemented yet")]
         public void Create_Generic_EqualityComparer()
         {
-            var comparer = _builder.CreateEqualityComparer<TestObject>();
+            var comparer = _builder.For<DummyObject>().GetEqualityComparer();
 
             comparer.Should().NotBeNull();
         }
@@ -35,7 +36,7 @@ namespace ILLightenComparer.Tests
         [Fact]
         public void Create_Not_Generic_Comparer()
         {
-            var comparer = _builder.CreateComparer(typeof(TestObject));
+            var comparer = _builder.GetComparer(typeof(DummyObject));
 
             comparer.Should().NotBeNull();
         }
@@ -43,7 +44,7 @@ namespace ILLightenComparer.Tests
         [Fact(Skip = "Not implemented yet")]
         public void Create_Not_Generic_EqualityComparer()
         {
-            var comparer = _builder.CreateEqualityComparer(typeof(TestObject));
+            var comparer = _builder.GetEqualityComparer(typeof(DummyObject));
 
             comparer.Should().NotBeNull();
         }
@@ -57,10 +58,10 @@ namespace ILLightenComparer.Tests
                 other.Should().BeSameAs(one);
             }
 
-            Test(_builder.CreateComparer(typeof(TestObject)), _builder.CreateComparer<TestObject>());
-            Test(_builder.CreateComparer<TestObject>(), _builder.CreateComparer(typeof(TestObject)));
+            Test(_builder.GetComparer(typeof(DummyObject)), _builder.GetComparer<DummyObject>());
+            Test(_builder.GetComparer<DummyObject>(), _builder.GetComparer(typeof(DummyObject)));
         }
 
-        private readonly IComparersBuilder _builder;
+        private readonly IContextBuilder _builder;
     }
 }

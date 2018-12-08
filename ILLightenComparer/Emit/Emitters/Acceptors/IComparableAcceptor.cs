@@ -1,9 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
 
 namespace ILLightenComparer.Emit.Emitters.Acceptors
 {
     internal interface IComparableAcceptor : IAcceptor
     {
-        MethodInfo CompareToMethod { get; }
+        Type MemberType { get; }
     }
 }

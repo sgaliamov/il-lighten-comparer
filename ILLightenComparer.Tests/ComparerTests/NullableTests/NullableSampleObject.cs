@@ -8,11 +8,12 @@ namespace ILLightenComparer.Tests.ComparerTests.NullableTests
     {
         public EnumBig? EnumField;
         public int? Field;
-        public EnumBig? EnumProperty { get; set; }
-        public int? Property { get; set; }
 
         public static IComparer<NullableSampleObject> Comparer { get; } =
             new NullableSampleObjectRelationalComparer();
+
+        public EnumBig? EnumProperty { get; set; }
+        public int? Property { get; set; }
 
         private sealed class NullableSampleObjectRelationalComparer : IComparer<NullableSampleObject>
         {

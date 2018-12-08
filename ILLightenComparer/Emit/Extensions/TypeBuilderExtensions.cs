@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Extensions
 {
@@ -32,26 +31,9 @@ namespace ILLightenComparer.Emit.Extensions
             Type[] parameterTypes) =>
             staticTypeBuilder.DefineMethod(
                 name,
-                MethodAttributes.Public | MethodAttributes.Static,
+                MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.Final,
                 CallingConventions.Standard,
                 returnType,
                 parameterTypes);
-
-        public static TypeBuilder BuildFactoryMethod(this TypeBuilder typeBuilder)
-        {
-            var constructorInfo = typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
-
-            var methodBuilder = DefineStaticMethod(typeBuilder,
-                MethodName.Factory,
-                typeBuilder,
-                null);
-
-            using (var il = methodBuilder.CreateILEmitter())
-            {
-                il.EmitCtorCall(constructorInfo);
-            }
-
-            return typeBuilder;
-        }
     }
 }

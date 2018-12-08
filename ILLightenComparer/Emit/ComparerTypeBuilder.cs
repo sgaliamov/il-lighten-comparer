@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -9,46 +10,62 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
+    using Set = ConcurrentDictionary<object, byte>;
+
     internal sealed class ComparerTypeBuilder
     {
         private readonly CompareEmitter _compareEmitter;
-        private readonly TypeBuilderContext _context;
+        private readonly Context _context;
         private readonly MembersProvider _membersProvider;
 
-        public ComparerTypeBuilder(TypeBuilderContext context, MembersProvider membersProvider)
+        public ComparerTypeBuilder(Context context, MembersProvider membersProvider)
         {
             _context = context;
             _membersProvider = membersProvider;
             _compareEmitter = new CompareEmitter(_context);
         }
 
-        public TypeInfo Build(Type objectType)
+        public Type Build(Type objectType)
         {
+            if (objectType.GetUnderlyingType().IsPrimitive())
+            {
+                throw new NotSupportedException(
+                    $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
+            }
+
             var basicInterface = typeof(IComparer);
             var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
 
             var typeBuilder = _context.DefineType(
-                $"{objectType.FullName}.Comparer",
+                $"{objectType.FullName}.DynamicComparer",
                 basicInterface,
                 genericInterface
             );
+
+            var contextField = typeBuilder.DefineField(
+                "_context",
+                typeof(IContext),
+                FieldAttributes.InitOnly | FieldAttributes.Private);
+
+            BuildFactory(typeBuilder, contextField);
 
             var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
 
             BuildBasicCompareMethod(
                 typeBuilder,
-                staticCompare,
                 basicInterface.GetMethod(MethodName.Compare),
+                staticCompare,
+                contextField,
                 objectType);
 
             BuildTypedCompareMethod(
                 typeBuilder,
+                genericInterface.GetMethod(MethodName.Compare),
                 staticCompare,
-                genericInterface.GetMethod(MethodName.Compare));
+                contextField,
+                objectType);
 
-            return typeBuilder
-                   .BuildFactoryMethod()
-                   .CreateTypeInfo();
+            return typeBuilder.CreateTypeInfo();
         }
 
         private MethodBuilder BuildStaticCompareMethod(TypeBuilder typeBuilder, Type objectType)
@@ -56,79 +73,31 @@ namespace ILLightenComparer.Emit
             var staticMethodBuilder = typeBuilder.DefineStaticMethod(
                 MethodName.Compare,
                 typeof(int),
-                new[]
-                {
-                    typeof(HashSet<object>),
-                    objectType, // x
-                    objectType // y
-                });
+                Method.StaticCompareMethodParameters(objectType));
 
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
                 if (objectType.IsClass)
                 {
-                    EmitReferenceComparision(il);
+                    _compareEmitter.EmitReferenceComparison(il);
                 }
 
-                EmitMembersComparision(il, objectType);
-                EmitDefaultResult(il);
+                if (IsDetectCyclesEnabled(objectType))
+                {
+                    EmitCycleDetection(il);
+                }
+
+                EmitMembersComparison(il, objectType);
             }
 
             return staticMethodBuilder;
         }
 
-        private void EmitMembersComparision(ILEmitter il, Type objectType)
-        {
-            var members = _membersProvider.GetMembers(objectType, _context.Configuration);
-
-            InitFirstLocalToKeepComparisonsResult(il);
-            foreach (var member in members)
-            {
-                member.Accept(_compareEmitter, il);
-            }
-        }
-
-        private static void InitFirstLocalToKeepComparisonsResult(ILEmitter il)
-        {
-            il.DeclareLocal(typeof(int), out _); // todo: automatically create local when needs
-        }
-
-        private static void EmitDefaultResult(ILEmitter il)
-        {
-            il.Emit(OpCodes.Ldc_I4_0)
-              .Emit(OpCodes.Ret);
-        }
-
-        private static void EmitReferenceComparision(ILEmitter il)
-        {
-            // x == y
-            il.Emit(OpCodes.Ldarg_1)
-              .Emit(OpCodes.Ldarg_2)
-              .DefineLabel(out var else0)
-              .Emit(OpCodes.Bne_Un_S, else0)
-              .Emit(OpCodes.Ldc_I4_0) // return 0
-              .Emit(OpCodes.Ret)
-              .MarkLabel(else0)
-              // y != null
-              .Emit(OpCodes.Ldarg_2)
-              .DefineLabel(out var else1)
-              .Emit(OpCodes.Brtrue_S, else1)
-              .Emit(OpCodes.Ldc_I4_1) // return 1
-              .Emit(OpCodes.Ret)
-              .MarkLabel(else1)
-              // x != null
-              .Emit(OpCodes.Ldarg_1)
-              .DefineLabel(out var else2)
-              .Emit(OpCodes.Brtrue_S, else2)
-              .Emit(OpCodes.Ldc_I4_M1) // return -1
-              .Emit(OpCodes.Ret)
-              .MarkLabel(else2);
-        }
-
-        private static void BuildBasicCompareMethod(
+        private void BuildBasicCompareMethod(
             TypeBuilder typeBuilder,
-            MethodInfo staticCompareMethod,
             MethodInfo interfaceMethod,
+            MethodInfo staticCompareMethod,
+            FieldInfo contextField,
             Type objectType)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
@@ -137,34 +106,144 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsValueType)
                 {
-                    EmitReferenceComparision(il);
+                    _compareEmitter.EmitReferenceComparison(il);
                 }
 
-                il.Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
-                  .Emit(OpCodes.Ldarg_1)
+                il.LoadArgument(Arg.This)
+                  .Emit(OpCodes.Ldfld, contextField)
+                  .LoadArgument(Arg.X)
                   .EmitCast(objectType)
-                  .Emit(OpCodes.Ldarg_2)
-                  .EmitCast(objectType)
-                  .Emit(OpCodes.Call, staticCompareMethod)
-                  .Emit(OpCodes.Ret);
+                  .LoadArgument(Arg.Y)
+                  .EmitCast(objectType);
+
+                EmitStaticCompareMethod(il, staticCompareMethod, objectType);
             }
         }
 
-        private static void BuildTypedCompareMethod(
+        private void BuildTypedCompareMethod(
             TypeBuilder typeBuilder,
+            MethodInfo interfaceMethod,
             MethodInfo staticCompareMethod,
-            MethodInfo interfaceMethod)
+            FieldInfo contextField,
+            Type objectType)
         {
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
             using (var il = methodBuilder.CreateILEmitter())
             {
-                il.Emit(OpCodes.Ldc_I4_0) // todo: hash set to detect cycles
-                  .Emit(OpCodes.Ldarg_1)
-                  .Emit(OpCodes.Ldarg_2)
-                  .Emit(OpCodes.Call, staticCompareMethod)
-                  .Emit(OpCodes.Ret);
+                il.LoadArgument(Arg.This)
+                  .Emit(OpCodes.Ldfld, contextField)
+                  .LoadArgument(Arg.X)
+                  .LoadArgument(Arg.Y);
+
+                EmitStaticCompareMethod(il, staticCompareMethod, objectType);
             }
+        }
+
+        private void EmitMembersComparison(ILEmitter il, Type objectType)
+        {
+            var members = _membersProvider.GetMembers(objectType);
+
+            InitFirstLocalToKeepComparisonsResult(il);
+            foreach (var member in members)
+            {
+                member.Accept(_compareEmitter, il);
+            }
+
+            il.Return(0);
+        }
+
+        private void EmitStaticCompareMethod(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
+        {
+            if (!_context.GetConfiguration(objectType).DetectCycles)
+            {
+                il.Emit(OpCodes.Ldnull)
+                  .Emit(OpCodes.Ldnull)
+                  .Call(staticCompareMethod)
+                  .Return();
+
+                return;
+            }
+
+            il.Emit(OpCodes.Newobj, Method.SetConstructor)
+              .Store(typeof(Set), 0, out var xSet)
+              .Emit(OpCodes.Newobj, Method.SetConstructor)
+              .Store(typeof(Set), 1, out var ySet)
+              .LoadLocal(xSet)
+              .LoadLocal(ySet)
+              .Call(staticCompareMethod)
+              // if (compare != 0) return compare;
+              .Store(typeof(int), out var result)
+              .LoadLocal(result)
+              .Branch(OpCodes.Brfalse_S, out var setsDiff)
+              .LoadLocal(result)
+              .Return()
+              .MarkLabel(setsDiff)
+              // else: return setX.Count - setY.Count;
+              .LoadLocal(xSet)
+              .Emit(OpCodes.Call, Method.SetGetCount)
+              .LoadLocal(ySet)
+              .Emit(OpCodes.Call, Method.SetGetCount)
+              .Emit(OpCodes.Sub)
+              .Return();
+        }
+
+        private bool IsDetectCyclesEnabled(Type objectType) =>
+            objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
+
+        private static void EmitCycleDetection(ILEmitter il)
+        {
+            il.LoadArgument(Arg.SetX)
+              .LoadArgument(Arg.X)
+              .LoadConstant(0)
+              .Emit(OpCodes.Call, Method.SetAdd)
+              .LoadArgument(Arg.SetY)
+              .LoadArgument(Arg.Y)
+              .LoadConstant(0)
+              .Emit(OpCodes.Call, Method.SetAdd)
+              .Emit(OpCodes.Or)
+              .LoadConstant(0)
+              .Emit(OpCodes.Ceq)
+              .Branch(OpCodes.Brfalse_S, out var next)
+              .Return(0)
+              .MarkLabel(next);
+        }
+
+        private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)
+        {
+            var parameters = new[] { typeof(IContext) };
+
+            var constructorInfo = typeBuilder.DefineConstructor(
+                MethodAttributes.Public,
+                CallingConventions.HasThis,
+                parameters);
+
+            using (var il = constructorInfo.CreateILEmitter())
+            {
+                il.LoadArgument(Arg.This)
+                  .Emit(OpCodes.Call, typeof(object).GetConstructor(Type.EmptyTypes))
+                  .LoadArgument(Arg.This)
+                  .LoadArgument(1)
+                  .Emit(OpCodes.Stfld, contextField)
+                  .Return();
+            }
+
+            var methodBuilder = typeBuilder.DefineStaticMethod(
+                MethodName.Factory,
+                typeBuilder,
+                parameters);
+
+            using (var il = methodBuilder.CreateILEmitter())
+            {
+                il.LoadArgument(Arg.This)
+                  .Emit(OpCodes.Newobj, constructorInfo)
+                  .Return();
+            }
+        }
+
+        private static void InitFirstLocalToKeepComparisonsResult(ILEmitter il)
+        {
+            il.DeclareLocal(typeof(int), 0, out _);
         }
     }
 }

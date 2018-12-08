@@ -6,10 +6,11 @@ namespace ILLightenComparer.Tests.ComparerTests.StringTests
     public class StringSampleObject
     {
         public string Field;
-        public string Property { get; set; }
 
         public static IComparer<StringSampleObject> Comparer { get; } =
             new FieldPropertyRelationalComparer();
+
+        public string Property { get; set; }
 
         public override string ToString() => $"{nameof(Field)}: {Field}, {nameof(Property)}: {Property}";
 

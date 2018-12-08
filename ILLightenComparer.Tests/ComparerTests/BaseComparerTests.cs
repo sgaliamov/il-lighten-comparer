@@ -13,6 +13,37 @@ namespace ILLightenComparer.Tests.ComparerTests
     public abstract class BaseComparerTests<T>
     {
         [Fact]
+        public void Comparison_Of_Null_With_Object_Produces_Negative_Value()
+        {
+            var obj = Fixture.Create<T>();
+
+            BasicComparer.Compare(null, obj).Should().BeNegative();
+            if (typeof(T).IsClass)
+            {
+                TypedComparer.Compare(default, obj).Should().BeNegative();
+            }
+        }
+
+        [Fact]
+        public void Comparison_Of_Object_With_Null_Produces_Positive_Value()
+        {
+            var obj = Fixture.Create<T>();
+
+            BasicComparer.Compare(obj, null).Should().BePositive();
+            if (typeof(T).IsClass)
+            {
+                TypedComparer.Compare(obj, default).Should().BePositive();
+            }
+        }
+
+        [Fact]
+        public void Comparison_When_Both_Null_Produces_0()
+        {
+            BasicComparer.Compare(null, null).Should().Be(0);
+            TypedComparer.Compare(default, default).Should().Be(0);
+        }
+
+        [Fact]
         public void Comparison_With_Itself_Produces_0()
         {
             var obj = Fixture.Create<T>();
@@ -22,53 +53,60 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Sorting_Must_Work_The_Same_As_For_Reference_Comparer()
+        public void Mutate_Class_Members_And_Test_Comparison()
         {
-            var original = Fixture.CreateMany<T>(Count).ToArray();
-            var copy1 = original.DeepClone();
-            var copy2 = original.DeepClone();
-
-            Array.Sort(original, ReferenceComparer);
-            Array.Sort(copy1, BasicComparer);
-            Array.Sort(copy2, TypedComparer);
-
-            Compare(original, copy1);
-            Compare(original, copy2);
-        }
-
-        private const int Count = 10000;
-
-        private static void Compare(IEnumerable<T> one, IEnumerable<T> other)
-        {
-            using (var enumeratorOne = one.GetEnumerator())
-            using (var enumeratorOther = other.GetEnumerator())
+            if (typeof(T).IsValueType)
             {
-                while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext())
+                return;
+            }
+
+            for (var i = 0; i < 10; i++)
+            {
+                var original = Fixture.Create<T>();
+
+                foreach (var mutant in Fixture.CreateMutants(original))
                 {
-                    var oneCurrent = enumeratorOne.Current;
-                    var otherCurrent = enumeratorOther.Current;
-
-                    oneCurrent
-                        .Should()
-                        .BeEquivalentTo(otherCurrent);
+                    ReferenceComparer.Compare(mutant, original).Should().NotBe(0);
+                    BasicComparer.Compare(mutant, original).Should().NotBe(0);
+                    TypedComparer.Compare(mutant, original).Should().NotBe(0);
                 }
-
-                enumeratorOne.MoveNext().Should().BeFalse();
-                enumeratorOther.MoveNext().Should().BeFalse();
             }
         }
 
-        protected abstract IComparer<T> ReferenceComparer { get; }
-        protected readonly Fixture Fixture = FixtureBuilder.GetInstance();
-        protected IComparer BasicComparer => ComparersBuilder.CreateComparer(typeof(T));
-        protected IComparer<T> TypedComparer => ComparersBuilder.CreateComparer<T>();
+        [Fact]
+        public void Sorting_Must_Work_The_Same_As_For_Reference_Comparer()
+        {
+            var original = Fixture.CreateMany<T>(Count).ToArray();
+            var copy0 = original.DeepClone();
+            var copy1 = original.DeepClone();
+            var copy2 = original.DeepClone();
 
-        protected readonly ComparersBuilder ComparersBuilder =
-            new ComparersBuilder()
-                .SetConfiguration(
-                    new CompareConfiguration
-                    {
-                        IncludeFields = true
-                    });
+            Array.Sort(copy0, ReferenceComparer);
+            Array.Sort(copy1, TypedComparer);
+            Array.Sort(copy2, BasicComparer);
+
+            copy0.ShouldBeSameOrder(copy1);
+            copy0.ShouldBeSameOrder(copy2);
+        }
+
+        protected readonly Fixture Fixture = FixtureBuilder.GetInstance();
+
+        protected IComparer BasicComparer => ComparersBuilder.GetComparer(typeof(T));
+
+        protected IContextBuilder ComparersBuilder =>
+            _comparersBuilder
+            ?? (_comparersBuilder = new ComparersBuilder()
+                .DefineDefaultConfiguration(new ComparerSettings
+                {
+                    IncludeFields = true
+                }));
+
+        protected abstract IComparer<T> ReferenceComparer { get; }
+
+        protected IComparer<T> TypedComparer => ComparersBuilder.GetComparer<T>();
+
+        private const int Count = 10000;
+
+        private IContextBuilder _comparersBuilder;
     }
 }

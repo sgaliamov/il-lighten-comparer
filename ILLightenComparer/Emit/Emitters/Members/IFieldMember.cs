@@ -1,11 +1,9 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IFieldMember
+    internal interface IFieldMember : IMember
     {
-        Type OwnerType { get; }
         FieldInfo FieldInfo { get; }
     }
 }

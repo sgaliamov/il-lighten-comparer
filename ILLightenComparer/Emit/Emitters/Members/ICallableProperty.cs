@@ -1,9 +1,4 @@
-﻿using System;
-
-namespace ILLightenComparer.Emit.Emitters.Members
+﻿namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface ICallableProperty : IPropertyMember
-    {
-        Type MemberType { get; }
-    }
+    internal interface ICallableProperty : IPropertyMember { }
 }

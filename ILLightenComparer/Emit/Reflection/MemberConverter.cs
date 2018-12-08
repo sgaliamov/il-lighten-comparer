@@ -1,90 +1,57 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Members;
 
 namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        // todo: split on two collections and use IncludeFields setting
-        private static readonly Converter[] Converters =
-        {
-            new Converter(GetPropertyType, IsString, info => new StringPropertyMember((PropertyInfo)info)),
-            new Converter(GetPropertyType, IsIntegral, info => new IntegralPropertyMember((PropertyInfo)info)),
-            new Converter(GetPropertyType, IsComparable, info => new ComparablePropertyMember((PropertyInfo)info)),
-            new Converter(GetPropertyType, IsNullable, info => new NullablePropertyMember((PropertyInfo)info)),
+        private readonly Context _context;
+        private readonly Func<MemberInfo, IAcceptor>[] _fieldFactories;
+        private readonly Func<MemberInfo, IAcceptor>[] _propertyFactories;
 
-            new Converter(GetFieldType, IsString, info => new StringFiledMember((FieldInfo)info)),
-            new Converter(GetFieldType, IsIntegral, info => new IntegralFiledMember((FieldInfo)info)),
-            new Converter(GetFieldType, IsComparable, info => new ComparableFieldMember((FieldInfo)info)),
-            new Converter(GetFieldType, IsNullable, info => new NullableFieldMember((FieldInfo)info))
-        };
+        public MemberConverter(
+            Context context,
+            Func<MemberInfo, IAcceptor>[] propertyFactories,
+            Func<MemberInfo, IAcceptor>[] fieldFactories)
+        {
+            _context = context;
+            _propertyFactories = propertyFactories;
+            _fieldFactories = fieldFactories;
+        }
 
         public IAcceptor Convert(MemberInfo memberInfo)
         {
-            foreach (var converter in Converters)
+            if (memberInfo is PropertyInfo)
             {
-                var (info, memberType) = converter.Convert(memberInfo);
-                if (info == null || memberType == null)
+                var acceptor = Convert(memberInfo, _propertyFactories);
+                if (acceptor != null)
                 {
-                    continue;
-                }
-
-                if (converter.Condition(memberType))
-                {
-                    return converter.Factory(info);
+                    return acceptor;
                 }
             }
 
-            throw new NotSupportedException(
-                $"{memberInfo.DisplayName()} is not supported.");
-        }
-
-        private static bool IsIntegral(Type type) => !type.IsNullable() && type.IsSmallIntegral();
-
-        private static bool IsNullable(Type type) => type.IsNullable();
-
-        private static (MemberInfo, Type) GetPropertyType(MemberInfo memberInfo)
-        {
-            if (memberInfo is PropertyInfo propertyInfo)
+            var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
+            if (includeFields && memberInfo is FieldInfo)
             {
-                return (propertyInfo, propertyInfo.PropertyType);
+                var acceptor = Convert(memberInfo, _fieldFactories);
+                if (acceptor != null)
+                {
+                    return acceptor;
+                }
             }
 
-            return default;
+            throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
         }
 
-        private static (MemberInfo, Type) GetFieldType(MemberInfo memberInfo)
-        {
-            if (memberInfo is FieldInfo fieldInfo)
-            {
-                return (fieldInfo, fieldInfo.FieldType);
-            }
-
-            return default;
-        }
-
-        private static bool IsComparable(Type type) => !type.IsNullable() && type.GetCompareToMethod() != null;
-
-        private static bool IsString(Type type) => type == typeof(string);
-
-        private sealed class Converter
-        {
-            public Converter(
-                Func<MemberInfo, (MemberInfo, Type)> convert,
-                Func<Type, bool> condition,
-                Func<MemberInfo, IAcceptor> factory)
-            {
-                Convert = convert;
-                Condition = condition;
-                Factory = factory;
-            }
-
-            public Func<Type, bool> Condition { get; }
-            public Func<MemberInfo, (MemberInfo, Type)> Convert { get; }
-            public Func<MemberInfo, IAcceptor> Factory { get; }
-        }
+        private static IAcceptor Convert(
+            MemberInfo memberInfo,
+            IEnumerable<Func<MemberInfo, IAcceptor>> factories) =>
+            factories
+                .Select(factory => factory(memberInfo))
+                .FirstOrDefault(acceptor => acceptor != null);
     }
 }

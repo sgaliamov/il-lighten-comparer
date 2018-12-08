@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 
 namespace ILLightenComparer.Emit.Extensions
@@ -8,8 +7,20 @@ namespace ILLightenComparer.Emit.Extensions
     {
         public static ILEmitter CreateILEmitter(this MethodBuilder methodBuilder)
         {
-            Debug.WriteLine($"\n{methodBuilder.DisplayName()}");
+#if DEBUG
+            return new ILEmitter($"\n{methodBuilder.DisplayName()}", methodBuilder.GetILGenerator());
+#else
             return new ILEmitter(methodBuilder.GetILGenerator());
+#endif
+        }
+
+        public static ILEmitter CreateILEmitter(this ConstructorBuilder constructorBuilder)
+        {
+#if DEBUG
+            return new ILEmitter($"\n{constructorBuilder.DisplayName()}", constructorBuilder.GetILGenerator());
+#else
+            return new ILEmitter(constructorBuilder.GetILGenerator());
+#endif
         }
     }
 }

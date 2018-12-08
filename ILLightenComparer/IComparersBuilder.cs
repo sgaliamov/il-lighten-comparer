@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-namespace ILLightenComparer
+﻿namespace ILLightenComparer
 {
-    public interface IComparersBuilder
+    public interface IComparersBuilder : IContextBuilder
     {
-        IComparer CreateComparer(Type objectType);
-        IComparer<T> CreateComparer<T>();
-        IEqualityComparer CreateEqualityComparer(Type objectType);
-        IEqualityComparer<T> CreateEqualityComparer<T>();
+        IContextBuilder DefineDefaultConfiguration(ComparerSettings settings);
     }
 }

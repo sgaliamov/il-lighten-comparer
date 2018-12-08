@@ -8,7 +8,7 @@ namespace ILLightenComparer.Emit.Extensions
     {
         public static ILEmitter LoadProperty(this ILEmitter il, IPropertyMember member, ushort argumentIndex)
         {
-            if (member.OwnerType.IsValueType)
+            if (member.DeclaringType.IsValueType)
             {
                 il.LoadArgumentAddress(argumentIndex);
             }
@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emit.Extensions
                 il.LoadArgument(argumentIndex);
             }
 
-            return il.Call(member.OwnerType, member.GetterMethod);
+            return il.Call(member.GetterMethod);
         }
 
         public static ILEmitter LoadField(this ILEmitter il, IFieldMember member, ushort argumentIndex) =>
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static ILEmitter LoadFieldAddress(this ILEmitter il, IFieldMember member, ushort argumentIndex)
         {
-            if (member.OwnerType.IsValueType)
+            if (member.DeclaringType.IsValueType)
             {
                 il.LoadArgumentAddress(argumentIndex);
             }
@@ -38,16 +38,12 @@ namespace ILLightenComparer.Emit.Extensions
             return il.Emit(OpCodes.Ldflda, member.FieldInfo);
         }
 
-        public static ILEmitter EmitReturnNotZero(this ILEmitter il) =>
-            il.DefineLabel(out var next)
-              .EmitReturnNotZero(next);
-
         public static ILEmitter EmitReturnNotZero(this ILEmitter il, Label next) =>
             il.Emit(OpCodes.Stloc_0)
               .Emit(OpCodes.Ldloc_0)
               .Emit(OpCodes.Brfalse_S, next)
               .Emit(OpCodes.Ldloc_0)
-              .Emit(OpCodes.Ret)
+              .Return()
               .MarkLabel(next);
     }
 }
