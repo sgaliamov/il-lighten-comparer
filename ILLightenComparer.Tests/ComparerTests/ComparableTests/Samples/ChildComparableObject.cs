@@ -19,13 +19,15 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
                 return 1;
             }
 
-            var comparableObjectComparison = base.CompareTo(other);
-            if (comparableObjectComparison != 0)
+            var compare = base.CompareTo(other);
+            if (compare != 0)
             {
-                return comparableObjectComparison;
+                return compare;
             }
 
             return Nullable.Compare(Field, other.Field);
         }
+
+        public override int CompareTo(ComparableObject other) => CompareTo(other as ChildComparableObject);
     }
 }

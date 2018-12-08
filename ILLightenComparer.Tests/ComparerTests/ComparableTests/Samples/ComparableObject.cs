@@ -8,7 +8,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 
         public int Property { get; set; }
 
-        public int CompareTo(ComparableObject other)
+        public virtual int CompareTo(ComparableObject other)
         {
             if (ReferenceEquals(this, other))
             {
