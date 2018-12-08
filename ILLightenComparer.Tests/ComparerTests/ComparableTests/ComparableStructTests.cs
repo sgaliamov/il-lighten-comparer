@@ -15,16 +15,16 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var one = new ContainerStruct
             {
-                ComparableProperty = Fixture.Create<ComparableObject>()
+                ComparableField = Fixture.Create<ComparableObject>()
             };
             TypedComparer.Compare(one, one.DeepClone()).Should().Be(0);
 
             for (var i = 0; i < 100; i++)
             {
-                one.ComparableProperty = Fixture.Create<ChildComparableObject>();
+                one.ComparableField = Fixture.Create<ComparableChildObject>();
                 var other = new ContainerStruct
                 {
-                    ComparableProperty = Fixture.Create<ChildComparableObject>()
+                    ComparableField = Fixture.Create<ComparableChildObject>()
                 };
 
                 var expected = ContainerStruct.Comparer.Compare(one, other).Normalize();

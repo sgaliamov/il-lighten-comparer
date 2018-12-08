@@ -5,7 +5,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
     public class ContainerObject
     {
-        public ChildComparableObject ComparableField;
+        public ComparableChildObject ComparableField;
         public ComparableStruct ComparableStructField;
 
         public ComparableStruct? ComparableStructNullableField;

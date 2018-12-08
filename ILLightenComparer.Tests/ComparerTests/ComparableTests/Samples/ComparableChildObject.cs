@@ -3,11 +3,11 @@ using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
-    public sealed class ChildComparableObject : ComparableObject, IComparable<ChildComparableObject>
+    public sealed class ComparableChildObject : ComparableObject, IComparable<ComparableChildObject>
     {
         public EnumSmall? Field;
 
-        public int CompareTo(ChildComparableObject other)
+        public int CompareTo(ComparableChildObject other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -28,6 +28,6 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
             return Nullable.Compare(Field, other.Field);
         }
 
-        public override int CompareTo(ComparableObject other) => CompareTo(other as ChildComparableObject);
+        public override int CompareTo(ComparableObject other) => CompareTo(other as ComparableChildObject);
     }
 }

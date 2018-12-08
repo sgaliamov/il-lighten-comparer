@@ -12,14 +12,14 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
     {
         public ComparableObjectTests()
         {
-            ComparersBuilder.For<ChildComparableObject>()
+            ComparersBuilder.For<ComparableChildObject>()
                             .DefineConfiguration(new ComparerSettings
                             {
                                 // todo: remove this configuration when simplified comparer will be implemented
                                 MembersOrder = new[]
                                 {
-                                    nameof(ChildComparableObject.Property),
-                                    nameof(ChildComparableObject.Field)
+                                    nameof(ComparableChildObject.Property),
+                                    nameof(ComparableChildObject.Field)
                                 }
                             });
         }
@@ -70,10 +70,10 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 
             for (var i = 0; i < 100; i++)
             {
-                one.ComparableProperty = Fixture.Create<ChildComparableObject>();
+                one.ComparableProperty = Fixture.Create<ComparableChildObject>();
                 var other = new ContainerObject
                 {
-                    ComparableProperty = Fixture.Create<ChildComparableObject>()
+                    ComparableProperty = Fixture.Create<ComparableChildObject>()
                 };
 
                 var expected = ContainerObject.Comparer.Compare(one, other).Normalize();
