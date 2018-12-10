@@ -21,8 +21,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         {
             public int Compare(SelfSealed x, SelfSealed y)
             {
-                var setX = new ObjectsSet();
-                var setY = new ObjectsSet();
+                var setX = new ConcurrentSet<object>();
+                var setY = new ConcurrentSet<object>();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0)
@@ -33,7 +33,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 return setX.Count - setY.Count;
             }
 
-            private static int Compare(SelfSealed x, SelfSealed y, ObjectsSet xSet, ObjectsSet ySet)
+            private static int Compare(SelfSealed x, SelfSealed y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
             {
                 if (ReferenceEquals(x, y))
                 {

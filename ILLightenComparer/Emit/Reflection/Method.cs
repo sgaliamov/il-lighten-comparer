@@ -10,21 +10,21 @@ namespace ILLightenComparer.Emit.Reflection
             IComparerContext context,
             T x,
             T y,
-            ObjectsSet xSet,
-            ObjectsSet ySet);
+            ConcurrentSet<object> xSet,
+            ConcurrentSet<object> ySet);
 
         public static readonly MethodInfo StringCompare = typeof(string).GetMethod(
             nameof(string.Compare),
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
         public static readonly ConstructorInfo SetConstructor =
-            typeof(ObjectsSet).GetConstructor(Type.EmptyTypes);
+            typeof(ConcurrentSet<object>).GetConstructor(Type.EmptyTypes);
 
         public static readonly MethodInfo SetAdd =
-            typeof(ObjectsSet).GetMethod(nameof(ObjectsSet.TryAdd), new[] { typeof(object), typeof(byte) });
+            typeof(ConcurrentSet<object>).GetMethod(nameof(ConcurrentSet<object>.TryAdd), new[] { typeof(object), typeof(byte) });
 
         public static readonly MethodInfo SetGetCount =
-            typeof(ObjectsSet).GetProperty(nameof(ObjectsSet.Count))?.GetGetMethod();
+            typeof(ConcurrentSet<object>).GetProperty(nameof(ConcurrentSet<object>.Count))?.GetGetMethod();
 
         public static MethodInfo ContextCompare =
             typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
@@ -34,8 +34,8 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(IComparerContext),
             objectType,
             objectType,
-            typeof(ObjectsSet),
-            typeof(ObjectsSet)
+            typeof(ConcurrentSet<object>),
+            typeof(ConcurrentSet<object>)
         };
     }
 }

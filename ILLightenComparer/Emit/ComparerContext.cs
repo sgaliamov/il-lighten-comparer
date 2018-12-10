@@ -15,7 +15,7 @@ namespace ILLightenComparer.Emit
 {
     public interface IComparerContext
     {
-        int DelayedCompare<T>(T x, T y, ObjectsSet xSet, ObjectsSet ySet);
+        int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
     }
 
     internal sealed class ComparerContext : IComparerContext
@@ -33,7 +33,7 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: cache delegates and benchmark ways
-        public int DelayedCompare<T>(T x, T y, ObjectsSet xSet, ObjectsSet ySet)
+        public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
             // todo: do not check types when T is struct
             if (x == null)
@@ -109,7 +109,7 @@ namespace ILLightenComparer.Emit
             return (typeBuilder, staticCompareMethodBuilder);
         }
 
-        private int Compare<T>(Type type, T x, T y, ObjectsSet xSet, ObjectsSet ySet)
+        private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
             var compareMethod = GetCompiledCompareMethod(type);
 

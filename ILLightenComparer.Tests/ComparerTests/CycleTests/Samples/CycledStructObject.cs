@@ -22,8 +22,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         {
             public int Compare(CycledStructObject x, CycledStructObject y)
             {
-                var setX = new ObjectsSet();
-                var setY = new ObjectsSet();
+                var setX = new ConcurrentSet<object>();
+                var setY = new ConcurrentSet<object>();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0)
@@ -37,8 +37,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
             public static int Compare(
                 CycledStructObject x,
                 CycledStructObject y,
-                ObjectsSet xSet,
-                ObjectsSet ySet)
+                ConcurrentSet<object> xSet,
+                ConcurrentSet<object> ySet)
             {
                 if (ReferenceEquals(x, y))
                 {

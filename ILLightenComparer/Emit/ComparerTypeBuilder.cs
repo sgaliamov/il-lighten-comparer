@@ -141,9 +141,9 @@ namespace ILLightenComparer.Emit
             }
 
             il.Emit(OpCodes.Newobj, Method.SetConstructor)
-              .Store(typeof(ObjectsSet), 0, out var xSet)
+              .Store(typeof(ConcurrentSet<object>), 0, out var xSet)
               .Emit(OpCodes.Newobj, Method.SetConstructor)
-              .Store(typeof(ObjectsSet), 1, out var ySet)
+              .Store(typeof(ConcurrentSet<object>), 1, out var ySet)
               .LoadLocal(xSet)
               .LoadLocal(ySet)
               .Call(staticCompareMethod)
