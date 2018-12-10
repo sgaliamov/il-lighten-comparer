@@ -62,30 +62,40 @@ namespace ILLightenComparer.Emit
             return Compare(xType, x, y, xSet, ySet);
         }
 
-        public Type GetComparerType(Type objectType)
+        public Type GetOrBuildComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
                 type => new Lazy<Type>(() =>
                 {
-                    var buildInfo = EnqueueBuild(type);
+                    var buildInfo = GetOrStartBuild(type);
+                    var typeBuilder = (TypeBuilder)buildInfo.Method.DeclaringType;
 
                     var result = _comparerTypeBuilder.Build(
-                        (TypeBuilder)buildInfo.ComparerType,
-                        (MethodBuilder)buildInfo.CompareMethod,
+                        typeBuilder,
+                        (MethodBuilder)buildInfo.Method,
                         buildInfo.ObjectType);
 
-                    buildInfo.ComparerType = result;
-                    buildInfo.CompareMethod = result.GetMethod(
+                    buildInfo.Method = result.GetMethod(
                         MethodName.Compare,
                         Method.StaticCompareMethodParameters(type));
-                    buildInfo.Compiled = true;
 
                     return result;
                 }));
 
             var comparerType = lazy.Value;
 
+            FinishStartedBuilds();
+
+            return comparerType;
+        }
+
+        public Configuration GetConfiguration(Type type) => _configurationBuilder.GetConfiguration(type);
+
+        public MethodInfo GetStaticCompareMethod(Type memberType) => GetOrStartBuild(memberType).Method;
+
+        private void FinishStartedBuilds()
+        {
             foreach (var item in _builds)
             {
                 if (item.Value.Value.Compiled)
@@ -93,26 +103,20 @@ namespace ILLightenComparer.Emit
                     continue;
                 }
 
-                GetComparerType(item.Value.Value.ObjectType);
+                GetOrBuildComparerType(item.Value.Value.ObjectType);
             }
-
-            return comparerType;
         }
-
-        public Configuration GetConfiguration(Type type) => _configurationBuilder.GetConfiguration(type);
-
-        public MethodInfo GetStaticCompareMethod(Type memberType) => EnqueueBuild(memberType).CompareMethod;
 
         private MethodInfo GetCompiledCompareMethod(Type memberType)
         {
-            var comparerType = GetComparerType(memberType);
+            var comparerType = GetOrBuildComparerType(memberType);
 
             return comparerType.GetMethod(
                 MethodName.Compare,
                 Method.StaticCompareMethodParameters(memberType));
         }
 
-        private BuildInfo EnqueueBuild(Type objectType)
+        private BuildInfo GetOrStartBuild(Type objectType)
         {
             var lazy = _builds.GetOrAdd(objectType,
                 type => new Lazy<BuildInfo>(() =>
@@ -130,7 +134,7 @@ namespace ILLightenComparer.Emit
                         typeof(int),
                         Method.StaticCompareMethodParameters(objectType));
 
-                    return new BuildInfo(type, typeBuilder, staticCompareMethodBuilder);
+                    return new BuildInfo(type, staticCompareMethodBuilder);
                 }));
 
             return lazy.Value;

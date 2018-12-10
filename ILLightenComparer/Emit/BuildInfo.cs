@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace ILLightenComparer.Emit
 {
     internal sealed class BuildInfo : IEquatable<BuildInfo>
     {
-        public BuildInfo(Type objectType, Type comparerType, MethodInfo compareMethod)
+        public BuildInfo(Type objectType, MethodInfo method)
         {
             ObjectType = objectType;
-            ComparerType = comparerType;
-            CompareMethod = compareMethod;
+            Method = method;
         }
 
-        public MethodInfo CompareMethod { get; set; }
-        public Type ComparerType { get; set; }
-        public bool Compiled { get; set; }
+        public bool Compiled => Method.GetType() != typeof(MethodBuilder);
+        public MethodInfo Method { get; set; }
         public Type ObjectType { get; }
 
         public bool Equals(BuildInfo other)

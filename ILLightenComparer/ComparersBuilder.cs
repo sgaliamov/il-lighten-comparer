@@ -51,7 +51,7 @@ namespace ILLightenComparer
 
             return _comparers.GetOrAdd(
                 objectType,
-                key => _context.GetComparerType(key).CreateInstance<IComparerContext, IComparer>(_context));
+                key => _context.GetOrBuildComparerType(key).CreateInstance<IComparerContext, IComparer>(_context));
         }
 
         public IEqualityComparer<T> GetEqualityComparer<T>() => throw new NotImplementedException();
