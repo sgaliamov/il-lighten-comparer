@@ -47,7 +47,7 @@
 
 ## Phase 3 Collections
 
-- [ ] create type only at the end, use builders when cycle is possible
+- [x] create type only at the end, use builders when cycle is possible
 - [ ] refactor visiting `IComparableAcceptor`
 - [ ] compare arrays
 - [ ] compare collection, do not iterate `IEnumerable`

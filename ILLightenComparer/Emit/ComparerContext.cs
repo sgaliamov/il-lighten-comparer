@@ -97,8 +97,7 @@ namespace ILLightenComparer.Emit
 
         private void FinishStartedBuilds()
         {
-            var builds = _builds.Select(x => x.Value);
-                // .ToDictionary(x => x.Key, x => x.Value.Value);
+            var builds = _builds.ToArray().Select(x => x.Value).ToArray();
 
             foreach (var item in builds)
             {
