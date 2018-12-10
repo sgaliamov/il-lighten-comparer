@@ -33,6 +33,11 @@ namespace ILLightenComparer.Emit
 
             var typeBuilder = _context.DefineType(objectType);
 
+            var staticCompare = typeBuilder.DefineStaticMethod(
+                MethodName.Compare,
+                typeof(int),
+                Method.StaticCompareMethodParameters(objectType));
+
             var contextField = typeBuilder.DefineField(
                 "_context",
                 typeof(IComparerContext),
@@ -40,7 +45,7 @@ namespace ILLightenComparer.Emit
 
             BuildFactory(typeBuilder, contextField);
 
-            var staticCompare = BuildStaticCompareMethod(typeBuilder, objectType);
+            BuildStaticCompareMethod(objectType, staticCompare);
 
             BuildBasicCompareMethod(
                 typeBuilder,
@@ -57,13 +62,8 @@ namespace ILLightenComparer.Emit
             return typeBuilder.CreateTypeInfo();
         }
 
-        private MethodBuilder BuildStaticCompareMethod(TypeBuilder typeBuilder, Type objectType)
+        private void BuildStaticCompareMethod(Type objectType, MethodBuilder staticMethodBuilder)
         {
-            var staticMethodBuilder = typeBuilder.DefineStaticMethod(
-                MethodName.Compare,
-                typeof(int),
-                Method.StaticCompareMethodParameters(objectType));
-
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
                 if (objectType.IsClass)
@@ -78,8 +78,6 @@ namespace ILLightenComparer.Emit
 
                 EmitMembersComparison(il, objectType);
             }
-
-            return staticMethodBuilder;
         }
 
         private void BuildBasicCompareMethod(
