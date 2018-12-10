@@ -72,44 +72,20 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var memberType = member.MemberType;
             var underlyingType = memberType.GetUnderlyingType();
-            var compareToMethod = memberType.GetUnderlyingCompareToMethod();
 
             il.DefineLabel(out var gotoNextMember);
-            member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                  .Store(underlyingType, 1, out var y) // todo: not optimal local variables
-                  .Store(underlyingType, 0, out var x);
+            member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
             if (underlyingType.IsValueType || underlyingType.IsSealed)
             {
-                if (memberType.IsValueType)
-                {
-                    il.LoadAddress(x)
-                      .LoadLocal(y);
-                }
-                else
-                {
-                    il.LoadLocal(x)
-                      .Branch(OpCodes.Brtrue_S, out var call)
-                      .LoadLocal(y)
-                      .Emit(OpCodes.Brfalse_S, gotoNextMember)
-                      .Return(-1)
-                      .MarkLabel(call)
-                      .LoadLocal(x)
-                      .LoadLocal(y);
-                }
+                var compareToMethod = memberType.GetUnderlyingCompareToMethod();
 
                 return il.Emit(OpCodes.Call, compareToMethod).EmitReturnNotZero(gotoNextMember);
             }
 
-            il.LoadArgument(Arg.Context)
-              .LoadLocal(x)
-              .LoadLocal(y)
-              .LoadArgument(Arg.SetX)
-              .LoadArgument(Arg.SetY);
-
             var delayedCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
 
-            return il.Emit(OpCodes.Call, contextCompare)
+            return il.Emit(OpCodes.Call, delayedCompare)
                      .EmitReturnNotZero(gotoNextMember);
         }
 

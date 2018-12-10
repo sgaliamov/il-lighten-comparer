@@ -103,6 +103,72 @@ namespace ILLightenComparer.Emit.Emitters
                 gotoNextMember);
         }
 
+        public ILEmitter Visit(IComparableField member, ILEmitter il, Label gotoNextMember)
+        {
+            var memberType = member.MemberType;
+            var underlyingType = memberType.GetUnderlyingType();
+
+            if (!underlyingType.IsClass)
+            {
+                return Visit((ICallableField)member, il, gotoNextMember);
+            }
+
+            if (underlyingType.IsSealed)
+            {
+                return il.LoadField(member, Arg.X)
+                         .Store(underlyingType, 0, out var x)
+                         .LoadField(member, Arg.Y)
+                         .Store(underlyingType, 1, out var y)
+                         .LoadLocal(x)
+                         .Branch(OpCodes.Brtrue_S, out var call)
+                         .LoadLocal(y)
+                         .Emit(OpCodes.Brfalse_S, gotoNextMember)
+                         .Return(-1)
+                         .MarkLabel(call)
+                         .LoadAddress(x)
+                         .LoadLocal(y);
+            }
+
+            return il.LoadArgument(Arg.Context)
+                     .LoadField(member, Arg.X)
+                     .LoadField(member, Arg.Y)
+                     .LoadArgument(Arg.SetX)
+                     .LoadArgument(Arg.SetY);
+        }
+
+        public ILEmitter Visit(IComparableProperty member, ILEmitter il, Label gotoNextMember)
+        {
+            var memberType = member.MemberType;
+            var underlyingType = memberType.GetUnderlyingType();
+
+            if (!underlyingType.IsClass)
+            {
+                return Visit((ICallableProperty)member, il, gotoNextMember);
+            }
+
+            if (underlyingType.IsSealed)
+            {
+                return il.LoadProperty(member, Arg.X)
+                         .Store(underlyingType, 0, out var x)
+                         .LoadProperty(member, Arg.Y)
+                         .Store(underlyingType, 1, out var y)
+                         .LoadLocal(x)
+                         .Branch(OpCodes.Brtrue_S, out var call)
+                         .LoadLocal(y)
+                         .Emit(OpCodes.Brfalse_S, gotoNextMember)
+                         .Return(-1)
+                         .MarkLabel(call)
+                         .LoadAddress(x)
+                         .LoadLocal(y);
+            }
+
+            return il.LoadArgument(Arg.Context)
+                     .LoadProperty(member, Arg.X)
+                     .LoadProperty(member, Arg.Y)
+                     .LoadArgument(Arg.SetX)
+                     .LoadArgument(Arg.SetY);
+        }
+
         private static ILEmitter LoadNullableMembers(
             ILEmitter il,
             bool callable,
