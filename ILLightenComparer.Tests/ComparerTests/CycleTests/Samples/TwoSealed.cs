@@ -2,6 +2,6 @@
 {
     public sealed class TwoSealed
     {
-        public ThreeSealed Three { get; set; }
+        public ThreeSealed Three;
     }
 }
