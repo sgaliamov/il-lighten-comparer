@@ -9,38 +9,23 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class StackEmitter
     {
-        public ILEmitter Visit(IValueField member, ILEmitter il, Label gotoNextMember)
+        private readonly MemberLoader _loader = new MemberLoader();
+
+        public ILEmitter Visit(IValueMember member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
             if (!memberType.IsNullable())
             {
-                return il.LoadFieldAddress(member, Arg.X)
-                         .LoadField(member, Arg.Y);
+                member.LoadMemberAddress(_loader, il, Arg.X);
+
+                return member.LoadMember(_loader, il, Arg.Y);
             }
 
-            il.LoadField(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
-              .LoadField(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
+            member.LoadMember(_loader, il, Arg.X)
+                  .Store(memberType, 0, out var nullableX);
 
-            return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
-        }
-
-        public ILEmitter Visit(IValueProperty member, ILEmitter il, Label gotoNextMember)
-        {
-            var memberType = member.MemberType;
-            if (!memberType.IsNullable())
-            {
-                return il.LoadProperty(member, Arg.X)
-                         .Store(memberType.GetUnderlyingType(), out var xAddress)
-                         .LoadAddress(xAddress)
-                         .LoadProperty(member, Arg.Y);
-            }
-
-            il.LoadProperty(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
-              .LoadProperty(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
+            member.LoadMember(_loader, il, Arg.Y)
+                  .Store(memberType, 1, out var nullableY);
 
             return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
         }
@@ -103,68 +88,38 @@ namespace ILLightenComparer.Emit.Emitters
                 gotoNextMember);
         }
 
-        public ILEmitter Visit(IComparableField member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IComparableMember member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
             var underlyingType = memberType.GetUnderlyingType();
             if (underlyingType.IsValueType)
             {
-                return Visit((IValueField)member, il, gotoNextMember);
+                return Visit((IValueMember)member, il, gotoNextMember);
             }
 
             if (underlyingType.IsSealed)
             {
-                return il.LoadField(member, Arg.X)
-                         .Store(underlyingType, 0, out var x)
-                         .LoadField(member, Arg.Y)
-                         .Store(underlyingType, 1, out var y)
-                         .LoadLocal(x)
-                         .Branch(OpCodes.Brtrue_S, out var call)
-                         .LoadLocal(y)
-                         .Emit(OpCodes.Brfalse_S, gotoNextMember)
-                         .Return(-1)
-                         .MarkLabel(call)
-                         .LoadLocal(x)
-                         .LoadLocal(y);
+                member.LoadMember(_loader, il, Arg.X)
+                      .Store(underlyingType, 0, out var x);
+
+                return member.LoadMember(_loader, il, Arg.Y)
+                             .Store(underlyingType, 1, out var y)
+                             .LoadLocal(x)
+                             .Branch(OpCodes.Brtrue_S, out var call)
+                             .LoadLocal(y)
+                             .Emit(OpCodes.Brfalse_S, gotoNextMember)
+                             .Return(-1)
+                             .MarkLabel(call)
+                             .LoadLocal(x)
+                             .LoadLocal(y);
             }
 
-            return il.LoadArgument(Arg.Context)
-                     .LoadField(member, Arg.X)
-                     .LoadField(member, Arg.Y)
-                     .LoadArgument(Arg.SetX)
-                     .LoadArgument(Arg.SetY);
-        }
+            il.LoadArgument(Arg.Context);
+            member.LoadMember(_loader, il, Arg.X);
 
-        public ILEmitter Visit(IComparableProperty member, ILEmitter il, Label gotoNextMember)
-        {
-            var memberType = member.MemberType;
-            var underlyingType = memberType.GetUnderlyingType();
-            if (underlyingType.IsValueType)
-            {
-                return Visit((IValueProperty)member, il, gotoNextMember);
-            }
-
-            if (underlyingType.IsSealed)
-            {
-                return il.LoadProperty(member, Arg.X)
-                         .Store(underlyingType, 0, out var x)
-                         .LoadProperty(member, Arg.Y)
-                         .Store(underlyingType, 1, out var y)
-                         .LoadLocal(x)
-                         .Branch(OpCodes.Brtrue_S, out var call)
-                         .LoadLocal(y)
-                         .Emit(OpCodes.Brfalse_S, gotoNextMember)
-                         .Return(-1)
-                         .MarkLabel(call)
-                         .LoadLocal(x)
-                         .LoadLocal(y);
-            }
-
-            return il.LoadArgument(Arg.Context)
-                     .LoadProperty(member, Arg.X)
-                     .LoadProperty(member, Arg.Y)
-                     .LoadArgument(Arg.SetX)
-                     .LoadArgument(Arg.SetY);
+            return member.LoadMember(_loader, il, Arg.Y)
+                         .LoadArgument(Arg.SetX)
+                         .LoadArgument(Arg.SetY);
         }
 
         private static ILEmitter LoadNullableMembers(
