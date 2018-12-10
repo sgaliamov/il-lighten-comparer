@@ -3,6 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests
@@ -15,7 +16,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Comparison_Should_Not_Fail_Because_Of_Generating_Comparers_For_Two_Dependent_Classes()
         {
             var one = _fixture.Create<OneSealed>();
@@ -29,7 +30,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Comparison_With_Cycle_On_Types_Level_Only()
         {
             var one = _fixture.Create<OneSealed>();
@@ -44,7 +45,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Cross_Reference_Should_Not_Fail()
         {
             var other = new SelfSealed();
@@ -63,7 +64,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Detects_Cycle_On_Second_Member()
         {
             var one = new SelfSealed();
@@ -105,7 +106,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Object_With_Bigger_Cycle_Is_Bigger()
         {
             var one = new SelfSealed();
@@ -124,7 +125,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Opened_Class_Comparer_Uses_Context_Compare_Method()
         {
             var one = _fixture.Create<SelfOpened>();

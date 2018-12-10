@@ -3,6 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
@@ -78,7 +79,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                                     .GetComparer();
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Compare_Nested_Null_Structs()
         {
             var one = new HierarchicalObject();
@@ -95,7 +96,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Compare_Nested_Structs()
         {
             for (var i = 0; i < 10; i++)

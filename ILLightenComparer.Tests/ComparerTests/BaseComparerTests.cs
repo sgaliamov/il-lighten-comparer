@@ -12,7 +12,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     public abstract class BaseComparerTests<T>
     {
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Comparison_Of_Null_With_Object_Produces_Negative_Value()
         {
             var obj = Fixture.Create<T>();
@@ -24,7 +24,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Comparison_Of_Object_With_Null_Produces_Positive_Value()
         {
             var obj = Fixture.Create<T>();
@@ -36,14 +36,14 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Comparison_When_Both_Null_Produces_0()
         {
             BasicComparer.Compare(null, null).Should().Be(0);
             TypedComparer.Compare(default, default).Should().Be(0);
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Comparison_With_Itself_Produces_0()
         {
             var obj = Fixture.Create<T>();
@@ -52,7 +52,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             TypedComparer.Compare(obj, obj).Should().Be(0);
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Mutate_Class_Members_And_Test_Comparison()
         {
             if (typeof(T).IsValueType)
@@ -73,7 +73,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        [Fact(Timeout = 1000 * 60)]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Sorting_Must_Work_The_Same_As_For_Reference_Comparer()
         {
             var original = Fixture.CreateMany<T>(Count).ToArray();
