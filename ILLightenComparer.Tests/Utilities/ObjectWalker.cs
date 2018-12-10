@@ -18,7 +18,10 @@ namespace ILLightenComparer.Tests.Utilities
 
         public Member Current { get; private set; }
 
-        public ObjectWalker GetEnumerator() => this;
+        public ObjectWalker GetEnumerator()
+        {
+            return this;
+        }
 
         public bool MoveNext()
         {
@@ -143,10 +146,12 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public bool Equals(Member other) =>
-            Index == other.Index
-            && Equals(MemberInfo, other.MemberInfo)
-            && Equals(Parent, other.Parent)
-            && Equals(Value, other.Value);
+        public bool Equals(Member other)
+        {
+            return Index == other.Index
+                   && Equals(MemberInfo, other.MemberInfo)
+                   && Equals(Parent, other.Parent)
+                   && Equals(Value, other.Value);
+        }
     }
 }

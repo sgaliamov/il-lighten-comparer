@@ -109,9 +109,15 @@ namespace ILLightenComparer.Emit.Emitters
             return Emit(opCode, methodInfo);
         }
 
-        public ILEmitter Return() => Emit(OpCodes.Ret);
+        public ILEmitter Return()
+        {
+            return Emit(OpCodes.Ret);
+        }
 
-        public ILEmitter Return(int value) => LoadConstant(value).Return();
+        public ILEmitter Return(int value)
+        {
+            return LoadConstant(value).Return();
+        }
 
         public ILEmitter EmitCast(Type objectType)
         {
@@ -200,7 +206,10 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter Store(Type localType, out LocalBuilder local) => Store(localType, 0, out local);
+        public ILEmitter Store(Type localType, out LocalBuilder local)
+        {
+            return Store(localType, 0, out local);
+        }
 
         public ILEmitter Store(Type localType, byte bucket, out LocalBuilder local)
         {

@@ -46,6 +46,9 @@ namespace ILLightenComparer.Emit
             return obj is BuildInfo other && Equals(other);
         }
 
-        public override int GetHashCode() => ObjectType != null ? ObjectType.GetHashCode() : 0;
+        public override int GetHashCode()
+        {
+            return ObjectType != null ? ObjectType.GetHashCode() : 0;
+        }
     }
 }

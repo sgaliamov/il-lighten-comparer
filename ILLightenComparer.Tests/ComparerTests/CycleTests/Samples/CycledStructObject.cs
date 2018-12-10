@@ -16,7 +16,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 
         public CycledStruct SecondStruct { get; set; }
 
-        public override string ToString() => Id.ToString();
+        public override string ToString()
+        {
+            return Id.ToString();
+        }
 
         public sealed class RelationalComparer : IComparer<CycledStructObject>
         {

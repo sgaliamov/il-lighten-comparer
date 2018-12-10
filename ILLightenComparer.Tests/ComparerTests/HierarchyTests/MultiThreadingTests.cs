@@ -66,20 +66,22 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             }
         }
 
-        private static IComparer<AbstractMembers> CreateComparer() =>
-            new ComparersBuilder()
-                .For<AnotherNestedObject>()
-                .DefineConfiguration(new ComparerSettings
-                {
-                    MembersOrder = new[]
-                    {
-                        nameof(AnotherNestedObject.Value),
-                        nameof(AnotherNestedObject.Key),
-                        nameof(AnotherNestedObject.Text)
-                    }
-                })
-                .For<AbstractMembers>()
-                .GetComparer();
+        private static IComparer<AbstractMembers> CreateComparer()
+        {
+            return new ComparersBuilder()
+                   .For<AnotherNestedObject>()
+                   .DefineConfiguration(new ComparerSettings
+                   {
+                       MembersOrder = new[]
+                       {
+                           nameof(AnotherNestedObject.Value),
+                           nameof(AnotherNestedObject.Key),
+                           nameof(AnotherNestedObject.Text)
+                       }
+                   })
+                   .For<AbstractMembers>()
+                   .GetComparer();
+        }
 
         private readonly Fixture _fixture;
     }

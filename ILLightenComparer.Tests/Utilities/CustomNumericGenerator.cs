@@ -19,10 +19,12 @@ namespace ILLightenComparer.Tests.Utilities
             _random = new Random();
         }
 
-        public object Create(object request, ISpecimenContext context) =>
-            request is Type type
+        public object Create(object request, ISpecimenContext context)
+        {
+            return request is Type type
                 ? CreateRandom(type)
                 : new NoSpecimen();
+        }
 
         private object CreateRandom(Type request)
         {
@@ -80,6 +82,9 @@ namespace ILLightenComparer.Tests.Utilities
                 : (T)Get(request, "MaxValue");
         }
 
-        private long GetNextRandom() => _random.Next(_lower, _upper);
+        private long GetNextRandom()
+        {
+            return _random.Next(_lower, _upper);
+        }
     }
 }

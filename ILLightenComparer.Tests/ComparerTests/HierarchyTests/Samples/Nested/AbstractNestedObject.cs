@@ -23,6 +23,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
                 : throw new ArgumentException($"Object must be of type {nameof(AbstractNestedObject)}.");
         }
 
-        private int CompareTo(INestedObject other) => string.Compare(Text, other.Text, StringComparison.Ordinal);
+        private int CompareTo(INestedObject other)
+        {
+            return string.Compare(Text, other.Text, StringComparison.Ordinal);
+        }
     }
 }

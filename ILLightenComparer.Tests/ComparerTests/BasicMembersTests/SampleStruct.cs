@@ -10,8 +10,10 @@ namespace ILLightenComparer.Tests.ComparerTests.BasicMembersTests
         public EnumBig EnumProperty { get; set; }
         public int Property { get; set; }
 
-        public override string ToString() =>
-            $"{nameof(EnumField)}: {EnumField}, {nameof(Field)}: {Field}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(Property)}: {Property}";
+        public override string ToString()
+        {
+            return $"{nameof(EnumField)}: {EnumField}, {nameof(Field)}: {Field}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(Property)}: {Property}";
+        }
 
         private sealed class ComparableSampleStructRelationalComparer : IComparer<SampleStruct>
         {

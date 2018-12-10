@@ -22,7 +22,10 @@ namespace ILLightenComparer.Tests.Utilities
             },
             LazyThreadSafetyMode.ExecutionAndPublication);
 
-        public static Fixture GetInstance() => Fixture.Value;
+        public static Fixture GetInstance()
+        {
+            return Fixture.Value;
+        }
 
         public static IEnumerable<T> CreateMutants<T>(this Fixture fixture, T prototype)
         {

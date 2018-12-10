@@ -12,16 +12,25 @@ namespace ILLightenComparer.Emit.Members
     {
         private ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
-            visitor.Visit(this, il, gotoNextMember);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il)
+        {
+            return visitor.Visit(this, il, gotoNextMember);
+        }
 
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMember(this, il, arg);
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMember(this, il, arg);
+        }
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMemberAddress(this, il, arg);
+        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMemberAddress(this, il, arg);
+        }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
 
         public static ComparableFieldMember Create(MemberInfo memberInfo)
         {
@@ -45,16 +54,25 @@ namespace ILLightenComparer.Emit.Members
     {
         private ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
-            visitor.Visit(this, il, gotoNextMember);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il)
+        {
+            return visitor.Visit(this, il, gotoNextMember);
+        }
 
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMember(this, il, arg);
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMember(this, il, arg);
+        }
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMemberAddress(this, il, arg);
+        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMemberAddress(this, il, arg);
+        }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
 
         public static ComparablePropertyMember Create(MemberInfo memberInfo)
         {

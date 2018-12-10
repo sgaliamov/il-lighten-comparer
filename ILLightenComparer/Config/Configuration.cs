@@ -12,8 +12,9 @@ namespace ILLightenComparer.Config
         public readonly StringComparison StringComparisonType;
         public readonly bool DetectCycles;
 
-        public Configuration Mutate(ComparerSettings settings) =>
-            new Configuration(
+        public Configuration Mutate(ComparerSettings settings)
+        {
+            return new Configuration(
                 settings.IgnoredMembers == null
                     ? IgnoredMembers
                     : new HashSet<string>(settings.IgnoredMembers),
@@ -21,6 +22,7 @@ namespace ILLightenComparer.Config
                 settings.MembersOrder ?? MembersOrder,
                 settings.StringComparisonType ?? StringComparisonType,
                 settings.DetectCycles ?? DetectCycles);
+        }
 
         public Configuration(
             HashSet<string> ignoredMembers,

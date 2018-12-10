@@ -163,8 +163,10 @@ namespace ILLightenComparer.Emit
               .Return();
         }
 
-        private bool IsDetectCyclesEnabled(Type objectType) =>
-            objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
+        private bool IsDetectCyclesEnabled(Type objectType)
+        {
+            return objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
+        }
 
         private static void EmitCycleDetection(ILEmitter il)
         {

@@ -29,13 +29,16 @@ namespace ILLightenComparer.Emit.Reflection
         public static MethodInfo DelayedCompare =
             typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
 
-        public static Type[] StaticCompareMethodParameters(Type objectType) => new[]
+        public static Type[] StaticCompareMethodParameters(Type objectType)
         {
-            typeof(IComparerContext),
-            objectType,
-            objectType,
-            typeof(ConcurrentSet<object>),
-            typeof(ConcurrentSet<object>)
-        };
+            return new[]
+            {
+                typeof(IComparerContext),
+                objectType,
+                objectType,
+                typeof(ConcurrentSet<object>),
+                typeof(ConcurrentSet<object>)
+            };
+        }
     }
 }

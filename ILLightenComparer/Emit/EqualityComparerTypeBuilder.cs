@@ -16,10 +16,14 @@ namespace ILLightenComparer.Emit
             _context = context;
         }
 
-        public IEqualityComparer<T> Build<T>() =>
+        public IEqualityComparer<T> Build<T>()
+        {
             throw new NotImplementedException();
+        }
 
-        internal IEqualityComparer Build(Type type) =>
+        internal IEqualityComparer Build(Type type)
+        {
             throw new NotImplementedException();
+        }
     }
 }

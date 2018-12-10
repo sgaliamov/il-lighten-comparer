@@ -91,9 +91,15 @@ namespace ILLightenComparer.Emit
             return comparerType;
         }
 
-        public Configuration GetConfiguration(Type type) => _configurationBuilder.GetConfiguration(type);
+        public Configuration GetConfiguration(Type type)
+        {
+            return _configurationBuilder.GetConfiguration(type);
+        }
 
-        internal MethodInfo GetStaticCompareMethod(Type memberType) => GetOrStartBuild(memberType).Method;
+        internal MethodInfo GetStaticCompareMethod(Type memberType)
+        {
+            return GetOrStartBuild(memberType).Method;
+        }
 
         private void FinishStartedBuilds()
         {

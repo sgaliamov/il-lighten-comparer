@@ -19,9 +19,11 @@ namespace ILLightenComparer.Emit.Extensions
         });
 
         // todo: cache delegates
-        public static TReturnType CreateInstance<T, TReturnType>(this Type type, T arg) =>
-            type.GetMethod(MethodName.Factory)
-                .CreateDelegate<Func<T, TReturnType>>()(arg);
+        public static TReturnType CreateInstance<T, TReturnType>(this Type type, T arg)
+        {
+            return type.GetMethod(MethodName.Factory)
+                       .CreateDelegate<Func<T, TReturnType>>()(arg);
+        }
 
         public static MethodInfo GetUnderlyingCompareToMethod(this Type type)
         {
@@ -30,10 +32,12 @@ namespace ILLightenComparer.Emit.Extensions
             return underlyingType.GetMethod(MethodName.CompareTo, new[] { underlyingType });
         }
 
-        public static MethodInfo GetPropertyGetter(this Type type, string name) =>
-            type.GetProperty(name)?.GetGetMethod()
-            ?? throw new ArgumentException(
-                $"{type.DeclaringType.DisplayName()} does not have {name} property.");
+        public static MethodInfo GetPropertyGetter(this Type type, string name)
+        {
+            return type.GetProperty(name)?.GetGetMethod()
+                   ?? throw new ArgumentException(
+                       $"{type.DeclaringType.DisplayName()} does not have {name} property.");
+        }
 
         public static Type GetUnderlyingType(this Type type)
         {
@@ -55,24 +59,33 @@ namespace ILLightenComparer.Emit.Extensions
             }
         }
 
-        public static bool IsNullable(this Type type) =>
-            type.IsValueType
-            && type.IsGenericType
-            && !type.IsGenericTypeDefinition
-            && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
+        public static bool IsNullable(this Type type)
+        {
+            return type.IsValueType
+                   && type.IsGenericType
+                   && !type.IsGenericTypeDefinition
+                   && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
+        }
 
-        public static bool IsSmallIntegral(this Type type) => SmallIntegralTypes.Contains(type);
+        public static bool IsSmallIntegral(this Type type)
+        {
+            return SmallIntegralTypes.Contains(type);
+        }
 
-        public static bool IsPrimitive(this Type type) =>
-            type.IsPrimitive
-            || type.IsEnum
-            //|| ReferenceEquals(type, typeof(IntPtr)) // todo: implement comparison for native ints
-            //|| ReferenceEquals(type, typeof(UIntPtr))
-            || ReferenceEquals(type, typeof(string))
-            || ReferenceEquals(type, typeof(decimal));
+        public static bool IsPrimitive(this Type type)
+        {
+            return type.IsPrimitive
+                   || type.IsEnum
+                   //|| ReferenceEquals(type, typeof(IntPtr)) // todo: implement comparison for native ints
+                   //|| ReferenceEquals(type, typeof(UIntPtr))
+                   || ReferenceEquals(type, typeof(string))
+                   || ReferenceEquals(type, typeof(decimal));
+        }
 
-        public static bool ImplementsGeneric(this Type type, Type generic, params Type[] typeArguments) =>
-            type.GetInterfaces()
-                .Any(t => t == generic.MakeGenericType(typeArguments));
+        public static bool ImplementsGeneric(this Type type, Type generic, params Type[] typeArguments)
+        {
+            return type.GetInterfaces()
+                       .Any(t => t == generic.MakeGenericType(typeArguments));
+        }
     }
 }

@@ -7,6 +7,9 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
     {
         public EnumBig Property { get; set; }
 
-        public int CompareTo(ComparableStruct other) => Property.CompareTo(other.Property);
+        public int CompareTo(ComparableStruct other)
+        {
+            return Property.CompareTo(other.Property);
+        }
     }
 }

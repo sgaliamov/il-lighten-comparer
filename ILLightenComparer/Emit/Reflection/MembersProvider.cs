@@ -26,15 +26,19 @@ namespace ILLightenComparer.Emit.Reflection
             return converted;
         }
 
-        private IAcceptor[] Convert(IEnumerable<MemberInfo> members) =>
-            members.Select(_converter.Convert).ToArray();
+        private IAcceptor[] Convert(IEnumerable<MemberInfo> members)
+        {
+            return members.Select(_converter.Convert).ToArray();
+        }
 
-        private IEnumerable<MemberInfo> Filter(IReflect type) =>
-            type.GetMembers(BindingFlags.Instance
-                            | BindingFlags.FlattenHierarchy
-                            | BindingFlags.Public)
-                .Where(IncludeFields)
-                .Where(IgnoredMembers);
+        private IEnumerable<MemberInfo> Filter(IReflect type)
+        {
+            return type.GetMembers(BindingFlags.Instance
+                                   | BindingFlags.FlattenHierarchy
+                                   | BindingFlags.Public)
+                       .Where(IncludeFields)
+                       .Where(IgnoredMembers);
+        }
 
         private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members)
         {

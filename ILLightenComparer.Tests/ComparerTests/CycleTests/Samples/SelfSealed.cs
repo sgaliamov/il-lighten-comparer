@@ -15,7 +15,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         public SelfSealed Second { get; set; }
         public int Value { get; set; }
 
-        public override string ToString() => Id.ToString();
+        public override string ToString()
+        {
+            return Id.ToString();
+        }
 
         public sealed class RelationalComparer : IComparer<SelfSealed>
         {

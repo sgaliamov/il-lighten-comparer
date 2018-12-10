@@ -49,9 +49,11 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static IAcceptor Convert(
             MemberInfo memberInfo,
-            IEnumerable<Func<MemberInfo, IAcceptor>> factories) =>
-            factories
-                .Select(factory => factory(memberInfo))
-                .FirstOrDefault(acceptor => acceptor != null);
+            IEnumerable<Func<MemberInfo, IAcceptor>> factories)
+        {
+            return factories
+                   .Select(factory => factory(memberInfo))
+                   .FirstOrDefault(acceptor => acceptor != null);
+        }
     }
 }

@@ -11,49 +11,71 @@ namespace ILLightenComparer.Emit.Members
     {
         private BasicFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
-            visitor.Visit(this, il, gotoNextMember);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il)
+        {
+            return visitor.Visit(this, il, gotoNextMember);
+        }
 
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMember(this, il, arg);
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMember(this, il, arg);
+        }
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMemberAddress(this, il, arg);
+        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMemberAddress(this, il, arg);
+        }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
 
-        public static BasicFieldMember Create(MemberInfo memberInfo) =>
-            memberInfo is FieldInfo info
-            && info
-               .FieldType
-               .GetUnderlyingType()
-               .IsPrimitive()
+        public static BasicFieldMember Create(MemberInfo memberInfo)
+        {
+            return memberInfo is FieldInfo info
+                   && info
+                      .FieldType
+                      .GetUnderlyingType()
+                      .IsPrimitive()
                 ? new BasicFieldMember(info)
                 : null;
+        }
     }
 
     internal sealed class BasicPropertyMember : PropertyMember, IBasicAcceptor, IValueMember
     {
         private BasicPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
-            visitor.Visit(this, il, gotoNextMember);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il)
+        {
+            return visitor.Visit(this, il, gotoNextMember);
+        }
 
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMember(this, il, arg);
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMember(this, il, arg);
+        }
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMemberAddress(this, il, arg);
+        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMemberAddress(this, il, arg);
+        }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
 
-        public static BasicPropertyMember Create(MemberInfo memberInfo) =>
-            memberInfo is PropertyInfo info
-            && info
-               .PropertyType
-               .GetUnderlyingType()
-               .IsPrimitive()
+        public static BasicPropertyMember Create(MemberInfo memberInfo)
+        {
+            return memberInfo is PropertyInfo info
+                   && info
+                      .PropertyType
+                      .GetUnderlyingType()
+                      .IsPrimitive()
                 ? new BasicPropertyMember(info)
                 : null;
+        }
     }
 }

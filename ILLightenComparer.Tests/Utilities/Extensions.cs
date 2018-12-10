@@ -13,17 +13,21 @@ namespace ILLightenComparer.Tests.Utilities
         private static readonly ConditionalWeakTable<object, object> ObjectIds =
             new ConditionalWeakTable<object, object>();
 
-        public static bool IsNullable(this Type type) =>
-            type.IsValueType
-            && type.IsGenericType
-            && !type.IsGenericTypeDefinition
-            && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
+        public static bool IsNullable(this Type type)
+        {
+            return type.IsValueType
+                   && type.IsGenericType
+                   && !type.IsGenericTypeDefinition
+                   && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
+        }
 
-        public static bool IsPrimitive(this Type type) =>
-            type.IsPrimitive
-            || type.IsEnum
-            || ReferenceEquals(type, typeof(string))
-            || ReferenceEquals(type, typeof(decimal));
+        public static bool IsPrimitive(this Type type)
+        {
+            return type.IsPrimitive
+                   || type.IsEnum
+                   || ReferenceEquals(type, typeof(string))
+                   || ReferenceEquals(type, typeof(decimal));
+        }
 
         public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
         {

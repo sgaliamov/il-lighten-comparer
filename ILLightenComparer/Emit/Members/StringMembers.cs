@@ -12,22 +12,33 @@ namespace ILLightenComparer.Emit.Members
 
         public bool LoadContext => false;
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
-            visitor.Visit(this, il, gotoNextMember);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il)
+        {
+            return visitor.Visit(this, il, gotoNextMember);
+        }
 
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMember(this, il, arg);
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMember(this, il, arg);
+        }
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMemberAddress(this, il, arg);
+        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMemberAddress(this, il, arg);
+        }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
 
-        public static StringFieldMember Create(MemberInfo memberInfo) =>
-            memberInfo is FieldInfo info
-            && info.FieldType == typeof(string)
+        public static StringFieldMember Create(MemberInfo memberInfo)
+        {
+            return memberInfo is FieldInfo info
+                   && info.FieldType == typeof(string)
                 ? new StringFieldMember(info)
                 : null;
+        }
     }
 
     internal sealed class StringPropertyMember : PropertyMember, IStringAcceptor, IArgumentsMember
@@ -36,21 +47,32 @@ namespace ILLightenComparer.Emit.Members
 
         public bool LoadContext => false;
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
-            visitor.Visit(this, il, gotoNextMember);
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il)
+        {
+            return visitor.Visit(this, il, gotoNextMember);
+        }
 
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMember(this, il, arg);
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMember(this, il, arg);
+        }
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
-            visitor.LoadMemberAddress(this, il, arg);
+        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        {
+            return visitor.LoadMemberAddress(this, il, arg);
+        }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
 
-        public static StringPropertyMember Create(MemberInfo memberInfo) =>
-            memberInfo is PropertyInfo info
-            && info.PropertyType == typeof(string)
+        public static StringPropertyMember Create(MemberInfo memberInfo)
+        {
+            return memberInfo is PropertyInfo info
+                   && info.PropertyType == typeof(string)
                 ? new StringPropertyMember(info)
                 : null;
+        }
     }
 }
