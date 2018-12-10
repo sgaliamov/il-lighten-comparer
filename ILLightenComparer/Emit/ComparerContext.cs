@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
@@ -65,37 +64,44 @@ namespace ILLightenComparer.Emit
 
         public Type GetComparerType(Type objectType)
         {
-            var comparerType = _comparerTypes.GetOrAdd(
+            var lazy = _comparerTypes.GetOrAdd(
                 objectType,
                 type => new Lazy<Type>(() =>
                 {
                     var buildInfo = EnqueueBuild(type);
 
                     var result = _comparerTypeBuilder.Build(
-                        buildInfo.TypeBuilder,
-                        buildInfo.MethodBuilder,
+                        (TypeBuilder)buildInfo.ComparerType,
+                        (MethodBuilder)buildInfo.CompareMethod,
                         buildInfo.ObjectType);
 
-                    while (!_buildScope.IsEmpty)
-                    {
-                        var lazy = _buildScope.First();
-
-                        buildInfo = lazy.Value.Value;
-
-                        GetComparerType(buildInfo.ObjectType);
-                    }
-
-                    _buildScope.TryRemove(type, out _);
+                    buildInfo.ComparerType = result;
+                    buildInfo.CompareMethod = result.GetMethod(
+                        MethodName.Compare,
+                        Method.StaticCompareMethodParameters(type));
+                    buildInfo.Compiled = true;
 
                     return result;
                 }));
 
-            return comparerType.Value;
+            var comparerType = lazy.Value;
+
+            foreach (var item in _buildScope)
+            {
+                if (item.Value.Value.Compiled)
+                {
+                    continue;
+                }
+
+                GetComparerType(item.Value.Value.ObjectType);
+            }
+
+            return comparerType;
         }
 
         public Configuration GetConfiguration(Type type) => _configurationBuilder.GetConfiguration(type);
 
-        public MethodBuilder GetStaticCompareMethod(Type memberType) => EnqueueBuild(memberType).MethodBuilder;
+        public MethodInfo GetStaticCompareMethod(Type memberType) => EnqueueBuild(memberType).CompareMethod;
 
         private MethodInfo GetCompiledCompareMethod(Type memberType)
         {

@@ -49,8 +49,8 @@
 
 - [ ] create type only at the end, use builders when cycle is possible
 - [ ] refactor visiting `IComparableAcceptor`
-- [ ] compare collection, do not iterate `IEnumerable`
 - [ ] compare arrays
+- [ ] compare collection, do not iterate `IEnumerable`
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
 
