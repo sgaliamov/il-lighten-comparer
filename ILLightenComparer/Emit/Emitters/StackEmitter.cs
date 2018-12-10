@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit.Emitters
             return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
         }
 
-        public ILEmitter Visit(IArgumentsField member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IArgumentsMember member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
             if (!memberType.IsNullable())
@@ -40,43 +40,16 @@ namespace ILLightenComparer.Emit.Emitters
                     il.LoadArgument(Arg.Context);
                 }
 
-                return il.LoadField(member, Arg.X)
-                         .LoadField(member, Arg.Y);
+                member.LoadMember(_loader, il, Arg.X);
+
+                return member.LoadMember(_loader, il, Arg.Y);
             }
 
-            il.LoadField(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
-              .LoadField(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
+            member.LoadMember(_loader, il, Arg.X)
+                  .Store(memberType, 0, out var nullableX);
 
-            return LoadNullableMembers(
-                il,
-                false,
-                member.LoadContext,
-                memberType,
-                nullableX,
-                nullableY,
-                gotoNextMember);
-        }
-
-        public ILEmitter Visit(IArgumentsProperty member, ILEmitter il, Label gotoNextMember)
-        {
-            var memberType = member.MemberType;
-            if (!memberType.IsNullable())
-            {
-                if (member.LoadContext)
-                {
-                    il.LoadArgument(Arg.Context);
-                }
-
-                return il.LoadProperty(member, Arg.X)
-                         .LoadProperty(member, Arg.Y);
-            }
-
-            il.LoadProperty(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
-              .LoadProperty(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
+            member.LoadMember(_loader, il, Arg.Y)
+                  .Store(memberType, 1, out var nullableY);
 
             return LoadNullableMembers(
                 il,

@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class HierarchicalFieldMember : FieldMember, IHierarchicalAcceptor, IArgumentsField
+    internal sealed class HierarchicalFieldMember : FieldMember, IHierarchicalAcceptor, IArgumentsMember
     {
         private HierarchicalFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
@@ -34,7 +34,7 @@ namespace ILLightenComparer.Emit.Members
                 : null;
     }
 
-    internal sealed class HierarchicalPropertyMember : PropertyMember, IHierarchicalAcceptor, IArgumentsProperty
+    internal sealed class HierarchicalPropertyMember : PropertyMember, IHierarchicalAcceptor, IArgumentsMember
     {
         private HierarchicalPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 

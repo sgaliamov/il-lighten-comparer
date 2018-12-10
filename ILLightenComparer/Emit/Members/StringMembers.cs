@@ -6,7 +6,7 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class StringFieldMember : FieldMember, IStringAcceptor, IArgumentsField
+    internal sealed class StringFieldMember : FieldMember, IStringAcceptor, IArgumentsMember
     {
         private StringFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit.Members
                 : null;
     }
 
-    internal sealed class StringPropertyMember : PropertyMember, IStringAcceptor, IArgumentsProperty
+    internal sealed class StringPropertyMember : PropertyMember, IStringAcceptor, IArgumentsMember
     {
         private StringPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 

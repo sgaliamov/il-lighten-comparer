@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class IntegralFieldMember : FieldMember, IIntegralAcceptor, IArgumentsField
+    internal sealed class IntegralFieldMember : FieldMember, IIntegralAcceptor, IArgumentsMember
     {
         private IntegralFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
@@ -34,7 +34,7 @@ namespace ILLightenComparer.Emit.Members
                 : null;
     }
 
-    internal sealed class IntegralPropertyMember : PropertyMember, IIntegralAcceptor, IArgumentsProperty
+    internal sealed class IntegralPropertyMember : PropertyMember, IIntegralAcceptor, IArgumentsMember
     {
         private IntegralPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
