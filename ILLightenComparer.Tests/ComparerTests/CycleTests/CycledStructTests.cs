@@ -8,7 +8,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 {
     public class CycledStructTests
     {
-        public CycledStructTests() =>
+        public CycledStructTests()
+        {
             _builder = new ComparersBuilder()
                        .DefineDefaultConfiguration(new ComparerSettings
                        {
@@ -36,6 +37,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
                                },
                                IgnoredMembers = new[] { nameof(CycledStructObject.Id) }
                            });
+        }
 
         [Fact(Timeout = Constants.DefaultTimeout)]
         public void Detects_Cycle_In_Object()

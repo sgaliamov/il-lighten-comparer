@@ -45,8 +45,8 @@ namespace ILLightenComparer.Emit.Members
             var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>), underlyingType);
 
             return isComparable
-                ? new ComparableFieldMember(info)
-                : null;
+                       ? new ComparableFieldMember(info)
+                       : null;
         }
     }
 
@@ -87,8 +87,8 @@ namespace ILLightenComparer.Emit.Members
             var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>), underlyingType);
 
             return isComparable
-                ? new ComparablePropertyMember(info)
-                : null;
+                       ? new ComparablePropertyMember(info)
+                       : null;
         }
     }
 }

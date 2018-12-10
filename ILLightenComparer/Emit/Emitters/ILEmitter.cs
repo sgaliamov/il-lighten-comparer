@@ -20,7 +20,10 @@ namespace ILLightenComparer.Emit.Emitters
             { 0, new Dictionary<Type, LocalBuilder>() }
         };
 
-        public ILEmitter(ILGenerator il) => _il = il;
+        public ILEmitter(ILGenerator il)
+        {
+            _il = il;
+        }
 
         public void Dispose()
         {
@@ -103,8 +106,8 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             var opCode = methodInfo.IsStatic || owner.IsValueType || owner.IsSealed
-                ? OpCodes.Call
-                : OpCodes.Callvirt;
+                             ? OpCodes.Call
+                             : OpCodes.Callvirt;
 
             return Emit(opCode, methodInfo);
         }
@@ -122,8 +125,8 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter EmitCast(Type objectType)
         {
             var castOp = objectType.IsValueType
-                ? OpCodes.Unbox_Any
-                : OpCodes.Castclass;
+                             ? OpCodes.Unbox_Any
+                             : OpCodes.Castclass;
 
             DebugLine($"\t\t{castOp} {objectType.Name}");
             _il.Emit(castOp, objectType);

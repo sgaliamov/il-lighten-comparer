@@ -11,7 +11,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         public CycledStruct? FirstStruct;
         public string TextField;
 
-        public CycledStructObject() => Id = this.GetObjectId();
+        public CycledStructObject()
+        {
+            Id = this.GetObjectId();
+        }
+
         public static IComparer<CycledStructObject> Comparer { get; } = new RelationalComparer();
 
         public CycledStruct SecondStruct { get; set; }

@@ -32,8 +32,8 @@ namespace ILLightenComparer.Config
         public Configuration GetConfiguration(Type type)
         {
             return _configurations.TryGetValue(type, out var configuration)
-                ? configuration
-                : _defaultConfiguration;
+                       ? configuration
+                       : _defaultConfiguration;
         }
     }
 }

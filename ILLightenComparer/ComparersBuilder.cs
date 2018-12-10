@@ -76,7 +76,10 @@ namespace ILLightenComparer
         {
             private readonly ComparersBuilder _owner;
 
-            public GenericProxy(ComparersBuilder comparersBuilder) => _owner = comparersBuilder;
+            public GenericProxy(ComparersBuilder comparersBuilder)
+            {
+                _owner = comparersBuilder;
+            }
 
             public IContextBuilder<TOther> For<TOther>()
             {

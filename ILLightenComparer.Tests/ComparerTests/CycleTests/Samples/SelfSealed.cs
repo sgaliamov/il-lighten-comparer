@@ -9,7 +9,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         public readonly int Id;
         public SelfSealed First;
 
-        public SelfSealed() => Id = this.GetObjectId();
+        public SelfSealed()
+        {
+            Id = this.GetObjectId();
+        }
 
         public static RelationalComparer Comparer { get; } = new RelationalComparer();
         public SelfSealed Second { get; set; }

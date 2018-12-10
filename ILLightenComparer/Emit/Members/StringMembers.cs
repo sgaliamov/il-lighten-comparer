@@ -36,8 +36,8 @@ namespace ILLightenComparer.Emit.Members
         {
             return memberInfo is FieldInfo info
                    && info.FieldType == typeof(string)
-                ? new StringFieldMember(info)
-                : null;
+                       ? new StringFieldMember(info)
+                       : null;
         }
     }
 
@@ -71,8 +71,8 @@ namespace ILLightenComparer.Emit.Members
         {
             return memberInfo is PropertyInfo info
                    && info.PropertyType == typeof(string)
-                ? new StringPropertyMember(info)
-                : null;
+                       ? new StringPropertyMember(info)
+                       : null;
         }
     }
 }

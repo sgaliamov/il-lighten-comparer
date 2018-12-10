@@ -22,8 +22,8 @@ namespace ILLightenComparer.Tests.Utilities
         public object Create(object request, ISpecimenContext context)
         {
             return request is Type type
-                ? CreateRandom(type)
-                : new NoSpecimen();
+                       ? CreateRandom(type)
+                       : new NoSpecimen();
         }
 
         private object CreateRandom(Type request)
@@ -74,12 +74,14 @@ namespace ILLightenComparer.Tests.Utilities
                 return null;
             }
 
-            object Get(IReflect t, string name) =>
-                t.GetField(name, BindingFlags.Static | BindingFlags.Public).GetValue(null);
+            object Get(IReflect t, string name)
+            {
+                return t.GetField(name, BindingFlags.Static | BindingFlags.Public).GetValue(null);
+            }
 
             return _random.NextDouble() < 0.5
-                ? (T)Get(request, "MinValue")
-                : (T)Get(request, "MaxValue");
+                       ? (T)Get(request, "MinValue")
+                       : (T)Get(request, "MaxValue");
         }
 
         private long GetNextRandom()

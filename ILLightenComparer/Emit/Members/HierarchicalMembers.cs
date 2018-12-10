@@ -40,8 +40,8 @@ namespace ILLightenComparer.Emit.Members
                        .FieldType
                        .GetUnderlyingType()
                        .IsPrimitive()
-                ? new HierarchicalFieldMember(info)
-                : null;
+                       ? new HierarchicalFieldMember(info)
+                       : null;
         }
     }
 
@@ -78,8 +78,8 @@ namespace ILLightenComparer.Emit.Members
                        .PropertyType
                        .GetUnderlyingType()
                        .IsPrimitive()
-                ? new HierarchicalPropertyMember(info)
-                : null;
+                       ? new HierarchicalPropertyMember(info)
+                       : null;
         }
     }
 }

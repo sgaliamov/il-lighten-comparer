@@ -40,8 +40,8 @@ namespace ILLightenComparer.Emit.Members
                       .FieldType
                       .GetUnderlyingType()
                       .IsSmallIntegral()
-                ? new IntegralFieldMember(info)
-                : null;
+                       ? new IntegralFieldMember(info)
+                       : null;
         }
     }
 
@@ -78,8 +78,8 @@ namespace ILLightenComparer.Emit.Members
                       .PropertyType
                       .GetUnderlyingType()
                       .IsSmallIntegral()
-                ? new IntegralPropertyMember(info)
-                : null;
+                       ? new IntegralPropertyMember(info)
+                       : null;
         }
     }
 }
