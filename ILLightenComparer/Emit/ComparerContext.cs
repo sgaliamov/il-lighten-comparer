@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -96,8 +98,16 @@ namespace ILLightenComparer.Emit
                 Method.StaticCompareMethodParameters(memberType));
         }
 
-        public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
-            _moduleBuilder.DefineType(name, interfaceTypes);
+        public TypeBuilder DefineType(Type objectType)
+        {
+            var basicInterface = typeof(IComparer);
+            var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
+
+            return _moduleBuilder.DefineType(
+                $"{objectType.FullName}.DynamicComparer",
+                basicInterface,
+                genericInterface);
+        }
 
         private int Compare<T>(Type type, T x, T y, ObjectsSet xSet, ObjectsSet ySet)
         {

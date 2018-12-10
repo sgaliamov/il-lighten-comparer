@@ -31,14 +31,7 @@ namespace ILLightenComparer.Emit
                     $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
             }
 
-            var basicInterface = typeof(IComparer);
-            var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
-
-            var typeBuilder = _context.DefineType(
-                $"{objectType.FullName}.DynamicComparer",
-                basicInterface,
-                genericInterface
-            );
+            var typeBuilder = _context.DefineType(objectType);
 
             var contextField = typeBuilder.DefineField(
                 "_context",
@@ -51,14 +44,12 @@ namespace ILLightenComparer.Emit
 
             BuildBasicCompareMethod(
                 typeBuilder,
-                basicInterface.GetMethod(MethodName.Compare),
                 staticCompare,
                 contextField,
                 objectType);
 
             BuildTypedCompareMethod(
                 typeBuilder,
-                genericInterface.GetMethod(MethodName.Compare),
                 staticCompare,
                 contextField,
                 objectType);
@@ -93,11 +84,11 @@ namespace ILLightenComparer.Emit
 
         private void BuildBasicCompareMethod(
             TypeBuilder typeBuilder,
-            MethodInfo interfaceMethod,
             MethodInfo staticCompareMethod,
             FieldInfo contextField,
             Type objectType)
         {
+            var interfaceMethod = typeof(IComparer).GetMethod(MethodName.Compare);
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
             using (var il = methodBuilder.CreateILEmitter())
@@ -120,11 +111,12 @@ namespace ILLightenComparer.Emit
 
         private void BuildTypedCompareMethod(
             TypeBuilder typeBuilder,
-            MethodInfo interfaceMethod,
             MethodInfo staticCompareMethod,
             FieldInfo contextField,
             Type objectType)
         {
+            var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
+            var interfaceMethod = genericInterface.GetMethod(MethodName.Compare);
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
             using (var il = methodBuilder.CreateILEmitter())
