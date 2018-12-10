@@ -14,51 +14,51 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IValueMember member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
-            if (!memberType.IsNullable())
+            if (memberType.IsNullable())
             {
-                member.LoadMemberAddress(_loader, il, Arg.X);
+                member.LoadMember(_loader, il, Arg.X)
+                      .Store(memberType, 0, out var nullableX);
 
-                return member.LoadMember(_loader, il, Arg.Y);
+                member.LoadMember(_loader, il, Arg.Y)
+                      .Store(memberType, 1, out var nullableY);
+
+                return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
             }
 
-            member.LoadMember(_loader, il, Arg.X)
-                  .Store(memberType, 0, out var nullableX);
+            member.LoadMemberAddress(_loader, il, Arg.X);
 
-            member.LoadMember(_loader, il, Arg.Y)
-                  .Store(memberType, 1, out var nullableY);
-
-            return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
+            return member.LoadMember(_loader, il, Arg.Y);
         }
 
         public ILEmitter Visit(IArgumentsMember member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
-            if (!memberType.IsNullable())
+            if (memberType.IsNullable())
             {
-                if (member.LoadContext)
-                {
-                    il.LoadArgument(Arg.Context);
-                }
+                member.LoadMember(_loader, il, Arg.X)
+                      .Store(memberType, 0, out var nullableX);
 
-                member.LoadMember(_loader, il, Arg.X);
+                member.LoadMember(_loader, il, Arg.Y)
+                      .Store(memberType, 1, out var nullableY);
 
-                return member.LoadMember(_loader, il, Arg.Y);
+                return LoadNullableMembers(
+                    il,
+                    false,
+                    member.LoadContext,
+                    memberType,
+                    nullableX,
+                    nullableY,
+                    gotoNextMember);
             }
 
-            member.LoadMember(_loader, il, Arg.X)
-                  .Store(memberType, 0, out var nullableX);
+            if (member.LoadContext)
+            {
+                il.LoadArgument(Arg.Context);
+            }
 
-            member.LoadMember(_loader, il, Arg.Y)
-                  .Store(memberType, 1, out var nullableY);
+            member.LoadMember(_loader, il, Arg.X);
 
-            return LoadNullableMembers(
-                il,
-                false,
-                member.LoadContext,
-                memberType,
-                nullableX,
-                nullableY,
-                gotoNextMember);
+            return member.LoadMember(_loader, il, Arg.Y);
         }
 
         public ILEmitter Visit(IComparableMember member, ILEmitter il, Label gotoNextMember)

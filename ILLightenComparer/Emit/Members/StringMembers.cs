@@ -14,10 +14,10 @@ namespace ILLightenComparer.Emit.Members
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
-        
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) => 
+
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMember(this, il, arg);
-        
+
         public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMemberAddress(this, il, arg);
 
@@ -38,10 +38,10 @@ namespace ILLightenComparer.Emit.Members
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
-        
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) => 
+
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMember(this, il, arg);
-        
+
         public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMemberAddress(this, il, arg);
 

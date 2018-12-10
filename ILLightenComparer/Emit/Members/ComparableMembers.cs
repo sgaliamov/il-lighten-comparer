@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emit.Members
 
         public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMember(this, il, arg);
-        
+
         public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMemberAddress(this, il, arg);
 

@@ -15,12 +15,12 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {
+            il.DefineLabel(out var gotoNextMember);
             var memberType = member.MemberType;
             var compareToMethod = memberType.GetUnderlyingCompareToMethod()
                                   ?? throw new ArgumentException(
                                       $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
-            il.DefineLabel(out var gotoNextMember);
             return member.LoadMembers(_stackEmitter, gotoNextMember, il)
                          .Call(compareToMethod)
                          .EmitReturnNotZero(gotoNextMember);
@@ -37,8 +37,8 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
         {
-            var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
             il.DefineLabel(out var gotoNextMember);
+            var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
 
             return member.LoadMembers(_stackEmitter, gotoNextMember, il)
                          .LoadConstant(comparisonType)
@@ -49,6 +49,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
+
             member.LoadMembers(_stackEmitter, gotoNextMember, il)
                   .LoadArgument(Arg.SetX)
                   .LoadArgument(Arg.SetY);
@@ -70,12 +71,11 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
         {
-            var memberType = member.MemberType;
-            var underlyingType = memberType.GetUnderlyingType();
-
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
+            var memberType = member.MemberType;
+            var underlyingType = memberType.GetUnderlyingType();
             if (underlyingType.IsValueType || underlyingType.IsSealed)
             {
                 var compareToMethod = memberType.GetUnderlyingCompareToMethod();
