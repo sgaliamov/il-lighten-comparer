@@ -17,12 +17,12 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il, gotoNextMember);
         }
 
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -59,12 +59,12 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il, gotoNextMember);
         }
 
-        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
