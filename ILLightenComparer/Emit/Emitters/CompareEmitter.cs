@@ -8,10 +8,10 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CompareEmitter
     {
-        private readonly Context _context;
+        private readonly ComparerContext _context;
         private readonly StackEmitter _stackEmitter = new StackEmitter();
 
-        public CompareEmitter(Context context) => _context = context;
+        public CompareEmitter(ComparerContext context) => _context = context;
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {

@@ -15,10 +15,10 @@ namespace ILLightenComparer.Emit
     internal sealed class ComparerTypeBuilder
     {
         private readonly CompareEmitter _compareEmitter;
-        private readonly Context _context;
+        private readonly ComparerContext _context;
         private readonly MembersProvider _membersProvider;
 
-        public ComparerTypeBuilder(Context context, MembersProvider membersProvider)
+        public ComparerTypeBuilder(ComparerContext context, MembersProvider membersProvider)
         {
             _context = context;
             _membersProvider = membersProvider;
@@ -44,7 +44,7 @@ namespace ILLightenComparer.Emit
 
             var contextField = typeBuilder.DefineField(
                 "_context",
-                typeof(IContext),
+                typeof(IComparerContext),
                 FieldAttributes.InitOnly | FieldAttributes.Private);
 
             BuildFactory(typeBuilder, contextField);
@@ -211,7 +211,7 @@ namespace ILLightenComparer.Emit
 
         private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)
         {
-            var parameters = new[] { typeof(IContext) };
+            var parameters = new[] { typeof(IComparerContext) };
 
             var constructorInfo = typeBuilder.DefineConstructor(
                 MethodAttributes.Public,

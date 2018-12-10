@@ -9,7 +9,7 @@ namespace ILLightenComparer.Emit.Reflection
     internal static class Method
     {
         public delegate int StaticMethodDelegate<in T>(
-            IContext context,
+            IComparerContext context,
             T x,
             T y,
             Set xSet,
@@ -29,11 +29,11 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(Set).GetProperty(nameof(Set.Count))?.GetGetMethod();
 
         public static MethodInfo ContextCompare =
-            typeof(IContext).GetMethod(nameof(IContext.Compare));
+            typeof(IComparerContext).GetMethod(nameof(IComparerContext.Compare));
 
         public static Type[] StaticCompareMethodParameters(Type objectType) => new[]
         {
-            typeof(IContext),
+            typeof(IComparerContext),
             objectType,
             objectType,
             typeof(Set),

@@ -11,22 +11,25 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit
 {
-    using ComparerTypes = ConcurrentDictionary<Type, Type>;
-    using TypeHeap = ConcurrentDictionary<Type, byte>;
     using Set = ConcurrentDictionary<object, byte>;
 
-    internal sealed class Context : IContext
+    public interface IComparerContext
+    {
+        int Compare<T>(T x, T y, Set xSet, Set ySet);
+    }
+
+    internal sealed class ComparerContext : IComparerContext
     {
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
-        private readonly ComparerTypes _comparerTypes = new ComparerTypes();
+        private readonly ConcurrentDictionary<Type, Type> _comparerTypes = new ConcurrentDictionary<Type, Type>();
         private readonly ConfigurationBuilder _configurations;
 
         // ReSharper disable once NotAccessedField.Local // todo: implement EqualityComparerTypeBuilder
         private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
         private readonly ModuleBuilder _moduleBuilder;
-        private readonly TypeHeap _typeHeap = new TypeHeap();
+        private readonly ConcurrentDictionary<Type, byte> _typeHeap = new ConcurrentDictionary<Type, byte>();
 
-        public Context(ModuleBuilder moduleBuilder, ConfigurationBuilder configurations)
+        public ComparerContext(ModuleBuilder moduleBuilder, ConfigurationBuilder configurations)
         {
             _moduleBuilder = moduleBuilder;
             _configurations = configurations;
@@ -35,7 +38,7 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: cache delegates and benchmark ways
-        public int Compare<T>(T x, T y, Set xSet, Set ySet)
+        public int Compare<T>(T x, T y, ConcurrentDictionary<object, byte> xSet, ConcurrentDictionary<object, byte> ySet)
         {
             if (x == null)
             {
@@ -97,7 +100,7 @@ namespace ILLightenComparer.Emit
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
             _moduleBuilder.DefineType(name, interfaceTypes);
 
-        private int Compare<T>(Type type, T x, T y, Set xSet, Set ySet)
+        private int Compare<T>(Type type, T x, T y, ConcurrentDictionary<object, byte> xSet, ConcurrentDictionary<object, byte> ySet)
         {
             var compareMethod = EnsureStaticCompareMethod(type);
 
@@ -134,7 +137,7 @@ namespace ILLightenComparer.Emit
             }
         }
 
-        private static ComparerTypeBuilder CreateComparerTypeBuilder(Context context)
+        private static ComparerTypeBuilder CreateComparerTypeBuilder(ComparerContext context)
         {
             Func<MemberInfo, IAcceptor>[] propertyFactories =
             {
@@ -157,10 +160,5 @@ namespace ILLightenComparer.Emit
 
             return new ComparerTypeBuilder(context, new MembersProvider(context, converter));
         }
-    }
-
-    public interface IContext
-    {
-        int Compare<T>(T x, T y, Set xSet, Set ySet);
     }
 }

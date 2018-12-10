@@ -9,12 +9,12 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private readonly Context _context;
+        private readonly ComparerContext _context;
         private readonly Func<MemberInfo, IAcceptor>[] _fieldFactories;
         private readonly Func<MemberInfo, IAcceptor>[] _propertyFactories;
 
         public MemberConverter(
-            Context context,
+            ComparerContext context,
             Func<MemberInfo, IAcceptor>[] propertyFactories,
             Func<MemberInfo, IAcceptor>[] fieldFactories)
         {

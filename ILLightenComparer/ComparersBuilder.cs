@@ -14,7 +14,7 @@ namespace ILLightenComparer
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ConfigurationBuilder _configurations = new ConfigurationBuilder();
-        private readonly Context _context;
+        private readonly ComparerContext _context;
 
         public ComparersBuilder()
         {
@@ -24,7 +24,7 @@ namespace ILLightenComparer
 
             var moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
 
-            _context = new Context(moduleBuilder, _configurations);
+            _context = new ComparerContext(moduleBuilder, _configurations);
         }
 
         public IContextBuilder DefineDefaultConfiguration(ComparerSettings settings)
@@ -44,7 +44,7 @@ namespace ILLightenComparer
         public IComparer GetComparer(Type objectType) =>
             _comparers.GetOrAdd(
                 objectType,
-                key => _context.GetComparerType(key).CreateInstance<IContext, IComparer>(_context));
+                key => _context.GetComparerType(key).CreateInstance<IComparerContext, IComparer>(_context));
 
         public IEqualityComparer<T> GetEqualityComparer<T>() => throw new NotImplementedException();
 
