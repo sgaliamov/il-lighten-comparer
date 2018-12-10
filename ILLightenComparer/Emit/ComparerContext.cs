@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
@@ -96,14 +97,17 @@ namespace ILLightenComparer.Emit
 
         private void FinishStartedBuilds()
         {
-            foreach (var item in _builds)
+            var builds = _builds.Select(x => x.Value);
+                // .ToDictionary(x => x.Key, x => x.Value.Value);
+
+            foreach (var item in builds)
             {
-                if (item.Value.Value.Compiled)
+                if (item.Value.Compiled)
                 {
                     continue;
                 }
 
-                GetOrBuildComparerType(item.Value.Value.ObjectType);
+                GetOrBuildComparerType(item.Value.ObjectType);
             }
         }
 
