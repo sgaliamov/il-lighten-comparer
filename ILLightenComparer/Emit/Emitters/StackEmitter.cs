@@ -108,7 +108,7 @@ namespace ILLightenComparer.Emit.Emitters
             var memberType = member.MemberType;
             var underlyingType = memberType.GetUnderlyingType();
 
-            if (!underlyingType.IsClass)
+            if (underlyingType.IsValueType)
             {
                 return Visit((ICallableField)member, il, gotoNextMember);
             }
@@ -125,7 +125,7 @@ namespace ILLightenComparer.Emit.Emitters
                          .Emit(OpCodes.Brfalse_S, gotoNextMember)
                          .Return(-1)
                          .MarkLabel(call)
-                         .LoadAddress(x)
+                         .LoadLocal(x)
                          .LoadLocal(y);
             }
 
@@ -141,7 +141,7 @@ namespace ILLightenComparer.Emit.Emitters
             var memberType = member.MemberType;
             var underlyingType = memberType.GetUnderlyingType();
 
-            if (!underlyingType.IsClass)
+            if (underlyingType.IsValueType)
             {
                 return Visit((ICallableProperty)member, il, gotoNextMember);
             }
@@ -158,7 +158,7 @@ namespace ILLightenComparer.Emit.Emitters
                          .Emit(OpCodes.Brfalse_S, gotoNextMember)
                          .Return(-1)
                          .MarkLabel(call)
-                         .LoadAddress(x)
+                         .LoadLocal(x)
                          .LoadLocal(y);
             }
 
