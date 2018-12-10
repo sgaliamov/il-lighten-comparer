@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Reflection.Emit;
 
 namespace ILLightenComparer.Emit
 {
@@ -12,8 +11,14 @@ namespace ILLightenComparer.Emit
             Method = method;
         }
 
-        public bool Compiled => Method.GetType() != typeof(MethodBuilder);
-        public MethodInfo Method { get; set; }
+        public bool Compiled { get; private set; }
+        public MethodInfo Method { get; private set; }
         public Type ObjectType { get; }
+
+        public void FinalizeBuild(MethodInfo method)
+        {
+            Method = method;
+            Compiled = true;
+        }
     }
 }

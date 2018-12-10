@@ -67,26 +67,25 @@ namespace ILLightenComparer.Emit
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
-                type => new Lazy<Type>(() =>
+                key => new Lazy<Type>(() =>
                 {
-                    var buildInfo = GetOrStartBuild(type);
-                    var typeBuilder = (TypeBuilder)buildInfo.Method.DeclaringType;
+                    var buildInfo = GetOrStartBuild(key);
 
                     var result = _comparerTypeBuilder.Build(
-                        typeBuilder,
+                        (TypeBuilder)buildInfo.Method.DeclaringType,
                         (MethodBuilder)buildInfo.Method,
                         buildInfo.ObjectType);
 
-                    buildInfo.Method = result.GetMethod(
-                        MethodName.Compare,
-                        Method.StaticCompareMethodParameters(type));
+                    var method = result.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(key));
+
+                    buildInfo.FinalizeBuild(method);
 
                     return result;
                 }));
 
             var comparerType = lazy.Value;
 
-            FinishStartedBuilds();
+            FinalizeStartedBuilds();
 
             return comparerType;
         }
@@ -101,7 +100,7 @@ namespace ILLightenComparer.Emit
             return GetOrStartBuild(memberType).Method;
         }
 
-        private void FinishStartedBuilds()
+        private void FinalizeStartedBuilds()
         {
             var builds = _builds.ToArray().Select(x => x.Value).ToArray();
 
@@ -128,22 +127,22 @@ namespace ILLightenComparer.Emit
         private BuildInfo GetOrStartBuild(Type objectType)
         {
             var lazy = _builds.GetOrAdd(objectType,
-                type => new Lazy<BuildInfo>(() =>
+                key => new Lazy<BuildInfo>(() =>
                 {
                     var basicInterface = typeof(IComparer);
-                    var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
+                    var genericInterface = typeof(IComparer<>).MakeGenericType(key);
 
                     var typeBuilder = _moduleBuilder.DefineType(
-                        $"{objectType.FullName}.DynamicComparer",
+                        $"{key.FullName}.DynamicComparer",
                         basicInterface,
                         genericInterface);
 
                     var staticCompareMethodBuilder = typeBuilder.DefineStaticMethod(
                         MethodName.Compare,
                         typeof(int),
-                        Method.StaticCompareMethodParameters(objectType));
+                        Method.StaticCompareMethodParameters(key));
 
-                    return new BuildInfo(type, staticCompareMethodBuilder);
+                    return new BuildInfo(key, staticCompareMethodBuilder);
                 }));
 
             return lazy.Value;
