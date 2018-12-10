@@ -9,7 +9,7 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class StackEmitter
     {
-        public ILEmitter Visit(ICallableField member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IValueField member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
             if (!memberType.IsNullable())
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Emit.Emitters
             return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
         }
 
-        public ILEmitter Visit(ICallableProperty member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IValueProperty member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.MemberType;
             if (!memberType.IsNullable())
@@ -107,10 +107,9 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var memberType = member.MemberType;
             var underlyingType = memberType.GetUnderlyingType();
-
             if (underlyingType.IsValueType)
             {
-                return Visit((ICallableField)member, il, gotoNextMember);
+                return Visit((IValueField)member, il, gotoNextMember);
             }
 
             if (underlyingType.IsSealed)
@@ -140,10 +139,9 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var memberType = member.MemberType;
             var underlyingType = memberType.GetUnderlyingType();
-
             if (underlyingType.IsValueType)
             {
-                return Visit((ICallableProperty)member, il, gotoNextMember);
+                return Visit((IValueProperty)member, il, gotoNextMember);
             }
 
             if (underlyingType.IsSealed)

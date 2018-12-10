@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class BasicFieldMember : FieldMember, IBasicAcceptor, ICallableField
+    internal sealed class BasicFieldMember : FieldMember, IBasicAcceptor, IValueField
     {
         private BasicFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Emit.Members
                 : null;
     }
 
-    internal sealed class BasicPropertyMember : PropertyMember, IBasicAcceptor, ICallableProperty
+    internal sealed class BasicPropertyMember : PropertyMember, IBasicAcceptor, IValueProperty
     {
         private BasicPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 

@@ -1,4 +1,4 @@
 ﻿namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IComparableProperty : ICallableProperty { }
+    internal interface IComparableProperty : IValueProperty { }
 }
