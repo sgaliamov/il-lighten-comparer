@@ -16,6 +16,9 @@ namespace ILLightenComparer.Emit.Members
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
 
+        public ILEmitter LoadMember(MemberLoader visitor, ushort arg, ILEmitter il) => 
+            visitor.LoadMember(this, il, arg);
+
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static IntegralFieldMember Create(MemberInfo memberInfo) =>
@@ -35,6 +38,9 @@ namespace ILLightenComparer.Emit.Members
         public bool LoadContext => false;
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) => visitor.Visit(this, il, gotoNextMember);
+
+        public ILEmitter LoadMember(MemberLoader visitor, ushort arg, ILEmitter il) => 
+            visitor.LoadMember(this, il, arg);
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 

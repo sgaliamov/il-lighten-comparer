@@ -16,6 +16,9 @@ namespace ILLightenComparer.Emit.Members
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
 
+        public ILEmitter LoadMember(MemberLoader visitor, ushort arg, ILEmitter il) => 
+            visitor.LoadMember(this, il, arg);
+
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static HierarchicalFieldMember Create(MemberInfo memberInfo) =>
@@ -36,6 +39,9 @@ namespace ILLightenComparer.Emit.Members
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
+
+        public ILEmitter LoadMember(MemberLoader visitor, ushort arg, ILEmitter il) => 
+            visitor.LoadMember(this, il, arg);
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
