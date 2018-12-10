@@ -62,7 +62,7 @@ namespace ILLightenComparer.Emit.Emitters
                          .EmitReturnNotZero(gotoNextMember);
             }
 
-            var contextCompare = Method.ContextCompare.MakeGenericMethod(underlyingType);
+            var contextCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
 
             return il.Emit(OpCodes.Call, contextCompare)
                      .EmitReturnNotZero(gotoNextMember);
@@ -107,7 +107,7 @@ namespace ILLightenComparer.Emit.Emitters
               .LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 
-            var contextCompare = Method.ContextCompare.MakeGenericMethod(underlyingType);
+            var delayedCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
 
             return il.Emit(OpCodes.Call, contextCompare)
                      .EmitReturnNotZero(gotoNextMember);
