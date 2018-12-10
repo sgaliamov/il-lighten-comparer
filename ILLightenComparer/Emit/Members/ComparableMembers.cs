@@ -8,17 +8,17 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class ComparableFieldMember : FieldMember, IComparableAcceptor, IComparableField
+    internal sealed class ComparableFieldMember : FieldMember, IComparableAcceptor, IComparableMember
     {
         private ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
 
-        public ILEmitter LoadMember(MemberLoader visitor, ushort arg, ILEmitter il) =>
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMember(this, il, arg);
         
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ushort arg, ILEmitter il) =>
+        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMemberAddress(this, il, arg);
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
@@ -41,17 +41,17 @@ namespace ILLightenComparer.Emit.Members
         }
     }
 
-    internal sealed class ComparablePropertyMember : PropertyMember, IComparableAcceptor, IComparableProperty
+    internal sealed class ComparablePropertyMember : PropertyMember, IComparableAcceptor, IComparableMember
     {
         private ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il) =>
             visitor.Visit(this, il, gotoNextMember);
 
-        public ILEmitter LoadMember(MemberLoader visitor, ushort arg, ILEmitter il) =>
+        public ILEmitter LoadMember(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMember(this, il, arg);
 
-        public ILEmitter LoadMemberAddress(MemberLoader visitor, ushort arg, ILEmitter il) =>
+        public ILEmitter LoadMemberAddress(MemberLoader visitor, ILEmitter il, ushort arg) =>
             visitor.LoadMemberAddress(this, il, arg);
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
