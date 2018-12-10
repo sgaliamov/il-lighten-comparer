@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
@@ -20,6 +21,7 @@ namespace ILLightenComparer.Emit
 
     internal sealed class ComparerContext : IComparerContext
     {
+        private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _buildScope = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ConfigurationBuilder _configurationBuilder;
@@ -67,8 +69,25 @@ namespace ILLightenComparer.Emit
                 objectType,
                 type => new Lazy<Type>(() =>
                 {
-                    var (typeBuilder, staticCompareMethodBuilder) = DefineType(type);
-                    return _comparerTypeBuilder.Build(typeBuilder, staticCompareMethodBuilder, type);
+                    var buildInfo = EnqueueBuild(type);
+
+                    var result = _comparerTypeBuilder.Build(
+                        buildInfo.TypeBuilder,
+                        buildInfo.MethodBuilder,
+                        buildInfo.ObjectType);
+
+                    while (!_buildScope.IsEmpty)
+                    {
+                        var lazy = _buildScope.First();
+
+                        buildInfo = lazy.Value.Value;
+
+                        GetComparerType(buildInfo.ObjectType);
+                    }
+
+                    _buildScope.TryRemove(type, out _);
+
+                    return result;
                 }));
 
             return comparerType.Value;
@@ -76,11 +95,7 @@ namespace ILLightenComparer.Emit
 
         public Configuration GetConfiguration(Type type) => _configurationBuilder.GetConfiguration(type);
 
-        public MethodBuilder GetStaticCompareMethod(Type memberType)
-        {
-            var (_, staticCompareMethodBuilder) = DefineType(memberType);
-            return staticCompareMethodBuilder;
-        }
+        public MethodBuilder GetStaticCompareMethod(Type memberType) => EnqueueBuild(memberType).MethodBuilder;
 
         private MethodInfo GetCompiledCompareMethod(Type memberType)
         {
@@ -91,22 +106,28 @@ namespace ILLightenComparer.Emit
                 Method.StaticCompareMethodParameters(memberType));
         }
 
-        private (TypeBuilder typeBuilder, MethodBuilder staticCompareMethodBuilder) DefineType(Type objectType)
+        private BuildInfo EnqueueBuild(Type objectType)
         {
-            var basicInterface = typeof(IComparer);
-            var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
+            var lazy = _buildScope.GetOrAdd(objectType,
+                type => new Lazy<BuildInfo>(() =>
+                {
+                    var basicInterface = typeof(IComparer);
+                    var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
 
-            var typeBuilder = _moduleBuilder.DefineType(
-                $"{objectType.FullName}.DynamicComparer",
-                basicInterface,
-                genericInterface);
+                    var typeBuilder = _moduleBuilder.DefineType(
+                        $"{objectType.FullName}.DynamicComparer",
+                        basicInterface,
+                        genericInterface);
 
-            var staticCompareMethodBuilder = typeBuilder.DefineStaticMethod(
-                MethodName.Compare,
-                typeof(int),
-                Method.StaticCompareMethodParameters(objectType));
+                    var staticCompareMethodBuilder = typeBuilder.DefineStaticMethod(
+                        MethodName.Compare,
+                        typeof(int),
+                        Method.StaticCompareMethodParameters(objectType));
 
-            return (typeBuilder, staticCompareMethodBuilder);
+                    return new BuildInfo(type, typeBuilder, staticCompareMethodBuilder);
+                }));
+
+            return lazy.Value;
         }
 
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
