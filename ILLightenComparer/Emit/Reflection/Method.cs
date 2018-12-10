@@ -27,7 +27,7 @@ namespace ILLightenComparer.Emit.Reflection
             typeof(ObjectsSet).GetProperty(nameof(ObjectsSet.Count))?.GetGetMethod();
 
         public static MethodInfo ContextCompare =
-            typeof(IComparerContext).GetMethod(nameof(IComparerContext.Compare));
+            typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
 
         public static Type[] StaticCompareMethodParameters(Type objectType) => new[]
         {

@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
@@ -16,17 +15,15 @@ namespace ILLightenComparer.Emit
 {
     public interface IComparerContext
     {
-        int Compare<T>(T x, T y, ObjectsSet xSet, ObjectsSet ySet);
+        int DelayedCompare<T>(T x, T y, ObjectsSet xSet, ObjectsSet ySet);
     }
 
     internal sealed class ComparerContext : IComparerContext
     {
-        private readonly ConcurrentDictionary<Type, MemberInfo> _compareMethods = new ConcurrentDictionary<Type, MemberInfo>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
-        private readonly ConcurrentDictionary<Type, Type> _comparerTypes = new ConcurrentDictionary<Type, Type>();
+        private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ConfigurationBuilder _configurationBuilder;
         private readonly ModuleBuilder _moduleBuilder;
-        private readonly ConcurrentDictionary<Type, byte> _typeHeap = new ConcurrentDictionary<Type, byte>();
 
         public ComparerContext(ModuleBuilder moduleBuilder, ConfigurationBuilder configurationBuilder)
         {
@@ -36,8 +33,9 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: cache delegates and benchmark ways
-        public int Compare<T>(T x, T y, ObjectsSet xSet, ObjectsSet ySet)
+        public int DelayedCompare<T>(T x, T y, ObjectsSet xSet, ObjectsSet ySet)
         {
+            // todo: do not check types when T is struct
             if (x == null)
             {
                 if (y == null)
@@ -65,38 +63,35 @@ namespace ILLightenComparer.Emit
 
         public Type GetComparerType(Type objectType)
         {
-            if (!_typeHeap.TryAdd(objectType, 0))
-            {
-                return null;
-            }
-
             var comparerType = _comparerTypes.GetOrAdd(
                 objectType,
-                t => _comparerTypeBuilder.Build(t));
+                type => new Lazy<Type>(() =>
+                {
+                    var (typeBuilder, staticCompareMethodBuilder) = DefineType(type);
+                    return _comparerTypeBuilder.Build(typeBuilder, staticCompareMethodBuilder, type);
+                }));
 
-            if (_typeHeap.TryRemove(objectType, out _))
-            {
-                return comparerType;
-            }
-
-            throw new InvalidOperationException("Comparison context is not valid.");
+            return comparerType.Value;
         }
 
         public Configuration GetConfiguration(Type type) => _configurationBuilder.GetConfiguration(type);
 
-        public MethodInfo GetStaticCompareMethod(Type memberType)
+        public MethodBuilder GetStaticCompareMethod(Type memberType)
         {
+            var (_, staticCompareMethodBuilder) = DefineType(memberType);
+            return staticCompareMethodBuilder;
+        }
 
-            // todo: technically we need only compare method, no need to build the type first.
-            // it will help to eliminate in context compare method and generate more effective code.
+        private MethodInfo GetCompiledCompareMethod(Type memberType)
+        {
             var comparerType = GetComparerType(memberType);
 
-            return comparerType?.GetMethod(
+            return comparerType.GetMethod(
                 MethodName.Compare,
                 Method.StaticCompareMethodParameters(memberType));
         }
 
-        public (TypeBuilder typeBuilder, MethodBuilder staticCompareMethodBuilder) DefineType(Type objectType)
+        private (TypeBuilder typeBuilder, MethodBuilder staticCompareMethodBuilder) DefineType(Type objectType)
         {
             var basicInterface = typeof(IComparer);
             var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
@@ -116,9 +111,10 @@ namespace ILLightenComparer.Emit
 
         private int Compare<T>(Type type, T x, T y, ObjectsSet xSet, ObjectsSet ySet)
         {
-            var compareMethod = EnsureStaticCompareMethod(type);
+            var compareMethod = GetCompiledCompareMethod(type);
 
-            if (typeof(T) != type)
+            var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
+            if (!isDeclaringTypeMatchedActualMemberType)
             {
                 // todo: benchmarks:
                 // - direct Invoke;
@@ -128,6 +124,7 @@ namespace ILLightenComparer.Emit
                 // return (int)@delegate.DynamicInvoke(this, x, y, hash);
                 // - DynamicMethod;
                 // - generate static class wrapper.
+
                 return (int)compareMethod.Invoke(
                     null,
                     new object[] { this, x, y, xSet, ySet });
@@ -136,21 +133,6 @@ namespace ILLightenComparer.Emit
             var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
 
             return compare(this, x, y, xSet, ySet);
-        }
-
-        private MethodInfo EnsureStaticCompareMethod(Type type)
-        {
-            // todo: find smart way to ensure compare method exists
-            while (true)
-            {
-                var compareMethod = GetStaticCompareMethod(type);
-                if (compareMethod != null)
-                {
-                    return compareMethod;
-                }
-
-                Thread.Yield();
-            }
         }
 
         private static ComparerTypeBuilder CreateComparerTypeBuilder(ComparerContext context)

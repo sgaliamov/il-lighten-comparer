@@ -23,20 +23,7 @@ namespace ILLightenComparer.Emit
             _compareEmitter = new CompareEmitter(_context);
         }
 
-        public Type Build(Type objectType)
-        {
-            if (objectType.GetUnderlyingType().IsPrimitive())
-            {
-                throw new NotSupportedException(
-                    $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
-            }
-
-            var (typeBuilder, staticCompare) = _context.DefineType(objectType);
-
-            return Build(typeBuilder, staticCompare, objectType);
-        }
-
-        private Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
+        public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
         {
             var contextField = comparerTypeBuilder.DefineField(
                 "_context",

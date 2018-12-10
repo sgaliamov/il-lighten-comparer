@@ -41,10 +41,18 @@ namespace ILLightenComparer
 
         public IComparer<T> GetComparer<T>() => (IComparer<T>)GetComparer(typeof(T));
 
-        public IComparer GetComparer(Type objectType) =>
-            _comparers.GetOrAdd(
+        public IComparer GetComparer(Type objectType)
+        {
+            if (objectType.GetUnderlyingType().IsPrimitive())
+            {
+                throw new NotSupportedException(
+                    $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
+            }
+
+            return _comparers.GetOrAdd(
                 objectType,
                 key => _context.GetComparerType(key).CreateInstance<IComparerContext, IComparer>(_context));
+        }
 
         public IEqualityComparer<T> GetEqualityComparer<T>() => throw new NotImplementedException();
 
