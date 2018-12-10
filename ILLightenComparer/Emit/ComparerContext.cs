@@ -20,7 +20,7 @@ namespace ILLightenComparer.Emit
 
     internal sealed class ComparerContext : IComparerContext
     {
-        private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _buildScope = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();
+        private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _builds = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ConfigurationBuilder _configurationBuilder;
@@ -86,7 +86,7 @@ namespace ILLightenComparer.Emit
 
             var comparerType = lazy.Value;
 
-            foreach (var item in _buildScope)
+            foreach (var item in _builds)
             {
                 if (item.Value.Value.Compiled)
                 {
@@ -114,7 +114,7 @@ namespace ILLightenComparer.Emit
 
         private BuildInfo EnqueueBuild(Type objectType)
         {
-            var lazy = _buildScope.GetOrAdd(objectType,
+            var lazy = _builds.GetOrAdd(objectType,
                 type => new Lazy<BuildInfo>(() =>
                 {
                     var basicInterface = typeof(IComparer);

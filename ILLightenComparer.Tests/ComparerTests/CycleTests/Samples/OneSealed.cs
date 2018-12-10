@@ -2,7 +2,7 @@
 {
     public sealed class OneSealed
     {
-        public AnotherSealed Another { get; set; }
+        public TwoSealed Two { get; set; }
         public sbyte Value { get; set; }
     }
 }

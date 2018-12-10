@@ -20,8 +20,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         {
             var one = _fixture.Create<OneSealed>();
             var other = _fixture.Create<OneSealed>();
-            one.Another.One = one;
-            other.Another.One = other;
+            one.Two.Three.One = one;
+            other.Two.Three.One = other;
 
             var expected = one.Value.CompareTo(other.Value);
             var actual = ComparerOneSealed.Compare(one, other);
@@ -35,10 +35,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var one = _fixture.Create<OneSealed>();
             var other = one.DeepClone();
             other.Value = (sbyte)(one.Value + 1);
-            one.Another.One = _fixture.Build<OneSealed>().Without(x => x.Another).Create();
-            other.Another.One = _fixture.Build<OneSealed>().Without(x => x.Another).Create();
+            one.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
+            other.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
 
-            var expected = one.Another.One.Value.CompareTo(other.Another.One.Value);
+            var expected = one.Two.Three.One.Value.CompareTo(other.Two.Three.One.Value);
             var actual = ComparerOneSealed.Compare(one, other);
 
             actual.Should().Be(expected);
