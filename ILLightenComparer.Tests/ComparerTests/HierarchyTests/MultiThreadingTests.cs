@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
@@ -27,7 +25,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 NotSealedProperty = _fixture.Create<AnotherNestedObject>()
             };
 
-            Parallel(() =>
+            Helper.Parallel(() =>
                 {
                     var comparer = CreateComparer();
 
@@ -38,7 +36,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
                     var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
 
-                    Parallel(() =>
+                    Helper.Parallel(() =>
                         {
                             var actual = comparer.Compare(one, other).Normalize();
                             actual.Should().Be(expected);
@@ -46,24 +44,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                         Environment.ProcessorCount);
                 },
                 Environment.ProcessorCount * 10);
-        }
-
-        private static void Parallel(ThreadStart action, int count)
-        {
-            var threads = Enumerable
-                          .Range(0, count)
-                          .Select(x => new Thread(action))
-                          .ToArray();
-
-            foreach (var thread in threads)
-            {
-                thread.Start();
-            }
-
-            foreach (var thread in threads)
-            {
-                thread.Join();
-            }
         }
 
         private static IComparer<AbstractMembers> CreateComparer()

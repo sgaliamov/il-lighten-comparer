@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using FluentAssertions;
 
 namespace ILLightenComparer.Tests.Utilities
 {
-    internal static class Extensions
+    internal static class Helper
     {
         private static int _counter;
 
@@ -67,6 +68,24 @@ namespace ILLightenComparer.Tests.Utilities
         public static int GetObjectId<T>(this T target) where T : class
         {
             return (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
+        }
+
+        public static void Parallel(ThreadStart action, int count)
+        {
+            var threads = Enumerable
+                          .Range(0, count)
+                          .Select(x => new Thread(action))
+                          .ToArray();
+
+            foreach (var thread in threads)
+            {
+                thread.Start();
+            }
+
+            foreach (var thread in threads)
+            {
+                thread.Join();
+            }
         }
     }
 }
