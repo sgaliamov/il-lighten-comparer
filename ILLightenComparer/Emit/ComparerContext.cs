@@ -21,16 +21,17 @@ namespace ILLightenComparer.Emit
 
     internal sealed class ComparerContext : IComparerContext
     {
+        private readonly ConcurrentDictionary<Type, MemberInfo> _compareMethods = new ConcurrentDictionary<Type, MemberInfo>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Type> _comparerTypes = new ConcurrentDictionary<Type, Type>();
-        private readonly ConfigurationBuilder _configurations;
+        private readonly ConfigurationBuilder _configurationBuilder;
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, byte> _typeHeap = new ConcurrentDictionary<Type, byte>();
 
-        public ComparerContext(ModuleBuilder moduleBuilder, ConfigurationBuilder configurations)
+        public ComparerContext(ModuleBuilder moduleBuilder, ConfigurationBuilder configurationBuilder)
         {
             _moduleBuilder = moduleBuilder;
-            _configurations = configurations;
+            _configurationBuilder = configurationBuilder;
             _comparerTypeBuilder = CreateComparerTypeBuilder(this);
         }
 
@@ -81,10 +82,11 @@ namespace ILLightenComparer.Emit
             throw new InvalidOperationException("Comparison context is not valid.");
         }
 
-        public Configuration GetConfiguration(Type type) => _configurations.GetConfiguration(type);
+        public Configuration GetConfiguration(Type type) => _configurationBuilder.GetConfiguration(type);
 
         public MethodInfo GetStaticCompareMethod(Type memberType)
         {
+
             // todo: technically we need only compare method, no need to build the type first.
             // it will help to eliminate in context compare method and generate more effective code.
             var comparerType = GetComparerType(memberType);
