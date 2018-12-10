@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {
-    using Set = ConcurrentDictionary<object, byte>;
-
     public sealed class CycledStructObject
     {
         public readonly int Id;
@@ -24,8 +22,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         {
             public int Compare(CycledStructObject x, CycledStructObject y)
             {
-                var setX = new Set();
-                var setY = new Set();
+                var setX = new ObjectsSet();
+                var setY = new ObjectsSet();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0)
@@ -39,8 +37,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
             public static int Compare(
                 CycledStructObject x,
                 CycledStructObject y,
-                Set xSet,
-                Set ySet)
+                ObjectsSet xSet,
+                ObjectsSet ySet)
             {
                 if (ReferenceEquals(x, y))
                 {

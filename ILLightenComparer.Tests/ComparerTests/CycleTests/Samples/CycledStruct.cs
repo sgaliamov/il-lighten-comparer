@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {
-    using Set = ConcurrentDictionary<object, byte>;
-
     public struct CycledStruct
     {
         public sbyte? Property { get; set; }
@@ -18,8 +16,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         {
             public int Compare(CycledStruct x, CycledStruct y)
             {
-                var setX = new Set();
-                var setY = new Set();
+                var setX = new ObjectsSet();
+                var setY = new ObjectsSet();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0)
@@ -30,7 +28,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 return setX.Count - setY.Count;
             }
 
-            public static int Compare(CycledStruct? x, CycledStruct? y, Set xSet, Set ySet)
+            public static int Compare(
+                CycledStruct? x,
+                CycledStruct? y,
+                ObjectsSet xSet,
+                ObjectsSet ySet)
             {
                 if (x.HasValue)
                 {
@@ -50,7 +52,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 return 0;
             }
 
-            public static int Compare(CycledStruct x, CycledStruct y, Set xSet, Set ySet)
+            public static int Compare(CycledStruct x, CycledStruct y, ObjectsSet xSet, ObjectsSet ySet)
             {
                 var compare = Nullable.Compare(x.Property, y.Property);
                 if (compare != 0)

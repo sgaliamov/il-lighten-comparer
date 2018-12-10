@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit
 {
-    using Set = ConcurrentDictionary<object, byte>;
-
     internal sealed class ComparerTypeBuilder
     {
         private readonly CompareEmitter _compareEmitter;
@@ -166,9 +164,9 @@ namespace ILLightenComparer.Emit
             }
 
             il.Emit(OpCodes.Newobj, Method.SetConstructor)
-              .Store(typeof(Set), 0, out var xSet)
+              .Store(typeof(ObjectsSet), 0, out var xSet)
               .Emit(OpCodes.Newobj, Method.SetConstructor)
-              .Store(typeof(Set), 1, out var ySet)
+              .Store(typeof(ObjectsSet), 1, out var ySet)
               .LoadLocal(xSet)
               .LoadLocal(ySet)
               .Call(staticCompareMethod)

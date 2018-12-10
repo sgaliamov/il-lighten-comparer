@@ -8,14 +8,13 @@ using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Reflection;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit
 {
-    using Set = ConcurrentDictionary<object, byte>;
-
     public interface IComparerContext
     {
-        int Compare<T>(T x, T y, Set xSet, Set ySet);
+        int Compare<T>(T x, T y, ObjectsSet xSet, ObjectsSet ySet);
     }
 
     internal sealed class ComparerContext : IComparerContext
@@ -38,7 +37,7 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: cache delegates and benchmark ways
-        public int Compare<T>(T x, T y, ConcurrentDictionary<object, byte> xSet, ConcurrentDictionary<object, byte> ySet)
+        public int Compare<T>(T x, T y, ObjectsSet xSet, ObjectsSet ySet)
         {
             if (x == null)
             {
@@ -100,7 +99,7 @@ namespace ILLightenComparer.Emit
         public TypeBuilder DefineType(string name, params Type[] interfaceTypes) =>
             _moduleBuilder.DefineType(name, interfaceTypes);
 
-        private int Compare<T>(Type type, T x, T y, ConcurrentDictionary<object, byte> xSet, ConcurrentDictionary<object, byte> ySet)
+        private int Compare<T>(Type type, T x, T y, ObjectsSet xSet, ObjectsSet ySet)
         {
             var compareMethod = EnsureStaticCompareMethod(type);
 
@@ -114,7 +113,9 @@ namespace ILLightenComparer.Emit
                 // return (int)@delegate.DynamicInvoke(this, x, y, hash);
                 // - DynamicMethod;
                 // - generate static class wrapper.
-                return (int)compareMethod.Invoke(null, new object[] { this, x, y, xSet, ySet });
+                return (int)compareMethod.Invoke(
+                    null,
+                    new object[] { this, x, y, xSet, ySet });
             }
 
             var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();

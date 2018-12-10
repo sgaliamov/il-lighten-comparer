@@ -1,11 +1,9 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {
-    using Set = ConcurrentDictionary<object, byte>;
-
     public sealed class SelfSealed
     {
         public readonly int Id;
@@ -23,8 +21,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         {
             public int Compare(SelfSealed x, SelfSealed y)
             {
-                var setX = new Set();
-                var setY = new Set();
+                var setX = new ObjectsSet();
+                var setY = new ObjectsSet();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0)
@@ -35,7 +33,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 return setX.Count - setY.Count;
             }
 
-            private static int Compare(SelfSealed x, SelfSealed y, Set xSet, Set ySet)
+            private static int Compare(SelfSealed x, SelfSealed y, ObjectsSet xSet, ObjectsSet ySet)
             {
                 if (ReferenceEquals(x, y))
                 {
