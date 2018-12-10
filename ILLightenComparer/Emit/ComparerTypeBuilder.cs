@@ -31,35 +31,35 @@ namespace ILLightenComparer.Emit
                     $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
             }
 
-            var typeBuilder = _context.DefineType(objectType);
+            var (typeBuilder, staticCompare) = _context.DefineType(objectType);
 
-            var staticCompare = typeBuilder.DefineStaticMethod(
-                MethodName.Compare,
-                typeof(int),
-                Method.StaticCompareMethodParameters(objectType));
+            return Build(typeBuilder, staticCompare, objectType);
+        }
 
-            var contextField = typeBuilder.DefineField(
+        private Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
+        {
+            var contextField = comparerTypeBuilder.DefineField(
                 "_context",
                 typeof(IComparerContext),
                 FieldAttributes.InitOnly | FieldAttributes.Private);
 
-            BuildFactory(typeBuilder, contextField);
+            BuildFactory(comparerTypeBuilder, contextField);
 
-            BuildStaticCompareMethod(objectType, staticCompare);
+            BuildStaticCompareMethod(objectType, staticCompareBuilder);
 
             BuildBasicCompareMethod(
-                typeBuilder,
-                staticCompare,
+                comparerTypeBuilder,
+                staticCompareBuilder,
                 contextField,
                 objectType);
 
             BuildTypedCompareMethod(
-                typeBuilder,
-                staticCompare,
+                comparerTypeBuilder,
+                staticCompareBuilder,
                 contextField,
                 objectType);
 
-            return typeBuilder.CreateTypeInfo();
+            return comparerTypeBuilder.CreateTypeInfo();
         }
 
         private void BuildStaticCompareMethod(Type objectType, MethodBuilder staticMethodBuilder)

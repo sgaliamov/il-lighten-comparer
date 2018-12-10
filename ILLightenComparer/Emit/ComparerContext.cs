@@ -24,9 +24,6 @@ namespace ILLightenComparer.Emit
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Type> _comparerTypes = new ConcurrentDictionary<Type, Type>();
         private readonly ConfigurationBuilder _configurations;
-
-        // ReSharper disable once NotAccessedField.Local // todo: implement EqualityComparerTypeBuilder
-        private readonly EqualityComparerTypeBuilder _equalityComparerTypeBuilder;
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, byte> _typeHeap = new ConcurrentDictionary<Type, byte>();
 
@@ -35,7 +32,6 @@ namespace ILLightenComparer.Emit
             _moduleBuilder = moduleBuilder;
             _configurations = configurations;
             _comparerTypeBuilder = CreateComparerTypeBuilder(this);
-            _equalityComparerTypeBuilder = new EqualityComparerTypeBuilder(this, null);
         }
 
         // todo: cache delegates and benchmark ways
@@ -98,15 +94,22 @@ namespace ILLightenComparer.Emit
                 Method.StaticCompareMethodParameters(memberType));
         }
 
-        public TypeBuilder DefineType(Type objectType)
+        public (TypeBuilder typeBuilder, MethodBuilder staticCompareMethodBuilder) DefineType(Type objectType)
         {
             var basicInterface = typeof(IComparer);
             var genericInterface = typeof(IComparer<>).MakeGenericType(objectType);
 
-            return _moduleBuilder.DefineType(
+            var typeBuilder = _moduleBuilder.DefineType(
                 $"{objectType.FullName}.DynamicComparer",
                 basicInterface,
                 genericInterface);
+
+            var staticCompareMethodBuilder = typeBuilder.DefineStaticMethod(
+                MethodName.Compare,
+                typeof(int),
+                Method.StaticCompareMethodParameters(objectType));
+
+            return (typeBuilder, staticCompareMethodBuilder);
         }
 
         private int Compare<T>(Type type, T x, T y, ObjectsSet xSet, ObjectsSet ySet)
