@@ -17,7 +17,7 @@ namespace ILLightenComparer.Tests
                 .DefineDefaultConfiguration(configuration);
         }
 
-        [Fact]
+        [Fact(Timeout = 1000 * 60)]
         public void Create_Generic_Comparer()
         {
             var comparer = _builder.For<DummyObject>().GetComparer();
@@ -25,7 +25,7 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact(Skip = "Not implemented yet", Timeout = 1000 * 60)]
         public void Create_Generic_EqualityComparer()
         {
             var comparer = _builder.For<DummyObject>().GetEqualityComparer();
@@ -33,7 +33,7 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        [Fact]
+        [Fact(Timeout = 1000 * 60)]
         public void Create_Not_Generic_Comparer()
         {
             var comparer = _builder.GetComparer(typeof(DummyObject));
@@ -41,7 +41,7 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact(Skip = "Not implemented yet", Timeout = 1000 * 60)]
         public void Create_Not_Generic_EqualityComparer()
         {
             var comparer = _builder.GetEqualityComparer(typeof(DummyObject));
@@ -49,7 +49,7 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        [Fact]
+        [Fact(Timeout = 1000 * 60)]
         public void Generic_And_NotGeneric_Builders_Produce_The_Same_Comparer()
         {
             void Test(object one, object other)

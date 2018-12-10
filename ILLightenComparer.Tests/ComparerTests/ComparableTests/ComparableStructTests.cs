@@ -24,7 +24,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
                             });
         }
 
-        [Fact]
+        [Fact(Timeout = 1000 * 60)]
         public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
         {
             var one = new ContainerStruct
