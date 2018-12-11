@@ -1,6 +1,6 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
@@ -16,13 +16,7 @@ namespace ILLightenComparer.Emit.Emitters
             var memberType = member.MemberType;
             if (memberType.IsNullable())
             {
-                member.Load(_loader, il, Arg.X)
-                      .Store(memberType, 0, out var nullableX);
-
-                member.Load(_loader, il, Arg.Y)
-                      .Store(memberType, 1, out var nullableY);
-
-                return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
+                return LoadNullableMembers(il, true, false, member, gotoNextMember);
             }
 
             member.LoadAddress(_loader, il, Arg.X);
@@ -35,19 +29,11 @@ namespace ILLightenComparer.Emit.Emitters
             var memberType = member.MemberType;
             if (memberType.IsNullable())
             {
-                member.Load(_loader, il, Arg.X)
-                      .Store(memberType, 0, out var nullableX);
-
-                member.Load(_loader, il, Arg.Y)
-                      .Store(memberType, 1, out var nullableY);
-
                 return LoadNullableMembers(
                     il,
                     false,
                     member.LoadContext,
-                    memberType,
-                    nullableX,
-                    nullableY,
+                    member,
                     gotoNextMember);
             }
 
@@ -95,15 +81,21 @@ namespace ILLightenComparer.Emit.Emitters
                          .LoadArgument(Arg.SetY);
         }
 
-        private static ILEmitter LoadNullableMembers(
+        private ILEmitter LoadNullableMembers(
             ILEmitter il,
             bool callable,
             bool loadContext,
-            Type memberType,
-            LocalBuilder nullableX,
-            LocalBuilder nullableY,
+            IAcceptor member,
             Label gotoNextMember)
         {
+            var memberType = member.MemberType;
+
+            member.Load(_loader, il, Arg.X)
+                  .Store(memberType, 0, out var nullableX);
+
+            member.Load(_loader, il, Arg.Y)
+                  .Store(memberType, 1, out var nullableY);
+
             var hasValueMethod = memberType.GetPropertyGetter(MethodName.HasValue);
             var getValueMethod = memberType.GetPropertyGetter(MethodName.Value);
             var underlyingType = memberType.GetUnderlyingType();
