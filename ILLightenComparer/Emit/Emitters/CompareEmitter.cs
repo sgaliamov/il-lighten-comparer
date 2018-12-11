@@ -11,7 +11,10 @@ namespace ILLightenComparer.Emit.Emitters
         private readonly ComparerContext _context;
         private readonly StackEmitter _stackEmitter = new StackEmitter();
 
-        public CompareEmitter(ComparerContext context) => _context = context;
+        public CompareEmitter(ComparerContext context)
+        {
+            _context = context;
+        }
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {
@@ -87,6 +90,11 @@ namespace ILLightenComparer.Emit.Emitters
 
             return il.Emit(OpCodes.Call, delayedCompare)
                      .EmitReturnNotZero(gotoNextMember);
+        }
+
+        public ILEmitter Visit(ICollectionAcceptor member, ILEmitter il)
+        {
+            throw new NotImplementedException();
         }
 
         public void EmitReferenceComparison(ILEmitter il)

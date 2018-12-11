@@ -114,7 +114,9 @@ namespace ILLightenComparer.Emit.Emitters
                 il.Store(underlyingType, out var xAddress).LoadAddress(xAddress);
             }
 
-            return il.LoadAddress(nullableY).Call(getValueMethod);
+            il.LoadAddress(nullableY).Call(getValueMethod);
+
+            return il;
         }
 
         private static void CheckNullableValuesForNull(
