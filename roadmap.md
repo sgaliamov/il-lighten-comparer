@@ -88,10 +88,21 @@
 
 ## Phase 6
 
+- [ ] implement `GetHashCode`
+
+## Phase 7
+
+- [ ] implement `Equals`
+
+## Phase 8
+
 - [x] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
-- [ ] compare `IntPtr`
 - [ ] setup CI/CD
 - [ ] add documentation comments
 - [ ] prepare presentation
+
+## Phase 9
+
+- [ ] compare `IntPtr`
 - [ ] compared dynamic?
 - [ ] compare private and protected members?
