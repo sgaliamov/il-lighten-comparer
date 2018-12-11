@@ -30,6 +30,107 @@ namespace ILLightenComparer.Tests.Utilities
                    || ReferenceEquals(type, typeof(decimal));
         }
 
+        public static int CompareTo<T>(this IList<T> one, IList<T> other)
+            where T : IComparable<T>
+        {
+            if (one == null)
+            {
+                if (other == null)
+                {
+                    return 0;
+                }
+
+                return -1;
+            }
+
+            if (other == null)
+            {
+                return 1;
+            }
+
+            var i = 0;
+            while (true)
+            {
+                var oneDone = i >= one.Count;
+                var otherDone = i >= other.Count;
+                if (oneDone)
+                {
+                    if (otherDone)
+                    {
+                        return 0;
+                    }
+
+                    return -1;
+                }
+
+                if (otherDone)
+                {
+                    return 1;
+                }
+
+                var compare = one[i].CompareTo(other[i]);
+                if (compare != 0)
+                {
+                    return compare;
+                }
+
+                i++;
+            }
+        }
+
+        public static int CompareTo<T>(this IEnumerable<T> one, IEnumerable<T> other)
+            where T : IComparable<T>
+        {
+            if (one == null)
+            {
+                if (other == null)
+                {
+                    return 0;
+                }
+
+                return -1;
+            }
+
+            if (other == null)
+            {
+                return 1;
+            }
+
+            using (var enumeratorOne = one.GetEnumerator())
+            using (var enumeratorOther = other.GetEnumerator())
+            {
+                while (true)
+                {
+                    var oneDone = !enumeratorOne.MoveNext();
+                    var otherDone = !enumeratorOther.MoveNext();
+
+                    if (oneDone)
+                    {
+                        if (otherDone)
+                        {
+                            return 0;
+                        }
+
+                        return -1;
+                    }
+
+                    if (otherDone)
+                    {
+                        return 1;
+                    }
+
+                    var oneCurrent = enumeratorOne.Current;
+                    var otherCurrent = enumeratorOther.Current;
+
+                    var compare = oneCurrent.CompareTo(otherCurrent);
+                    if (compare != 0)
+                    {
+                        return compare;
+                    }
+                }
+            }
+        }
+
         public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
         {
             using (var enumeratorOne = one.GetEnumerator())

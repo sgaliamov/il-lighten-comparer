@@ -104,5 +104,7 @@
 ## Phase 9
 
 - [ ] compare `IntPtr`
+- [ ] compare dictionary
+- [ ] compare complex collection
 - [ ] compared dynamic?
 - [ ] compare private and protected members?
