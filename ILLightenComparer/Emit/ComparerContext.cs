@@ -182,6 +182,7 @@ namespace ILLightenComparer.Emit
                 IntegralPropertyMember.Create,
                 BasicPropertyMember.Create,
                 ComparablePropertyMember.Create,
+                CollectionPropertyMember.Create,
                 HierarchicalPropertyMember.Create
             };
 
@@ -191,6 +192,7 @@ namespace ILLightenComparer.Emit
                 IntegralFieldMember.Create,
                 BasicFieldMember.Create,
                 ComparableFieldMember.Create,
+                CollectionFieldMember.Create,
                 HierarchicalFieldMember.Create
             };
             var converter = new MemberConverter(context, propertyFactories, fieldFactories);

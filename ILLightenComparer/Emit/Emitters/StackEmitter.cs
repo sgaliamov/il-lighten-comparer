@@ -43,8 +43,15 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             member.Load(_loader, il, Arg.X);
+            member.Load(_loader, il, Arg.Y);
 
-            return member.Load(_loader, il, Arg.Y);
+            if (member.LoadContext)
+            {
+                il.LoadArgument(Arg.SetX)
+                  .LoadArgument(Arg.SetY);
+            }
+
+            return il;
         }
 
         public ILEmitter Visit(IComparableMember member, ILEmitter il, Label gotoNextMember)
@@ -111,10 +118,16 @@ namespace ILLightenComparer.Emit.Emitters
 
             if (callable)
             {
-                il.Store(underlyingType, out var xAddress).LoadAddress(xAddress);
+                il.Store(underlyingType, out var x).LoadAddress(x);
             }
 
             il.LoadAddress(nullableY).Call(getValueMethod);
+
+            if (loadContext)
+            {
+                il.LoadArgument(Arg.SetX)
+                  .LoadArgument(Arg.SetY);
+            }
 
             return il;
         }
