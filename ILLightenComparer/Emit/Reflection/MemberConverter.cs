@@ -25,23 +25,31 @@ namespace ILLightenComparer.Emit.Reflection
 
         public IAcceptor Convert(MemberInfo memberInfo)
         {
-            if (memberInfo is PropertyInfo)
+            switch (memberInfo)
             {
-                var acceptor = Convert(memberInfo, _propertyFactories);
-                if (acceptor != null)
+                case PropertyInfo _:
                 {
-                    return acceptor;
-                }
-            }
+                    var acceptor = Convert(memberInfo, _propertyFactories);
+                    if (acceptor != null)
+                    {
+                        return acceptor;
+                    }
 
-            var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
-            if (includeFields && memberInfo is FieldInfo)
-            {
-                var acceptor = Convert(memberInfo, _fieldFactories);
-                if (acceptor != null)
-                {
-                    return acceptor;
+                    break;
                 }
+
+                case FieldInfo _:
+                    var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
+                    if (includeFields)
+                    {
+                        var acceptor = Convert(memberInfo, _fieldFactories);
+                        if (acceptor != null)
+                        {
+                            return acceptor;
+                        }
+                    }
+
+                    break;
             }
 
             throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
