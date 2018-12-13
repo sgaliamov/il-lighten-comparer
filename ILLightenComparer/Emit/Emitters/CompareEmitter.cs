@@ -21,7 +21,9 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            member.LoadMembers(_stackEmitter, gotoNextMember, il);
+            member.LoadMembers(_stackEmitter, il, gotoNextMember);
+
+            member.Accept(_callVisitor, il, gotoNextMember);
 
             return _callVisitor.Visit(member, il, gotoNextMember);
         }
@@ -29,7 +31,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            member.LoadMembers(_stackEmitter, gotoNextMember, il);
+            member.LoadMembers(_stackEmitter, il, gotoNextMember);
 
             return _callVisitor.Visit(member, il, gotoNextMember);
         }
@@ -37,7 +39,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            member.LoadMembers(_stackEmitter, gotoNextMember, il);
+            member.LoadMembers(_stackEmitter, il, gotoNextMember);
 
             return _callVisitor.Visit(member, il, gotoNextMember);
         }
@@ -45,7 +47,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            member.LoadMembers(_stackEmitter, gotoNextMember, il);
+            member.LoadMembers(_stackEmitter, il, gotoNextMember);
 
             return _callVisitor.Visit(member, il, gotoNextMember);
         }
@@ -53,7 +55,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            member.LoadMembers(_stackEmitter, gotoNextMember, il);
+            member.LoadMembers(_stackEmitter, il, gotoNextMember);
 
             return _callVisitor.Visit(member, il, gotoNextMember);
         }

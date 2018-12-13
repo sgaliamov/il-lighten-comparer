@@ -12,7 +12,7 @@ namespace ILLightenComparer.Emit.Members
     {
         private ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNext, ILEmitter il)
+        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
@@ -32,7 +32,7 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public ILEmitter Accept(CompareCallVisitor visitor, Label gotoNext, ILEmitter il)
+        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
@@ -59,7 +59,7 @@ namespace ILLightenComparer.Emit.Members
     {
         private ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNext, ILEmitter il)
+        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
@@ -79,7 +79,7 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
         
-        public ILEmitter Accept(CompareCallVisitor visitor, Label gotoNext, ILEmitter il)
+        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
