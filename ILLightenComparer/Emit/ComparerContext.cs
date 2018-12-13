@@ -21,6 +21,26 @@ namespace ILLightenComparer.Emit
 
     internal sealed class ComparerContext : IComparerContext
     {
+        private static readonly Func<MemberInfo, IAcceptor>[] PropertyFactories =
+        {
+            StringPropertyMember.Create,
+            IntegralPropertyMember.Create,
+            BasicPropertyMember.Create,
+            ComparablePropertyMember.Create,
+            CollectionPropertyMember.Create,
+            HierarchicalPropertyMember.Create
+        };
+
+        private static readonly Func<MemberInfo, IAcceptor>[] FieldFactories =
+        {
+            StringFieldMember.Create,
+            IntegralFieldMember.Create,
+            BasicFieldMember.Create,
+            ComparableFieldMember.Create,
+            CollectionFieldMember.Create,
+            HierarchicalFieldMember.Create
+        };
+
         private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _builds = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
@@ -176,28 +196,9 @@ namespace ILLightenComparer.Emit
 
         private static ComparerTypeBuilder CreateComparerTypeBuilder(ComparerContext context)
         {
-            Func<MemberInfo, IAcceptor>[] propertyFactories =
-            {
-                StringPropertyMember.Create,
-                IntegralPropertyMember.Create,
-                BasicPropertyMember.Create,
-                ComparablePropertyMember.Create,
-                CollectionPropertyMember.Create,
-                HierarchicalPropertyMember.Create
-            };
+            var converter = new MemberConverter(context, PropertyFactories, FieldFactories);
 
-            Func<MemberInfo, IAcceptor>[] fieldFactories =
-            {
-                StringFieldMember.Create,
-                IntegralFieldMember.Create,
-                BasicFieldMember.Create,
-                ComparableFieldMember.Create,
-                CollectionFieldMember.Create,
-                HierarchicalFieldMember.Create
-            };
-            var converter = new MemberConverter(context, propertyFactories, fieldFactories);
-
-            return new ComparerTypeBuilder(context, new MembersProvider(context, converter));
+            return new ComparerTypeBuilder(context, converter);
         }
     }
 }

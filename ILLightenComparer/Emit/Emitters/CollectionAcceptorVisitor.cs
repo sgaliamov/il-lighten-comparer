@@ -3,15 +3,23 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CollectionAcceptorVisitor
     {
+        private readonly CompareCallVisitor _callVisitor;
+        private readonly MemberConverter _converter;
         private readonly MemberLoader _loader;
 
-        public CollectionAcceptorVisitor(MemberLoader loader)
+        public CollectionAcceptorVisitor(
+            MemberLoader loader,
+            MemberConverter converter,
+            CompareCallVisitor callVisitor)
         {
+            _callVisitor = callVisitor;
+            _converter = converter;
             _loader = loader;
         }
 
@@ -48,7 +56,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         private void EmitCompare(ILEmitter il, ICollectionAcceptor member)
         {
-            throw new NotImplementedException();
+            var acceptor = _converter.Convert(member.MemberType.GetElementType());
         }
 
         private void EmitLoadValues(

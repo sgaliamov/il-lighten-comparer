@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters
 {
@@ -10,11 +11,11 @@ namespace ILLightenComparer.Emit.Emitters
         private readonly MemberLoader _loader = new MemberLoader();
         private readonly StackEmitter _stackEmitter;
 
-        public CompareEmitter(ComparerContext context)
+        public CompareEmitter(ComparerContext context, MemberConverter converter)
         {
             _callVisitor = new CompareCallVisitor(context);
             _stackEmitter = new StackEmitter(_loader);
-            _collectionAcceptorVisitor = new CollectionAcceptorVisitor(_loader);
+            _collectionAcceptorVisitor = new CollectionAcceptorVisitor(_loader, converter, _callVisitor);
         }
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
