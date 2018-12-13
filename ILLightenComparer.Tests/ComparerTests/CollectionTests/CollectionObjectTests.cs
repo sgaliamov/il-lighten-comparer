@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using AutoFixture;
+using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
@@ -15,7 +16,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = _builder.For<ArrayObject<sbyte>>().GetComparer();
 
             var one = Create<sbyte>();
-            var other = Create<sbyte>();
+            var other = one.DeepClone();
 
             Array.Sort(one, ArrayObject<sbyte>.Comparer);
             Array.Sort(other, comparer);

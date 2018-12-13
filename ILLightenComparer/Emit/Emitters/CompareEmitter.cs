@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
-using ILLightenComparer.Emit.Reflection;
+using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters
 {
@@ -11,7 +11,7 @@ namespace ILLightenComparer.Emit.Emitters
         private readonly MemberLoader _loader = new MemberLoader();
         private readonly StackEmitter _stackEmitter;
 
-        public CompareEmitter(ComparerContext context, MemberConverter converter)
+        public CompareEmitter(ComparerContext context)
         {
             _callVisitor = new CompareCallVisitor(context);
             _stackEmitter = new StackEmitter(_loader);
@@ -23,7 +23,8 @@ namespace ILLightenComparer.Emit.Emitters
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, il, gotoNextMember);
 
-            return member.Accept(_callVisitor, il, gotoNextMember);
+            return member.Accept(_callVisitor, il, gotoNextMember)
+                         .EmitReturnNotZero(gotoNextMember);
         }
 
         public ILEmitter Visit(IArrayAcceptor member, ILEmitter il)

@@ -85,7 +85,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             var compareMethod = _context.GetStaticCompareMethod(underlyingType);
 
-            return il.Emit(OpCodes.Call, compareMethod).EmitReturnNotZero(gotoNextMember);
+            return il.Emit(OpCodes.Call, compareMethod);
         }
 
         private static ILEmitter VisitComparable(Type memberType, ILEmitter il, Label gotoNextMember)
@@ -98,12 +98,12 @@ namespace ILLightenComparer.Emit.Emitters
 
             var compareToMethod = memberType.GetUnderlyingCompareToMethod();
 
-            return il.Emit(OpCodes.Call, compareToMethod).EmitReturnNotZero(gotoNextMember);
+            return il.Emit(OpCodes.Call, compareToMethod);
         }
 
         private static ILEmitter VisitIntegral(ILEmitter il, Label gotoNextMember)
         {
-            return il.Emit(OpCodes.Sub).EmitReturnNotZero(gotoNextMember);
+            return il.Emit(OpCodes.Sub);
         }
 
         private ILEmitter VisitString(Type declaringType, ILEmitter il, Label gotoNextMember)
@@ -112,7 +112,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             return il.LoadConstant(comparisonType)
                      .Call(Method.StringCompare)
-                     .EmitReturnNotZero(gotoNextMember);
+                ;
         }
 
         private static ILEmitter VisitBasic(Type memberType, ILEmitter il, Label gotoNextMember)
@@ -121,7 +121,7 @@ namespace ILLightenComparer.Emit.Emitters
                                   ?? throw new ArgumentException(
                                       $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
-            return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
+            return il.Call(compareToMethod);
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(
@@ -131,8 +131,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var delayedCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
 
-            return il.Emit(OpCodes.Call, delayedCompare)
-                     .EmitReturnNotZero(gotoNextMember);
+            return il.Emit(OpCodes.Call, delayedCompare);
         }
     }
 }
