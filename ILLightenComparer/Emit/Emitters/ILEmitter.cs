@@ -134,6 +134,18 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
+        public ILEmitter Branch(OpCode opCode, Label label)
+        {
+            if (opCode.FlowControl != FlowControl.Branch
+                && opCode.FlowControl != FlowControl.Cond_Branch)
+            {
+                throw new ArgumentOutOfRangeException(nameof(opCode),
+                    $"Only a branch instruction is allowed. OpCode: {opCode}.");
+            }
+
+            return Emit(opCode, label);
+        }
+
         public ILEmitter Branch(OpCode opCode, out Label label)
         {
             if (opCode.FlowControl != FlowControl.Branch
@@ -200,6 +212,14 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
+        public ILEmitter LoadString(string value)
+        {
+            DebugLine($"\t\t{OpCodes.Ldstr} {value}");
+            _il.Emit(OpCodes.Ldstr, value);
+
+            return this;
+        }
+
         public ILEmitter LoadAddress(LocalBuilder local)
         {
             var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
@@ -218,6 +238,11 @@ namespace ILLightenComparer.Emit.Emitters
         {
             DeclareLocal(localType, bucket, out local);
 
+            return Store(local);
+        }
+
+        public ILEmitter Store(LocalBuilder local)
+        {
             switch (local.LocalIndex)
             {
                 case 0: return Emit(OpCodes.Stloc_0);
@@ -248,6 +273,17 @@ namespace ILLightenComparer.Emit.Emitters
 
         #region debug
 
+        // ReSharper disable PartialMethodWithSinglePart
+
+        partial void DebugOutput();
+        partial void DebugEmitLabel(OpCode opCode, Label label);
+        partial void DebugMarkLabel(Label label);
+        partial void DebugLine(string message);
+        partial void AddDebugLabel(Label label);
+
+        // ReSharper restore PartialMethodWithSinglePart
+
+#if DEBUG
         public ILEmitter EmitWriteLine(LocalBuilder local)
         {
             DebugLine($"\t\tWrite: {local.LocalIndex}");
@@ -263,16 +299,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             return this;
         }
-
-        // ReSharper disable PartialMethodWithSinglePart
-
-        partial void DebugOutput();
-        partial void DebugEmitLabel(OpCode opCode, Label label);
-        partial void DebugMarkLabel(Label label);
-        partial void DebugLine(string message);
-        partial void AddDebugLabel(Label label);
-
-        // ReSharper restore PartialMethodWithSinglePart
+#endif
 
         #endregion
     }
