@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using FluentAssertions;
-using FluentAssertions.Common;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -100,18 +99,17 @@ namespace ILLightenComparer.Tests.Utilities
                 return 1;
             }
 
-            if (typeof(T).Implements(typeof(IComparable<T>)))
-            {
-                return ((IComparable<T>)one).CompareTo((T)other);
-            }
-
             switch (one)
             {
+                case IComparable<T> comparable:
+                    return comparable.CompareTo((T)other);
+
                 case string str:
                     return string.CompareOrdinal(str, (string)other);
-            }
 
-            throw new NotSupportedException();
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
         public static int CompareTo<T>(this IEnumerable<T> one, IEnumerable<T> other)

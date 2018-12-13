@@ -3,15 +3,15 @@ using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
 {
-    public class ArrayObject<T>
+    public class ArrayOfObjects<T>
     {
-        public static IComparer<ArrayObject<T>> Comparer { get; } = new RelationalComparer();
+        public static IComparer<ArrayOfObjects<T>> Comparer { get; } = new RelationalComparer();
 
         public T[] ArrayProperty { get; set; }
 
-        private sealed class RelationalComparer : IComparer<ArrayObject<T>>
+        private sealed class RelationalComparer : IComparer<ArrayOfObjects<T>>
         {
-            public int Compare(ArrayObject<T> x, ArrayObject<T> y)
+            public int Compare(ArrayOfObjects<T> x, ArrayOfObjects<T> y)
             {
                 if (ReferenceEquals(x, y))
                 {
