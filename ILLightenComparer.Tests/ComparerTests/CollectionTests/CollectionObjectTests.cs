@@ -3,6 +3,7 @@ using System.Linq;
 using AutoFixture;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples;
+using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
     public class CollectionObjectTests
     {
         [Fact]
-        public void Compare_Array()
+        public void Compare_Array_Of_Bytes()
         {
             var comparer = _builder.For<ArrayObject<sbyte>>().GetComparer();
 
@@ -25,22 +26,24 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         [Fact]
-        public void Compare_Nullable_Array()
+        public void Compare_Array_Of_Comparable_Objects()
         {
-            //var comparer = _builder.For<ArrayObject<int?>>().GetComparer();
+            var comparer = _builder.For<ArrayObject<ComparableChildObject>>().GetComparer();
 
-            //var one = Create<sbyte>();
-            //var other = Create<sbyte>();
+            var one = Create<ComparableChildObject>();
+            var other = one.DeepClone();
 
-            //Array.Sort(one, ArrayObject<sbyte>.Comparer);
-            //Array.Sort(other, comparer);
+            Array.Sort(one, ArrayObject<ComparableChildObject>.Comparer);
+            Array.Sort(other, comparer);
 
-            //one.ShouldBeSameOrder(other);
+            one.ShouldBeSameOrder(other);
         }
+
+        private const int ItemsCount = 100;
 
         private ArrayObject<T>[] Create<T>() where T : IComparable<T>
         {
-            var objects = new ArrayObject<T>[100];
+            var objects = new ArrayObject<T>[ItemsCount];
             for (var index = 0; index < objects.Length; index++)
             {
                 objects[index] = new ArrayObject<T>

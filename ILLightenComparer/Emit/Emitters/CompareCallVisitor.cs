@@ -63,7 +63,7 @@ namespace ILLightenComparer.Emit.Emitters
             var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>), underlyingType);
             if (isComparable)
             {
-                return VisitComparable(variableType, il);
+                return VisitComparable(underlyingType, il);
             }
 
             var isEnumerable = variableType.ImplementsGeneric(typeof(IEnumerable<>), underlyingType);
@@ -73,6 +73,13 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             return VisitHierarchical(il, variableType);
+        }
+
+        private ILEmitter VisitString(Type declaringType, ILEmitter il)
+        {
+            var comparisonType = (int)_context.GetConfiguration(declaringType).StringComparisonType;
+
+            return il.LoadConstant(comparisonType).Call(Method.StringCompare);
         }
 
         private ILEmitter VisitHierarchical(ILEmitter il, Type variableType)
@@ -96,7 +103,9 @@ namespace ILLightenComparer.Emit.Emitters
                 return EmitCallForDelayedCompareMethod(il, underlyingType);
             }
 
-            var compareToMethod = memberType.GetUnderlyingCompareToMethod();
+            var compareToMethod = memberType.GetUnderlyingCompareToMethod()
+                                  ?? throw new InvalidOperationException(
+                                      $"Can't find compare method for {memberType.DisplayName()}");
 
             return il.Emit(OpCodes.Call, compareToMethod);
         }
@@ -104,13 +113,6 @@ namespace ILLightenComparer.Emit.Emitters
         private static ILEmitter VisitIntegral(ILEmitter il)
         {
             return il.Emit(OpCodes.Sub);
-        }
-
-        private ILEmitter VisitString(Type declaringType, ILEmitter il)
-        {
-            var comparisonType = (int)_context.GetConfiguration(declaringType).StringComparisonType;
-
-            return il.LoadConstant(comparisonType).Call(Method.StringCompare);
         }
 
         private static ILEmitter VisitBasic(Type memberType, ILEmitter il)

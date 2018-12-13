@@ -42,7 +42,6 @@ namespace ILLightenComparer.Emit.Emitters
                     gotoNextMember);
             }
 
-
             if (member.LoadContext)
             {
                 il.LoadArgument(Arg.Context);
