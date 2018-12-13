@@ -48,11 +48,16 @@ namespace ILLightenComparer.Tests.Utilities
                 return 1;
             }
 
+            if (one.Count < 0 || other.Count < 0)
+            {
+                throw new IndexOutOfRangeException($"Collection {one.GetType()} has negative count of elements.");
+            }
+
             var i = 0;
             while (true)
             {
-                var oneDone = i >= one.Count;
-                var otherDone = i >= other.Count;
+                var oneDone = i == one.Count;
+                var otherDone = i == other.Count;
                 if (oneDone)
                 {
                     if (otherDone)

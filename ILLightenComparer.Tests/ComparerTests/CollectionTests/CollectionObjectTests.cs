@@ -14,8 +14,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         {
             var comparer = _builder.For<ArrayObject<sbyte>>().GetComparer();
 
-            var one = Create();
-            var other = Create();
+            var one = Create<sbyte>();
+            var other = Create<sbyte>();
 
             Array.Sort(one, ArrayObject<sbyte>.Comparer);
             Array.Sort(other, comparer);
@@ -23,12 +23,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
-        private ArrayObject<sbyte>[] Create()
+        private ArrayObject<T>[] Create<T>() where T : IComparable<T>
         {
-            var one = new ArrayObject<sbyte>[100];
+            var one = new ArrayObject<T>[100];
             foreach (var item in one)
             {
-                item.ArrayProperty = _fixture.CreateMany<sbyte>(_random.Next(10, 20)).ToArray();
+                item.ArrayProperty = _fixture.CreateMany<T>(_random.Next(5, 10)).ToArray();
             }
 
             return one;
