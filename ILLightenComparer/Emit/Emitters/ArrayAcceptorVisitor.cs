@@ -8,13 +8,13 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters
 {
-    internal sealed class CollectionAcceptorVisitor
+    internal sealed class ArrayAcceptorVisitor
     {
         private readonly CompareCallVisitor _callVisitor;
         private readonly MemberConverter _converter;
         private readonly MemberLoader _loader;
 
-        public CollectionAcceptorVisitor(
+        public ArrayAcceptorVisitor(
             MemberLoader loader,
             MemberConverter converter,
             CompareCallVisitor callVisitor)
@@ -24,17 +24,15 @@ namespace ILLightenComparer.Emit.Emitters
             _loader = loader;
         }
 
-        public ILEmitter Visit(ICollectionAcceptor member, ILEmitter il)
+        public ILEmitter Visit(IArrayAcceptor member, ILEmitter il)
         {
-            var memberType = member.MemberType;
-
             il.DefineLabel(out var gotoNextMember);
 
             EmitCheckMemberReferenceComparison(il, member, gotoNextMember);
 
             var (countX, countY) = EmitLoadCounts(il, member);
 
-            EmitCheckForNegativeCount(il, countX, countY, memberType);
+            EmitCheckForNegativeCount(il, countX, countY, member.MemberType);
 
             il.LoadConstant(0)
               .Store(typeof(int), 3, out var index)
@@ -59,12 +57,12 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var acceptor = _converter.Convert(member.MemberType.GetElementType());
 
-            acceptor.Accept(_callVisitor, gotoNextMember, il);
+            acceptor.Accept(_callVisitor, il, gotoNextMember);
         }
 
         private void EmitLoadValues(
             ILEmitter il,
-            ICollectionAcceptor member,
+            IArrayAcceptor member,
             LocalBuilder index)
         {
             member.Load(_loader, il, Arg.X)
@@ -107,7 +105,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         private (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
             ILEmitter il,
-            ICollectionAcceptor member)
+            IArrayAcceptor member)
         {
             member.Load(_loader, il, Arg.X)
                   .Call(member.CountMethod)

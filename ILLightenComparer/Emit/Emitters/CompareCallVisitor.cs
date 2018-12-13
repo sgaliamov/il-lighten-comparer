@@ -66,7 +66,7 @@ namespace ILLightenComparer.Emit.Emitters
                      .EmitReturnNotZero(gotoNextMember);
         }
 
-        public ILEmitter Visit(ICollectionAcceptor member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IArrayAcceptor member, ILEmitter il, Label gotoNextMember)
         {
             throw new NotImplementedException();
         }

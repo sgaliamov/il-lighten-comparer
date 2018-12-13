@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
@@ -9,12 +9,12 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class CollectionFieldMember : FieldMember, ICollectionAcceptor, IArgumentsMember
+    internal sealed class ArrayFieldMember : FieldMember, IArrayAcceptor, IArgumentsMember
     {
-        private CollectionFieldMember(FieldInfo fieldInfo) : base(fieldInfo)
+        private ArrayFieldMember(FieldInfo fieldInfo) : base(fieldInfo)
         {
-            CountMethod = MemberType.GetPropertyGetter(MethodName.Count);
-            GetItemMethod = MemberType.GetMethod(MethodName.GetItem, new[] { typeof(int) });
+            CountMethod = MemberType.GetMethod(MethodName.ArrayLength, Type.EmptyTypes);
+            GetItemMethod = MemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
         }
 
         public bool LoadContext => false;
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public static CollectionFieldMember Create(MemberInfo memberInfo)
+        public static ArrayFieldMember Create(MemberInfo memberInfo)
         {
             var info = memberInfo as FieldInfo;
             if (info == null)
@@ -56,21 +56,18 @@ namespace ILLightenComparer.Emit.Members
 
             var underlyingType = info.FieldType.GetUnderlyingType();
 
-
-            var isCollection = underlyingType.ImplementsGeneric(typeof(IList<>), underlyingType);
-
-            return isCollection
-                       ? new CollectionFieldMember(info)
+            return underlyingType.IsArray
+                       ? new ArrayFieldMember(info)
                        : null;
         }
     }
 
-    internal sealed class CollectionPropertyMember : PropertyMember, ICollectionAcceptor, IArgumentsMember
+    internal sealed class ArrayPropertyMember : PropertyMember, IArrayAcceptor, IArgumentsMember
     {
-        private CollectionPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo)
+        private ArrayPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo)
         {
-            CountMethod = MemberType.GetPropertyGetter(MethodName.Count);
-            GetItemMethod = MemberType.GetMethod(MethodName.GetItem, new[] { typeof(int) });
+            CountMethod = MemberType.GetMethod(MethodName.ArrayLength, Type.EmptyTypes);
+            GetItemMethod = MemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
         }
 
         public bool LoadContext => false;
@@ -102,7 +99,7 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public static CollectionPropertyMember Create(MemberInfo memberInfo)
+        public static ArrayPropertyMember Create(MemberInfo memberInfo)
         {
             var info = memberInfo as PropertyInfo;
             if (info == null)
@@ -112,10 +109,8 @@ namespace ILLightenComparer.Emit.Members
 
             var underlyingType = info.PropertyType.GetUnderlyingType();
 
-            var isCollection = underlyingType.ImplementsGeneric(typeof(IList<>), underlyingType);
-
-            return isCollection
-                       ? new CollectionPropertyMember(info)
+            return underlyingType.IsArray
+                       ? new ArrayPropertyMember(info)
                        : null;
         }
     }

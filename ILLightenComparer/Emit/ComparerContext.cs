@@ -27,7 +27,7 @@ namespace ILLightenComparer.Emit
             IntegralPropertyMember.Create,
             BasicPropertyMember.Create,
             ComparablePropertyMember.Create,
-            CollectionPropertyMember.Create,
+            ArrayPropertyMember.Create,
             HierarchicalPropertyMember.Create
         };
 
@@ -37,7 +37,7 @@ namespace ILLightenComparer.Emit
             IntegralFieldMember.Create,
             BasicFieldMember.Create,
             ComparableFieldMember.Create,
-            CollectionFieldMember.Create,
+            ArrayFieldMember.Create,
             HierarchicalFieldMember.Create
         };
 
