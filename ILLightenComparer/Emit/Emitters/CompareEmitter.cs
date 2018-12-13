@@ -97,7 +97,7 @@ namespace ILLightenComparer.Emit.Emitters
             throw new NotImplementedException();
         }
 
-        public void EmitReferenceComparison(ILEmitter il)
+        public void EmitCheckArgumentsReferenceComparison(ILEmitter il)
         {
             il.LoadArgument(Arg.X) // x == y
               .LoadArgument(Arg.Y)

@@ -55,7 +55,7 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsClass)
                 {
-                    _compareEmitter.EmitReferenceComparison(il);
+                    _compareEmitter.EmitCheckArgumentsReferenceComparison(il);
                 }
 
                 if (IsDetectCyclesEnabled(objectType))
@@ -80,7 +80,7 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsValueType)
                 {
-                    _compareEmitter.EmitReferenceComparison(il);
+                    _compareEmitter.EmitCheckArgumentsReferenceComparison(il);
                 }
 
                 il.LoadArgument(Arg.This)
