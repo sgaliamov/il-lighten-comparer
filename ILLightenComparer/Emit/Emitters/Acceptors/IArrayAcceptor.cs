@@ -4,7 +4,7 @@ namespace ILLightenComparer.Emit.Emitters.Acceptors
 {
     internal interface IArrayAcceptor : IAcceptor
     {
-        MethodInfo CountMethod { get; }
+        MethodInfo GetLengthMethod { get; }
         MethodInfo GetItemMethod { get; }
     }
 }

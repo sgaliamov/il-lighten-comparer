@@ -108,11 +108,11 @@ namespace ILLightenComparer.Emit.Emitters
             IArrayAcceptor member)
         {
             member.Load(_loader, il, Arg.X)
-                  .Call(member.CountMethod)
+                  .Call(member.GetLengthMethod)
                   .Store(typeof(int), 0, out var countX);
 
             member.Load(_loader, il, Arg.Y)
-                  .Call(member.CountMethod)
+                  .Call(member.GetLengthMethod)
                   .Store(typeof(int), 1, out var countY);
 
             return (countX, countY);
