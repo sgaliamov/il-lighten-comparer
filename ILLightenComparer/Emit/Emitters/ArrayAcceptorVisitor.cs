@@ -47,7 +47,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             EmitLoadValues(il, member, x, y, index);
 
-            member.Accept(_callVisitor, il, gotoNextMember)
+            member.Accept(_callVisitor, il)
                   .DefineLabel(out var continueLoop)
                   .EmitReturnNotZero(continueLoop);
 

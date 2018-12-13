@@ -40,9 +40,9 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il)
         {
-            return visitor.Visit(this, il, gotoNext);
+            return visitor.Visit(this, il);
         }
 
         public static ArrayFieldMember Create(MemberInfo memberInfo)
@@ -93,9 +93,9 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il)
         {
-            return visitor.Visit(this, il, gotoNext);
+            return visitor.Visit(this, il);
         }
 
         public static ArrayPropertyMember Create(MemberInfo memberInfo)

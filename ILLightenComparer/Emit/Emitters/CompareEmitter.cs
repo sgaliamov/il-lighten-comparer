@@ -23,7 +23,7 @@ namespace ILLightenComparer.Emit.Emitters
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, il, gotoNextMember);
 
-            return member.Accept(_callVisitor, il, gotoNextMember)
+            return member.Accept(_callVisitor, il)
                          .EmitReturnNotZero(gotoNextMember)
                          .MarkLabel(gotoNextMember);
         }

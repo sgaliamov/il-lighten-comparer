@@ -32,9 +32,9 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il)
         {
-            return visitor.Visit(this, il, gotoNext);
+            return visitor.Visit(this, il);
         }
 
         public static StringFieldMember Create(MemberInfo memberInfo)
@@ -72,9 +72,9 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il)
         {
-            return visitor.Visit(this, il, gotoNext);
+            return visitor.Visit(this, il);
         }
 
         public static StringPropertyMember Create(MemberInfo memberInfo)

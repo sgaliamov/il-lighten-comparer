@@ -103,11 +103,8 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var memberType = member.VariableType;
 
-            member.Load(_loader, il, Arg.X)
-                  .Store(memberType, 0, out var nullableX);
-
-            member.Load(_loader, il, Arg.Y)
-                  .Store(memberType, 1, out var nullableY);
+            member.Load(_loader, il, Arg.X).Store(memberType, 0, out var nullableX);
+            member.Load(_loader, il, Arg.Y).Store(memberType, 1, out var nullableY);
 
             var hasValueMethod = memberType.GetPropertyGetter(MethodName.HasValue);
             var getValueMethod = memberType.GetPropertyGetter(MethodName.Value);

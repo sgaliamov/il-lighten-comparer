@@ -9,6 +9,6 @@ namespace ILLightenComparer.Emit.Emitters.Acceptors
         ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg);
         ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg);
         ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
-        ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il, Label gotoNext);
+        ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il);
     }
 }
