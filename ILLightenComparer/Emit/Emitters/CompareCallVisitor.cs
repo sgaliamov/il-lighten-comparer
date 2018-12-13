@@ -57,7 +57,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             if (underlyingType.IsPrimitive())
             {
-                return VisitBasic(variableType, il);
+                return VisitBasic(underlyingType, il);
             }
 
             var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>), underlyingType);
@@ -105,7 +105,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             var compareToMethod = memberType.GetUnderlyingCompareToMethod()
                                   ?? throw new InvalidOperationException(
-                                      $"Can't find compare method for {memberType.DisplayName()}");
+                                      $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
             return il.Emit(OpCodes.Call, compareToMethod);
         }
@@ -118,7 +118,7 @@ namespace ILLightenComparer.Emit.Emitters
         private static ILEmitter VisitBasic(Type memberType, ILEmitter il)
         {
             var compareToMethod = memberType.GetUnderlyingCompareToMethod()
-                                  ?? throw new ArgumentException(
+                                  ?? throw new InvalidOperationException(
                                       $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
 
             return il.Call(compareToMethod);

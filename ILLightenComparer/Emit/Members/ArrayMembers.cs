@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
@@ -14,10 +15,12 @@ namespace ILLightenComparer.Emit.Members
         {
             GetLengthMethod = VariableType.GetPropertyGetter(MethodName.ArrayLength);
             GetItemMethod = VariableType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
+            ElementType = VariableType.GetUnderlyingType().GetElementType();
         }
 
         public bool LoadContext => false;
         public MethodInfo GetLengthMethod { get; }
+        public Type ElementType { get; }
         public MethodInfo GetItemMethod { get; }
 
         public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
@@ -67,10 +70,12 @@ namespace ILLightenComparer.Emit.Members
         {
             GetLengthMethod = VariableType.GetPropertyGetter(MethodName.ArrayLength);
             GetItemMethod = VariableType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
+            ElementType = VariableType.GetUnderlyingType().GetElementType();
         }
 
         public bool LoadContext => false;
         public MethodInfo GetLengthMethod { get; }
+        public Type ElementType { get; }
         public MethodInfo GetItemMethod { get; }
 
         public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)

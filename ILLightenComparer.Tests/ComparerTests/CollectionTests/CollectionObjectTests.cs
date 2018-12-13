@@ -26,6 +26,20 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         [Fact]
+        public void Compare_Array_Of_Longs()
+        {
+            var comparer = _builder.For<ArrayObject<long>>().GetComparer();
+
+            var one = Create<long>();
+            var other = one.DeepClone();
+
+            Array.Sort(one, ArrayObject<long>.Comparer);
+            Array.Sort(other, comparer);
+
+            one.ShouldBeSameOrder(other);
+        }
+
+        [Fact]
         public void Compare_Array_Of_Comparable_Objects()
         {
             var comparer = _builder.For<ArrayObject<ComparableChildObject>>().GetComparer();
@@ -48,7 +62,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             {
                 objects[index] = new ArrayObject<T>
                 {
-                    ArrayProperty = _fixture.CreateMany<T>(_random.Next(5, 10)).ToArray()
+                    ArrayProperty = _fixture.CreateMany<T>(_random.Next(0, 5)).ToArray()
                 };
             }
 

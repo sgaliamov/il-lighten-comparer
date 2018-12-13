@@ -71,8 +71,15 @@ namespace ILLightenComparer.Emit.Emitters
         {
             il.LoadLocal(x)
               .LoadLocal(index)
-              .Call(member.GetItemMethod)
-              .LoadLocal(y)
+              .Call(member.GetItemMethod);
+
+            if (member.ElementType.IsValueType)
+            {
+                il.Store(member.ElementType, LocalX, out var item)
+                  .LoadAddress(item);
+            }
+
+            il.LoadLocal(y)
               .LoadLocal(index)
               .Call(member.GetItemMethod);
         }

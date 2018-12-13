@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using FluentAssertions;
+using FluentAssertions.Common;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -31,7 +32,6 @@ namespace ILLightenComparer.Tests.Utilities
         }
 
         public static int CompareTo<T>(this IList<T> one, IList<T> other)
-            where T : IComparable<T>
         {
             if (one == null)
             {
@@ -73,7 +73,7 @@ namespace ILLightenComparer.Tests.Utilities
                     return 1;
                 }
 
-                var compare = one[i].CompareTo(other[i]);
+                var compare = one[i].GenericCompareTo<T>(other[i]);
                 if (compare != 0)
                 {
                     return compare;
@@ -83,8 +83,38 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
+        public static int GenericCompareTo<T>(this object one, object other)
+        {
+            if (one == null)
+            {
+                if (other == null)
+                {
+                    return 0;
+                }
+
+                return -1;
+            }
+
+            if (other == null)
+            {
+                return 1;
+            }
+
+            if (typeof(T).Implements(typeof(IComparable<T>)))
+            {
+                return ((IComparable<T>)one).CompareTo((T)other);
+            }
+
+            switch (one)
+            {
+                case string str:
+                    return string.CompareOrdinal(str, (string)other);
+            }
+
+            throw new NotSupportedException();
+        }
+
         public static int CompareTo<T>(this IEnumerable<T> one, IEnumerable<T> other)
-            where T : IComparable<T>
         {
             if (one == null)
             {
@@ -127,7 +157,7 @@ namespace ILLightenComparer.Tests.Utilities
                     var oneCurrent = enumeratorOne.Current;
                     var otherCurrent = enumeratorOther.Current;
 
-                    var compare = oneCurrent.CompareTo(otherCurrent);
+                    var compare = oneCurrent.GenericCompareTo<T>(otherCurrent);
                     if (compare != 0)
                     {
                         return compare;

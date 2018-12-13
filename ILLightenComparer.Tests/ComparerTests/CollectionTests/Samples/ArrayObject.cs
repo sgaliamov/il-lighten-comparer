@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
 {
     public class ArrayObject<T>
-        where T : IComparable<T>
     {
         public static IComparer<ArrayObject<T>> Comparer { get; } = new RelationalComparer();
 

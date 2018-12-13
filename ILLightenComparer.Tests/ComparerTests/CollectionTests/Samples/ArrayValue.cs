@@ -9,7 +9,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
     {
         public static IComparer<ArrayValue<T>> Comparer { get; } = new RelationalComparer();
 
-        public T[] ArrayProperty { get; set; }
+        public T?[] ArrayProperty { get; set; }
 
         private sealed class RelationalComparer : IComparer<ArrayValue<T>>
         {
