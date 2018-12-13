@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
+using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
@@ -43,7 +44,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             EmitLoadValues(il, member, index);
 
-            EmitCompare(il, member);
+            EmitCompare(il, member, gotoNextMember);
 
             il.LoadLocal(index)
               .LoadConstant(1)
@@ -54,9 +55,11 @@ namespace ILLightenComparer.Emit.Emitters
             return il;
         }
 
-        private void EmitCompare(ILEmitter il, ICollectionAcceptor member)
+        private void EmitCompare(ILEmitter il, IMember member, Label gotoNextMember)
         {
             var acceptor = _converter.Convert(member.MemberType.GetElementType());
+
+            acceptor.Accept(_callVisitor, gotoNextMember, il);
         }
 
         private void EmitLoadValues(

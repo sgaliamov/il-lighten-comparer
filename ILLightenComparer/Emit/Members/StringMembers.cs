@@ -12,9 +12,9 @@ namespace ILLightenComparer.Emit.Members
 
         public bool LoadContext => false;
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il)
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNext, ILEmitter il)
         {
-            return visitor.Visit(this, il, gotoNextMember);
+            return visitor.Visit(this, il, gotoNext);
         }
 
         public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
@@ -30,6 +30,11 @@ namespace ILLightenComparer.Emit.Members
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
         {
             return visitor.Visit(this, il);
+        }
+        
+        public ILEmitter Accept(CompareCallVisitor visitor, Label gotoNext, ILEmitter il)
+        {
+            return visitor.Visit(this, il, gotoNext);
         }
 
         public static StringFieldMember Create(MemberInfo memberInfo)
@@ -47,9 +52,9 @@ namespace ILLightenComparer.Emit.Members
 
         public bool LoadContext => false;
 
-        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNextMember, ILEmitter il)
+        public ILEmitter LoadMembers(StackEmitter visitor, Label gotoNext, ILEmitter il)
         {
-            return visitor.Visit(this, il, gotoNextMember);
+            return visitor.Visit(this, il, gotoNext);
         }
 
         public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
@@ -65,6 +70,11 @@ namespace ILLightenComparer.Emit.Members
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
         {
             return visitor.Visit(this, il);
+        }
+        
+        public ILEmitter Accept(CompareCallVisitor visitor, Label gotoNext, ILEmitter il)
+        {
+            return visitor.Visit(this, il, gotoNext);
         }
 
         public static StringPropertyMember Create(MemberInfo memberInfo)
