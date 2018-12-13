@@ -6,8 +6,8 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CompareEmitter
     {
-        private readonly CompareCallVisitor _callVisitor;
         private readonly ArrayAcceptorVisitor _arrayAcceptorVisitor;
+        private readonly CompareCallVisitor _callVisitor;
         private readonly MemberLoader _loader = new MemberLoader();
         private readonly StackEmitter _stackEmitter;
 
@@ -15,7 +15,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             _callVisitor = new CompareCallVisitor(context);
             _stackEmitter = new StackEmitter(_loader);
-            _arrayAcceptorVisitor = new ArrayAcceptorVisitor(_loader, converter, _callVisitor);
+            _arrayAcceptorVisitor = new ArrayAcceptorVisitor(_loader, _callVisitor);
         }
 
         public ILEmitter Visit(IAcceptor member, ILEmitter il)

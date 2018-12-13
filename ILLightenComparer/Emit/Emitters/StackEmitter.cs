@@ -152,7 +152,7 @@ namespace ILLightenComparer.Emit.Emitters
               .Call(hasValueMethod)
               .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
               .LoadLocal(secondHasValue)
-              .Emit(OpCodes.Brfalse_S, ifBothNull)
+              .Branch(OpCodes.Brfalse_S, ifBothNull)
               .Return(-1)
               .MarkLabel(ifFirstHasValue)
               .LoadLocal(secondHasValue)

@@ -2,25 +2,18 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
-using ILLightenComparer.Emit.Emitters.Members;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class ArrayAcceptorVisitor
     {
         private readonly CompareCallVisitor _callVisitor;
-        private readonly MemberConverter _converter;
         private readonly MemberLoader _loader;
 
-        public ArrayAcceptorVisitor(
-            MemberLoader loader,
-            MemberConverter converter,
-            CompareCallVisitor callVisitor)
+        public ArrayAcceptorVisitor(MemberLoader loader, CompareCallVisitor callVisitor)
         {
             _callVisitor = callVisitor;
-            _converter = converter;
             _loader = loader;
         }
 
@@ -42,7 +35,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             EmitLoadValues(il, member, index);
 
-            EmitCompare(il, member, gotoNextMember);
+            member.Accept(_callVisitor, il, gotoNextMember);
 
             il.LoadLocal(index)
               .LoadConstant(1)
@@ -51,13 +44,6 @@ namespace ILLightenComparer.Emit.Emitters
               .Branch(OpCodes.Br_S, loopStart);
 
             return il;
-        }
-
-        private void EmitCompare(ILEmitter il, IVariable member, Label gotoNextMember)
-        {
-            var acceptor = _converter.Convert(member.VariableType.GetElementType());
-
-            acceptor.Accept(_callVisitor, il, gotoNextMember);
         }
 
         private void EmitLoadValues(
@@ -137,22 +123,22 @@ namespace ILLightenComparer.Emit.Emitters
               .MarkLabel(loopInit);
         }
 
-        private void EmitCheckMemberReferenceComparison(ILEmitter il, IAcceptor member, Label next)
+        private void EmitCheckMemberReferenceComparison(ILEmitter il, IAcceptor member, Label gotoNextMember)
         {
             member.Load(_loader, il, Arg.X);
             member.Load(_loader, il, Arg.Y)
-                  .Branch(OpCodes.Bne_Un_S, out var checkY)
-                  .Return(0)
-                  .MarkLabel(checkY);
-
-            member.Load(_loader, il, Arg.Y)
-                  .Branch(OpCodes.Brtrue_S, out var checkX)
-                  .Return(1)
+                  .Branch(OpCodes.Bne_Un_S, out var checkX)
+                  .Branch(OpCodes.Br_S, gotoNextMember)
                   .MarkLabel(checkX);
 
             member.Load(_loader, il, Arg.X)
-                  .Branch(OpCodes.Brtrue_S, next)
+                  .Branch(OpCodes.Brtrue_S, out var checkY)
                   .Return(-1)
+                  .MarkLabel(checkY);
+
+            member.Load(_loader, il, Arg.Y)
+                  .Branch(OpCodes.Brtrue_S, out var next)
+                  .Return(1)
                   .MarkLabel(next);
         }
     }

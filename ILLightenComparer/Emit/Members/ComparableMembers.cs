@@ -78,7 +78,7 @@ namespace ILLightenComparer.Emit.Members
         {
             return visitor.Visit(this, il);
         }
-        
+
         public ILEmitter Accept(CompareCallVisitor visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);

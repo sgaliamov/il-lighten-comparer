@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
@@ -17,7 +18,66 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il, Label gotoNextMember)
         {
-            var underlyingType = member.VariableType.GetUnderlyingType();
+            return VisitHierarchical(il, gotoNextMember, member.VariableType);
+        }
+
+        public ILEmitter Visit(IComparableAcceptor member, ILEmitter il, Label gotoNextMember)
+        {
+            return VisitComparable(member.VariableType, il, gotoNextMember);
+        }
+
+        public ILEmitter Visit(IBasicAcceptor member, ILEmitter il, Label gotoNextMember)
+        {
+            return VisitBasic(member.VariableType, il, gotoNextMember);
+        }
+
+        public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il, Label gotoNextMember)
+        {
+            return VisitIntegral(il, gotoNextMember);
+        }
+
+        public ILEmitter Visit(IStringAcceptor member, ILEmitter il, Label gotoNextMember)
+        {
+            return VisitString(member.DeclaringType, il, gotoNextMember);
+        }
+
+        public ILEmitter Visit(IArrayAcceptor member, ILEmitter il, Label gotoNextMember)
+        {
+            var variableType = member.VariableType;
+            var underlyingType = variableType.GetElementType().GetUnderlyingType();
+            if (underlyingType == typeof(string))
+            {
+                return VisitString(member.DeclaringType, il, gotoNextMember);
+            }
+
+            if (underlyingType.IsSmallIntegral())
+            {
+                return VisitIntegral(il, gotoNextMember);
+            }
+
+            if (underlyingType.IsPrimitive())
+            {
+                return VisitBasic(variableType, il, gotoNextMember);
+            }
+
+            var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>), underlyingType);
+            if (isComparable)
+            {
+                return VisitComparable(variableType, il, gotoNextMember);
+            }
+
+            var isEnumerable = variableType.ImplementsGeneric(typeof(IEnumerable<>), underlyingType);
+            if (isEnumerable)
+            {
+                throw new NotSupportedException($"Nested collections {variableType} are not supported.");
+            }
+
+            return VisitHierarchical(il, gotoNextMember, variableType);
+        }
+
+        private ILEmitter VisitHierarchical(ILEmitter il, Label gotoNextMember, Type variableType)
+        {
+            var underlyingType = variableType.GetUnderlyingType();
             if (!underlyingType.IsValueType && !underlyingType.IsSealed)
             {
                 return EmitCallForDelayedCompareMethod(il, underlyingType, gotoNextMember);
@@ -28,9 +88,8 @@ namespace ILLightenComparer.Emit.Emitters
             return il.Emit(OpCodes.Call, compareMethod).EmitReturnNotZero(gotoNextMember);
         }
 
-        public ILEmitter Visit(IComparableAcceptor member, ILEmitter il, Label gotoNextMember)
+        private static ILEmitter VisitComparable(Type memberType, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.VariableType;
             var underlyingType = memberType.GetUnderlyingType();
             if (!underlyingType.IsValueType && !underlyingType.IsSealed)
             {
@@ -42,33 +101,27 @@ namespace ILLightenComparer.Emit.Emitters
             return il.Emit(OpCodes.Call, compareToMethod).EmitReturnNotZero(gotoNextMember);
         }
 
-        public ILEmitter Visit(IBasicAcceptor member, ILEmitter il, Label gotoNextMember)
-        {
-            var memberType = member.VariableType;
-            var compareToMethod = memberType.GetUnderlyingCompareToMethod()
-                                  ?? throw new ArgumentException(
-                                      $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
-
-            return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
-        }
-
-        public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il, Label gotoNextMember)
+        private static ILEmitter VisitIntegral(ILEmitter il, Label gotoNextMember)
         {
             return il.Emit(OpCodes.Sub).EmitReturnNotZero(gotoNextMember);
         }
 
-        public ILEmitter Visit(IStringAcceptor member, ILEmitter il, Label gotoNextMember)
+        private ILEmitter VisitString(Type declaringType, ILEmitter il, Label gotoNextMember)
         {
-            var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
+            var comparisonType = (int)_context.GetConfiguration(declaringType).StringComparisonType;
 
             return il.LoadConstant(comparisonType)
                      .Call(Method.StringCompare)
                      .EmitReturnNotZero(gotoNextMember);
         }
 
-        public ILEmitter Visit(IArrayAcceptor member, ILEmitter il, Label gotoNextMember)
+        private static ILEmitter VisitBasic(Type memberType, ILEmitter il, Label gotoNextMember)
         {
-            throw new NotImplementedException();
+            var compareToMethod = memberType.GetUnderlyingCompareToMethod()
+                                  ?? throw new ArgumentException(
+                                      $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
+
+            return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(
