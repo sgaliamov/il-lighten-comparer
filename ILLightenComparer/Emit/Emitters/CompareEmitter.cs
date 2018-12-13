@@ -8,6 +8,7 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CompareEmitter
     {
+        private readonly CollectionAcceptorVisitor _collectionAcceptorVisitor;
         private readonly ComparerContext _context;
         private readonly MemberLoader _loader = new MemberLoader();
         private readonly StackEmitter _stackEmitter;
@@ -16,6 +17,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             _context = context;
             _stackEmitter = new StackEmitter(_loader);
+            _collectionAcceptorVisitor = new CollectionAcceptorVisitor(_loader);
         }
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
@@ -94,7 +96,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(ICollectionAcceptor member, ILEmitter il)
         {
-            throw new NotImplementedException();
+            return _collectionAcceptorVisitor.Visit(member, il);
         }
 
         public void EmitCheckArgumentsReferenceComparison(ILEmitter il)
