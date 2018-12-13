@@ -196,7 +196,7 @@ namespace ILLightenComparer.Emit
 
         private static ComparerTypeBuilder CreateComparerTypeBuilder(ComparerContext context)
         {
-            var converter = new MemberConverter(context, PropertyFactories, FieldFactories);
+            var converter = new MemberConverter(PropertyFactories, FieldFactories);
 
             return new ComparerTypeBuilder(context, converter);
         }

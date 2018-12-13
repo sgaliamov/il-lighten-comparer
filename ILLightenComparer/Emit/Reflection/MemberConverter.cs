@@ -9,16 +9,13 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private readonly ComparerContext _context;
         private readonly Func<MemberInfo, IAcceptor>[] _fieldFactories;
         private readonly Func<MemberInfo, IAcceptor>[] _propertyFactories;
 
         public MemberConverter(
-            ComparerContext context,
             Func<MemberInfo, IAcceptor>[] propertyFactories,
             Func<MemberInfo, IAcceptor>[] fieldFactories)
         {
-            _context = context;
             _propertyFactories = propertyFactories;
             _fieldFactories = fieldFactories;
         }
@@ -39,17 +36,15 @@ namespace ILLightenComparer.Emit.Reflection
                 }
 
                 case FieldInfo _:
-                    var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
-                    if (includeFields)
+                {
+                    var acceptor = Convert(memberInfo, _fieldFactories);
+                    if (acceptor != null)
                     {
-                        var acceptor = Convert(memberInfo, _fieldFactories);
-                        if (acceptor != null)
-                        {
-                            return acceptor;
-                        }
+                        return acceptor;
                     }
 
                     break;
+                }
             }
 
             throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
