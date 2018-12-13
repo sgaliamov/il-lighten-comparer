@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters
 {
@@ -19,7 +18,6 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(ICollectionAcceptor member, ILEmitter il)
         {
             var memberType = member.MemberType;
-            var elementType = memberType.GetElementType();
 
             il.DefineLabel(out var gotoNextMember);
 
@@ -35,9 +33,9 @@ namespace ILLightenComparer.Emit.Emitters
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            EmitLoadValues(member, il, index, elementType);
+            EmitLoadValues(il, member, index);
 
-            // compare
+            EmitCompare(il, member);
 
             il.LoadLocal(index)
               .LoadConstant(1)
@@ -48,21 +46,31 @@ namespace ILLightenComparer.Emit.Emitters
             return il;
         }
 
-        private void EmitLoadValues(ICollectionAcceptor member, ILEmitter il, LocalBuilder index, Type elementType)
+        private void EmitCompare(ILEmitter il, ICollectionAcceptor member)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void EmitLoadValues(
+            ILEmitter il,
+            ICollectionAcceptor member,
+            LocalBuilder index)
         {
             member.Load(_loader, il, Arg.X)
                   .LoadLocal(index)
-                  .Call(member.GetItemMethod)
-                  .Store(elementType, 4, out var x);
+                  .Call(member.GetItemMethod);
 
             member.Load(_loader, il, Arg.Y)
                   .LoadLocal(index)
-                  .Call(member.GetItemMethod)
-                  .Store(elementType, 5, out var y);
+                  .Call(member.GetItemMethod);
         }
 
         private static void EmitCheckIfLoopsAreDone(
-            ILEmitter il, LocalBuilder index, LocalBuilder countX, LocalBuilder countY, Label gotoNextMember)
+            ILEmitter il,
+            LocalBuilder index,
+            LocalBuilder countX,
+            LocalBuilder countY,
+            Label gotoNextMember)
         {
             il.LoadLocal(index)
               .LoadLocal(countX)
@@ -86,7 +94,9 @@ namespace ILLightenComparer.Emit.Emitters
               .MarkLabel(loadValues);
         }
 
-        private (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(ILEmitter il, ICollectionAcceptor member)
+        private (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
+            ILEmitter il,
+            ICollectionAcceptor member)
         {
             member.Load(_loader, il, Arg.X)
                   .Call(member.CountMethod)
@@ -118,7 +128,7 @@ namespace ILLightenComparer.Emit.Emitters
               .MarkLabel(loopInit);
         }
 
-        private void EmitCheckMemberReferenceComparison(ILEmitter il, ICollectionAcceptor member, Label next)
+        private void EmitCheckMemberReferenceComparison(ILEmitter il, IAcceptor member, Label next)
         {
             member.Load(_loader, il, Arg.X);
             member.Load(_loader, il, Arg.Y)
