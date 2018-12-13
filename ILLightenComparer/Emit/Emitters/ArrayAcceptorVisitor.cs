@@ -48,11 +48,8 @@ namespace ILLightenComparer.Emit.Emitters
             EmitLoadValues(il, member, x, y, index);
 
             member.Accept(_callVisitor, il, gotoNextMember)
-                  .Emit(OpCodes.Stloc_0)
-                  .Emit(OpCodes.Ldloc_0)
-                  .Branch(OpCodes.Brfalse_S, out var continueLoop)
-                  .Emit(OpCodes.Ldloc_0)
-                  .Return();
+                  .DefineLabel(out var continueLoop)
+                  .EmitReturnNotZero(continueLoop);
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)

@@ -24,7 +24,8 @@ namespace ILLightenComparer.Emit.Emitters
             member.LoadMembers(_stackEmitter, il, gotoNextMember);
 
             return member.Accept(_callVisitor, il, gotoNextMember)
-                         .EmitReturnNotZero(gotoNextMember);
+                         .EmitReturnNotZero(gotoNextMember)
+                         .MarkLabel(gotoNextMember);
         }
 
         public ILEmitter Visit(IArrayAcceptor member, ILEmitter il)
