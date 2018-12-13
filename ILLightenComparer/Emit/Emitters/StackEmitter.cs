@@ -9,7 +9,12 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class StackEmitter
     {
-        private readonly MemberLoader _loader = new MemberLoader();
+        private readonly MemberLoader _loader;
+
+        public StackEmitter(MemberLoader loader)
+        {
+            _loader = loader;
+        }
 
         public ILEmitter Visit(IValueMember member, ILEmitter il, Label gotoNextMember)
         {
@@ -36,6 +41,7 @@ namespace ILLightenComparer.Emit.Emitters
                     member,
                     gotoNextMember);
             }
+
 
             if (member.LoadContext)
             {

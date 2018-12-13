@@ -9,11 +9,13 @@ namespace ILLightenComparer.Emit.Emitters
     internal sealed class CompareEmitter
     {
         private readonly ComparerContext _context;
-        private readonly StackEmitter _stackEmitter = new StackEmitter();
+        private readonly MemberLoader _loader = new MemberLoader();
+        private readonly StackEmitter _stackEmitter;
 
         public CompareEmitter(ComparerContext context)
         {
             _context = context;
+            _stackEmitter = new StackEmitter(_loader);
         }
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
@@ -53,9 +55,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             il.DefineLabel(out var gotoNextMember);
 
-            member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                  .LoadArgument(Arg.SetX)
-                  .LoadArgument(Arg.SetY);
+            member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
             var underlyingType = member.MemberType.GetUnderlyingType();
             if (underlyingType.IsValueType || underlyingType.IsSealed)
