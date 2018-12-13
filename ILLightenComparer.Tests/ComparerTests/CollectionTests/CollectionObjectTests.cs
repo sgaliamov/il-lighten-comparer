@@ -23,15 +23,32 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
+        [Fact]
+        public void Compare_Nullable_Array()
+        {
+            //var comparer = _builder.For<ArrayObject<int?>>().GetComparer();
+
+            //var one = Create<sbyte>();
+            //var other = Create<sbyte>();
+
+            //Array.Sort(one, ArrayObject<sbyte>.Comparer);
+            //Array.Sort(other, comparer);
+
+            //one.ShouldBeSameOrder(other);
+        }
+
         private ArrayObject<T>[] Create<T>() where T : IComparable<T>
         {
-            var one = new ArrayObject<T>[100];
-            foreach (var item in one)
+            var objects = new ArrayObject<T>[100];
+            for (var index = 0; index < objects.Length; index++)
             {
-                item.ArrayProperty = _fixture.CreateMany<T>(_random.Next(5, 10)).ToArray();
+                objects[index] = new ArrayObject<T>
+                {
+                    ArrayProperty = _fixture.CreateMany<T>(_random.Next(5, 10)).ToArray()
+                };
             }
 
-            return one;
+            return objects;
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();

@@ -8,6 +8,14 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class ArrayAcceptorVisitor
     {
+        private const int LocalX = 1;
+        private const int LocalY = 2;
+        private const int LocalCountX = 3;
+        private const int LocalCountY = 4;
+        private const int LocalDoneX = 5;
+        private const int LocalDoneY = 6;
+        private const int LocalIndex = 7;
+
         private readonly CompareCallVisitor _callVisitor;
         private readonly MemberLoader _loader;
 
@@ -21,43 +29,49 @@ namespace ILLightenComparer.Emit.Emitters
         {
             il.DefineLabel(out var gotoNextMember);
 
-            EmitCheckMemberReferenceComparison(il, member, gotoNextMember);
+            member.Load(_loader, il, Arg.X).Store(member.VariableType, LocalX, out var x);
+            member.Load(_loader, il, Arg.Y).Store(member.VariableType, LocalY, out var y);
 
-            var (countX, countY) = EmitLoadCounts(il, member);
+            EmitCheckMemberReferenceComparison(il, x, y, gotoNextMember);
+
+            var (countX, countY) = EmitLoadCounts(il, member, x, y);
 
             EmitCheckForNegativeCount(il, countX, countY, member.VariableType);
 
             il.LoadConstant(0)
-              .Store(typeof(int), 3, out var index)
-              .DefineLabel(out var loopStart);
+              .Store(typeof(int), LocalIndex, out var index)
+              .DefineLabel(out var loopStart)
+              .MarkLabel(loopStart);
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            EmitLoadValues(il, member, index);
+            EmitLoadValues(il, member, x, y, index);
 
             member.Accept(_callVisitor, il, gotoNextMember);
 
             il.LoadLocal(index)
-              .LoadConstant(1)
+              .LoadConstant(LocalX)
               .Emit(OpCodes.Add)
               .Store(index)
-              .Branch(OpCodes.Br_S, loopStart);
+              .Branch(OpCodes.Br_S, loopStart)
+              .MarkLabel(gotoNextMember);
 
             return il;
         }
 
-        private void EmitLoadValues(
+        private static void EmitLoadValues(
             ILEmitter il,
             IArrayAcceptor member,
+            LocalBuilder x,
+            LocalBuilder y,
             LocalBuilder index)
         {
-            member.Load(_loader, il, Arg.X)
-                  .LoadLocal(index)
-                  .Call(member.GetItemMethod);
-
-            member.Load(_loader, il, Arg.Y)
-                  .LoadLocal(index)
-                  .Call(member.GetItemMethod);
+            il.LoadLocal(x)
+              .LoadLocal(index)
+              .Call(member.GetItemMethod)
+              .LoadLocal(y)
+              .LoadLocal(index)
+              .Call(member.GetItemMethod);
         }
 
         private static void EmitCheckIfLoopsAreDone(
@@ -70,36 +84,37 @@ namespace ILLightenComparer.Emit.Emitters
             il.LoadLocal(index)
               .LoadLocal(countX)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), 4, out var isDoneX)
+              .Store(typeof(int), LocalDoneX, out var isDoneX)
               .LoadLocal(index)
               .LoadLocal(countY)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), 5, out var isDoneY)
+              .Store(typeof(int), LocalDoneY, out var isDoneY)
               .LoadLocal(isDoneX)
               .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
               .LoadLocal(isDoneY)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
               .Branch(OpCodes.Br_S, gotoNextMember)
               .MarkLabel(returnM1)
-              .Return(-1)
+              .Return(-LocalX)
               .MarkLabel(checkIsDoneY)
               .LoadLocal(isDoneY)
               .Branch(OpCodes.Brfalse_S, out var loadValues)
-              .Return(1)
+              .Return(LocalX)
               .MarkLabel(loadValues);
         }
 
-        private (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
+        private static (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
             ILEmitter il,
-            IArrayAcceptor member)
+            IArrayAcceptor member,
+            LocalBuilder x,
+            LocalBuilder y)
         {
-            member.Load(_loader, il, Arg.X)
-                  .Call(member.GetLengthMethod)
-                  .Store(typeof(int), 0, out var countX);
-
-            member.Load(_loader, il, Arg.Y)
-                  .Call(member.GetLengthMethod)
-                  .Store(typeof(int), 1, out var countY);
+            il.LoadLocal(x)
+              .Call(member.GetLengthMethod)
+              .Store(typeof(int), LocalCountX, out var countX)
+              .LoadLocal(y)
+              .Call(member.GetLengthMethod)
+              .Store(typeof(int), LocalCountY, out var countY);
 
             return (countX, countY);
         }
@@ -123,23 +138,25 @@ namespace ILLightenComparer.Emit.Emitters
               .MarkLabel(loopInit);
         }
 
-        private void EmitCheckMemberReferenceComparison(ILEmitter il, IAcceptor member, Label gotoNextMember)
+        private static void EmitCheckMemberReferenceComparison(
+            ILEmitter il,
+            LocalBuilder x,
+            LocalBuilder y,
+            Label gotoNextMember)
         {
-            member.Load(_loader, il, Arg.X);
-            member.Load(_loader, il, Arg.Y)
-                  .Branch(OpCodes.Bne_Un_S, out var checkX)
-                  .Branch(OpCodes.Br_S, gotoNextMember)
-                  .MarkLabel(checkX);
-
-            member.Load(_loader, il, Arg.X)
-                  .Branch(OpCodes.Brtrue_S, out var checkY)
-                  .Return(-1)
-                  .MarkLabel(checkY);
-
-            member.Load(_loader, il, Arg.Y)
-                  .Branch(OpCodes.Brtrue_S, out var next)
-                  .Return(1)
-                  .MarkLabel(next);
+            il.LoadLocal(x)
+              .LoadLocal(y)
+              .Branch(OpCodes.Bne_Un_S, out var checkX)
+              .Branch(OpCodes.Br, gotoNextMember)
+              .MarkLabel(checkX)
+              .LoadLocal(x)
+              .Branch(OpCodes.Brtrue_S, out var checkY)
+              .Return(-LocalX)
+              .MarkLabel(checkY)
+              .LoadLocal(y)
+              .Branch(OpCodes.Brtrue_S, out var next)
+              .Return(LocalX)
+              .MarkLabel(next);
         }
     }
 }

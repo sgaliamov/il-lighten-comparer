@@ -4,7 +4,7 @@ using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
 {
-    internal class ArrayObject<T>
+    public class ArrayObject<T>
         where T : IComparable<T>
     {
         public static IComparer<ArrayObject<T>> Comparer { get; } = new RelationalComparer();

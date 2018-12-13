@@ -214,7 +214,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter LoadString(string value)
         {
-            DebugLine($"\t\t{OpCodes.Ldstr} {value}");
+            DebugLine($"\t\t{OpCodes.Ldstr} \"{value}\"");
             _il.Emit(OpCodes.Ldstr, value);
 
             return this;
