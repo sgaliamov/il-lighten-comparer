@@ -23,55 +23,33 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            var memberType = member.MemberType;
-            var compareToMethod = memberType.GetUnderlyingCompareToMethod()
-                                  ?? throw new ArgumentException(
-                                      $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
+            member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
-            return member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                         .Call(compareToMethod)
-                         .EmitReturnNotZero(gotoNextMember);
+            return Visit(member, il, gotoNextMember);
         }
 
         public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
+            member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
-            return member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                         .Emit(OpCodes.Sub)
-                         .EmitReturnNotZero(gotoNextMember);
+            return Visit(member, il, gotoNextMember);
         }
 
         public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
+            member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
-            return member.LoadMembers(_stackEmitter, gotoNextMember, il)
-                         .LoadConstant(comparisonType)
-                         .Call(Method.StringCompare)
-                         .EmitReturnNotZero(gotoNextMember);
+            return Visit(member, il, gotoNextMember);
         }
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-
             member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
-            var underlyingType = member.MemberType.GetUnderlyingType();
-            if (underlyingType.IsValueType || underlyingType.IsSealed)
-            {
-                var compareMethod = _context.GetStaticCompareMethod(underlyingType);
-
-                return il.Emit(OpCodes.Call, compareMethod)
-                         .EmitReturnNotZero(gotoNextMember);
-            }
-
-            var contextCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
-
-            return il.Emit(OpCodes.Call, contextCompare)
-                     .EmitReturnNotZero(gotoNextMember);
+            return Visit(member, il, gotoNextMember);
         }
 
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
@@ -79,19 +57,7 @@ namespace ILLightenComparer.Emit.Emitters
             il.DefineLabel(out var gotoNextMember);
             member.LoadMembers(_stackEmitter, gotoNextMember, il);
 
-            var memberType = member.MemberType;
-            var underlyingType = memberType.GetUnderlyingType();
-            if (underlyingType.IsValueType || underlyingType.IsSealed)
-            {
-                var compareToMethod = memberType.GetUnderlyingCompareToMethod();
-
-                return il.Emit(OpCodes.Call, compareToMethod).EmitReturnNotZero(gotoNextMember);
-            }
-
-            var delayedCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
-
-            return il.Emit(OpCodes.Call, delayedCompare)
-                     .EmitReturnNotZero(gotoNextMember);
+            return Visit(member, il, gotoNextMember);
         }
 
         public ILEmitter Visit(ICollectionAcceptor member, ILEmitter il)
@@ -116,6 +82,71 @@ namespace ILLightenComparer.Emit.Emitters
               .Branch(OpCodes.Brtrue_S, out var next)
               .Return(-1)
               .MarkLabel(next);
+        }
+
+        private ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il, Label gotoNextMember)
+        {
+            var underlyingType = member.MemberType.GetUnderlyingType();
+            if (!underlyingType.IsValueType && !underlyingType.IsSealed)
+            {
+                return EmitCallForDelayedCompareMethod(il, underlyingType, gotoNextMember);
+            }
+
+            var compareMethod = _context.GetStaticCompareMethod(underlyingType);
+
+            return il.Emit(OpCodes.Call, compareMethod).EmitReturnNotZero(gotoNextMember);
+        }
+
+        private ILEmitter Visit(IComparableAcceptor member, ILEmitter il, Label gotoNextMember)
+        {
+            var memberType = member.MemberType;
+            var underlyingType = memberType.GetUnderlyingType();
+            if (!underlyingType.IsValueType && !underlyingType.IsSealed)
+            {
+                return EmitCallForDelayedCompareMethod(il, underlyingType, gotoNextMember);
+            }
+
+            var compareToMethod = memberType.GetUnderlyingCompareToMethod();
+
+            return il.Emit(OpCodes.Call, compareToMethod).EmitReturnNotZero(gotoNextMember);
+        }
+
+        private ILEmitter Visit(
+            IBasicAcceptor member,
+            ILEmitter il,
+            Label gotoNextMember)
+        {
+            var memberType = member.MemberType;
+            var compareToMethod = memberType.GetUnderlyingCompareToMethod()
+                                  ?? throw new ArgumentException(
+                                      $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
+
+            return il.Call(compareToMethod).EmitReturnNotZero(gotoNextMember);
+        }
+
+        private ILEmitter Visit(IIntegralAcceptor _, ILEmitter il, Label gotoNextMember)
+        {
+            return il.Emit(OpCodes.Sub).EmitReturnNotZero(gotoNextMember);
+        }
+
+        private ILEmitter Visit(IStringAcceptor member, ILEmitter il, Label gotoNextMember)
+        {
+            var comparisonType = (int)_context.GetConfiguration(member.DeclaringType).StringComparisonType;
+
+            return il.LoadConstant(comparisonType)
+                     .Call(Method.StringCompare)
+                     .EmitReturnNotZero(gotoNextMember);
+        }
+
+        private static ILEmitter EmitCallForDelayedCompareMethod(
+            ILEmitter il,
+            Type underlyingType,
+            Label gotoNextMember)
+        {
+            var delayedCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
+
+            return il.Emit(OpCodes.Call, delayedCompare)
+                     .EmitReturnNotZero(gotoNextMember);
         }
     }
 }
