@@ -18,7 +18,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IValueMember member, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.MemberType;
+            var memberType = member.VariableType;
             if (memberType.IsNullable())
             {
                 return LoadNullableMembers(il, true, false, member, gotoNextMember);
@@ -31,7 +31,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IArgumentsMember member, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.MemberType;
+            var memberType = member.VariableType;
             if (memberType.IsNullable())
             {
                 return LoadNullableMembers(
@@ -62,7 +62,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IComparableMember member, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.MemberType;
+            var memberType = member.VariableType;
             var underlyingType = memberType.GetUnderlyingType();
             if (underlyingType.IsValueType)
             {
@@ -101,7 +101,7 @@ namespace ILLightenComparer.Emit.Emitters
             IAcceptor member,
             Label gotoNextMember)
         {
-            var memberType = member.MemberType;
+            var memberType = member.VariableType;
 
             member.Load(_loader, il, Arg.X)
                   .Store(memberType, 0, out var nullableX);

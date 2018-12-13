@@ -14,7 +14,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter LoadMemberAddress(IPropertyMember member, ILEmitter il, ushort arg)
         {
             return LoadProperty(il, member, arg)
-                   .Store(member.MemberType.GetUnderlyingType(), out var local)
+                   .Store(member.VariableType.GetUnderlyingType(), out var local)
                    .LoadAddress(local);
         }
 

@@ -13,7 +13,7 @@ namespace ILLightenComparer.Emit.Members
             _propertyInfo = propertyInfo;
         }
 
-        public Type MemberType => _propertyInfo.PropertyType;
+        public Type VariableType => _propertyInfo.PropertyType;
         public MethodInfo GetterMethod => _propertyInfo.GetMethod;
         public Type DeclaringType => _propertyInfo.DeclaringType;
     }
@@ -25,7 +25,7 @@ namespace ILLightenComparer.Emit.Members
             FieldInfo = fieldInfo;
         }
 
-        public Type MemberType => FieldInfo.FieldType;
+        public Type VariableType => FieldInfo.FieldType;
         public FieldInfo FieldInfo { get; }
         public Type DeclaringType => FieldInfo.DeclaringType;
     }

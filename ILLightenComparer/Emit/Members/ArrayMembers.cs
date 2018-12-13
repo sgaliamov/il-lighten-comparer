@@ -12,8 +12,8 @@ namespace ILLightenComparer.Emit.Members
     {
         private ArrayFieldMember(FieldInfo fieldInfo) : base(fieldInfo)
         {
-            GetLengthMethod = MemberType.GetPropertyGetter(MethodName.ArrayLength);
-            GetItemMethod = MemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
+            GetLengthMethod = VariableType.GetPropertyGetter(MethodName.ArrayLength);
+            GetItemMethod = VariableType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
         }
 
         public bool LoadContext => false;
@@ -65,8 +65,8 @@ namespace ILLightenComparer.Emit.Members
     {
         private ArrayPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo)
         {
-            GetLengthMethod = MemberType.GetPropertyGetter(MethodName.ArrayLength);
-            GetItemMethod = MemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
+            GetLengthMethod = VariableType.GetPropertyGetter(MethodName.ArrayLength);
+            GetItemMethod = VariableType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
         }
 
         public bool LoadContext => false;

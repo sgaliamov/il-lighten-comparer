@@ -3,7 +3,7 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Emitters.Acceptors
 {
-    internal interface IAcceptor : IMember
+    internal interface IAcceptor : IVariable
     {
         ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext);
         ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg);

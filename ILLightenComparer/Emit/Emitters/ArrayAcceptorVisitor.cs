@@ -32,7 +32,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             var (countX, countY) = EmitLoadCounts(il, member);
 
-            EmitCheckForNegativeCount(il, countX, countY, member.MemberType);
+            EmitCheckForNegativeCount(il, countX, countY, member.VariableType);
 
             il.LoadConstant(0)
               .Store(typeof(int), 3, out var index)
@@ -53,9 +53,9 @@ namespace ILLightenComparer.Emit.Emitters
             return il;
         }
 
-        private void EmitCompare(ILEmitter il, IMember member, Label gotoNextMember)
+        private void EmitCompare(ILEmitter il, IVariable member, Label gotoNextMember)
         {
-            var acceptor = _converter.Convert(member.MemberType.GetElementType());
+            var acceptor = _converter.Convert(member.VariableType.GetElementType());
 
             acceptor.Accept(_callVisitor, il, gotoNextMember);
         }

@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il, Label gotoNextMember)
         {
-            var underlyingType = member.MemberType.GetUnderlyingType();
+            var underlyingType = member.VariableType.GetUnderlyingType();
             if (!underlyingType.IsValueType && !underlyingType.IsSealed)
             {
                 return EmitCallForDelayedCompareMethod(il, underlyingType, gotoNextMember);
@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IComparableAcceptor member, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.MemberType;
+            var memberType = member.VariableType;
             var underlyingType = memberType.GetUnderlyingType();
             if (!underlyingType.IsValueType && !underlyingType.IsSealed)
             {
@@ -44,7 +44,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IBasicAcceptor member, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.MemberType;
+            var memberType = member.VariableType;
             var compareToMethod = memberType.GetUnderlyingCompareToMethod()
                                   ?? throw new ArgumentException(
                                       $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");

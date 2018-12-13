@@ -2,9 +2,9 @@
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IMember
+    internal interface IVariable
     {
         Type DeclaringType { get; }
-        Type MemberType { get; }
+        Type VariableType { get; }
     }
 }
