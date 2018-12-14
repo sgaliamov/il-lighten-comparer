@@ -36,9 +36,9 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Comparable_Nullable_Struct()
         {
-            CompareObjectArrayOfNullable<ComparableStruct>();
+            CompareObjectArrayOfNullable<ComparableStruct<EnumSmall>>();
 
-            CompareStructArrayOfNullable<ComparableStruct>();
+            CompareStructArrayOfNullable<ComparableStruct<string>>();
         }
 
         [Fact]
@@ -52,9 +52,9 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Comparable_Struct()
         {
-            CompareObjectArrayOf<ComparableStruct>();
+            CompareObjectArrayOf<ComparableStruct<int>>();
 
-            CompareStructArrayOf<ComparableStruct>();
+            CompareStructArrayOf<ComparableStruct<decimal>>();
         }
 
         [Fact]

@@ -49,11 +49,12 @@
 
 - [x] create type only at the end, use builders when cycle is possible
 - [x] refactor visiting `IComparableAcceptor`
-- [ ] compare arrays
-- [ ] compare collection, do not iterate `IEnumerable`
+- [x] compare arrays
+- [ ] compare array of `ComparableStruct`
+- [ ] refactor variables loading
+- [ ] compare `IEnumarable`
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
-- [ ] refactor variables loading
 
 ## Phase 4 Settings
 

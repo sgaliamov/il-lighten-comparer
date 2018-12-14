@@ -1,15 +1,23 @@
 ﻿using System;
-using ILLightenComparer.Tests.Samples;
+using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
-    public struct ComparableStruct : IComparable<ComparableStruct>
+    public struct ComparableStruct<TMember> : IComparable<ComparableStruct<TMember>>
     {
-        public EnumBig Property { get; set; }
+        public TMember Field;
 
-        public int CompareTo(ComparableStruct other)
+        public TMember Property { get; set; }
+
+        public int CompareTo(ComparableStruct<TMember> other)
         {
-            return Property.CompareTo(other.Property);
+            var compare = Comparer<TMember>.Default.Compare(Field, other.Field);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            return Comparer<TMember>.Default.Compare(Property, other.Property);
         }
     }
 }
