@@ -11,7 +11,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 {
-    public sealed class CollectionObjectTests
+    public sealed class ClassArrayTests
     {
         [Fact]
         public void Compare_Array_Of_Arrays()
