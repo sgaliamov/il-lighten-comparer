@@ -38,6 +38,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         [Fact]
+        public void Compare_Array_Of_NullableEnums()
+        {
+            CompareArrayOf<EnumSmall?>();
+        }
+
+        [Fact]
         public void Compare_Array_Of_HierarchicalObjects()
         {
             CompareArrayOf(HierarchicalObject.Comparer);
