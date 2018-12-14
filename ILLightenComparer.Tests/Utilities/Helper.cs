@@ -30,7 +30,7 @@ namespace ILLightenComparer.Tests.Utilities
                    || ReferenceEquals(type, typeof(decimal));
         }
 
-        public static int CompareTo<T>(this IList<T> one, IList<T> other)
+        public static int Compare<T>(IList<T> one, IList<T> other)
         {
             if (one == null)
             {
@@ -112,7 +112,7 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static int CompareTo<T>(this IEnumerable<T> one, IEnumerable<T> other)
+        public static int Compare<T>(IEnumerable<T> one, IEnumerable<T> other)
         {
             if (one == null)
             {

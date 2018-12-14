@@ -8,6 +8,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
 
         public int Value { get; set; }
 
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
         private sealed class RelationalComparer : IComparer<NestedObject>
         {
             public int Compare(NestedObject x, NestedObject y)

@@ -30,7 +30,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
                     return -1;
                 }
 
-                return x.ArrayProperty.CompareTo(y.ArrayProperty);
+                return Helper.Compare(x.ArrayProperty, y.ArrayProperty);
             }
         }
     }

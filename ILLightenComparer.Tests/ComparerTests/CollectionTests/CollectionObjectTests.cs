@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using Force.DeepCloner;
@@ -25,7 +26,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var one = Create<sbyte>();
             var other = one.DeepClone();
 
-            Array.Sort(one, ArrayOfObjects<sbyte>.Comparer);
+            Array.Sort(one, ArrayOfObjects<sbyte>.GetComparer(Comparer<sbyte>.Default));
             Array.Sort(other, comparer);
 
             one.ShouldBeSameOrder(other);
@@ -39,7 +40,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var one = Create<ComparableChildObject>();
             var other = one.DeepClone();
 
-            Array.Sort(one, ArrayOfObjects<ComparableChildObject>.Comparer);
+            Array.Sort(one, ArrayOfObjects<ComparableChildObject>.GetComparer(Comparer<ComparableChildObject>.Default));
             Array.Sort(other, comparer);
 
             one.ShouldBeSameOrder(other);
@@ -53,8 +54,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var one = Create<HierarchicalObject>();
             var other = one.DeepClone();
 
+            Array.Sort(one, ArrayOfObjects<HierarchicalObject>.GetComparer(HierarchicalObject.Comparer));
             Array.Sort(other, comparer);
-            Array.Sort(one, HierarchicalObject.Comparer);
 
             one.ShouldBeSameOrder(other);
         }
@@ -67,7 +68,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var one = Create<long>();
             var other = one.DeepClone();
 
-            Array.Sort(one, ArrayOfObjects<long>.Comparer);
+            Array.Sort(one, ArrayOfObjects<long>.GetComparer(Comparer<long>.Default));
             Array.Sort(other, comparer);
 
             one.ShouldBeSameOrder(other);
@@ -81,13 +82,13 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var one = Create<string>();
             var other = one.DeepClone();
 
-            Array.Sort(one, ArrayOfObjects<string>.Comparer);
+            Array.Sort(one, ArrayOfObjects<string>.GetComparer(Comparer<string>.Default));
             Array.Sort(other, comparer);
 
             one.ShouldBeSameOrder(other);
         }
 
-        private const int ItemsCount = 100;
+        private const int ItemsCount = 5;
 
         private ArrayOfObjects<T>[] Create<T>()
         {
@@ -96,7 +97,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             {
                 objects[index] = new ArrayOfObjects<T>
                 {
-                    ArrayProperty = _fixture.CreateMany<T>(_random.Next(0, 5)).ToArray()
+                    ArrayProperty = _fixture.CreateMany<T>(_random.Next(0, 2)).ToArray()
                 };
             }
 

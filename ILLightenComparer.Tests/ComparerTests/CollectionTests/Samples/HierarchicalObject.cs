@@ -9,11 +9,16 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
 
         public NestedObject Nested { get; set; }
 
+        public override string ToString()
+        {
+            return Nested?.ToString() ?? "NULL";
+        }
+
         public sealed class RelationalComparer : IComparer<HierarchicalObject>, IComparer
         {
             public int Compare(object x, object y)
             {
-                return Compare(x as HierarchicalObject, y as HierarchicalObject);
+                return Compare((HierarchicalObject)x, (HierarchicalObject)y);
             }
 
             public int Compare(HierarchicalObject x, HierarchicalObject y)
