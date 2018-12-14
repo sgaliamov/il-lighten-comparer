@@ -82,10 +82,15 @@ namespace ILLightenComparer.Emit.Extensions
                    || ReferenceEquals(type, typeof(decimal));
         }
 
-        public static bool ImplementsGeneric(this Type type, Type generic, params Type[] typeArguments)
+        public static bool ImplementsGeneric(this Type type, Type generic)
         {
+            if (!generic.IsGenericType)
+            {
+                throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
+            }
+
             return type.GetInterfaces()
-                       .Any(t => t == generic.MakeGenericType(typeArguments));
+                       .Any(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
     }
 }

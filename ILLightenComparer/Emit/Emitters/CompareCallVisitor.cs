@@ -44,7 +44,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IArrayAcceptor member, ILEmitter il)
         {
             var variableType = member.VariableType;
-            var underlyingElementType = variableType.GetElementType().GetUnderlyingType();
+            var underlyingElementType = member.ElementType.GetUnderlyingType();
             if (underlyingElementType == typeof(string))
             {
                 return VisitString(member.DeclaringType, il);
@@ -60,15 +60,13 @@ namespace ILLightenComparer.Emit.Emitters
                 return VisitBasic(underlyingElementType, il);
             }
 
-            var isComparable = underlyingElementType.ImplementsGeneric(typeof(IComparable<>), underlyingElementType);
+            var isComparable = underlyingElementType.ImplementsGeneric(typeof(IComparable<>));
             if (isComparable)
             {
                 return VisitComparable(underlyingElementType, il);
             }
 
-            var isEnumerable = variableType.ImplementsGeneric(
-                typeof(IEnumerable<>),
-                underlyingElementType);
+            var isEnumerable = underlyingElementType.ImplementsGeneric(typeof(IEnumerable<>));
             if (isEnumerable)
             {
                 throw new NotSupportedException($"Nested collections {variableType} are not supported.");
