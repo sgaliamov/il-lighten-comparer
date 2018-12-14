@@ -72,7 +72,7 @@ namespace ILLightenComparer.Emit.Emitters
                 throw new NotSupportedException($"Nested collections {variableType} are not supported.");
             }
 
-            return VisitHierarchical(il, variableType);
+            return VisitHierarchical(il, underlyingElementType);
         }
 
         private ILEmitter VisitString(Type declaringType, ILEmitter il)

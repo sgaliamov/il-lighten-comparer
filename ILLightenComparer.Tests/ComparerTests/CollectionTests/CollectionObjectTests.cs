@@ -4,8 +4,6 @@ using AutoFixture;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
-using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
-using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -56,6 +54,9 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var other = one.DeepClone();
 
             Array.Sort(other, comparer);
+            Array.Sort(one, HierarchicalObject.Comparer);
+
+            one.ShouldBeSameOrder(other);
         }
 
         [Fact]
