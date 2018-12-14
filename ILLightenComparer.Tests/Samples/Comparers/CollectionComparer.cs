@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.Utilities
+namespace ILLightenComparer.Tests.Samples.Comparers
 {
     internal sealed class CollectionComparer<TCollection, TItem> : IComparer<TCollection>
         where TCollection : IEnumerable<TItem>
     {
-        private readonly IComparer<TItem> _comparer;
+        private readonly IComparer<TItem> _itemComparer;
 
-        public CollectionComparer(IComparer<TItem> comparer)
+        public CollectionComparer(IComparer<TItem> itemComparer)
         {
-            _comparer = comparer;
+            _itemComparer = itemComparer ?? Comparer<TItem>.Default;
         }
 
         public int Compare(TCollection x, TCollection y)
@@ -55,7 +55,7 @@ namespace ILLightenComparer.Tests.Utilities
                     var xCurrent = enumeratorX.Current;
                     var yCurrent = enumeratorY.Current;
 
-                    var compare = _comparer.Compare(xCurrent, yCurrent);
+                    var compare = _itemComparer.Compare(xCurrent, yCurrent);
                     if (compare != 0)
                     {
                         return compare;

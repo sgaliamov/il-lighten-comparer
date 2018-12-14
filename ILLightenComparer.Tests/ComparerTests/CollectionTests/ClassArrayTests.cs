@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using Force.DeepCloner;
-using ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.Samples;
+using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -40,7 +40,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_HierarchicalObjects()
         {
-            CompareArrayOf(HierarchicalObject.Comparer);
+            var nestedComparer = new SampleObjectComparer<int>();
+            var comparer = new SampleObjectComparer<SampleObject<int>>(nestedComparer);
+
+            CompareArrayOf(comparer);
         }
 
         [Fact]
@@ -68,8 +71,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var one = Create<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
-            var collectionComparer = new CollectionComparer<T[], T>(itemComparer ?? Comparer<T>.Default);
-            var comparison = SampleObject<T[]>.CreateComparer(collectionComparer);
+            var collectionComparer = new CollectionComparer<T[], T>(itemComparer);
+            var comparison = new SampleObjectComparer<T[]>(collectionComparer);
 
             Array.Sort(one, comparison);
             Array.Sort(other, comparer);
