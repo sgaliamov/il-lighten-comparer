@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Emitters.Members;
@@ -105,11 +106,10 @@ namespace ILLightenComparer.Emit.Emitters
             member.Load(_loader, il, Arg.X).Store(memberType, 0, out var nullableX);
             member.Load(_loader, il, Arg.Y).Store(memberType, 1, out var nullableY);
 
-            var hasValueMethod = memberType.GetPropertyGetter(MethodName.HasValue);
             var getValueMethod = memberType.GetPropertyGetter(MethodName.Value);
             var underlyingType = memberType.GetUnderlyingType();
 
-            CheckNullableValuesForNull(il, nullableX, nullableY, hasValueMethod, gotoNextMember);
+            il.CheckNullableValuesForNull(nullableX, nullableY, memberType, gotoNextMember);
 
             if (loadContext)
             {
@@ -132,29 +132,6 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             return il;
-        }
-
-        private static void CheckNullableValuesForNull(
-            ILEmitter il,
-            LocalBuilder nullableX,
-            LocalBuilder nullableY,
-            MethodInfo hasValueMethod,
-            Label ifBothNull)
-        {
-            il.LoadAddress(nullableY)
-              .Call(hasValueMethod)
-              .Store(typeof(bool), out var secondHasValue)
-              .LoadAddress(nullableX)
-              .Call(hasValueMethod)
-              .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Branch(OpCodes.Brfalse_S, ifBothNull)
-              .Return(-1)
-              .MarkLabel(ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Branch(OpCodes.Brtrue_S, out var getValues)
-              .Return(1)
-              .MarkLabel(getValues);
         }
     }
 }
