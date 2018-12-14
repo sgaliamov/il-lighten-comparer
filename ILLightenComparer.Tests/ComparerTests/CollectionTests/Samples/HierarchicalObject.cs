@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
 {
-    public class HierarchicalObject
+    public sealed class HierarchicalObject
     {
         public static RelationalComparer Comparer { get; } = new RelationalComparer();
 

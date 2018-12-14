@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
@@ -43,36 +42,28 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IArrayAcceptor member, ILEmitter il)
         {
-            var variableType = member.VariableType;
             var underlyingElementType = member.ElementType.GetUnderlyingType();
-            if (underlyingElementType == typeof(string))
-            {
-                return VisitString(member.DeclaringType, il);
-            }
 
-            if (underlyingElementType.IsSmallIntegral())
+            switch (underlyingElementType.GetComparisonType())
             {
-                return VisitIntegral(il);
-            }
+                case ComparisonType.Strings:
+                    return VisitString(member.DeclaringType, il);
 
-            if (underlyingElementType.IsPrimitive())
-            {
-                return VisitBasic(underlyingElementType, il);
-            }
+                case ComparisonType.Integrals:
+                    return VisitIntegral(il);
 
-            var isComparable = underlyingElementType.ImplementsGeneric(typeof(IComparable<>));
-            if (isComparable)
-            {
-                return VisitComparable(underlyingElementType, il);
-            }
+                case ComparisonType.Primitives:
+                    return VisitBasic(underlyingElementType, il);
 
-            var isEnumerable = underlyingElementType.ImplementsGeneric(typeof(IEnumerable<>));
-            if (isEnumerable)
-            {
-                throw new NotSupportedException($"Nested collections {variableType} are not supported.");
-            }
+                case ComparisonType.Comparables:
+                    return VisitComparable(underlyingElementType, il);
 
-            return VisitHierarchical(il, underlyingElementType);
+                case ComparisonType.Hierarchicals:
+                    return VisitHierarchical(il, underlyingElementType);
+
+                default:
+                    throw new NotSupportedException($"{underlyingElementType.DisplayName()} is not supported.");
+            }
         }
 
         private ILEmitter VisitString(Type declaringType, ILEmitter il)

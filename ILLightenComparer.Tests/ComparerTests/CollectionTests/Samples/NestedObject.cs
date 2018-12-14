@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples
 {
-    public sealed class NestedObject
+    public class NestedObject
     {
         public static IComparer<NestedObject> Comparer { get; } = new RelationalComparer();
 

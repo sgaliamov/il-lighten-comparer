@@ -93,42 +93,42 @@ namespace ILLightenComparer.Emit.Extensions
                        .Any(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
 
-        public static Case GetCase(this Type type)
+        public static ComparisonType GetComparisonType(this Type type)
         {
             if (type == typeof(string))
             {
-                return Case.String;
+                return ComparisonType.Strings;
             }
 
             if (type.IsSmallIntegral())
             {
-                return Case.Integral;
+                return ComparisonType.Integrals;
             }
 
             if (type.IsPrimitive())
             {
-                return Case.Primitive;
+                return ComparisonType.Primitives;
             }
 
             var isComparable = type.ImplementsGeneric(typeof(IComparable<>));
             if (isComparable)
             {
-                return Case.Comparable;
+                return ComparisonType.Comparables;
             }
 
             var isList = type.ImplementsGeneric(typeof(IList<>));
             if (isList)
             {
-                return Case.Array;
+                return ComparisonType.Arrays;
             }
 
             var isEnumerable = type.ImplementsGeneric(typeof(IEnumerable<>));
             if (isEnumerable)
             {
-                return Case.Enumerable;
+                return ComparisonType.Enumerables;
             }
 
-            return Case.Hierarchical;
+            return ComparisonType.Hierarchicals;
         }
     }
 }

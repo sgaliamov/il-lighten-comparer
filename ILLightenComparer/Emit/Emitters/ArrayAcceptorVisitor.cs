@@ -69,11 +69,16 @@ namespace ILLightenComparer.Emit.Emitters
             LocalBuilder y,
             LocalBuilder index)
         {
+            var comparisonType = member.ElementType.GetComparisonType();
+            if (comparisonType == ComparisonType.Hierarchicals)
+            {
+                il.LoadArgument(Arg.Context);
+            }
+
             il.LoadLocal(x)
               .LoadLocal(index)
               .Call(member.GetItemMethod);
-
-            if (member.ElementType.IsValueType && !member.ElementType.IsSmallIntegral())
+            if (comparisonType == ComparisonType.Primitives)
             {
                 il.Store(member.ElementType, LocalX, out var item)
                   .LoadAddress(item);
@@ -82,6 +87,12 @@ namespace ILLightenComparer.Emit.Emitters
             il.LoadLocal(y)
               .LoadLocal(index)
               .Call(member.GetItemMethod);
+
+            if (comparisonType == ComparisonType.Hierarchicals)
+            {
+                il.LoadArgument(Arg.SetX)
+                  .LoadArgument(Arg.SetY);
+            }
         }
 
         private static void EmitCheckIfLoopsAreDone(
