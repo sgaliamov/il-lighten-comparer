@@ -5,12 +5,13 @@ using AutoFixture;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CollectionTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
+using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 {
-    public class CollectionObjectTests
+    public sealed class CollectionObjectTests
     {
         [Fact]
         public void Compare_Array_Of_Arrays()
@@ -21,87 +22,67 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Bytes()
         {
-            var comparer = _builder.For<ArrayOfObjects<sbyte>>().GetComparer();
-
-            var one = Create<sbyte>();
-            var other = one.DeepClone();
-
-            Array.Sort(one, ArrayOfObjects<sbyte>.GetComparer(Comparer<sbyte>.Default));
-            Array.Sort(other, comparer);
-
-            one.ShouldBeSameOrder(other);
+            CompareArrayOf<byte>();
         }
 
         [Fact]
         public void Compare_Array_Of_Comparable_Objects()
         {
-            var comparer = _builder.For<ArrayOfObjects<ComparableChildObject>>().GetComparer();
+            CompareArrayOf<ComparableChildObject>();
+        }
 
-            var one = Create<ComparableChildObject>();
-            var other = one.DeepClone();
-
-            Array.Sort(one, ArrayOfObjects<ComparableChildObject>.GetComparer(Comparer<ComparableChildObject>.Default));
-            Array.Sort(other, comparer);
-
-            one.ShouldBeSameOrder(other);
+        [Fact]
+        public void Compare_Array_Of_Enums()
+        {
+            CompareArrayOf<EnumSmall>();
         }
 
         [Fact]
         public void Compare_Array_Of_HierarchicalObjects()
         {
-            var comparer = _builder.For<ArrayOfObjects<HierarchicalObject>>().GetComparer();
-
-            var one = Create<HierarchicalObject>();
-            var other = one.DeepClone();
-
-            Array.Sort(one, ArrayOfObjects<HierarchicalObject>.GetComparer(HierarchicalObject.Comparer));
-            Array.Sort(other, comparer);
-
-            one.ShouldBeSameOrder(other);
+            CompareArrayOf(HierarchicalObject.Comparer);
         }
 
         [Fact]
         public void Compare_Array_Of_Longs()
         {
-            var comparer = _builder.For<ArrayOfObjects<long>>().GetComparer();
-
-            var one = Create<long>();
-            var other = one.DeepClone();
-
-            Array.Sort(one, ArrayOfObjects<long>.GetComparer(Comparer<long>.Default));
-            Array.Sort(other, comparer);
-
-            one.ShouldBeSameOrder(other);
+            CompareArrayOf<long>();
         }
 
         [Fact]
         public void Compare_Array_Of_Strings()
         {
-            var comparer = _builder.For<ArrayOfObjects<string>>().GetComparer();
+            CompareArrayOf<string>();
+        }
 
-            var one = Create<string>();
+        private void CompareArrayOf<T>(IComparer<T> itemComparer = null)
+        {
+            var comparer = _builder.For<ArrayOfObjects<T>>().GetComparer();
+
+            var one = Create<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
-            Array.Sort(one, ArrayOfObjects<string>.GetComparer(Comparer<string>.Default));
+            Array.Sort(one, ArrayOfObjects<T>.GetComparer(itemComparer ?? Comparer<T>.Default));
             Array.Sort(other, comparer);
 
             one.ShouldBeSameOrder(other);
         }
 
-        private const int ItemsCount = 5;
+        private const int ItemsCount = 100;
 
-        private ArrayOfObjects<T>[] Create<T>()
+        private IEnumerable<ArrayOfObjects<T>> Create<T>(int itemsCount)
         {
-            var objects = new ArrayOfObjects<T>[ItemsCount];
-            for (var index = 0; index < objects.Length; index++)
+            for (var index = 0; index < itemsCount; index++)
             {
-                objects[index] = new ArrayOfObjects<T>
+                var array = _random.NextDouble() < 0.2
+                                ? null
+                                : _fixture.CreateMany<T>(_random.Next(0, 5)).ToArray();
+
+                yield return new ArrayOfObjects<T>
                 {
-                    ArrayProperty = _fixture.CreateMany<T>(_random.Next(0, 2)).ToArray()
+                    ArrayProperty = array
                 };
             }
-
-            return objects;
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
