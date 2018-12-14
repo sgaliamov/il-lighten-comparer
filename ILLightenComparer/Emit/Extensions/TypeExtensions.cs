@@ -118,9 +118,13 @@ namespace ILLightenComparer.Emit.Extensions
                 return ComparisonType.Comparables;
             }
 
-            var isList = type.ImplementsGeneric(typeof(IList<>));
-            if (isList)
+            if (type.IsArray)
             {
+                if (type.GetArrayRank() > 1)
+                {
+                    return ComparisonType.NotSupported;
+                }
+
                 return ComparisonType.Arrays;
             }
 

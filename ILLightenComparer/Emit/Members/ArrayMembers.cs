@@ -57,10 +57,12 @@ namespace ILLightenComparer.Emit.Members
             }
 
             var underlyingType = info.FieldType.GetUnderlyingType();
+            if (underlyingType.IsArray && underlyingType.GetArrayRank() == 1)
+            {
+                return new ArrayFieldMember(info);
+            }
 
-            return underlyingType.IsArray
-                       ? new ArrayFieldMember(info)
-                       : null;
+            return null;
         }
     }
 
@@ -112,10 +114,12 @@ namespace ILLightenComparer.Emit.Members
             }
 
             var underlyingType = info.PropertyType.GetUnderlyingType();
+            if (underlyingType.IsArray && underlyingType.GetArrayRank() == 1)
+            {
+                return new ArrayPropertyMember(info);
+            }
 
-            return underlyingType.IsArray
-                       ? new ArrayPropertyMember(info)
-                       : null;
+            return null;
         }
     }
 }

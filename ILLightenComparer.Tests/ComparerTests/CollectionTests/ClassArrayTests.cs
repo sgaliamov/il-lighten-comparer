@@ -16,7 +16,9 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Arrays()
         {
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[,]>>().GetComparer());
         }
 
         [Fact]
@@ -66,16 +68,16 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private void CompareArrayOf<T>(IComparer<T> itemComparer = null)
         {
-            var comparer = _builder.For<SampleObject<T[]>>().GetComparer();
+            var target = _builder.For<SampleObject<T[]>>().GetComparer();
 
             var one = Create<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
             var collectionComparer = new CollectionComparer<T[], T>(itemComparer);
-            var comparison = new SampleObjectComparer<T[]>(collectionComparer);
+            var referenceComparer = new SampleObjectComparer<T[]>(collectionComparer);
 
-            Array.Sort(one, comparison);
-            Array.Sort(other, comparer);
+            Array.Sort(one, referenceComparer);
+            Array.Sort(other, target);
 
             one.ShouldBeSameOrder(other);
         }

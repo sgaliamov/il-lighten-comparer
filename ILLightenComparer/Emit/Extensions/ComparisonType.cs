@@ -2,6 +2,7 @@
 {
     internal enum ComparisonType : byte
     {
+        NotSupported = 0,
         Strings = 1,
         Integrals = 2,
         Primitives = 3,
