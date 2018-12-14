@@ -53,6 +53,7 @@
 - [ ] compare collection, do not iterate `IEnumerable`
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
+- [ ] refactor variables loading
 
 ## Phase 4 Settings
 

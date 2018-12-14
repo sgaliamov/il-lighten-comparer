@@ -46,7 +46,14 @@ namespace ILLightenComparer.Emit.Emitters
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            EmitLoadValues(il, member, x, y, index, gotoNextMember);
+            if (member.ElementType.IsNullable())
+            {
+                EmitLoadNullableValues(il, member, x, y, index, gotoNextMember);
+            }
+            else
+            {
+                EmitLoadValues(il, member, x, y, index);
+            }
 
             member.Accept(_callVisitor, il)
                   .DefineLabel(out var continueLoop)
@@ -68,6 +75,42 @@ namespace ILLightenComparer.Emit.Emitters
             IArrayAcceptor member,
             LocalBuilder x,
             LocalBuilder y,
+            LocalBuilder index)
+        {
+            var elementType = member.ElementType;
+            var underlyingType = elementType.GetUnderlyingType();
+            var comparisonType = elementType.GetComparisonType();
+
+            if (comparisonType == ComparisonType.Hierarchicals)
+            {
+                il.LoadArgument(Arg.Context);
+            }
+
+            il.LoadLocal(x)
+              .LoadLocal(index)
+              .Call(member.GetItemMethod);
+            if (comparisonType == ComparisonType.Primitives)
+            {
+                il.Store(underlyingType, LocalX, out var item)
+                  .LoadAddress(item);
+            }
+
+            il.LoadLocal(y)
+              .LoadLocal(index)
+              .Call(member.GetItemMethod);
+
+            if (comparisonType == ComparisonType.Hierarchicals)
+            {
+                il.LoadArgument(Arg.SetX)
+                  .LoadArgument(Arg.SetY);
+            }
+        }
+
+        private static void EmitLoadNullableValues(
+            ILEmitter il,
+            IArrayAcceptor member,
+            LocalBuilder x,
+            LocalBuilder y,
             LocalBuilder index,
             Label gotoNextMember)
         {
@@ -75,52 +118,30 @@ namespace ILLightenComparer.Emit.Emitters
             var underlyingType = elementType.GetUnderlyingType();
             var comparisonType = elementType.GetComparisonType();
 
-            if (elementType.IsNullable())
+            il.LoadLocal(x)
+              .LoadLocal(index)
+              .Call(member.GetItemMethod)
+              .Store(elementType, LocalX, out var nullableX);
+            il.LoadLocal(y)
+              .LoadLocal(index)
+              .Call(member.GetItemMethod)
+              .Store(elementType, LocalY, out var nullableY);
+
+            il.CheckNullableValuesForNull(nullableX, nullableY, elementType, gotoNextMember);
+
+            if (comparisonType == ComparisonType.Hierarchicals)
             {
-                il.LoadLocal(x)
-                  .LoadLocal(index)
-                  .Call(member.GetItemMethod)
-                  .Store(elementType, LocalX, out var nullableX);
-                il.LoadLocal(y)
-                  .LoadLocal(index)
-                  .Call(member.GetItemMethod)
-                  .Store(elementType, LocalY, out var nullableY);
-
-                il.CheckNullableValuesForNull(nullableX, nullableY, elementType, gotoNextMember);
-
-                if (comparisonType == ComparisonType.Hierarchicals)
-                {
-                    il.LoadArgument(Arg.Context);
-                }
-
-                var getValueMethod = elementType.GetPropertyGetter(MethodName.Value);
-                il.LoadAddress(nullableX).Call(getValueMethod);
-                if (comparisonType == ComparisonType.Primitives)
-                {
-                    il.Store(underlyingType, out var address).LoadAddress(address);
-                }
-                il.LoadAddress(nullableY).Call(getValueMethod);
+                il.LoadArgument(Arg.Context);
             }
-            else
+
+            var getValueMethod = elementType.GetPropertyGetter(MethodName.Value);
+            il.LoadAddress(nullableX).Call(getValueMethod);
+            if (comparisonType == ComparisonType.Primitives)
             {
-                if (comparisonType == ComparisonType.Hierarchicals)
-                {
-                    il.LoadArgument(Arg.Context);
-                }
-
-                il.LoadLocal(x)
-                  .LoadLocal(index)
-                  .Call(member.GetItemMethod);
-                if (comparisonType == ComparisonType.Primitives)
-                {
-                    il.Store(underlyingType, LocalX, out var item)
-                      .LoadAddress(item);
-                }
-
-                il.LoadLocal(y)
-                  .LoadLocal(index)
-                  .Call(member.GetItemMethod);
+                il.Store(underlyingType, out var address).LoadAddress(address);
             }
+
+            il.LoadAddress(nullableY).Call(getValueMethod);
 
             if (comparisonType == ComparisonType.Hierarchicals)
             {
