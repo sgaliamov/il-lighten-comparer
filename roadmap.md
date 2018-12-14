@@ -83,7 +83,7 @@
 - [ ] optimization for a last member - just return its result
 - [ ] change behavior then types are not matched but castable
 - [ ] do reference comparison only once
-- [ ] use Br_S when possible
+- [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?
 - [ ] support internal classes to compare?
 

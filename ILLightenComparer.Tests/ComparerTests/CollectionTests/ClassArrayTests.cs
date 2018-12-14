@@ -40,7 +40,13 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         [Fact]
-        public void Compare_Array_Of_HierarchicalObjects()
+        public void Compare_Array_Of_Longs()
+        {
+            CompareArrayOf<long>();
+        }
+
+        [Fact]
+        public void Compare_Array_Of_Nested_Objects()
         {
             var nestedComparer = new SampleObjectComparer<int>();
             var comparer = new SampleObjectComparer<SampleObject<int>>(nestedComparer);
@@ -49,9 +55,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         [Fact]
-        public void Compare_Array_Of_Longs()
+        public void Compare_Array_Of_Nullable_Structs()
         {
-            CompareArrayOf<long>();
+            var comparer = new SampleStructComparer<int>();
+
+            CompareArrayOfNullable(comparer);
         }
 
         [Fact]
@@ -64,6 +72,14 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Strings()
         {
             CompareArrayOf<string>();
+        }
+
+        [Fact]
+        public void Compare_Array_Of_Structs()
+        {
+            var comparer = new SampleStructComparer<int>();
+
+            CompareArrayOf(comparer);
         }
 
         private void CompareArrayOf<T>(IComparer<T> itemComparer = null)

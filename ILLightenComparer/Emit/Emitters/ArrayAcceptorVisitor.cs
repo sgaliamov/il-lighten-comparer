@@ -74,10 +74,6 @@ namespace ILLightenComparer.Emit.Emitters
             var elementType = member.ElementType;
             var underlyingType = elementType.GetUnderlyingType();
             var comparisonType = elementType.GetComparisonType();
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.Context);
-            }
 
             if (elementType.IsNullable())
             {
@@ -92,6 +88,11 @@ namespace ILLightenComparer.Emit.Emitters
 
                 il.CheckNullableValuesForNull(nullableX, nullableY, elementType, gotoNextMember);
 
+                if (comparisonType == ComparisonType.Hierarchicals)
+                {
+                    il.LoadArgument(Arg.Context);
+                }
+
                 var getValueMethod = elementType.GetPropertyGetter(MethodName.Value);
                 il.LoadAddress(nullableX).Call(getValueMethod);
                 if (comparisonType == ComparisonType.Primitives)
@@ -102,6 +103,11 @@ namespace ILLightenComparer.Emit.Emitters
             }
             else
             {
+                if (comparisonType == ComparisonType.Hierarchicals)
+                {
+                    il.LoadArgument(Arg.Context);
+                }
+
                 il.LoadLocal(x)
                   .LoadLocal(index)
                   .Call(member.GetItemMethod);
