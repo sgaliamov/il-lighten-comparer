@@ -108,7 +108,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         private readonly IContextBuilder _builder = new ComparersBuilder()
             .DefineDefaultConfiguration(new ComparerSettings
             {
-                IncludeFields = true
+                IncludeFields = true,
+                DetectCycles = false
             });
 
         private readonly Random _random = new Random();

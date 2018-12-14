@@ -95,6 +95,8 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static ComparisonType GetComparisonType(this Type type)
         {
+            type = type.GetUnderlyingType();
+
             if (type == typeof(string))
             {
                 return ComparisonType.Strings;
