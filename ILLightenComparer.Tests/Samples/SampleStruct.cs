@@ -2,18 +2,18 @@
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleObject<TMember>
+    public struct SampleStruct<TMember>
     {
         public TMember Field;
 
         public TMember Property { get; set; }
 
-        public static IComparer<SampleObject<TMember>> CreateComparer(IComparer<TMember> comparer)
+        public static IComparer<SampleStruct<TMember>> CreateComparer(IComparer<TMember> comparer)
         {
             return new RelationalComparer(comparer);
         }
 
-        private sealed class RelationalComparer : IComparer<SampleObject<TMember>>
+        private sealed class RelationalComparer : IComparer<SampleStruct<TMember>>
         {
             private readonly IComparer<TMember> _memberComparer;
 
@@ -22,23 +22,8 @@ namespace ILLightenComparer.Tests.Samples
                 _memberComparer = memberComparer;
             }
 
-            public int Compare(SampleObject<TMember> x, SampleObject<TMember> y)
+            public int Compare(SampleStruct<TMember> x, SampleStruct<TMember> y)
             {
-                if (ReferenceEquals(x, y))
-                {
-                    return 0;
-                }
-
-                if (ReferenceEquals(null, y))
-                {
-                    return 1;
-                }
-
-                if (ReferenceEquals(null, x))
-                {
-                    return -1;
-                }
-
                 var compare = _memberComparer.Compare(x.Field, y.Field);
                 if (compare != 0)
                 {

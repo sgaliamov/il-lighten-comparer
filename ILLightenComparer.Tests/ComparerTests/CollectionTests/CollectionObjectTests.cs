@@ -16,7 +16,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Arrays()
         {
-            Assert.Throws<NotSupportedException>(() => _builder.For<ArrayOfObjects<int[]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[]>>().GetComparer());
         }
 
         [Fact]
@@ -38,12 +38,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         [Fact]
-        public void Compare_Array_Of_NullableEnums()
-        {
-            CompareArrayOf<EnumSmall?>();
-        }
-
-        [Fact]
         public void Compare_Array_Of_HierarchicalObjects()
         {
             CompareArrayOf(HierarchicalObject.Comparer);
@@ -56,6 +50,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         [Fact]
+        public void Compare_Array_Of_NullableEnums()
+        {
+            CompareArrayOfNullable<EnumSmall>();
+        }
+
+        [Fact]
         public void Compare_Array_Of_Strings()
         {
             CompareArrayOf<string>();
@@ -63,30 +63,44 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private void CompareArrayOf<T>(IComparer<T> itemComparer = null)
         {
-            var comparer = _builder.For<ArrayOfObjects<T>>().GetComparer();
+            var comparer = _builder.For<SampleObject<T[]>>().GetComparer();
 
             var one = Create<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
-            Array.Sort(one, ArrayOfObjects<T>.GetComparer(itemComparer ?? Comparer<T>.Default));
+            var collectionComparer = new CollectionComparer<T[], T>(itemComparer ?? Comparer<T>.Default);
+            var comparison = SampleObject<T[]>.CreateComparer(collectionComparer);
+
+            Array.Sort(one, comparison);
             Array.Sort(other, comparer);
 
             one.ShouldBeSameOrder(other);
         }
 
+        private void CompareArrayOfNullable<T>(IComparer<T> itemComparer = null) where T : struct
+        {
+            var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
+
+            CompareArrayOf(nullableComparer);
+        }
+
         private const int ItemsCount = 100;
 
-        private IEnumerable<ArrayOfObjects<T>> Create<T>(int itemsCount)
+        private IEnumerable<SampleObject<T[]>> Create<T>(int itemsCount)
         {
+            T[] Create()
+            {
+                return _random.NextDouble() < 0.2
+                           ? null
+                           : _fixture.CreateMany<T>(_random.Next(0, 5)).ToArray();
+            }
+
             for (var index = 0; index < itemsCount; index++)
             {
-                var array = _random.NextDouble() < 0.2
-                                ? null
-                                : _fixture.CreateMany<T>(_random.Next(0, 5)).ToArray();
-
-                yield return new ArrayOfObjects<T>
+                yield return new SampleObject<T[]>
                 {
-                    ArrayProperty = array
+                    Property = Create(),
+                    Field = Create()
                 };
             }
         }
