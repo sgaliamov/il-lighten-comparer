@@ -9,7 +9,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class ArrayFieldVariable : FieldVariable, IArrayAcceptor, IArgumentsVariable
+    internal sealed class ArrayFieldVariable : FieldVariable, IArrayAcceptor, IArgumentVariable
     {
         private ArrayFieldVariable(FieldInfo fieldInfo) : base(fieldInfo)
         {
@@ -66,7 +66,7 @@ namespace ILLightenComparer.Emit.Variables
         }
     }
 
-    internal sealed class ArrayPropertyVariable : PropertyVariable, IArrayAcceptor, IArgumentsVariable
+    internal sealed class ArrayPropertyVariable : PropertyVariable, IArrayAcceptor, IArgumentVariable
     {
         private ArrayPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo)
         {

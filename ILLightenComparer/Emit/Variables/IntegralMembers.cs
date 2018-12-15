@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class IntegralFieldVariable : FieldVariable, IIntegralAcceptor, IArgumentsVariable
+    internal sealed class IntegralFieldVariable : FieldVariable, IIntegralAcceptor, IArgumentVariable
     {
         private IntegralFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
@@ -50,7 +50,7 @@ namespace ILLightenComparer.Emit.Variables
         }
     }
 
-    internal sealed class IntegralPropertyVariable : PropertyVariable, IIntegralAcceptor, IArgumentsVariable
+    internal sealed class IntegralPropertyVariable : PropertyVariable, IIntegralAcceptor, IArgumentVariable
     {
         private IntegralPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 

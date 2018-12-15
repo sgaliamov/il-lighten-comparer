@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class HierarchicalFieldVariable : FieldVariable, IHierarchicalAcceptor, IArgumentsVariable
+    internal sealed class HierarchicalFieldVariable : FieldVariable, IHierarchicalAcceptor, IArgumentVariable
     {
         private HierarchicalFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
@@ -50,7 +50,7 @@ namespace ILLightenComparer.Emit.Variables
         }
     }
 
-    internal sealed class HierarchicalPropertyVariable : PropertyVariable, IHierarchicalAcceptor, IArgumentsVariable
+    internal sealed class HierarchicalPropertyVariable : PropertyVariable, IHierarchicalAcceptor, IArgumentVariable
     {
         private HierarchicalPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 

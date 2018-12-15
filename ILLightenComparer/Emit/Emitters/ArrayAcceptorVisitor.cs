@@ -37,8 +37,6 @@ namespace ILLightenComparer.Emit.Emitters
 
             var (countX, countY) = EmitLoadCounts(il, member, x, y);
 
-            EmitCheckForNegativeCount(il, countX, countY, member.VariableType);
-
             il.LoadConstant(0)
               .Store(typeof(int), LocalIndex, out var index)
               .DefineLabel(out var loopStart)
@@ -191,6 +189,8 @@ namespace ILLightenComparer.Emit.Emitters
               .LoadLocal(y)
               .Call(member.GetLengthMethod)
               .Store(typeof(int), LocalCountY, out var countY);
+
+            EmitCheckForNegativeCount(il, countX, countY, member.VariableType);
 
             return (countX, countY);
         }

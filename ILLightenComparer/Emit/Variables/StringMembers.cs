@@ -6,7 +6,7 @@ using ILLightenComparer.Emit.Emitters.Variables;
 
 namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class StringFieldVariable : FieldVariable, IStringAcceptor, IArgumentsVariable
+    internal sealed class StringFieldVariable : FieldVariable, IStringAcceptor, IArgumentVariable
     {
         private StringFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Emit.Variables
         }
     }
 
-    internal sealed class StringPropertyVariable : PropertyVariable, IStringAcceptor, IArgumentsVariable
+    internal sealed class StringPropertyVariable : PropertyVariable, IStringAcceptor, IArgumentVariable
     {
         private StringPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 

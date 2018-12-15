@@ -2,5 +2,8 @@
 
 namespace ILLightenComparer.Emit.Emitters.Variables
 {
-    internal interface IBasicVariable : IAcceptor { }
+    internal interface IArgumentVariable : IAcceptor
+    {
+        bool LoadContext { get; }
+    }
 }

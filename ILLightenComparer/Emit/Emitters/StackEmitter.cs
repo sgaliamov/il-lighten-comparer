@@ -15,20 +15,7 @@ namespace ILLightenComparer.Emit.Emitters
             _loader = loader;
         }
 
-        public ILEmitter Visit(IBasicVariable member, ILEmitter il, Label gotoNextMember)
-        {
-            var memberType = member.VariableType;
-            if (memberType.IsNullable())
-            {
-                return LoadNullableMembers(il, true, false, member, gotoNextMember);
-            }
-
-            member.LoadAddress(_loader, il, Arg.X);
-
-            return member.Load(_loader, il, Arg.Y);
-        }
-
-        public ILEmitter Visit(IArgumentsVariable variable, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IArgumentVariable variable, ILEmitter il, Label gotoNextMember)
         {
             var memberType = variable.VariableType;
             if (memberType.IsNullable())
@@ -64,7 +51,14 @@ namespace ILLightenComparer.Emit.Emitters
             var underlyingType = memberType.GetUnderlyingType();
             if (underlyingType.IsValueType)
             {
-                return Visit((IBasicVariable)variable, il, gotoNextMember);
+                if (memberType.IsNullable())
+                {
+                    return LoadNullableMembers(il, true, false, variable, gotoNextMember);
+                }
+
+                variable.LoadAddress(_loader, il, Arg.X);
+
+                return variable.Load(_loader, il, Arg.Y);
             }
 
             if (underlyingType.IsSealed)

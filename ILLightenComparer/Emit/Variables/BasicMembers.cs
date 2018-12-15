@@ -7,7 +7,8 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class BasicFieldVariable : FieldVariable, IBasicAcceptor, IBasicVariable
+    internal sealed class BasicFieldVariable :
+        FieldVariable, IBasicAcceptor, IComparableVariable
     {
         private BasicFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
@@ -48,7 +49,8 @@ namespace ILLightenComparer.Emit.Variables
         }
     }
 
-    internal sealed class BasicPropertyVariable : PropertyVariable, IBasicAcceptor, IBasicVariable
+    internal sealed class BasicPropertyVariable :
+        PropertyVariable, IBasicAcceptor, IComparableVariable
     {
         private BasicPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
