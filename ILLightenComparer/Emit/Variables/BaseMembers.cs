@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Variables;
 
-namespace ILLightenComparer.Emit.Members
+namespace ILLightenComparer.Emit.Variables
 {
     internal abstract class PropertyVariable : IPropertyVariable
     {

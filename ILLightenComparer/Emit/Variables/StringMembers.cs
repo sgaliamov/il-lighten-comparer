@@ -1,16 +1,16 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
-using ILLightenComparer.Emit.Emitters.Members;
-using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Emitters.Variables;
 
-namespace ILLightenComparer.Emit.Members
+namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class ComparableFieldVariable : FieldVariable, IComparableAcceptor, IComparableVariable
+    internal sealed class StringFieldVariable : FieldVariable, IStringAcceptor, IArgumentsVariable
     {
-        private ComparableFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
+        private StringFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
+
+        public bool LoadContext => false;
 
         public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
@@ -37,27 +37,20 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static ComparableFieldVariable Create(MemberInfo memberInfo)
+        public static StringFieldVariable Create(MemberInfo memberInfo)
         {
-            var info = memberInfo as FieldInfo;
-            if (info == null)
-            {
-                return null;
-            }
-
-            var underlyingType = info.FieldType.GetUnderlyingType();
-
-            var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>));
-
-            return isComparable
-                       ? new ComparableFieldVariable(info)
+            return memberInfo is FieldInfo info
+                   && info.FieldType == typeof(string)
+                       ? new StringFieldVariable(info)
                        : null;
         }
     }
 
-    internal sealed class ComparablePropertyVariable : PropertyVariable, IComparableAcceptor, IComparableVariable
+    internal sealed class StringPropertyVariable : PropertyVariable, IStringAcceptor, IArgumentsVariable
     {
-        private ComparablePropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        private StringPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
+
+        public bool LoadContext => false;
 
         public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
@@ -84,20 +77,11 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static ComparablePropertyVariable Create(MemberInfo memberInfo)
+        public static StringPropertyVariable Create(MemberInfo memberInfo)
         {
-            var info = memberInfo as PropertyInfo;
-            if (info == null)
-            {
-                return null;
-            }
-
-            var underlyingType = info.PropertyType.GetUnderlyingType();
-
-            var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>));
-
-            return isComparable
-                       ? new ComparablePropertyVariable(info)
+            return memberInfo is PropertyInfo info
+                   && info.PropertyType == typeof(string)
+                       ? new StringPropertyVariable(info)
                        : null;
         }
     }

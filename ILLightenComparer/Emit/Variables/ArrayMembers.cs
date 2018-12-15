@@ -3,11 +3,11 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
-namespace ILLightenComparer.Emit.Members
+namespace ILLightenComparer.Emit.Variables
 {
     internal sealed class ArrayFieldVariable : FieldVariable, IArrayAcceptor, IArgumentsVariable
     {

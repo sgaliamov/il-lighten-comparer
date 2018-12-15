@@ -2,13 +2,14 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Variables;
+using ILLightenComparer.Emit.Extensions;
 
-namespace ILLightenComparer.Emit.Members
+namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class StringFieldVariable : FieldVariable, IStringAcceptor, IArgumentsVariable
+    internal sealed class IntegralFieldVariable : FieldVariable, IIntegralAcceptor, IArgumentsVariable
     {
-        private StringFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
+        private IntegralFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
         public bool LoadContext => false;
 
@@ -37,18 +38,21 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static StringFieldVariable Create(MemberInfo memberInfo)
+        public static IntegralFieldVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is FieldInfo info
-                   && info.FieldType == typeof(string)
-                       ? new StringFieldVariable(info)
+                   && info
+                      .FieldType
+                      .GetUnderlyingType()
+                      .IsSmallIntegral()
+                       ? new IntegralFieldVariable(info)
                        : null;
         }
     }
 
-    internal sealed class StringPropertyVariable : PropertyVariable, IStringAcceptor, IArgumentsVariable
+    internal sealed class IntegralPropertyVariable : PropertyVariable, IIntegralAcceptor, IArgumentsVariable
     {
-        private StringPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        private IntegralPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public bool LoadContext => false;
 
@@ -77,11 +81,14 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static StringPropertyVariable Create(MemberInfo memberInfo)
+        public static IntegralPropertyVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is PropertyInfo info
-                   && info.PropertyType == typeof(string)
-                       ? new StringPropertyVariable(info)
+                   && info
+                      .PropertyType
+                      .GetUnderlyingType()
+                      .IsSmallIntegral()
+                       ? new IntegralPropertyVariable(info)
                        : null;
         }
     }

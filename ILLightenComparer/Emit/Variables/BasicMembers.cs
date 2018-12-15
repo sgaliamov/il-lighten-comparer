@@ -2,16 +2,14 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 
-namespace ILLightenComparer.Emit.Members
+namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class IntegralFieldVariable : FieldVariable, IIntegralAcceptor, IArgumentsVariable
+    internal sealed class BasicFieldVariable : FieldVariable, IBasicAcceptor, IBasicVariable
     {
-        private IntegralFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
-
-        public bool LoadContext => false;
+        private BasicFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
         public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
@@ -38,23 +36,21 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static IntegralFieldVariable Create(MemberInfo memberInfo)
+        public static BasicFieldVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is FieldInfo info
                    && info
                       .FieldType
                       .GetUnderlyingType()
-                      .IsSmallIntegral()
-                       ? new IntegralFieldVariable(info)
+                      .IsPrimitive()
+                       ? new BasicFieldVariable(info)
                        : null;
         }
     }
 
-    internal sealed class IntegralPropertyVariable : PropertyVariable, IIntegralAcceptor, IArgumentsVariable
+    internal sealed class BasicPropertyVariable : PropertyVariable, IBasicAcceptor, IBasicVariable
     {
-        private IntegralPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
-
-        public bool LoadContext => false;
+        private BasicPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
@@ -81,14 +77,14 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static IntegralPropertyVariable Create(MemberInfo memberInfo)
+        public static BasicPropertyVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is PropertyInfo info
                    && info
                       .PropertyType
                       .GetUnderlyingType()
-                      .IsSmallIntegral()
-                       ? new IntegralPropertyVariable(info)
+                      .IsPrimitive()
+                       ? new BasicPropertyVariable(info)
                        : null;
         }
     }

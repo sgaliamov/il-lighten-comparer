@@ -1,15 +1,16 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Acceptors;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 
-namespace ILLightenComparer.Emit.Members
+namespace ILLightenComparer.Emit.Variables
 {
-    internal sealed class BasicFieldVariable : FieldVariable, IBasicAcceptor, IBasicVariable
+    internal sealed class ComparableFieldVariable : FieldVariable, IComparableAcceptor, IComparableVariable
     {
-        private BasicFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
+        private ComparableFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
         public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
@@ -36,21 +37,27 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static BasicFieldVariable Create(MemberInfo memberInfo)
+        public static ComparableFieldVariable Create(MemberInfo memberInfo)
         {
-            return memberInfo is FieldInfo info
-                   && info
-                      .FieldType
-                      .GetUnderlyingType()
-                      .IsPrimitive()
-                       ? new BasicFieldVariable(info)
+            var info = memberInfo as FieldInfo;
+            if (info == null)
+            {
+                return null;
+            }
+
+            var underlyingType = info.FieldType.GetUnderlyingType();
+
+            var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>));
+
+            return isComparable
+                       ? new ComparableFieldVariable(info)
                        : null;
         }
     }
 
-    internal sealed class BasicPropertyVariable : PropertyVariable, IBasicAcceptor, IBasicVariable
+    internal sealed class ComparablePropertyVariable : PropertyVariable, IComparableAcceptor, IComparableVariable
     {
-        private BasicPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        private ComparablePropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
@@ -77,14 +84,20 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static BasicPropertyVariable Create(MemberInfo memberInfo)
+        public static ComparablePropertyVariable Create(MemberInfo memberInfo)
         {
-            return memberInfo is PropertyInfo info
-                   && info
-                      .PropertyType
-                      .GetUnderlyingType()
-                      .IsPrimitive()
-                       ? new BasicPropertyVariable(info)
+            var info = memberInfo as PropertyInfo;
+            if (info == null)
+            {
+                return null;
+            }
+
+            var underlyingType = info.PropertyType.GetUnderlyingType();
+
+            var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>));
+
+            return isComparable
+                       ? new ComparablePropertyVariable(info)
                        : null;
         }
     }

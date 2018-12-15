@@ -1,5 +1,5 @@
 ﻿using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Variables;
 
 namespace ILLightenComparer.Emit.Emitters.Acceptors
 {

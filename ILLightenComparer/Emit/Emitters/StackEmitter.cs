@@ -1,8 +1,6 @@
-﻿using System;
-using System.Reflection;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Acceptors;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
@@ -72,26 +70,26 @@ namespace ILLightenComparer.Emit.Emitters
             if (underlyingType.IsSealed)
             {
                 variable.Load(_loader, il, Arg.X)
-                      .Store(underlyingType, 0, out var x);
+                        .Store(underlyingType, 0, out var x);
 
                 return variable.Load(_loader, il, Arg.Y)
-                             .Store(underlyingType, 1, out var y)
-                             .LoadLocal(x)
-                             .Branch(OpCodes.Brtrue_S, out var call)
-                             .LoadLocal(y)
-                             .Emit(OpCodes.Brfalse_S, gotoNextMember)
-                             .Return(-1)
-                             .MarkLabel(call)
-                             .LoadLocal(x)
-                             .LoadLocal(y);
+                               .Store(underlyingType, 1, out var y)
+                               .LoadLocal(x)
+                               .Branch(OpCodes.Brtrue_S, out var call)
+                               .LoadLocal(y)
+                               .Emit(OpCodes.Brfalse_S, gotoNextMember)
+                               .Return(-1)
+                               .MarkLabel(call)
+                               .LoadLocal(x)
+                               .LoadLocal(y);
             }
 
             il.LoadArgument(Arg.Context);
             variable.Load(_loader, il, Arg.X);
 
             return variable.Load(_loader, il, Arg.Y)
-                         .LoadArgument(Arg.SetX)
-                         .LoadArgument(Arg.SetY);
+                           .LoadArgument(Arg.SetX)
+                           .LoadArgument(Arg.SetY);
         }
 
         private ILEmitter LoadNullableMembers(

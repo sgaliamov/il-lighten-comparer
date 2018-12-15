@@ -8,9 +8,9 @@ using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Members;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.Variables;
 
 namespace ILLightenComparer.Emit
 {
