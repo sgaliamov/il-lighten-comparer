@@ -5,10 +5,9 @@
         NotSupported = 0,
         Strings = 1,
         Integrals = 2,
-        Primitives = 3,
-        Comparables = 4,
-        Hierarchicals = 5,
-        Enumerables = 6,
-        Arrays = 7
+        Comparables = 3,
+        Hierarchicals = 4,
+        Enumerables = 5,
+        Arrays = 6
     }
 }

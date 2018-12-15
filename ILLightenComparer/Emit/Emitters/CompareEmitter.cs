@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Emitters.Visitors;
-using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters
@@ -29,7 +29,7 @@ namespace ILLightenComparer.Emit.Emitters
                          .MarkLabel(gotoNextMember);
         }
 
-        public ILEmitter Visit(ICollectionComparison member, ILEmitter il)
+        public ILEmitter Visit(CollectionComparison member, ILEmitter il)
         {
             return _arrayVisitor.Visit(member, il);
         }

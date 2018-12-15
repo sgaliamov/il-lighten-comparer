@@ -1,7 +1,8 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
+using ILLightenComparer.Emit.Emitters.Visitors;
 
-namespace ILLightenComparer.Emit.Emitters.Visitors.Comparisons
+namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
     internal interface IComparison
     {

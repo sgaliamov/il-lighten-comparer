@@ -107,11 +107,6 @@ namespace ILLightenComparer.Emit.Extensions
                 return ComparisonType.Integrals;
             }
 
-            if (type.IsPrimitive())
-            {
-                return ComparisonType.Primitives;
-            }
-
             var isComparable = type.ImplementsGeneric(typeof(IComparable<>));
             if (isComparable)
             {

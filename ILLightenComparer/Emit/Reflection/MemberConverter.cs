@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters.Comparisons;
-using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using StringComparison = ILLightenComparer.Emit.Emitters.Comparisons.StringComparison;
 

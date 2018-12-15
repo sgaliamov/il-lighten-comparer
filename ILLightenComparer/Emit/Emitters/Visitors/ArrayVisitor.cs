@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
+using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             _loader = loader;
         }
 
-        public ILEmitter Visit(ICollectionComparison comparison, ILEmitter il)
+        public ILEmitter Visit(CollectionComparison comparison, ILEmitter il)
         {
             var variable = comparison.Variable;
             il.DefineLabel(out var gotoNextMember);
@@ -71,7 +71,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         private static void EmitLoadValues(
             ILEmitter il,
-            ICollectionComparison member,
+            CollectionComparison member,
             LocalBuilder x,
             LocalBuilder y,
             LocalBuilder index)
@@ -88,7 +88,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             il.LoadLocal(x)
               .LoadLocal(index)
               .Call(member.GetItemMethod);
-            if (comparisonType == ComparisonType.Primitives)
+            if (comparisonType == ComparisonType.Comparables)
             {
                 il.Store(underlyingType, LocalX, out var item)
                   .LoadAddress(item);
@@ -107,7 +107,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         private static void EmitLoadNullableValues(
             ILEmitter il,
-            ICollectionComparison member,
+            CollectionComparison member,
             LocalBuilder x,
             LocalBuilder y,
             LocalBuilder index,
@@ -135,7 +135,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             var getValueMethod = elementType.GetPropertyGetter(MethodName.Value);
             il.LoadAddress(nullableX).Call(getValueMethod);
-            if (comparisonType == ComparisonType.Primitives)
+            if (comparisonType == ComparisonType.Comparables)
             {
                 il.Store(underlyingType, out var address).LoadAddress(address);
             }
@@ -180,7 +180,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         private static (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
             ILEmitter il,
-            ICollectionComparison comparison,
+            CollectionComparison comparison,
             LocalBuilder x,
             LocalBuilder y)
         {

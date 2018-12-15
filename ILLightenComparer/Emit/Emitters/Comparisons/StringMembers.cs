@@ -2,11 +2,10 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
-using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class StringComparison : IStringComparison
+    internal sealed class StringComparison : IStaticComparison
     {
         private StringComparison(IVariable variable)
         {

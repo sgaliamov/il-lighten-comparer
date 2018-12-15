@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Emitters.Variables;
-using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
@@ -16,7 +16,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             _loader = loader;
         }
 
-        public ILEmitter Visit(IHierarchicalComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(HierarchicalComparison comparison, ILEmitter il, Label gotoNextMember)
         {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
@@ -38,7 +38,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                      .LoadArgument(Arg.SetY);
         }
 
-        public ILEmitter Visit(IComparableComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(ComparableComparison comparison, ILEmitter il, Label gotoNextMember)
         {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
@@ -80,14 +80,19 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il;
         }
 
-        public ILEmitter Visit(ICollectionComparison variable, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(CollectionComparison variable, ILEmitter il, Label gotoNextMember)
         {
             throw new NotImplementedException();
         }
 
         public ILEmitter Visit(IStaticComparison comparison, ILEmitter il, Label gotoNextMember)
         {
-            throw new NotImplementedException();
+            var variable = comparison.Variable;
+
+            variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y);
+
+            return il;
         }
 
         private ILEmitter LoadNullableMembers(

@@ -3,13 +3,12 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
-using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class CollectionComparison : ICollectionComparison
+    internal sealed class CollectionComparison : IComparison
     {
         private CollectionComparison(IVariable variable)
         {
@@ -22,9 +21,10 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             ElementType = variableType.GetUnderlyingType().GetElementType();
         }
 
-        public MethodInfo GetLengthMethod { get; }
         public Type ElementType { get; }
         public MethodInfo GetItemMethod { get; }
+
+        public MethodInfo GetLengthMethod { get; }
 
         public IVariable Variable { get; }
 

@@ -3,12 +3,11 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
-using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class ComparableComparison : IComparableComparison
+    internal sealed class ComparableComparison : IComparison
     {
         private ComparableComparison(IVariable variable)
         {
