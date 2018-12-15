@@ -6,14 +6,15 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emit.Emitters.Acceptors;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.Variables;
 
 namespace ILLightenComparer.Emit
 {
+    using Builds = ConcurrentDictionary<Type, Lazy<BuildInfo>>;
+    using ComparerTypes = ConcurrentDictionary<Type, Lazy<Type>>;
+
     public interface IComparerContext
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
@@ -21,29 +22,9 @@ namespace ILLightenComparer.Emit
 
     internal sealed class ComparerContext : IComparerContext
     {
-        private static readonly Func<MemberInfo, IAcceptor>[] PropertyFactories =
-        {
-            StringPropertyVariable.Create,
-            IntegralPropertyVariable.Create,
-            BasicPropertyVariable.Create,
-            ComparablePropertyVariable.Create,
-            ArrayPropertyVariable.Create,
-            HierarchicalPropertyVariable.Create
-        };
-
-        private static readonly Func<MemberInfo, IAcceptor>[] FieldFactories =
-        {
-            StringFieldVariable.Create,
-            IntegralFieldVariable.Create,
-            BasicFieldVariable.Create,
-            ComparableFieldVariable.Create,
-            ArrayFieldVariable.Create,
-            HierarchicalFieldVariable.Create
-        };
-
-        private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _builds = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();
+        private readonly Builds _builds = new Builds();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
-        private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
+        private readonly ComparerTypes _comparerTypes = new ComparerTypes();
         private readonly ConfigurationBuilder _configurationBuilder;
         private readonly ModuleBuilder _moduleBuilder;
 
@@ -51,7 +32,7 @@ namespace ILLightenComparer.Emit
         {
             _moduleBuilder = moduleBuilder;
             _configurationBuilder = configurationBuilder;
-            _comparerTypeBuilder = CreateComparerTypeBuilder(this);
+            _comparerTypeBuilder = new ComparerTypeBuilder(this);
         }
 
         // todo: cache delegates and benchmark ways
@@ -192,13 +173,6 @@ namespace ILLightenComparer.Emit
             var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
 
             return compare(this, x, y, xSet, ySet);
-        }
-
-        private static ComparerTypeBuilder CreateComparerTypeBuilder(ComparerContext context)
-        {
-            var converter = new MemberConverter(PropertyFactories, FieldFactories);
-
-            return new ComparerTypeBuilder(context, converter);
         }
     }
 }

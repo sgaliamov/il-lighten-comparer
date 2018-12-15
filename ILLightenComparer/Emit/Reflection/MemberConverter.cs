@@ -1,62 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ILLightenComparer.Emit.Emitters.Acceptors;
+using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
+using StringComparison = ILLightenComparer.Emit.Emitters.Comparisons.StringComparison;
 
 namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private readonly Func<MemberInfo, IAcceptor>[] _fieldFactories;
-        private readonly Func<MemberInfo, IAcceptor>[] _propertyFactories;
-
-        public MemberConverter(
-            Func<MemberInfo, IAcceptor>[] propertyFactories,
-            Func<MemberInfo, IAcceptor>[] fieldFactories)
+        private static readonly Func<MemberInfo, IComparison>[] Factories =
         {
-            _propertyFactories = propertyFactories;
-            _fieldFactories = fieldFactories;
-        }
+            IntegralComparison.Create,
+            StringComparison.Create,
+            ComparableComparison.Create,
+            CollectionComparison.Create,
+            HierarchicalComparison.Create
+        };
 
-        public IAcceptor Convert(MemberInfo memberInfo)
+        public IComparison Convert(MemberInfo memberInfo)
         {
-            switch (memberInfo)
+            var comparison = Factories
+                             .Select(factory => factory(memberInfo))
+                             .FirstOrDefault(x => x != null);
+
+            if (comparison != null)
             {
-                case PropertyInfo _:
-                {
-                    var acceptor = Convert(memberInfo, _propertyFactories);
-                    if (acceptor != null)
-                    {
-                        return acceptor;
-                    }
-
-                    break;
-                }
-
-                case FieldInfo _:
-                {
-                    var acceptor = Convert(memberInfo, _fieldFactories);
-                    if (acceptor != null)
-                    {
-                        return acceptor;
-                    }
-
-                    break;
-                }
+                return comparison;
             }
 
             throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
-        }
-
-        private static IAcceptor Convert(
-            MemberInfo memberInfo,
-            IEnumerable<Func<MemberInfo, IAcceptor>> factories)
-        {
-            return factories
-                   .Select(factory => factory(memberInfo))
-                   .FirstOrDefault(acceptor => acceptor != null);
         }
     }
 }

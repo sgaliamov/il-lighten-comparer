@@ -13,8 +13,8 @@ namespace ILLightenComparer.Emit.Emitters.Variables
             _propertyInfo = propertyInfo;
         }
 
-        public Type VariableType => _propertyInfo.PropertyType;
         public MethodInfo GetterMethod => _propertyInfo.GetMethod;
+        public Type VariableType => _propertyInfo.PropertyType;
         public Type OwnerType => _propertyInfo.DeclaringType;
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)

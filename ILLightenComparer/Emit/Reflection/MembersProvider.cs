@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ILLightenComparer.Emit.Emitters.Acceptors;
+using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 
 namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MembersProvider
     {
         private readonly ComparerContext _context;
-        private readonly MemberConverter _converter;
+        private readonly MemberConverter _converter = new MemberConverter();
 
-        public MembersProvider(ComparerContext context, MemberConverter memberConverter)
+        public MembersProvider(ComparerContext context)
         {
             _context = context;
-            _converter = memberConverter;
         }
 
-        public IAcceptor[] GetMembers(Type type)
+        public IComparison[] GetMembers(Type type)
         {
             var filtered = Filter(type);
             var sorted = Sort(type, filtered);
@@ -26,7 +25,7 @@ namespace ILLightenComparer.Emit.Reflection
             return converted;
         }
 
-        private IAcceptor[] Convert(IEnumerable<MemberInfo> members)
+        private IComparison[] Convert(IEnumerable<MemberInfo> members)
         {
             return members.Select(_converter.Convert).ToArray();
         }

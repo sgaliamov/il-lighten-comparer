@@ -16,11 +16,11 @@ namespace ILLightenComparer.Emit
         private readonly ComparerContext _context;
         private readonly MembersProvider _membersProvider;
 
-        public ComparerTypeBuilder(ComparerContext context, MemberConverter converter)
+        public ComparerTypeBuilder(ComparerContext context)
         {
             _compareEmitter = new CompareEmitter(context);
             _context = context;
-            _membersProvider = new MembersProvider(context, converter);
+            _membersProvider = new MembersProvider(context);
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -55,7 +55,7 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsClass)
                 {
-                    _compareEmitter.EmitCheckArgumentsReferenceComparison(il);
+                    _compareEmitter.EmitArgumentsReferenceComparison(il);
                 }
 
                 if (IsDetectCyclesEnabled(objectType))
@@ -80,7 +80,7 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsValueType)
                 {
-                    _compareEmitter.EmitCheckArgumentsReferenceComparison(il);
+                    _compareEmitter.EmitArgumentsReferenceComparison(il);
                 }
 
                 il.LoadArgument(Arg.This)
