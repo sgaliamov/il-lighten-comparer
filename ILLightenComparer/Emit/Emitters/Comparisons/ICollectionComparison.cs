@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 
-namespace ILLightenComparer.Emit.Emitters.Acceptors
+namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal interface IArrayAcceptor : IAcceptor
+    internal interface ICollectionComparison : IComparison
     {
         Type ElementType { get; }
         MethodInfo GetItemMethod { get; }
