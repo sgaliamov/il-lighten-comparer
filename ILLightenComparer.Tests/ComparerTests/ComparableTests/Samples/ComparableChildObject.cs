@@ -28,6 +28,9 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
             return Nullable.Compare(Field, other.Field);
         }
 
-        public override int CompareTo(ComparableObject other) => CompareTo(other as ComparableChildObject);
+        public override int CompareTo(ComparableObject other)
+        {
+            return CompareTo(other as ComparableChildObject);
+        }
     }
 }

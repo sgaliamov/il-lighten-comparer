@@ -1,43 +1,44 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Reflection;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Reflection
 {
-    using Set = ConcurrentDictionary<object, byte>;
-
     internal static class Method
     {
         public delegate int StaticMethodDelegate<in T>(
-            IContext context,
+            IComparerContext context,
             T x,
             T y,
-            Set xSet,
-            Set ySet);
+            ConcurrentSet<object> xSet,
+            ConcurrentSet<object> ySet);
 
         public static readonly MethodInfo StringCompare = typeof(string).GetMethod(
             nameof(string.Compare),
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
         public static readonly ConstructorInfo SetConstructor =
-            typeof(Set).GetConstructor(Type.EmptyTypes);
+            typeof(ConcurrentSet<object>).GetConstructor(Type.EmptyTypes);
 
         public static readonly MethodInfo SetAdd =
-            typeof(Set).GetMethod(nameof(Set.TryAdd), new[] { typeof(object), typeof(byte) });
+            typeof(ConcurrentSet<object>).GetMethod(nameof(ConcurrentSet<object>.TryAdd), new[] { typeof(object), typeof(byte) });
 
         public static readonly MethodInfo SetGetCount =
-            typeof(Set).GetProperty(nameof(Set.Count))?.GetGetMethod();
+            typeof(ConcurrentSet<object>).GetProperty(nameof(ConcurrentSet<object>.Count))?.GetGetMethod();
 
-        public static MethodInfo ContextCompare =
-            typeof(IContext).GetMethod(nameof(IContext.Compare));
+        public static MethodInfo DelayedCompare =
+            typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
 
-        public static Type[] StaticCompareMethodParameters(Type objectType) => new[]
+        public static Type[] StaticCompareMethodParameters(Type objectType)
         {
-            typeof(IContext),
-            objectType,
-            objectType,
-            typeof(Set),
-            typeof(Set)
-        };
+            return new[]
+            {
+                typeof(IComparerContext),
+                objectType,
+                objectType,
+                typeof(ConcurrentSet<object>),
+                typeof(ConcurrentSet<object>)
+            };
+        }
     }
 }

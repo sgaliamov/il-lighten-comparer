@@ -9,38 +9,41 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private readonly Context _context;
         private readonly Func<MemberInfo, IAcceptor>[] _fieldFactories;
         private readonly Func<MemberInfo, IAcceptor>[] _propertyFactories;
 
         public MemberConverter(
-            Context context,
             Func<MemberInfo, IAcceptor>[] propertyFactories,
             Func<MemberInfo, IAcceptor>[] fieldFactories)
         {
-            _context = context;
             _propertyFactories = propertyFactories;
             _fieldFactories = fieldFactories;
         }
 
         public IAcceptor Convert(MemberInfo memberInfo)
         {
-            if (memberInfo is PropertyInfo)
+            switch (memberInfo)
             {
-                var acceptor = Convert(memberInfo, _propertyFactories);
-                if (acceptor != null)
+                case PropertyInfo _:
                 {
-                    return acceptor;
-                }
-            }
+                    var acceptor = Convert(memberInfo, _propertyFactories);
+                    if (acceptor != null)
+                    {
+                        return acceptor;
+                    }
 
-            var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
-            if (includeFields && memberInfo is FieldInfo)
-            {
-                var acceptor = Convert(memberInfo, _fieldFactories);
-                if (acceptor != null)
+                    break;
+                }
+
+                case FieldInfo _:
                 {
-                    return acceptor;
+                    var acceptor = Convert(memberInfo, _fieldFactories);
+                    if (acceptor != null)
+                    {
+                        return acceptor;
+                    }
+
+                    break;
                 }
             }
 
@@ -49,9 +52,11 @@ namespace ILLightenComparer.Emit.Reflection
 
         private static IAcceptor Convert(
             MemberInfo memberInfo,
-            IEnumerable<Func<MemberInfo, IAcceptor>> factories) =>
-            factories
-                .Select(factory => factory(memberInfo))
-                .FirstOrDefault(acceptor => acceptor != null);
+            IEnumerable<Func<MemberInfo, IAcceptor>> factories)
+        {
+            return factories
+                   .Select(factory => factory(memberInfo))
+                   .FirstOrDefault(acceptor => acceptor != null);
+        }
     }
 }

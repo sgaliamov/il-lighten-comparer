@@ -1,49 +1,44 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Members;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Extensions
 {
     internal static class ILEmitterExtensions
     {
-        public static ILEmitter LoadProperty(this ILEmitter il, IPropertyMember member, ushort argumentIndex)
+        public static ILEmitter EmitReturnNotZero(this ILEmitter il, Label next)
         {
-            if (member.DeclaringType.IsValueType)
-            {
-                il.LoadArgumentAddress(argumentIndex);
-            }
-            else
-            {
-                il.LoadArgument(argumentIndex);
-            }
-
-            return il.Call(member.GetterMethod);
+            return il.Emit(OpCodes.Stloc_0)
+                     .Emit(OpCodes.Ldloc_0)
+                     .Emit(OpCodes.Brfalse_S, next)
+                     .Emit(OpCodes.Ldloc_0)
+                     .Return();
         }
 
-        public static ILEmitter LoadField(this ILEmitter il, IFieldMember member, ushort argumentIndex) =>
-            il.LoadArgument(argumentIndex)
-              .Emit(OpCodes.Ldfld, member.FieldInfo);
-
-        public static ILEmitter LoadFieldAddress(this ILEmitter il, IFieldMember member, ushort argumentIndex)
+        public static void CheckNullableValuesForNull(
+            this ILEmitter il,
+            LocalBuilder nullableX,
+            LocalBuilder nullableY,
+            Type variableType,
+            Label ifBothNull)
         {
-            if (member.DeclaringType.IsValueType)
-            {
-                il.LoadArgumentAddress(argumentIndex);
-            }
-            else
-            {
-                il.LoadArgument(argumentIndex);
-            }
+            var hasValueMethod = variableType.GetPropertyGetter(MethodName.HasValue);
 
-            return il.Emit(OpCodes.Ldflda, member.FieldInfo);
+            il.LoadAddress(nullableY)
+              .Call(hasValueMethod)
+              .Store(typeof(bool), out var secondHasValue)
+              .LoadAddress(nullableX)
+              .Call(hasValueMethod)
+              .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
+              .LoadLocal(secondHasValue)
+              .Branch(OpCodes.Brfalse_S, ifBothNull)
+              .Return(-1)
+              .MarkLabel(ifFirstHasValue)
+              .LoadLocal(secondHasValue)
+              .Branch(OpCodes.Brtrue_S, out var getValues)
+              .Return(1)
+              .MarkLabel(getValues);
         }
-
-        public static ILEmitter EmitReturnNotZero(this ILEmitter il, Label next) =>
-            il.Emit(OpCodes.Stloc_0)
-              .Emit(OpCodes.Ldloc_0)
-              .Emit(OpCodes.Brfalse_S, next)
-              .Emit(OpCodes.Ldloc_0)
-              .Return()
-              .MarkLabel(next);
     }
 }

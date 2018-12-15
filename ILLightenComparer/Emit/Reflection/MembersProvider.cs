@@ -8,10 +8,10 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MembersProvider
     {
-        private readonly Context _context;
+        private readonly ComparerContext _context;
         private readonly MemberConverter _converter;
 
-        public MembersProvider(Context context, MemberConverter memberConverter)
+        public MembersProvider(ComparerContext context, MemberConverter memberConverter)
         {
             _context = context;
             _converter = memberConverter;
@@ -26,15 +26,19 @@ namespace ILLightenComparer.Emit.Reflection
             return converted;
         }
 
-        private IAcceptor[] Convert(IEnumerable<MemberInfo> members) =>
-            members.Select(_converter.Convert).ToArray();
+        private IAcceptor[] Convert(IEnumerable<MemberInfo> members)
+        {
+            return members.Select(_converter.Convert).ToArray();
+        }
 
-        private IEnumerable<MemberInfo> Filter(IReflect type) =>
-            type.GetMembers(BindingFlags.Instance
-                            | BindingFlags.FlattenHierarchy
-                            | BindingFlags.Public)
-                .Where(IncludeFields)
-                .Where(IgnoredMembers);
+        private IEnumerable<MemberInfo> Filter(IReflect type)
+        {
+            return type.GetMembers(BindingFlags.Instance
+                                   | BindingFlags.FlattenHierarchy
+                                   | BindingFlags.Public)
+                       .Where(IncludeFields)
+                       .Where(IgnoredMembers);
+        }
 
         private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members)
         {

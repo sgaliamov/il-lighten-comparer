@@ -14,7 +14,7 @@ namespace ILLightenComparer
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ConfigurationBuilder _configurations = new ConfigurationBuilder();
-        private readonly Context _context;
+        private readonly ComparerContext _context;
 
         public ComparersBuilder()
         {
@@ -24,7 +24,7 @@ namespace ILLightenComparer
 
             var moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
 
-            _context = new Context(moduleBuilder, _configurations);
+            _context = new ComparerContext(moduleBuilder, _configurations);
         }
 
         public IContextBuilder DefineDefaultConfiguration(ComparerSettings settings)
@@ -39,26 +39,52 @@ namespace ILLightenComparer
             return this;
         }
 
-        public IComparer<T> GetComparer<T>() => (IComparer<T>)GetComparer(typeof(T));
+        public IComparer<T> GetComparer<T>()
+        {
+            return (IComparer<T>)GetComparer(typeof(T));
+        }
 
-        public IComparer GetComparer(Type objectType) =>
-            _comparers.GetOrAdd(
+        public IComparer GetComparer(Type objectType)
+        {
+            if (objectType.GetUnderlyingType().IsPrimitive())
+            {
+                throw new NotSupportedException(
+                    $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
+            }
+
+            return _comparers.GetOrAdd(
                 objectType,
-                key => _context.GetComparerType(key).CreateInstance<IContext, IComparer>(_context));
+                key => _context.GetOrBuildComparerType(key).CreateInstance<IComparerContext, IComparer>(_context));
+        }
 
-        public IEqualityComparer<T> GetEqualityComparer<T>() => throw new NotImplementedException();
+        public IEqualityComparer<T> GetEqualityComparer<T>()
+        {
+            throw new NotImplementedException();
+        }
 
-        public IEqualityComparer GetEqualityComparer(Type objectType) => throw new NotImplementedException();
+        public IEqualityComparer GetEqualityComparer(Type objectType)
+        {
+            throw new NotImplementedException();
+        }
 
-        public IContextBuilder<T> For<T>() => new GenericProxy<T>(this);
+        public IContextBuilder<T> For<T>()
+        {
+            return new GenericProxy<T>(this);
+        }
 
         private sealed class GenericProxy<T> : IContextBuilder<T>, IComparerProviderOrBuilderContext<T>
         {
             private readonly ComparersBuilder _owner;
 
-            public GenericProxy(ComparersBuilder comparersBuilder) => _owner = comparersBuilder;
+            public GenericProxy(ComparersBuilder comparersBuilder)
+            {
+                _owner = comparersBuilder;
+            }
 
-            public IContextBuilder<TOther> For<TOther>() => _owner.For<TOther>();
+            public IContextBuilder<TOther> For<TOther>()
+            {
+                return _owner.For<TOther>();
+            }
 
             public IComparerProviderOrBuilderContext<T> DefineConfiguration(ComparerSettings settings)
             {
@@ -66,9 +92,15 @@ namespace ILLightenComparer
                 return this;
             }
 
-            public IComparer<T> GetComparer() => _owner.GetComparer<T>();
+            public IComparer<T> GetComparer()
+            {
+                return _owner.GetComparer<T>();
+            }
 
-            public IEqualityComparer<T> GetEqualityComparer() => _owner.GetEqualityComparer<T>();
+            public IEqualityComparer<T> GetEqualityComparer()
+            {
+                return _owner.GetEqualityComparer<T>();
+            }
         }
     }
 }

@@ -20,7 +20,10 @@ namespace ILLightenComparer.Emit.Emitters
             { 0, new Dictionary<Type, LocalBuilder>() }
         };
 
-        public ILEmitter(ILGenerator il) => _il = il;
+        public ILEmitter(ILGenerator il)
+        {
+            _il = il;
+        }
 
         public void Dispose()
         {
@@ -103,26 +106,44 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             var opCode = methodInfo.IsStatic || owner.IsValueType || owner.IsSealed
-                ? OpCodes.Call
-                : OpCodes.Callvirt;
+                             ? OpCodes.Call
+                             : OpCodes.Callvirt;
 
             return Emit(opCode, methodInfo);
         }
 
-        public ILEmitter Return() => Emit(OpCodes.Ret);
+        public ILEmitter Return()
+        {
+            return Emit(OpCodes.Ret);
+        }
 
-        public ILEmitter Return(int value) => LoadConstant(value).Return();
+        public ILEmitter Return(int value)
+        {
+            return LoadConstant(value).Return();
+        }
 
         public ILEmitter EmitCast(Type objectType)
         {
             var castOp = objectType.IsValueType
-                ? OpCodes.Unbox_Any
-                : OpCodes.Castclass;
+                             ? OpCodes.Unbox_Any
+                             : OpCodes.Castclass;
 
             DebugLine($"\t\t{castOp} {objectType.Name}");
             _il.Emit(castOp, objectType);
 
             return this;
+        }
+
+        public ILEmitter Branch(OpCode opCode, Label label)
+        {
+            if (opCode.FlowControl != FlowControl.Branch
+                && opCode.FlowControl != FlowControl.Cond_Branch)
+            {
+                throw new ArgumentOutOfRangeException(nameof(opCode),
+                    $"Only a branch instruction is allowed. OpCode: {opCode}.");
+            }
+
+            return Emit(opCode, label);
         }
 
         public ILEmitter Branch(OpCode opCode, out Label label)
@@ -191,6 +212,14 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
+        public ILEmitter LoadString(string value)
+        {
+            DebugLine($"\t\t{OpCodes.Ldstr} \"{value}\"");
+            _il.Emit(OpCodes.Ldstr, value);
+
+            return this;
+        }
+
         public ILEmitter LoadAddress(LocalBuilder local)
         {
             var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
@@ -200,12 +229,20 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter Store(Type localType, out LocalBuilder local) => Store(localType, 0, out local);
+        public ILEmitter Store(Type localType, out LocalBuilder local)
+        {
+            return Store(localType, 0, out local);
+        }
 
         public ILEmitter Store(Type localType, byte bucket, out LocalBuilder local)
         {
             DeclareLocal(localType, bucket, out local);
 
+            return Store(local);
+        }
+
+        public ILEmitter Store(LocalBuilder local)
+        {
             switch (local.LocalIndex)
             {
                 case 0: return Emit(OpCodes.Stloc_0);
@@ -236,6 +273,17 @@ namespace ILLightenComparer.Emit.Emitters
 
         #region debug
 
+        // ReSharper disable PartialMethodWithSinglePart
+
+        partial void DebugOutput();
+        partial void DebugEmitLabel(OpCode opCode, Label label);
+        partial void DebugMarkLabel(Label label);
+        partial void DebugLine(string message);
+        partial void AddDebugLabel(Label label);
+
+        // ReSharper restore PartialMethodWithSinglePart
+
+#if DEBUG
         public ILEmitter EmitWriteLine(LocalBuilder local)
         {
             DebugLine($"\t\tWrite: {local.LocalIndex}");
@@ -251,16 +299,7 @@ namespace ILLightenComparer.Emit.Emitters
 
             return this;
         }
-
-        // ReSharper disable PartialMethodWithSinglePart
-
-        partial void DebugOutput();
-        partial void DebugEmitLabel(OpCode opCode, Label label);
-        partial void DebugMarkLabel(Label label);
-        partial void DebugLine(string message);
-        partial void AddDebugLabel(Label label);
-
-        // ReSharper restore PartialMethodWithSinglePart
+#endif
 
         #endregion
     }

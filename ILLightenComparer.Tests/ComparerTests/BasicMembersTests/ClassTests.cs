@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ILLightenComparer.Tests.ComparerTests.BasicMembersTests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.BasicMembersTests
 {

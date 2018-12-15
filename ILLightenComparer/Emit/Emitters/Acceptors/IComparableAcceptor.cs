@@ -1,9 +1,4 @@
-﻿using System;
-
-namespace ILLightenComparer.Emit.Emitters.Acceptors
+﻿namespace ILLightenComparer.Emit.Emitters.Acceptors
 {
-    internal interface IComparableAcceptor : IAcceptor
-    {
-        Type MemberType { get; }
-    }
+    internal interface IComparableAcceptor : IAcceptor { }
 }

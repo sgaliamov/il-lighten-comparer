@@ -14,6 +14,7 @@
 1. *GetCompareToMethod* will not support typeless *IComparable*.
 1. Generated methods should follow a possible manual implementation as much as possible. So, if types of arguments are not matched it should fail with ArgumentException. If one of types is castable to another, an object with more members should be considered as bigger object, because if base parts are same, extra parts of child class add additional weight.
 1. Context's comparison exists to support replacing an object after code generation.
+1. Visitor Pattern can be applied when decision can be done on design stage.
 
 ## Cycle detection
 

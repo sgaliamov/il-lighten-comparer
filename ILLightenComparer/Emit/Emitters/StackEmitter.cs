@@ -1,7 +1,6 @@
-﻿using System;
-using System.Reflection;
-using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Members;
+﻿using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Acceptors;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
@@ -9,114 +8,100 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class StackEmitter
     {
-        public ILEmitter Visit(ICallableField member, ILEmitter il, Label gotoNextMember)
+        private readonly VariableLoader _loader;
+
+        public StackEmitter(VariableLoader loader)
         {
-            var memberType = member.MemberType;
-            if (!memberType.IsNullable())
-            {
-                return il.LoadFieldAddress(member, Arg.X)
-                         .LoadField(member, Arg.Y);
-            }
-
-            il.LoadField(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
-              .LoadField(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
-
-            return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
+            _loader = loader;
         }
 
-        public ILEmitter Visit(ICallableProperty member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IArgumentVariable variable, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.MemberType;
-            if (!memberType.IsNullable())
+            var memberType = variable.VariableType;
+            if (memberType.IsNullable())
             {
-                return il.LoadProperty(member, Arg.X)
-                         .Store(memberType.GetUnderlyingType(), out var xAddress)
-                         .LoadAddress(xAddress)
-                         .LoadProperty(member, Arg.Y);
+                return LoadNullableMembers(
+                    il,
+                    false,
+                    variable.LoadContext,
+                    variable,
+                    gotoNextMember);
             }
 
-            il.LoadProperty(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
-              .LoadProperty(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
+            if (variable.LoadContext)
+            {
+                il.LoadArgument(Arg.Context);
+            }
 
-            return LoadNullableMembers(il, true, false, memberType, nullableX, nullableY, gotoNextMember);
+            variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y);
+
+            if (variable.LoadContext)
+            {
+                il.LoadArgument(Arg.SetX)
+                  .LoadArgument(Arg.SetY);
+            }
+
+            return il;
         }
 
-        public ILEmitter Visit(IArgumentsField member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IComparableVariable variable, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.MemberType;
-            if (!memberType.IsNullable())
+            var memberType = variable.VariableType;
+            var underlyingType = memberType.GetUnderlyingType();
+            if (underlyingType.IsValueType)
             {
-                if (member.LoadContext)
+                if (memberType.IsNullable())
                 {
-                    il.LoadArgument(Arg.Context);
+                    return LoadNullableMembers(il, true, false, variable, gotoNextMember);
                 }
 
-                return il.LoadField(member, Arg.X)
-                         .LoadField(member, Arg.Y);
+                variable.LoadAddress(_loader, il, Arg.X);
+
+                return variable.Load(_loader, il, Arg.Y);
             }
 
-            il.LoadField(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
-              .LoadField(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
-
-            return LoadNullableMembers(
-                il,
-                false,
-                member.LoadContext,
-                memberType,
-                nullableX,
-                nullableY,
-                gotoNextMember);
-        }
-
-        public ILEmitter Visit(IArgumentsProperty member, ILEmitter il, Label gotoNextMember)
-        {
-            var memberType = member.MemberType;
-            if (!memberType.IsNullable())
+            if (underlyingType.IsSealed)
             {
-                if (member.LoadContext)
-                {
-                    il.LoadArgument(Arg.Context);
-                }
+                variable.Load(_loader, il, Arg.X)
+                        .Store(underlyingType, 0, out var x);
 
-                return il.LoadProperty(member, Arg.X)
-                         .LoadProperty(member, Arg.Y);
+                return variable.Load(_loader, il, Arg.Y)
+                               .Store(underlyingType, 1, out var y)
+                               .LoadLocal(x)
+                               .Branch(OpCodes.Brtrue_S, out var call)
+                               .LoadLocal(y)
+                               .Emit(OpCodes.Brfalse_S, gotoNextMember)
+                               .Return(-1)
+                               .MarkLabel(call)
+                               .LoadLocal(x)
+                               .LoadLocal(y);
             }
 
-            il.LoadProperty(member, Arg.X)
-              .Store(memberType, 0, out var nullableX)
-              .LoadProperty(member, Arg.Y)
-              .Store(memberType, 1, out var nullableY);
+            il.LoadArgument(Arg.Context);
+            variable.Load(_loader, il, Arg.X);
 
-            return LoadNullableMembers(
-                il,
-                false,
-                member.LoadContext,
-                memberType,
-                nullableX,
-                nullableY,
-                gotoNextMember);
+            return variable.Load(_loader, il, Arg.Y)
+                           .LoadArgument(Arg.SetX)
+                           .LoadArgument(Arg.SetY);
         }
 
-        private static ILEmitter LoadNullableMembers(
+        private ILEmitter LoadNullableMembers(
             ILEmitter il,
             bool callable,
             bool loadContext,
-            Type memberType,
-            LocalBuilder nullableX,
-            LocalBuilder nullableY,
+            IAcceptor member,
             Label gotoNextMember)
         {
-            var hasValueMethod = memberType.GetPropertyGetter(MethodName.HasValue);
+            var memberType = member.VariableType;
+
+            member.Load(_loader, il, Arg.X).Store(memberType, 0, out var nullableX);
+            member.Load(_loader, il, Arg.Y).Store(memberType, 1, out var nullableY);
+
             var getValueMethod = memberType.GetPropertyGetter(MethodName.Value);
             var underlyingType = memberType.GetUnderlyingType();
 
-            CheckNullableValuesForNull(il, nullableX, nullableY, hasValueMethod, gotoNextMember);
+            il.CheckNullableValuesForNull(nullableX, nullableY, memberType, gotoNextMember);
 
             if (loadContext)
             {
@@ -127,33 +112,18 @@ namespace ILLightenComparer.Emit.Emitters
 
             if (callable)
             {
-                il.Store(underlyingType, out var xAddress).LoadAddress(xAddress);
+                il.Store(underlyingType, out var x).LoadAddress(x);
             }
 
-            return il.LoadAddress(nullableY).Call(getValueMethod);
-        }
+            il.LoadAddress(nullableY).Call(getValueMethod);
 
-        private static void CheckNullableValuesForNull(
-            ILEmitter il,
-            LocalBuilder nullableX,
-            LocalBuilder nullableY,
-            MethodInfo hasValueMethod,
-            Label ifBothNull)
-        {
-            il.LoadAddress(nullableY)
-              .Call(hasValueMethod)
-              .Store(typeof(bool), out var secondHasValue)
-              .LoadAddress(nullableX)
-              .Call(hasValueMethod)
-              .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Emit(OpCodes.Brfalse_S, ifBothNull)
-              .Return(-1)
-              .MarkLabel(ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Branch(OpCodes.Brtrue_S, out var getValues)
-              .Return(1)
-              .MarkLabel(getValues);
+            if (loadContext)
+            {
+                il.LoadArgument(Arg.SetX)
+                  .LoadArgument(Arg.SetY);
+            }
+
+            return il;
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
@@ -19,7 +17,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Generate_Comparer_For_Not_Sealed_Member_In_Parallel_Still_Works()
         {
             var one = new AbstractMembers
@@ -27,7 +25,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 NotSealedProperty = _fixture.Create<AnotherNestedObject>()
             };
 
-            Parallel(() =>
+            Helper.Parallel(() =>
                 {
                     var comparer = CreateComparer();
 
@@ -38,7 +36,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
                     var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
 
-                    Parallel(() =>
+                    Helper.Parallel(() =>
                         {
                             var actual = comparer.Compare(one, other).Normalize();
                             actual.Should().Be(expected);
@@ -48,38 +46,22 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 Environment.ProcessorCount * 10);
         }
 
-        private static void Parallel(ThreadStart action, int count)
+        private static IComparer<AbstractMembers> CreateComparer()
         {
-            var threads = Enumerable
-                          .Range(0, count)
-                          .Select(x => new Thread(action))
-                          .ToArray();
-
-            foreach (var thread in threads)
-            {
-                thread.Start();
-            }
-
-            foreach (var thread in threads)
-            {
-                thread.Join();
-            }
+            return new ComparersBuilder()
+                   .For<AnotherNestedObject>()
+                   .DefineConfiguration(new ComparerSettings
+                   {
+                       MembersOrder = new[]
+                       {
+                           nameof(AnotherNestedObject.Value),
+                           nameof(AnotherNestedObject.Key),
+                           nameof(AnotherNestedObject.Text)
+                       }
+                   })
+                   .For<AbstractMembers>()
+                   .GetComparer();
         }
-
-        private static IComparer<AbstractMembers> CreateComparer() =>
-            new ComparersBuilder()
-                .For<AnotherNestedObject>()
-                .DefineConfiguration(new ComparerSettings
-                {
-                    MembersOrder = new[]
-                    {
-                        nameof(AnotherNestedObject.Value),
-                        nameof(AnotherNestedObject.Key),
-                        nameof(AnotherNestedObject.Text)
-                    }
-                })
-                .For<AbstractMembers>()
-                .GetComparer();
 
         private readonly Fixture _fixture;
     }

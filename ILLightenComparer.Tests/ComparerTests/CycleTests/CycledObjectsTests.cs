@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests
@@ -15,13 +17,13 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Comparison_Should_Not_Fail_Because_Of_Generating_Comparers_For_Two_Dependent_Classes()
         {
             var one = _fixture.Create<OneSealed>();
             var other = _fixture.Create<OneSealed>();
-            one.Another.One = one;
-            other.Another.One = other;
+            one.Two.Three.One = one;
+            other.Two.Three.One = other;
 
             var expected = one.Value.CompareTo(other.Value);
             var actual = ComparerOneSealed.Compare(one, other);
@@ -29,22 +31,22 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Comparison_With_Cycle_On_Types_Level_Only()
         {
             var one = _fixture.Create<OneSealed>();
             var other = one.DeepClone();
             other.Value = (sbyte)(one.Value + 1);
-            one.Another.One = _fixture.Build<OneSealed>().Without(x => x.Another).Create();
-            other.Another.One = _fixture.Build<OneSealed>().Without(x => x.Another).Create();
+            one.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
+            other.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
 
-            var expected = one.Another.One.Value.CompareTo(other.Another.One.Value);
+            var expected = one.Two.Three.One.Value.CompareTo(other.Two.Three.One.Value);
             var actual = ComparerOneSealed.Compare(one, other);
 
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Cross_Reference_Should_Not_Fail()
         {
             var other = new SelfSealed();
@@ -63,7 +65,35 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
+        public void Cycle_Detection_In_Multiple_Threads_Works()
+        {
+            Helper.Parallel(
+                () =>
+                {
+                    var comparer = new ComparersBuilder()
+                                   .DefineDefaultConfiguration(new ComparerSettings
+                                   {
+                                       IncludeFields = true,
+                                       DetectCycles = true
+                                   })
+                                   .For<OneSealed>()
+                                   .GetComparer();
+
+                    var one = _fixture.Create<OneSealed>();
+                    var other = _fixture.Create<OneSealed>();
+                    one.Two.Three.One = one;
+                    other.Two.Three.One = other;
+
+                    var expected = one.Value.CompareTo(other.Value);
+                    var actual = comparer.Compare(one, other);
+
+                    actual.Should().Be(expected);
+                },
+                Environment.ProcessorCount * 10);
+        }
+
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Detects_Cycle_On_Second_Member()
         {
             var one = new SelfSealed();
@@ -105,7 +135,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Object_With_Bigger_Cycle_Is_Bigger()
         {
             var one = new SelfSealed();
@@ -124,7 +154,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Opened_Class_Comparer_Uses_Context_Compare_Method()
         {
             var one = _fixture.Create<SelfOpened>();

@@ -1,30 +1,34 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {
-    using Set = ConcurrentDictionary<object, byte>;
-
     public sealed class SelfSealed
     {
         public readonly int Id;
         public SelfSealed First;
 
-        public SelfSealed() => Id = this.GetObjectId();
+        public SelfSealed()
+        {
+            Id = this.GetObjectId();
+        }
 
         public static RelationalComparer Comparer { get; } = new RelationalComparer();
         public SelfSealed Second { get; set; }
         public int Value { get; set; }
 
-        public override string ToString() => Id.ToString();
+        public override string ToString()
+        {
+            return Id.ToString();
+        }
 
         public sealed class RelationalComparer : IComparer<SelfSealed>
         {
             public int Compare(SelfSealed x, SelfSealed y)
             {
-                var setX = new Set();
-                var setY = new Set();
+                var setX = new ConcurrentSet<object>();
+                var setY = new ConcurrentSet<object>();
 
                 var compare = Compare(x, y, setX, setY);
                 if (compare != 0)
@@ -35,7 +39,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 return setX.Count - setY.Count;
             }
 
-            private static int Compare(SelfSealed x, SelfSealed y, Set xSet, Set ySet)
+            private static int Compare(SelfSealed x, SelfSealed y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
             {
                 if (ReferenceEquals(x, y))
                 {

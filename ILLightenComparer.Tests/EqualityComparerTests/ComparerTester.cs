@@ -32,8 +32,8 @@ namespace ILLightenComparer.Tests.EqualityComparerTests
 
                                   var oldValue = property.GetValue(one);
                                   var newValue = property.PropertyType == typeof(bool)
-                                      ? !(bool)oldValue
-                                      : context.Resolve(property.PropertyType);
+                                                     ? !(bool)oldValue
+                                                     : context.Resolve(property.PropertyType);
                                   property.SetValue(other, newValue);
 
                                   return new
@@ -104,8 +104,8 @@ namespace ILLightenComparer.Tests.EqualityComparerTests
                 .ForEach(property =>
                 {
                     var newValue = property.PropertyType == typeof(bool)
-                        ? !(bool)property.GetValue(other)
-                        : context.Resolve(property.PropertyType);
+                                       ? !(bool)property.GetValue(other)
+                                       : context.Resolve(property.PropertyType);
 
                     property.SetValue(other, newValue);
                 });

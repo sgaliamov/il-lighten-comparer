@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.ComparerTests.BasicMembersTests
+namespace ILLightenComparer.Tests.ComparerTests.BasicMembersTests.Samples
 {
     public class SampleObject
     {
@@ -14,8 +14,10 @@ namespace ILLightenComparer.Tests.ComparerTests.BasicMembersTests
         public EnumBig EnumProperty { get; set; }
         public int Property { get; set; }
 
-        public override string ToString() =>
-            $"{nameof(EnumField)}: {EnumField}, {nameof(Field)}: {Field}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(Property)}: {Property}";
+        public override string ToString()
+        {
+            return $"{nameof(EnumField)}: {EnumField}, {nameof(Field)}: {Field}, {nameof(EnumProperty)}: {EnumProperty}, {nameof(Property)}: {Property}";
+        }
 
         private sealed class ComparableSampleObjectRelationalComparer : IComparer<SampleObject>
         {

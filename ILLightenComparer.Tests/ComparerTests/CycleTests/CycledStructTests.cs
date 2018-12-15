@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 {
     public class CycledStructTests
     {
-        public CycledStructTests() =>
+        public CycledStructTests()
+        {
             _builder = new ComparersBuilder()
                        .DefineDefaultConfiguration(new ComparerSettings
                        {
@@ -35,13 +37,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
                                },
                                IgnoredMembers = new[] { nameof(CycledStructObject.Id) }
                            });
+        }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Detects_Cycle_In_Object()
         {
-            var comparerStruct = ComparerStruct;
-
-
             var one = new CycledStructObject();
             one.FirstStruct = new CycledStruct { SecondObject = one };
 
@@ -55,7 +55,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Detects_Cycle_In_Struct()
         {
             var one = new CycledStruct
@@ -77,7 +77,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Detects_Cycle_On_First_Member()
         {
             var one = new CycledStructObject();
@@ -109,7 +109,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Timeout = Constants.DefaultTimeout)]
         public void Detects_Cycle_On_Second_Member()
         {
             var one = new CycledStruct { SecondObject = new CycledStructObject() };

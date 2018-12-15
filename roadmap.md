@@ -47,9 +47,12 @@
 
 ## Phase 3 Collections
 
-- [ ] create type only at the end, use builders when cycle is possible
-- [ ] refacotor visiting `IComparableAcceptor`
-- [ ] compare collection, do not iterate `IEnumerable`
+- [x] create type only at the end, use builders when cycle is possible
+- [x] refactor visiting `IComparableAcceptor`
+- [x] compare arrays
+- [ ] compare array of `ComparableStruct`
+- [ ] refactor variables loading
+- [ ] compare `IEnumarable`
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
 
@@ -82,15 +85,29 @@
 - [ ] optimization for a last member - just return its result
 - [ ] change behavior then types are not matched but castable
 - [ ] do reference comparison only once
+- [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?
 - [ ] support internal classes to compare?
 
 ## Phase 6
 
+- [ ] implement `GetHashCode`
+
+## Phase 7
+
+- [ ] implement `Equals`
+
+## Phase 8
+
 - [x] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
-- [ ] compare `IntPtr`
 - [ ] setup CI/CD
 - [ ] add documentation comments
 - [ ] prepare presentation
+
+## Phase 9
+
+- [ ] compare `IntPtr`
+- [ ] compare dictionary
+- [ ] compare complex collection
 - [ ] compared dynamic?
 - [ ] compare private and protected members?
