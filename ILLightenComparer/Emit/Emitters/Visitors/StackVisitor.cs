@@ -88,6 +88,10 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         public ILEmitter Visit(IStaticComparison comparison, ILEmitter il, Label gotoNextMember)
         {
             var variable = comparison.Variable;
+            if (variable.VariableType.IsNullable())
+            {
+                return LoadNullableMembers(il, false, false, variable, gotoNextMember);
+            }
 
             variable.Load(_loader, il, Arg.X);
             variable.Load(_loader, il, Arg.Y);

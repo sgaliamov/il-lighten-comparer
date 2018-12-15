@@ -15,7 +15,6 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             Variable = variable;
 
             var variableType = variable.VariableType;
-
             GetLengthMethod = variableType.GetPropertyGetter(MethodName.ArrayLength);
             GetItemMethod = variableType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
             ElementType = variableType.GetUnderlyingType().GetElementType();
@@ -23,7 +22,6 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public Type ElementType { get; }
         public MethodInfo GetItemMethod { get; }
-
         public MethodInfo GetLengthMethod { get; }
 
         public IVariable Variable { get; }
