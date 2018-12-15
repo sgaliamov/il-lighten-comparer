@@ -4,11 +4,11 @@ using ILLightenComparer.Emit.Emitters.Members;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal abstract class PropertyMember : IPropertyMember
+    internal abstract class PropertyVariable : IPropertyVariable
     {
         private readonly PropertyInfo _propertyInfo;
 
-        protected PropertyMember(PropertyInfo propertyInfo)
+        protected PropertyVariable(PropertyInfo propertyInfo)
         {
             _propertyInfo = propertyInfo;
         }
@@ -18,9 +18,9 @@ namespace ILLightenComparer.Emit.Members
         public Type DeclaringType => _propertyInfo.DeclaringType;
     }
 
-    internal abstract class FieldMember : IFieldMember
+    internal abstract class FieldVariable : IFieldVariable
     {
-        protected FieldMember(FieldInfo fieldInfo)
+        protected FieldVariable(FieldInfo fieldInfo)
         {
             FieldInfo = fieldInfo;
         }

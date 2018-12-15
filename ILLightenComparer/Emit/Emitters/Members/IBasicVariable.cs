@@ -2,5 +2,5 @@
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IValueMember : IAcceptor { }
+    internal interface IBasicVariable : IAcceptor { }
 }

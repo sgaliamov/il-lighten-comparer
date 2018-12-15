@@ -7,21 +7,21 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class BasicFieldMember : FieldMember, IBasicAcceptor, IValueMember
+    internal sealed class BasicFieldVariable : FieldVariable, IBasicAcceptor, IBasicVariable
     {
-        private BasicFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+        private BasicFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -36,33 +36,33 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static BasicFieldMember Create(MemberInfo memberInfo)
+        public static BasicFieldVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is FieldInfo info
                    && info
                       .FieldType
                       .GetUnderlyingType()
                       .IsPrimitive()
-                       ? new BasicFieldMember(info)
+                       ? new BasicFieldVariable(info)
                        : null;
         }
     }
 
-    internal sealed class BasicPropertyMember : PropertyMember, IBasicAcceptor, IValueMember
+    internal sealed class BasicPropertyVariable : PropertyVariable, IBasicAcceptor, IBasicVariable
     {
-        private BasicPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        private BasicPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -77,14 +77,14 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static BasicPropertyMember Create(MemberInfo memberInfo)
+        public static BasicPropertyVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is PropertyInfo info
                    && info
                       .PropertyType
                       .GetUnderlyingType()
                       .IsPrimitive()
-                       ? new BasicPropertyMember(info)
+                       ? new BasicPropertyVariable(info)
                        : null;
         }
     }

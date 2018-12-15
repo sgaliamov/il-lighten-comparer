@@ -8,7 +8,7 @@ namespace ILLightenComparer.Emit.Emitters
     {
         private readonly ArrayAcceptorVisitor _arrayAcceptorVisitor;
         private readonly CompareCallVisitor _callVisitor;
-        private readonly MemberLoader _loader = new MemberLoader();
+        private readonly VariableLoader _loader = new VariableLoader();
         private readonly StackEmitter _stackEmitter;
 
         public CompareEmitter(ComparerContext context)
@@ -21,7 +21,7 @@ namespace ILLightenComparer.Emit.Emitters
         public ILEmitter Visit(IAcceptor member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            member.LoadMembers(_stackEmitter, il, gotoNextMember);
+            member.LoadVariables(_stackEmitter, il, gotoNextMember);
 
             return member.Accept(_callVisitor, il)
                          .EmitReturnNotZero(gotoNextMember)

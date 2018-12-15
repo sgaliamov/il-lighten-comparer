@@ -10,14 +10,14 @@ namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class StackEmitter
     {
-        private readonly MemberLoader _loader;
+        private readonly VariableLoader _loader;
 
-        public StackEmitter(MemberLoader loader)
+        public StackEmitter(VariableLoader loader)
         {
             _loader = loader;
         }
 
-        public ILEmitter Visit(IValueMember member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IBasicVariable member, ILEmitter il, Label gotoNextMember)
         {
             var memberType = member.VariableType;
             if (memberType.IsNullable())
@@ -30,28 +30,28 @@ namespace ILLightenComparer.Emit.Emitters
             return member.Load(_loader, il, Arg.Y);
         }
 
-        public ILEmitter Visit(IArgumentsMember member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IArgumentsVariable variable, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.VariableType;
+            var memberType = variable.VariableType;
             if (memberType.IsNullable())
             {
                 return LoadNullableMembers(
                     il,
                     false,
-                    member.LoadContext,
-                    member,
+                    variable.LoadContext,
+                    variable,
                     gotoNextMember);
             }
 
-            if (member.LoadContext)
+            if (variable.LoadContext)
             {
                 il.LoadArgument(Arg.Context);
             }
 
-            member.Load(_loader, il, Arg.X);
-            member.Load(_loader, il, Arg.Y);
+            variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y);
 
-            if (member.LoadContext)
+            if (variable.LoadContext)
             {
                 il.LoadArgument(Arg.SetX)
                   .LoadArgument(Arg.SetY);
@@ -60,21 +60,21 @@ namespace ILLightenComparer.Emit.Emitters
             return il;
         }
 
-        public ILEmitter Visit(IComparableMember member, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IComparableVariable variable, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = member.VariableType;
+            var memberType = variable.VariableType;
             var underlyingType = memberType.GetUnderlyingType();
             if (underlyingType.IsValueType)
             {
-                return Visit((IValueMember)member, il, gotoNextMember);
+                return Visit((IBasicVariable)variable, il, gotoNextMember);
             }
 
             if (underlyingType.IsSealed)
             {
-                member.Load(_loader, il, Arg.X)
+                variable.Load(_loader, il, Arg.X)
                       .Store(underlyingType, 0, out var x);
 
-                return member.Load(_loader, il, Arg.Y)
+                return variable.Load(_loader, il, Arg.Y)
                              .Store(underlyingType, 1, out var y)
                              .LoadLocal(x)
                              .Branch(OpCodes.Brtrue_S, out var call)
@@ -87,9 +87,9 @@ namespace ILLightenComparer.Emit.Emitters
             }
 
             il.LoadArgument(Arg.Context);
-            member.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.X);
 
-            return member.Load(_loader, il, Arg.Y)
+            return variable.Load(_loader, il, Arg.Y)
                          .LoadArgument(Arg.SetX)
                          .LoadArgument(Arg.SetY);
         }

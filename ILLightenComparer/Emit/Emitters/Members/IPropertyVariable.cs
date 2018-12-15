@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IPropertyMember : IVariable
+    internal interface IPropertyVariable : IVariable
     {
         MethodInfo GetterMethod { get; }
     }

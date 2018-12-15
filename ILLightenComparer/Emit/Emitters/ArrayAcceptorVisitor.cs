@@ -18,9 +18,9 @@ namespace ILLightenComparer.Emit.Emitters
         private const int LocalIndex = 7;
 
         private readonly CompareCallVisitor _callVisitor;
-        private readonly MemberLoader _loader;
+        private readonly VariableLoader _loader;
 
-        public ArrayAcceptorVisitor(MemberLoader loader, CompareCallVisitor callVisitor)
+        public ArrayAcceptorVisitor(VariableLoader loader, CompareCallVisitor callVisitor)
         {
             _callVisitor = callVisitor;
             _loader = loader;

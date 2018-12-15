@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IArgumentsMember : IAcceptor
+    internal interface IArgumentsVariable : IAcceptor
     {
         bool LoadContext { get; }
     }

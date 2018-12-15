@@ -9,9 +9,9 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class ArrayFieldMember : FieldMember, IArrayAcceptor, IArgumentsMember
+    internal sealed class ArrayFieldVariable : FieldVariable, IArrayAcceptor, IArgumentsVariable
     {
-        private ArrayFieldMember(FieldInfo fieldInfo) : base(fieldInfo)
+        private ArrayFieldVariable(FieldInfo fieldInfo) : base(fieldInfo)
         {
             GetLengthMethod = VariableType.GetPropertyGetter(MethodName.ArrayLength);
             GetItemMethod = VariableType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
@@ -23,17 +23,17 @@ namespace ILLightenComparer.Emit.Members
         public Type ElementType { get; }
         public MethodInfo GetItemMethod { get; }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -48,7 +48,7 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static ArrayFieldMember Create(MemberInfo memberInfo)
+        public static ArrayFieldVariable Create(MemberInfo memberInfo)
         {
             var info = memberInfo as FieldInfo;
             if (info == null)
@@ -59,16 +59,16 @@ namespace ILLightenComparer.Emit.Members
             var underlyingType = info.FieldType.GetUnderlyingType();
             if (underlyingType.IsArray && underlyingType.GetArrayRank() == 1)
             {
-                return new ArrayFieldMember(info);
+                return new ArrayFieldVariable(info);
             }
 
             return null;
         }
     }
 
-    internal sealed class ArrayPropertyMember : PropertyMember, IArrayAcceptor, IArgumentsMember
+    internal sealed class ArrayPropertyVariable : PropertyVariable, IArrayAcceptor, IArgumentsVariable
     {
-        private ArrayPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo)
+        private ArrayPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo)
         {
             GetLengthMethod = VariableType.GetPropertyGetter(MethodName.ArrayLength);
             GetItemMethod = VariableType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
@@ -80,17 +80,17 @@ namespace ILLightenComparer.Emit.Members
         public Type ElementType { get; }
         public MethodInfo GetItemMethod { get; }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -105,7 +105,7 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static ArrayPropertyMember Create(MemberInfo memberInfo)
+        public static ArrayPropertyVariable Create(MemberInfo memberInfo)
         {
             var info = memberInfo as PropertyInfo;
             if (info == null)
@@ -116,7 +116,7 @@ namespace ILLightenComparer.Emit.Members
             var underlyingType = info.PropertyType.GetUnderlyingType();
             if (underlyingType.IsArray && underlyingType.GetArrayRank() == 1)
             {
-                return new ArrayPropertyMember(info);
+                return new ArrayPropertyVariable(info);
             }
 
             return null;

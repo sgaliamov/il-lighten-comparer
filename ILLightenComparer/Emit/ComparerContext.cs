@@ -23,22 +23,22 @@ namespace ILLightenComparer.Emit
     {
         private static readonly Func<MemberInfo, IAcceptor>[] PropertyFactories =
         {
-            StringPropertyMember.Create,
-            IntegralPropertyMember.Create,
-            BasicPropertyMember.Create,
-            ComparablePropertyMember.Create,
-            ArrayPropertyMember.Create,
-            HierarchicalPropertyMember.Create
+            StringPropertyVariable.Create,
+            IntegralPropertyVariable.Create,
+            BasicPropertyVariable.Create,
+            ComparablePropertyVariable.Create,
+            ArrayPropertyVariable.Create,
+            HierarchicalPropertyVariable.Create
         };
 
         private static readonly Func<MemberInfo, IAcceptor>[] FieldFactories =
         {
-            StringFieldMember.Create,
-            IntegralFieldMember.Create,
-            BasicFieldMember.Create,
-            ComparableFieldMember.Create,
-            ArrayFieldMember.Create,
-            HierarchicalFieldMember.Create
+            StringFieldVariable.Create,
+            IntegralFieldVariable.Create,
+            BasicFieldVariable.Create,
+            ComparableFieldVariable.Create,
+            ArrayFieldVariable.Create,
+            HierarchicalFieldVariable.Create
         };
 
         private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _builds = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();

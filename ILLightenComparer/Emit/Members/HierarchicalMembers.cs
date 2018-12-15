@@ -7,23 +7,23 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class HierarchicalFieldMember : FieldMember, IHierarchicalAcceptor, IArgumentsMember
+    internal sealed class HierarchicalFieldVariable : FieldVariable, IHierarchicalAcceptor, IArgumentsVariable
     {
-        private HierarchicalFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+        private HierarchicalFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
         public bool LoadContext => true;
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -38,35 +38,35 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static HierarchicalFieldMember Create(MemberInfo memberInfo)
+        public static HierarchicalFieldVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is FieldInfo info
                    && !info
                        .FieldType
                        .GetUnderlyingType()
                        .IsPrimitive()
-                       ? new HierarchicalFieldMember(info)
+                       ? new HierarchicalFieldVariable(info)
                        : null;
         }
     }
 
-    internal sealed class HierarchicalPropertyMember : PropertyMember, IHierarchicalAcceptor, IArgumentsMember
+    internal sealed class HierarchicalPropertyVariable : PropertyVariable, IHierarchicalAcceptor, IArgumentsVariable
     {
-        private HierarchicalPropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        private HierarchicalPropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public bool LoadContext => true;
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -81,14 +81,14 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static HierarchicalPropertyMember Create(MemberInfo memberInfo)
+        public static HierarchicalPropertyVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is PropertyInfo info
                    && !info
                        .PropertyType
                        .GetUnderlyingType()
                        .IsPrimitive()
-                       ? new HierarchicalPropertyMember(info)
+                       ? new HierarchicalPropertyVariable(info)
                        : null;
         }
     }

@@ -8,21 +8,21 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Members
 {
-    internal sealed class ComparableFieldMember : FieldMember, IComparableAcceptor, IComparableMember
+    internal sealed class ComparableFieldVariable : FieldVariable, IComparableAcceptor, IComparableVariable
     {
-        private ComparableFieldMember(FieldInfo fieldInfo) : base(fieldInfo) { }
+        private ComparableFieldVariable(FieldInfo fieldInfo) : base(fieldInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -37,7 +37,7 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static ComparableFieldMember Create(MemberInfo memberInfo)
+        public static ComparableFieldVariable Create(MemberInfo memberInfo)
         {
             var info = memberInfo as FieldInfo;
             if (info == null)
@@ -50,26 +50,26 @@ namespace ILLightenComparer.Emit.Members
             var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>));
 
             return isComparable
-                       ? new ComparableFieldMember(info)
+                       ? new ComparableFieldVariable(info)
                        : null;
         }
     }
 
-    internal sealed class ComparablePropertyMember : PropertyMember, IComparableAcceptor, IComparableMember
+    internal sealed class ComparablePropertyVariable : PropertyVariable, IComparableAcceptor, IComparableVariable
     {
-        private ComparablePropertyMember(PropertyInfo propertyInfo) : base(propertyInfo) { }
+        private ComparablePropertyVariable(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
-        public ILEmitter LoadMembers(StackEmitter visitor, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(StackEmitter visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public ILEmitter Load(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMember(this, il, arg);
         }
 
-        public ILEmitter LoadAddress(MemberLoader visitor, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadMemberAddress(this, il, arg);
         }
@@ -84,7 +84,7 @@ namespace ILLightenComparer.Emit.Members
             return visitor.Visit(this, il);
         }
 
-        public static ComparablePropertyMember Create(MemberInfo memberInfo)
+        public static ComparablePropertyVariable Create(MemberInfo memberInfo)
         {
             var info = memberInfo as PropertyInfo;
             if (info == null)
@@ -97,7 +97,7 @@ namespace ILLightenComparer.Emit.Members
             var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>));
 
             return isComparable
-                       ? new ComparablePropertyMember(info)
+                       ? new ComparablePropertyVariable(info)
                        : null;
         }
     }

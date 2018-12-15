@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Emit.Emitters.Members
 {
-    internal interface IFieldMember : IVariable
+    internal interface IFieldVariable : IVariable
     {
         FieldInfo FieldInfo { get; }
     }
