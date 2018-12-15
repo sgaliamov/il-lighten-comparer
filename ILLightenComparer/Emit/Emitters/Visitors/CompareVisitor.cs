@@ -1,60 +1,53 @@
 ﻿using System;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Acceptors;
+using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
-namespace ILLightenComparer.Emit.Emitters
+namespace ILLightenComparer.Emit.Emitters.Visitors
 {
-    internal sealed class CompareCallVisitor
+    internal sealed class CompareVisitor
     {
         private readonly ComparerContext _context;
 
-        public CompareCallVisitor(ComparerContext context)
+        public CompareVisitor(ComparerContext context)
         {
             _context = context;
         }
 
-        public ILEmitter Visit(IHierarchicalAcceptor member, ILEmitter il)
+        public ILEmitter Visit(IHierarchicalComparison comparison, ILEmitter il)
         {
-            return VisitHierarchical(il, member.VariableType);
+            return VisitHierarchical(il, comparison.Variable.VariableType);
         }
 
-        public ILEmitter Visit(IComparableAcceptor member, ILEmitter il)
+        public ILEmitter Visit(IComparableComparison comparison, ILEmitter il)
         {
-            return VisitComparable(member.VariableType, il);
+            return VisitComparable(comparison.Variable.VariableType, il);
         }
 
-        public ILEmitter Visit(IBasicAcceptor member, ILEmitter il)
-        {
-            return VisitBasic(member.VariableType, il);
-        }
-
-        public ILEmitter Visit(IIntegralAcceptor member, ILEmitter il)
+        public ILEmitter Visit(IIntegralComparison comparison, ILEmitter il)
         {
             return VisitIntegral(il);
         }
 
-        public ILEmitter Visit(IStringAcceptor member, ILEmitter il)
+        public ILEmitter Visit(IStringComparison comparison, ILEmitter il)
         {
-            return VisitString(member.DeclaringType, il);
+            return VisitString(comparison.Variable.OwnerType, il);
         }
 
-        public ILEmitter Visit(IArrayAcceptor member, ILEmitter il)
+        public ILEmitter Visit(ICollectionComparison comparison, ILEmitter il)
         {
-            var underlyingElementType = member.ElementType.GetUnderlyingType();
+            var underlyingElementType = comparison.ElementType.GetUnderlyingType();
 
             switch (underlyingElementType.GetComparisonType())
             {
                 case ComparisonType.Strings:
-                    return VisitString(member.DeclaringType, il);
+                    return VisitString(comparison.Variable.OwnerType, il);
 
                 case ComparisonType.Integrals:
                     return VisitIntegral(il);
 
                 case ComparisonType.Primitives:
-                    return VisitBasic(underlyingElementType, il);
-
                 case ComparisonType.Comparables:
                     return VisitComparable(underlyingElementType, il);
 
@@ -104,15 +97,6 @@ namespace ILLightenComparer.Emit.Emitters
         private static ILEmitter VisitIntegral(ILEmitter il)
         {
             return il.Emit(OpCodes.Sub);
-        }
-
-        private static ILEmitter VisitBasic(Type memberType, ILEmitter il)
-        {
-            var compareToMethod = memberType.GetUnderlyingCompareToMethod()
-                                  ?? throw new InvalidOperationException(
-                                      $"{memberType.DisplayName()} does not have {MethodName.CompareTo} method.");
-
-            return il.Call(compareToMethod);
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type underlyingType)

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Acceptors;
+using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
-namespace ILLightenComparer.Emit.Emitters
+namespace ILLightenComparer.Emit.Emitters.Visitors
 {
-    internal sealed class ArrayAcceptorVisitor
+    internal sealed class ArrayVisitor
     {
         private const int LocalX = 1;
         private const int LocalY = 2;
@@ -16,26 +16,27 @@ namespace ILLightenComparer.Emit.Emitters
         private const int LocalDoneX = 5;
         private const int LocalDoneY = 6;
         private const int LocalIndex = 7;
-
-        private readonly CompareCallVisitor _callVisitor;
         private readonly VariableLoader _loader;
 
-        public ArrayAcceptorVisitor(VariableLoader loader, CompareCallVisitor callVisitor)
+        private readonly CompareVisitor _visitor;
+
+        public ArrayVisitor(VariableLoader loader, CompareVisitor visitor)
         {
-            _callVisitor = callVisitor;
+            _visitor = visitor;
             _loader = loader;
         }
 
-        public ILEmitter Visit(IArrayAcceptor member, ILEmitter il)
+        public ILEmitter Visit(ICollectionComparison comparison, ILEmitter il)
         {
+            var variable = comparison.Variable;
             il.DefineLabel(out var gotoNextMember);
 
-            member.Load(_loader, il, Arg.X).Store(member.VariableType, LocalX, out var x);
-            member.Load(_loader, il, Arg.Y).Store(member.VariableType, LocalY, out var y);
+            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
+            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var y);
 
             EmitCheckMemberReferenceComparison(il, x, y, gotoNextMember);
 
-            var (countX, countY) = EmitLoadCounts(il, member, x, y);
+            var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
 
             il.LoadConstant(0)
               .Store(typeof(int), LocalIndex, out var index)
@@ -44,18 +45,18 @@ namespace ILLightenComparer.Emit.Emitters
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            if (member.ElementType.IsNullable())
+            if (comparison.ElementType.IsNullable())
             {
-                EmitLoadNullableValues(il, member, x, y, index, gotoNextMember);
+                EmitLoadNullableValues(il, comparison, x, y, index, gotoNextMember);
             }
             else
             {
-                EmitLoadValues(il, member, x, y, index);
+                EmitLoadValues(il, comparison, x, y, index);
             }
 
-            member.Accept(_callVisitor, il)
-                  .DefineLabel(out var continueLoop)
-                  .EmitReturnNotZero(continueLoop);
+            comparison.Accept(_visitor, il)
+                      .DefineLabel(out var continueLoop)
+                      .EmitReturnNotZero(continueLoop);
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)
@@ -70,7 +71,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         private static void EmitLoadValues(
             ILEmitter il,
-            IArrayAcceptor member,
+            ICollectionComparison member,
             LocalBuilder x,
             LocalBuilder y,
             LocalBuilder index)
@@ -106,7 +107,7 @@ namespace ILLightenComparer.Emit.Emitters
 
         private static void EmitLoadNullableValues(
             ILEmitter il,
-            IArrayAcceptor member,
+            ICollectionComparison member,
             LocalBuilder x,
             LocalBuilder y,
             LocalBuilder index,
@@ -179,18 +180,18 @@ namespace ILLightenComparer.Emit.Emitters
 
         private static (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
             ILEmitter il,
-            IArrayAcceptor member,
+            ICollectionComparison comparison,
             LocalBuilder x,
             LocalBuilder y)
         {
             il.LoadLocal(x)
-              .Call(member.GetLengthMethod)
+              .Call(comparison.GetLengthMethod)
               .Store(typeof(int), LocalCountX, out var countX)
               .LoadLocal(y)
-              .Call(member.GetLengthMethod)
+              .Call(comparison.GetLengthMethod)
               .Store(typeof(int), LocalCountY, out var countY);
 
-            EmitCheckForNegativeCount(il, countX, countY, member.VariableType);
+            EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
 
             return (countX, countY);
         }

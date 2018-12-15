@@ -1,63 +1,56 @@
-﻿using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Acceptors;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
+using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
-namespace ILLightenComparer.Emit.Emitters
+namespace ILLightenComparer.Emit.Emitters.Visitors
 {
-    internal sealed class StackEmitter
+    internal sealed class StackVisitor
     {
         private readonly VariableLoader _loader;
 
-        public StackEmitter(VariableLoader loader)
+        public StackVisitor(VariableLoader loader)
         {
             _loader = loader;
         }
 
-        public ILEmitter Visit(IArgumentVariable variable, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IHierarchicalComparison comparison, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = variable.VariableType;
-            if (memberType.IsNullable())
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+            if (variableType.IsNullable())
             {
                 return LoadNullableMembers(
                     il,
                     false,
-                    variable.LoadContext,
+                    true,
                     variable,
                     gotoNextMember);
             }
 
-            if (variable.LoadContext)
-            {
-                il.LoadArgument(Arg.Context);
-            }
-
+            il.LoadArgument(Arg.Context);
             variable.Load(_loader, il, Arg.X);
             variable.Load(_loader, il, Arg.Y);
 
-            if (variable.LoadContext)
-            {
-                il.LoadArgument(Arg.SetX)
-                  .LoadArgument(Arg.SetY);
-            }
-
-            return il;
+            return il.LoadArgument(Arg.SetX)
+                     .LoadArgument(Arg.SetY);
         }
 
-        public ILEmitter Visit(IComparableVariable variable, ILEmitter il, Label gotoNextMember)
+        public ILEmitter Visit(IComparableComparison comparison, ILEmitter il, Label gotoNextMember)
         {
-            var memberType = variable.VariableType;
-            var underlyingType = memberType.GetUnderlyingType();
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+            var underlyingType = variableType.GetUnderlyingType();
             if (underlyingType.IsValueType)
             {
-                if (memberType.IsNullable())
+                if (variableType.IsNullable())
                 {
                     return LoadNullableMembers(il, true, false, variable, gotoNextMember);
                 }
 
                 variable.LoadAddress(_loader, il, Arg.X);
-
                 return variable.Load(_loader, il, Arg.Y);
             }
 
@@ -80,23 +73,34 @@ namespace ILLightenComparer.Emit.Emitters
 
             il.LoadArgument(Arg.Context);
             variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y)
+                    .LoadArgument(Arg.SetX)
+                    .LoadArgument(Arg.SetY);
 
-            return variable.Load(_loader, il, Arg.Y)
-                           .LoadArgument(Arg.SetX)
-                           .LoadArgument(Arg.SetY);
+            return il;
+        }
+
+        public ILEmitter Visit(ICollectionComparison variable, ILEmitter il, Label gotoNextMember)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ILEmitter Visit(IStaticComparison comparison, ILEmitter il, Label gotoNextMember)
+        {
+            throw new NotImplementedException();
         }
 
         private ILEmitter LoadNullableMembers(
             ILEmitter il,
             bool callable,
             bool loadContext,
-            IAcceptor member,
+            IVariable variable,
             Label gotoNextMember)
         {
-            var memberType = member.VariableType;
+            var memberType = variable.VariableType;
 
-            member.Load(_loader, il, Arg.X).Store(memberType, 0, out var nullableX);
-            member.Load(_loader, il, Arg.Y).Store(memberType, 1, out var nullableY);
+            variable.Load(_loader, il, Arg.X).Store(memberType, 0, out var nullableX);
+            variable.Load(_loader, il, Arg.Y).Store(memberType, 1, out var nullableY);
 
             var getValueMethod = memberType.GetPropertyGetter(MethodName.Value);
             var underlyingType = memberType.GetUnderlyingType();

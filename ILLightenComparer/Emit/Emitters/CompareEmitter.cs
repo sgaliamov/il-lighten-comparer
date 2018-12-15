@@ -1,39 +1,40 @@
 ﻿using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Acceptors;
+using ILLightenComparer.Emit.Emitters.Visitors;
+using ILLightenComparer.Emit.Emitters.Visitors.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CompareEmitter
     {
-        private readonly ArrayAcceptorVisitor _arrayAcceptorVisitor;
-        private readonly CompareCallVisitor _callVisitor;
+        private readonly ArrayVisitor _arrayVisitor;
+        private readonly CompareVisitor _compareVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
-        private readonly StackEmitter _stackEmitter;
+        private readonly StackVisitor _stackVisitor;
 
         public CompareEmitter(ComparerContext context)
         {
-            _callVisitor = new CompareCallVisitor(context);
-            _stackEmitter = new StackEmitter(_loader);
-            _arrayAcceptorVisitor = new ArrayAcceptorVisitor(_loader, _callVisitor);
+            _compareVisitor = new CompareVisitor(context);
+            _stackVisitor = new StackVisitor(_loader);
+            _arrayVisitor = new ArrayVisitor(_loader, _compareVisitor);
         }
 
-        public ILEmitter Visit(IAcceptor member, ILEmitter il)
+        public ILEmitter Visit(IComparison member, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            member.LoadVariables(_stackEmitter, il, gotoNextMember);
+            member.LoadVariables(_stackVisitor, il, gotoNextMember);
 
-            return member.Accept(_callVisitor, il)
+            return member.Accept(_compareVisitor, il)
                          .EmitReturnNotZero(gotoNextMember)
                          .MarkLabel(gotoNextMember);
         }
 
-        public ILEmitter Visit(IArrayAcceptor member, ILEmitter il)
+        public ILEmitter Visit(ICollectionComparison member, ILEmitter il)
         {
-            return _arrayAcceptorVisitor.Visit(member, il);
+            return _arrayVisitor.Visit(member, il);
         }
 
-        public void EmitCheckArgumentsReferenceComparison(ILEmitter il)
+        public void EmitArgumentsReferenceComparison(ILEmitter il)
         {
             il.LoadArgument(Arg.X) // x == y
               .LoadArgument(Arg.Y)
