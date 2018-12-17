@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ILLightenComparer.Emit.Emitters;
 using ILLightenComparer.Emit.Emitters.Comparisons;
 
 namespace ILLightenComparer.Emit.Reflection
@@ -9,9 +10,9 @@ namespace ILLightenComparer.Emit.Reflection
     internal sealed class MembersProvider
     {
         private readonly ComparerContext _context;
-        private readonly MemberConverter _converter;
+        private readonly Converter _converter;
 
-        public MembersProvider(ComparerContext context, MemberConverter converter)
+        public MembersProvider(ComparerContext context, Converter converter)
         {
             _context = context;
             _converter = converter;

@@ -12,11 +12,11 @@ namespace ILLightenComparer.Emit.Emitters
         private readonly VariableLoader _loader = new VariableLoader();
         private readonly StackVisitor _stackVisitor;
 
-        public CompareEmitter(ComparerContext context)
+        public CompareEmitter(ComparerContext context, Converter converter)
         {
             _compareVisitor = new CompareVisitor(context);
             _stackVisitor = new StackVisitor(_loader);
-            _arrayVisitor = new ArrayVisitor(_stackVisitor, _compareVisitor, _loader);
+            _arrayVisitor = new ArrayVisitor(_stackVisitor, _compareVisitor, _loader, converter);
         }
 
         public ILEmitter Visit(IMemberComparison comparison, ILEmitter il)

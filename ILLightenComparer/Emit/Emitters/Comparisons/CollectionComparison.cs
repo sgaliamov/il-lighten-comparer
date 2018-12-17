@@ -27,6 +27,11 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         {
             var variable = VariableFactory.Create(memberInfo);
 
+            return Create(variable);
+        }
+
+        public static CollectionComparison Create(IVariable variable)
+        {
             var underlyingType = variable.VariableType.GetUnderlyingType();
             if (underlyingType.IsArray && underlyingType.GetArrayRank() == 1)
             {

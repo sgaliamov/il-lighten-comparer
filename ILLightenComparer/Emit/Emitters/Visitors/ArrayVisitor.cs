@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
-using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
@@ -18,16 +17,19 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         private const int LocalIndex = 7;
 
         private readonly CompareVisitor _compareVisitor;
+        private readonly Converter _converter;
         private readonly VariableLoader _loader;
         private readonly StackVisitor _stackVisitor;
 
         public ArrayVisitor(
             StackVisitor stackVisitor,
             CompareVisitor compareVisitor,
-            VariableLoader loader)
+            VariableLoader loader,
+            Converter converter)
         {
             _compareVisitor = compareVisitor;
             _loader = loader;
+            _converter = converter;
             _stackVisitor = stackVisitor;
         }
 
@@ -51,7 +53,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            var itemComparison = Magic(variable, index);
+            var itemComparison = _converter.CreateArrayItemComparison(variable, index);
             itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
             itemComparison.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(continueLoop);
@@ -65,13 +67,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .MarkLabel(gotoNextMember);
 
             return il;
-        }
-
-        private static IComparisonAcceptor Magic(IVariable variable, LocalBuilder index)
-        {
-            var itemVariable = ArrayItemVariable.Create(variable.VariableType, variable.OwnerType, index);
-
-            return ArrayItemComparison.Create(itemVariable);
         }
 
         private static void EmitCheckIfLoopsAreDone(
