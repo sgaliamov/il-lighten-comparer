@@ -50,8 +50,8 @@
 - [x] create type only at the end, use builders when cycle is possible
 - [x] refactor visiting `IComparableAcceptor`
 - [x] compare arrays
-- [ ] compare array of `ComparableStruct`
-- [ ] refactor variables loading
+- [x] compare array of `ComparableStruct`
+- [x] refactor variables loading
 - [ ] compare `IEnumarable`
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
