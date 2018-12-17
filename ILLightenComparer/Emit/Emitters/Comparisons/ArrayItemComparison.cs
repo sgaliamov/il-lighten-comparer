@@ -1,4 +1,6 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Linq;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
 
@@ -6,10 +8,18 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
     internal sealed class ArrayItemComparison : IComparisonAcceptor
     {
-        public ArrayItemComparison(ArrayItemVariable itemVariable, IComparisonAcceptor itemAcceptor)
+        private static readonly Func<IVariable, IComparisonAcceptor>[] Factories =
         {
-            Variable = itemVariable;
-            ItemAcceptor = itemAcceptor;
+            IntegralComparison.Create,
+            StringComparison.Create,
+            ComparableComparison.Create,
+            HierarchicalComparison.Create
+        };
+
+        private ArrayItemComparison(IVariable itemVariable, IComparisonAcceptor itemAcceptor)
+        {
+            Variable = itemVariable ?? throw new ArgumentNullException(nameof(itemVariable));
+            ItemAcceptor = itemAcceptor ?? throw new ArgumentNullException(nameof(itemAcceptor));
         }
 
         public IComparisonAcceptor ItemAcceptor { get; }
@@ -27,6 +37,15 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.LoadVariables(this, il, gotoNext);
+        }
+
+        public static ArrayItemComparison Create(IVariable itemVariable)
+        {
+            var comparison = Factories
+                             .Select(factory => factory(itemVariable))
+                             .FirstOrDefault(x => x != null);
+
+            return new ArrayItemComparison(itemVariable, comparison);
         }
     }
 }

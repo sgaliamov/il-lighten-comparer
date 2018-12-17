@@ -50,6 +50,8 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
+            var itemVariable = ArrayItemVariable.Create(variable.VariableType, index);
+            var itemComparison = ArrayItemComparison.Create(itemVariable);
 
             itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
 

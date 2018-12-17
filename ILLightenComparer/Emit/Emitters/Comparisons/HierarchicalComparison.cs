@@ -33,6 +33,12 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         public static HierarchicalComparison Create(MemberInfo memberInfo)
         {
             var variable = VariableFactory.Create(memberInfo);
+
+            return Create(variable);
+        }
+
+        public static HierarchicalComparison Create(IVariable variable)
+        {
             if (variable.VariableType.GetUnderlyingType().IsPrimitive())
             {
                 return null;

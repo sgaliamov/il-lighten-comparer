@@ -32,6 +32,12 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         public static StringComparison Create(MemberInfo memberInfo)
         {
             var variable = VariableFactory.Create(memberInfo);
+
+            return Create(variable);
+        }
+
+        public static StringComparison Create(IVariable variable)
+        {
             if (variable.VariableType == typeof(string))
             {
                 return new StringComparison(variable);

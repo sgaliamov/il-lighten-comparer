@@ -33,6 +33,12 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         public static IntegralComparison Create(MemberInfo memberInfo)
         {
             var variable = VariableFactory.Create(memberInfo);
+            
+            return Create(variable);
+        }
+
+        public static IntegralComparison Create(IVariable variable)
+        {
             if (variable.VariableType.GetUnderlyingType().IsSmallIntegral())
             {
                 return new IntegralComparison(variable);

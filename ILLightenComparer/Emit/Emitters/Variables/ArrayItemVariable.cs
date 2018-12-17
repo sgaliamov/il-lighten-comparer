@@ -2,20 +2,17 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Visitors;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Variables
 {
     internal sealed class ArrayItemVariable : IVariable
     {
-        public ArrayItemVariable(
-            Type ownerType,
-            Type variableType,
-            MethodInfo itemMethod,
-            LocalBuilder indexVariable)
+        private ArrayItemVariable(Type arrayMemberType, LocalBuilder indexVariable)
         {
-            OwnerType = ownerType;
-            VariableType = variableType;
-            GetItemMethod = itemMethod;
+            OwnerType = arrayMemberType.DeclaringType;
+            VariableType = arrayMemberType.GetElementType();
+            GetItemMethod = arrayMemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
             IndexVariable = indexVariable;
         }
 
@@ -40,6 +37,13 @@ namespace ILLightenComparer.Emit.Emitters.Variables
         public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadAddress(this, il, arg);
+        }
+
+        public static IVariable Create(Type arrayMemberType, LocalBuilder indexVariable)
+        {
+            return arrayMemberType.IsArray && arrayMemberType.GetArrayRank() == 1
+                       ? new ArrayItemVariable(arrayMemberType, indexVariable)
+                       : null;
         }
     }
 }

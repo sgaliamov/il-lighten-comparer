@@ -34,9 +34,15 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         public static ComparableComparison Create(MemberInfo memberInfo)
         {
             var variable = VariableFactory.Create(memberInfo);
-            var underlyingType = variable.VariableType.GetUnderlyingType();
 
-            var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>));
+            return Create(variable);
+        }
+
+        public static ComparableComparison Create(IVariable variable)
+        {
+            var isComparable = variable
+                               .VariableType.GetUnderlyingType()
+                               .ImplementsGeneric(typeof(IComparable<>));
             if (isComparable)
             {
                 return new ComparableComparison(variable);
