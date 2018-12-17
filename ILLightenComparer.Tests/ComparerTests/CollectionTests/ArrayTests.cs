@@ -170,9 +170,20 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private T[] CreateArray<T>()
         {
-            return _random.NextDouble() < 0.2
-                       ? null
-                       : _fixture.CreateMany<T>(_random.Next(0, 5)).ToArray();
+            if (_random.NextDouble() < 0.2)
+            {
+                return null;
+            }
+
+            var list = _fixture.CreateMany<T>(_random.Next(0, 5)).ToList();
+
+            if (_random.NextDouble() < 0.2)
+            {
+                list.Add(default);
+                list.Add(default);
+            }
+
+            return list.OrderBy(_ => _random.Next()).ToArray();
         }
 
         private IEnumerable<SampleObject<T[]>> CreateObjects<T>(int itemsCount)

@@ -83,12 +83,7 @@ namespace ILLightenComparer.Tests.Utilities
 
             if (toSchedule.ValueType.IsAssignableFrom(typeof(IEnumerable)))
             {
-                throw new NotImplementedException();
-                //uint index = 0;
-                //foreach (var item in (IEnumerable)value)
-                //{
-                //    Schedule(new Member(value, item, index++));
-                //}
+                throw new NotSupportedException();
             }
 
             _toWalk.Push(toSchedule);
@@ -108,12 +103,6 @@ namespace ILLightenComparer.Tests.Utilities
         public Member(object value)
             : this(null, null, value.GetType(), value) { }
 
-        //public Member(object parent, Type valueType, object value, uint index)
-        //    : this(parent, null, valueType, value) => Index = index;
-
-        public uint? Index { get; }
-
-        //public bool IsCollection => Index.HasValue;
         public MemberInfo MemberInfo { get; }
         public object Parent { get; }
         public object Value { get; }
@@ -138,7 +127,7 @@ namespace ILLightenComparer.Tests.Utilities
         {
             unchecked
             {
-                var hashCode = Index.GetHashCode();
+                var hashCode = 397;
                 hashCode = (hashCode * 397) ^ (MemberInfo != null ? MemberInfo.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Parent != null ? Parent.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Value != null ? Value.GetHashCode() : 0);
@@ -148,8 +137,7 @@ namespace ILLightenComparer.Tests.Utilities
 
         public bool Equals(Member other)
         {
-            return Index == other.Index
-                   && Equals(MemberInfo, other.MemberInfo)
+            return Equals(MemberInfo, other.MemberInfo)
                    && Equals(Parent, other.Parent)
                    && Equals(Value, other.Value);
         }

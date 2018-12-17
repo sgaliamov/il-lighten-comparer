@@ -76,7 +76,21 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact(Timeout = Constants.DefaultTimeout)]
         public void Sorting_Must_Work_The_Same_As_For_Reference_Comparer()
         {
-            var original = Fixture.CreateMany<T>(Count).ToArray();
+            IEnumerable<T> CreateMany()
+            {
+                var enumerable = Fixture.CreateMany<T>(Count);
+                if (typeof(T).IsClass || typeof(T).IsNullable())
+                {
+                    enumerable = enumerable.Append(default);
+                    enumerable = enumerable.Append(default);
+                    enumerable = enumerable.Append(default);
+                }
+
+                return enumerable.OrderBy(_ => Guid.NewGuid());
+            }
+
+            var original = CreateMany().ToArray();
+
             var copy0 = original.DeepClone();
             var copy1 = original.DeepClone();
             var copy2 = original.DeepClone();
