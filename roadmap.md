@@ -85,6 +85,8 @@
 - [ ] optimization for a last member - just return its result
 - [ ] change behavior then types are not matched but castable
 - [ ] do reference comparison only once
+- [ ] create visitor for nullable as for arrays
+- [ ] introduce variables scope to not have to track variable buckets
 - [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?
 - [ ] support internal classes to compare?
