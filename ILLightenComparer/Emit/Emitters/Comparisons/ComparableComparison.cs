@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class ComparableComparison : IComparison
+    internal sealed class ComparableComparison : IComparisonAcceptor
     {
         private ComparableComparison(IVariable variable)
         {
@@ -34,8 +34,8 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         public static ComparableComparison Create(MemberInfo memberInfo)
         {
             var variable = VariableFactory.Create(memberInfo);
-
             var underlyingType = variable.VariableType.GetUnderlyingType();
+
             var isComparable = underlyingType.ImplementsGeneric(typeof(IComparable<>));
             if (isComparable)
             {

@@ -9,14 +9,15 @@ namespace ILLightenComparer.Emit.Reflection
     internal sealed class MembersProvider
     {
         private readonly ComparerContext _context;
-        private readonly MemberConverter _converter = new MemberConverter();
+        private readonly MemberConverter _converter;
 
-        public MembersProvider(ComparerContext context)
+        public MembersProvider(ComparerContext context, MemberConverter converter)
         {
             _context = context;
+            _converter = converter;
         }
 
-        public IComparison[] GetMembers(Type type)
+        public ICompareEmitterAcceptor[] GetMembers(Type type)
         {
             var filtered = Filter(type);
             var sorted = Sort(type, filtered);
@@ -25,7 +26,7 @@ namespace ILLightenComparer.Emit.Reflection
             return converted;
         }
 
-        private IComparison[] Convert(IEnumerable<MemberInfo> members)
+        private ICompareEmitterAcceptor[] Convert(IEnumerable<MemberInfo> members)
         {
             return members.Select(_converter.Convert).ToArray();
         }

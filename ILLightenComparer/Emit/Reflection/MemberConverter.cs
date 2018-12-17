@@ -9,7 +9,7 @@ namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MemberConverter
     {
-        private static readonly Func<MemberInfo, IComparison>[] Factories =
+        private static readonly Func<MemberInfo, ICompareEmitterAcceptor>[] Factories =
         {
             IntegralComparison.Create,
             StringComparison.Create,
@@ -18,7 +18,7 @@ namespace ILLightenComparer.Emit.Reflection
             HierarchicalComparison.Create
         };
 
-        public IComparison Convert(MemberInfo memberInfo)
+        public ICompareEmitterAcceptor Convert(MemberInfo memberInfo)
         {
             var comparison = Factories
                              .Select(factory => factory(memberInfo))

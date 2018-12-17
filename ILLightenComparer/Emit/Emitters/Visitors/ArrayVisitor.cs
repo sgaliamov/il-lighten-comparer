@@ -3,27 +3,31 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
 {
     internal sealed class ArrayVisitor
     {
-        private const int LocalX = 1;
-        private const int LocalY = 2;
+        private const int LocalX = Arg.X; // 1
+        private const int LocalY = Arg.Y; // 2
         private const int LocalCountX = 3;
         private const int LocalCountY = 4;
         private const int LocalDoneX = 5;
         private const int LocalDoneY = 6;
         private const int LocalIndex = 7;
+
+        private readonly CompareVisitor _compareVisitor;
         private readonly VariableLoader _loader;
+        private readonly StackVisitor _stackVisitor;
 
-        private readonly CompareVisitor _visitor;
-
-        public ArrayVisitor(VariableLoader loader, CompareVisitor visitor)
+        public ArrayVisitor(
+            StackVisitor stackVisitor,
+            CompareVisitor compareVisitor,
+            VariableLoader loader)
         {
-            _visitor = visitor;
+            _compareVisitor = compareVisitor;
             _loader = loader;
+            _stackVisitor = stackVisitor;
         }
 
         public ILEmitter Visit(CollectionComparison comparison, ILEmitter il)
@@ -45,108 +49,21 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            if (comparison.ElementType.IsNullable())
-            {
-                EmitLoadNullableValues(il, comparison, x, y, index, gotoNextMember);
-            }
-            else
-            {
-                EmitLoadValues(il, comparison, x, y, index);
-            }
+            _stackVisitor.Visit(comparison, il, x, y, index, gotoNextMember);
 
-            comparison.Accept(_visitor, il)
+            comparison.Accept(_compareVisitor, il)
                       .DefineLabel(out var continueLoop)
                       .EmitReturnNotZero(continueLoop);
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)
-              .LoadConstant(LocalX)
+              .LoadConstant(1)
               .Emit(OpCodes.Add)
               .Store(index)
               .Branch(OpCodes.Br, loopStart)
               .MarkLabel(gotoNextMember);
 
             return il;
-        }
-
-        private static void EmitLoadValues(
-            ILEmitter il,
-            CollectionComparison member,
-            LocalBuilder x,
-            LocalBuilder y,
-            LocalBuilder index)
-        {
-            var elementType = member.ElementType;
-            var underlyingType = elementType.GetUnderlyingType();
-            var comparisonType = elementType.GetComparisonType();
-
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.Context);
-            }
-
-            il.LoadLocal(x)
-              .LoadLocal(index)
-              .Call(member.GetItemMethod);
-            if (comparisonType == ComparisonType.Comparables)
-            {
-                il.Store(underlyingType, LocalX, out var item)
-                  .LoadAddress(item);
-            }
-
-            il.LoadLocal(y)
-              .LoadLocal(index)
-              .Call(member.GetItemMethod);
-
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.SetX)
-                  .LoadArgument(Arg.SetY);
-            }
-        }
-
-        private static void EmitLoadNullableValues(
-            ILEmitter il,
-            CollectionComparison member,
-            LocalBuilder x,
-            LocalBuilder y,
-            LocalBuilder index,
-            Label gotoNextMember)
-        {
-            var elementType = member.ElementType;
-            var underlyingType = elementType.GetUnderlyingType();
-            var comparisonType = elementType.GetComparisonType();
-
-            il.LoadLocal(x)
-              .LoadLocal(index)
-              .Call(member.GetItemMethod)
-              .Store(elementType, LocalX, out var nullableX);
-            il.LoadLocal(y)
-              .LoadLocal(index)
-              .Call(member.GetItemMethod)
-              .Store(elementType, LocalY, out var nullableY);
-
-            il.CheckNullableValuesForNull(nullableX, nullableY, elementType, gotoNextMember);
-
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.Context);
-            }
-
-            var getValueMethod = elementType.GetPropertyGetter(MethodName.Value);
-            il.LoadAddress(nullableX).Call(getValueMethod);
-            if (comparisonType == ComparisonType.Comparables)
-            {
-                il.Store(underlyingType, out var address).LoadAddress(address);
-            }
-
-            il.LoadAddress(nullableY).Call(getValueMethod);
-
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.SetX)
-                  .LoadArgument(Arg.SetY);
-            }
         }
 
         private static void EmitCheckIfLoopsAreDone(
@@ -170,11 +87,11 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Branch(OpCodes.Brfalse_S, out var returnM1)
               .Branch(OpCodes.Br_S, gotoNextMember)
               .MarkLabel(returnM1)
-              .Return(-LocalX)
+              .Return(-1)
               .MarkLabel(checkIsDoneY)
               .LoadLocal(isDoneY)
               .Branch(OpCodes.Brfalse_S, out var loadValues)
-              .Return(LocalX)
+              .Return(1)
               .MarkLabel(loadValues);
         }
 
@@ -228,11 +145,11 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .MarkLabel(checkX)
               .LoadLocal(x)
               .Branch(OpCodes.Brtrue_S, out var checkY)
-              .Return(-LocalX)
+              .Return(-1)
               .MarkLabel(checkY)
               .LoadLocal(y)
               .Branch(OpCodes.Brtrue_S, out var next)
-              .Return(LocalX)
+              .Return(1)
               .MarkLabel(next);
         }
     }

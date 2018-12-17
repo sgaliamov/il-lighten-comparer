@@ -16,22 +16,22 @@ namespace ILLightenComparer.Emit.Emitters
         {
             _compareVisitor = new CompareVisitor(context);
             _stackVisitor = new StackVisitor(_loader);
-            _arrayVisitor = new ArrayVisitor(_loader, _compareVisitor);
+            _arrayVisitor = new ArrayVisitor(_stackVisitor, _compareVisitor, _loader);
         }
 
-        public ILEmitter Visit(IComparison member, ILEmitter il)
+        public ILEmitter Visit(IComparisonAcceptor comparison, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
-            member.LoadVariables(_stackVisitor, il, gotoNextMember);
+            comparison.LoadVariables(_stackVisitor, il, gotoNextMember);
 
-            return member.Accept(_compareVisitor, il)
-                         .EmitReturnNotZero(gotoNextMember)
-                         .MarkLabel(gotoNextMember);
+            return comparison.Accept(_compareVisitor, il)
+                             .EmitReturnNotZero(gotoNextMember)
+                             .MarkLabel(gotoNextMember);
         }
 
-        public ILEmitter Visit(CollectionComparison member, ILEmitter il)
+        public ILEmitter Visit(CollectionComparison comparison, ILEmitter il)
         {
-            return _arrayVisitor.Visit(member, il);
+            return _arrayVisitor.Visit(comparison, il);
         }
 
         public void EmitArgumentsReferenceComparison(ILEmitter il)

@@ -18,9 +18,9 @@ namespace ILLightenComparer.Emit
 
         public ComparerTypeBuilder(ComparerContext context)
         {
-            _compareEmitter = new CompareEmitter(context);
             _context = context;
-            _membersProvider = new MembersProvider(context);
+            _compareEmitter = new CompareEmitter(context);
+            _membersProvider = new MembersProvider(context, new MemberConverter());
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)

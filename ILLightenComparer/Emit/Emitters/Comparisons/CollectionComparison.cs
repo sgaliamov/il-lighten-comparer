@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Extensions;
@@ -8,7 +7,7 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class CollectionComparison : IComparison
+    internal sealed class CollectionComparison : ICompareVisitorAcceptor, ICompareEmitterAcceptor
     {
         private CollectionComparison(IVariable variable)
         {
@@ -17,24 +16,19 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             var variableType = variable.VariableType;
             GetLengthMethod = variableType.GetPropertyGetter(MethodName.ArrayLength);
             GetItemMethod = variableType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
-            ElementType = variableType.GetUnderlyingType().GetElementType();
+            ElementType = variableType.GetElementType();
         }
 
         public Type ElementType { get; }
         public MethodInfo GetItemMethod { get; }
         public MethodInfo GetLengthMethod { get; }
 
-        public IVariable Variable { get; }
-
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
         {
             return visitor.Visit(this, il);
         }
 
-        public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)
-        {
-            return visitor.Visit(this, il, gotoNext);
-        }
+        public IVariable Variable { get; }
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
         {
