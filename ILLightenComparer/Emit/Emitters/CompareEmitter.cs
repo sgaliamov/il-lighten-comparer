@@ -19,7 +19,7 @@ namespace ILLightenComparer.Emit.Emitters
             _arrayVisitor = new ArrayVisitor(_stackVisitor, _compareVisitor, _loader);
         }
 
-        public ILEmitter Visit(IComparisonAcceptor comparison, ILEmitter il)
+        public ILEmitter Visit(IMemberComparison comparison, ILEmitter il)
         {
             il.DefineLabel(out var gotoNextMember);
             comparison.LoadVariables(_stackVisitor, il, gotoNextMember);

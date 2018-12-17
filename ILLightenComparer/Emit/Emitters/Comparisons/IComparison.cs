@@ -9,25 +9,18 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         IVariable Variable { get; }
     }
 
-    internal interface IStaticComparison : IComparisonAcceptor { }
-
-    internal interface IComparisonAcceptor :
-        ICompareVisitorAcceptor, 
-        ICompareEmitterAcceptor, 
-        IStackVisitorAcceptor { }
-
-    internal interface ICompareVisitorAcceptor : IComparison
-    {
-        ILEmitter Accept(CompareVisitor visitor, ILEmitter il);
-    }
-
     internal interface ICompareEmitterAcceptor : IComparison
     {
         ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
     }
 
-    internal interface IStackVisitorAcceptor : IComparison
+    internal interface IComparisonAcceptor : IComparison
     {
+        ILEmitter Accept(CompareVisitor visitor, ILEmitter il);
         ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext);
     }
+
+    internal interface IMemberComparison : IComparisonAcceptor, ICompareEmitterAcceptor { }
+
+    internal interface IStaticComparison : IMemberComparison { }
 }

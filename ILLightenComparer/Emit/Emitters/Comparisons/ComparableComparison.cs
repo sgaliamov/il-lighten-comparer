@@ -7,7 +7,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class ComparableComparison : IComparisonAcceptor
+    internal sealed class ComparableComparison : IMemberComparison
     {
         private ComparableComparison(IVariable variable)
         {
