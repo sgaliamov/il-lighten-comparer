@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
@@ -49,11 +50,12 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            _stackVisitor.LoadVariables(comparison, il, x, y, index, gotoNextMember);
 
-            _compareVisitor.Visit(comparison, il)
-                           .DefineLabel(out var continueLoop)
-                           .EmitReturnNotZero(continueLoop);
+            itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+
+            itemComparison.Accept(_compareVisitor, il)
+                          .DefineLabel(out var continueLoop)
+                          .EmitReturnNotZero(continueLoop);
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)

@@ -36,27 +36,32 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return VisitString(comparison.Variable.OwnerType, il);
         }
 
-        public ILEmitter Visit(CollectionComparison comparison, ILEmitter il)
+        //public ILEmitter Visit(CollectionComparison comparison, ILEmitter il)
+        //{
+        //    var underlyingElementType = comparison.ElementType.GetUnderlyingType();
+
+        //    switch (underlyingElementType.GetComparisonType())
+        //    {
+        //        case ComparisonType.Strings:
+        //            return VisitString(comparison.Variable.OwnerType, il);
+
+        //        case ComparisonType.Integrals:
+        //            return VisitIntegral(il);
+
+        //        case ComparisonType.Comparables:
+        //            return VisitComparable(underlyingElementType, il);
+
+        //        case ComparisonType.Hierarchicals:
+        //            return VisitHierarchical(il, underlyingElementType);
+
+        //        default:
+        //            throw new NotSupportedException($"{underlyingElementType.DisplayName()} is not supported.");
+        //    }
+        //}
+
+        public ILEmitter Visit(ArrayItemComparison comparison, ILEmitter il)
         {
-            var underlyingElementType = comparison.ElementType.GetUnderlyingType();
-
-            switch (underlyingElementType.GetComparisonType())
-            {
-                case ComparisonType.Strings:
-                    return VisitString(comparison.Variable.OwnerType, il);
-
-                case ComparisonType.Integrals:
-                    return VisitIntegral(il);
-
-                case ComparisonType.Comparables:
-                    return VisitComparable(underlyingElementType, il);
-
-                case ComparisonType.Hierarchicals:
-                    return VisitHierarchical(il, underlyingElementType);
-
-                default:
-                    throw new NotSupportedException($"{underlyingElementType.DisplayName()} is not supported.");
-            }
+            return comparison.ItemAcceptor.Accept(this, il);
         }
 
         private ILEmitter VisitString(Type declaringType, ILEmitter il)

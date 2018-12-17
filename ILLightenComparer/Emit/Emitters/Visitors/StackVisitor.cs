@@ -93,40 +93,27 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il;
         }
 
-        public void LoadVariables(
-            CollectionComparison comparison,
-            ILEmitter il,
-            LocalBuilder x,
-            LocalBuilder y,
-            LocalBuilder index,
-            Label gotoNextMember)
+        public ILEmitter LoadVariables(ArrayItemComparison comparison, ILEmitter il, Label gotoNextMember)
         {
-            if (comparison.Variable.VariableType.IsNullable())
-            {
-                EmitLoadNullableValues(il, comparison, x, y, index, gotoNextMember);
-            }
-            else
-            {
-                EmitLoadValues(il, comparison, x, y, index);
-            }
+            return comparison.ItemAcceptor.LoadVariables(this, il, gotoNextMember);
         }
 
         private ILEmitter LoadNullableMembers(
             ILEmitter il,
+            IVariable variable,
             bool callable,
             bool loadContext,
-            IVariable variable,
             Label gotoNextMember)
         {
-            var memberType = variable.VariableType;
+            var variableType = variable.VariableType;
 
-            variable.Load(_loader, il, Arg.X).Store(memberType, 0, out var nullableX);
-            variable.Load(_loader, il, Arg.Y).Store(memberType, 1, out var nullableY);
+            variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
+            variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
 
-            var getValueMethod = memberType.GetPropertyGetter(MethodName.Value);
-            var underlyingType = memberType.GetUnderlyingType();
+            var getValueMethod = variableType.GetPropertyGetter(MethodName.Value);
+            var underlyingType = variableType.GetUnderlyingType();
 
-            il.CheckNullableValuesForNull(nullableX, nullableY, memberType, gotoNextMember);
+            il.CheckNullableValuesForNull(nullableX, nullableY, variableType, gotoNextMember);
 
             if (loadContext)
             {
@@ -151,84 +138,84 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il;
         }
 
-        private static void EmitLoadValues(
-            ILEmitter il,
-            CollectionComparison member,
-            LocalBuilder x,
-            LocalBuilder y,
-            LocalBuilder index)
-        {
-            var elementType = member.ElementType;
-            var underlyingType = elementType.GetUnderlyingType();
-            var comparisonType = elementType.GetComparisonType();
+        //private static void EmitLoadValues(
+        //    ILEmitter il,
+        //    ArrayItemComparison member,
+        //    LocalBuilder x,
+        //    LocalBuilder y,
+        //    LocalBuilder index)
+        //{
+        //    var elementType = member.ElementType;
+        //    var underlyingType = elementType.GetUnderlyingType();
+        //    var comparisonType = elementType.GetComparisonType();
 
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.Context);
-            }
+        //    if (comparisonType == ComparisonType.Hierarchicals)
+        //    {
+        //        il.LoadArgument(Arg.Context);
+        //    }
 
-            il.LoadLocal(x)
-              .LoadLocal(index)
-              .Call(member.GetItemMethod);
-            if (comparisonType == ComparisonType.Comparables)
-            {
-                il.Store(underlyingType, Arg.X, out var item)
-                  .LoadAddress(item);
-            }
+        //    il.LoadLocal(x)
+        //      .LoadLocal(index)
+        //      .Call(member.GetItemMethod);
+        //    if (comparisonType == ComparisonType.Comparables)
+        //    {
+        //        il.Store(underlyingType, Arg.X, out var item)
+        //          .LoadAddress(item);
+        //    }
 
-            il.LoadLocal(y)
-              .LoadLocal(index)
-              .Call(member.GetItemMethod);
+        //    il.LoadLocal(y)
+        //      .LoadLocal(index)
+        //      .Call(member.GetItemMethod);
 
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.SetX)
-                  .LoadArgument(Arg.SetY);
-            }
-        }
+        //    if (comparisonType == ComparisonType.Hierarchicals)
+        //    {
+        //        il.LoadArgument(Arg.SetX)
+        //          .LoadArgument(Arg.SetY);
+        //    }
+        //}
 
-        private static void EmitLoadNullableValues(
-            ILEmitter il,
-            CollectionComparison member,
-            LocalBuilder x,
-            LocalBuilder y,
-            LocalBuilder index,
-            Label gotoNextMember)
-        {
-            var elementType = member.ElementType;
-            var underlyingType = elementType.GetUnderlyingType();
-            var comparisonType = elementType.GetComparisonType();
+        //private static void EmitLoadNullableValues(
+        //    ILEmitter il,
+        //    CollectionComparison comparison,
+        //    LocalBuilder x,
+        //    LocalBuilder y,
+        //    LocalBuilder index,
+        //    Label gotoNextMember)
+        //{
+        //    var elementType = comparison.ElementType;
+        //    var underlyingType = elementType.GetUnderlyingType();
+        //    var comparisonType = elementType.GetComparisonType();
 
-            il.LoadLocal(x)
-              .LoadLocal(index)
-              .Call(member.GetItemMethod)
-              .Store(elementType, Arg.X, out var nullableX);
-            il.LoadLocal(y)
-              .LoadLocal(index)
-              .Call(member.GetItemMethod)
-              .Store(elementType, Arg.X, out var nullableY);
+        //    il.LoadLocal(x)
+        //      .LoadLocal(index)
+        //      .Call(comparison.GetItemMethod)
+        //      .Store(elementType, Arg.X, out var nullableX);
+        //    il.LoadLocal(y)
+        //      .LoadLocal(index)
+        //      .Call(comparison.GetItemMethod)
+        //      .Store(elementType, Arg.X, out var nullableY);
 
-            il.CheckNullableValuesForNull(nullableX, nullableY, elementType, gotoNextMember);
+        //    il.CheckNullableValuesForNull(nullableX, nullableY, elementType, gotoNextMember);
 
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.Context);
-            }
+        //    if (comparisonType == ComparisonType.Hierarchicals)
+        //    {
+        //        il.LoadArgument(Arg.Context);
+        //    }
 
-            var getValueMethod = elementType.GetPropertyGetter(MethodName.Value);
-            il.LoadAddress(nullableX).Call(getValueMethod);
-            if (comparisonType == ComparisonType.Comparables)
-            {
-                il.Store(underlyingType, out var address).LoadAddress(address);
-            }
+        //    var getValueMethod = elementType.GetPropertyGetter(MethodName.Value);
+        //    il.LoadAddress(nullableX).Call(getValueMethod);
+        //    if (comparisonType == ComparisonType.Comparables)
+        //    {
+        //        il.Store(underlyingType, out var address).LoadAddress(address);
+        //    }
 
-            il.LoadAddress(nullableY).Call(getValueMethod);
+        //    il.LoadAddress(nullableY).Call(getValueMethod);
 
-            if (comparisonType == ComparisonType.Hierarchicals)
-            {
-                il.LoadArgument(Arg.SetX)
-                  .LoadArgument(Arg.SetY);
-            }
-        }
+        //    if (comparisonType == ComparisonType.Hierarchicals)
+        //    {
+        //        il.LoadArgument(Arg.SetX)
+        //          .LoadArgument(Arg.SetY);
+        //    }
+        //}
     }
 }
