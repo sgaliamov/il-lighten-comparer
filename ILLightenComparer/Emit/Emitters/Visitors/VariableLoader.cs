@@ -60,7 +60,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il.LoadLocal(arg)
                      .LoadLocal(variable.IndexVariable)
                      .Call(variable.GetItemMethod)
-                     .Store(variable.VariableType.GetUnderlyingType(), out var local)
+                     .Store(variable.VariableType, out var local)
                      .LoadAddress(local);
         }
     }

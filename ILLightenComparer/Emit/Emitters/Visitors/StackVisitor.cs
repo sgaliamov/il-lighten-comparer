@@ -23,9 +23,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             {
                 return LoadNullableMembers(
                     il,
+                    variable,
                     false,
                     true,
-                    variable,
                     gotoNextMember);
             }
 
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             {
                 if (variableType.IsNullable())
                 {
-                    return LoadNullableMembers(il, true, false, variable, gotoNextMember);
+                    return LoadNullableMembers(il, variable, true, false, gotoNextMember);
                 }
 
                 variable.LoadAddress(_loader, il, Arg.X);
@@ -84,7 +84,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             var variable = comparison.Variable;
             if (variable.VariableType.IsNullable())
             {
-                return LoadNullableMembers(il, false, false, variable, gotoNextMember);
+                return LoadNullableMembers(il, variable, false, false, gotoNextMember);
             }
 
             variable.Load(_loader, il, Arg.X);
