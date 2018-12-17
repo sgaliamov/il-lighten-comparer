@@ -63,7 +63,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                                .LoadLocal(x)
                                .Branch(OpCodes.Brtrue_S, out var call)
                                .LoadLocal(y)
-                               .Emit(OpCodes.Brfalse_S, gotoNextMember)
+                               .Branch(OpCodes.Brfalse_S, gotoNextMember)
                                .Return(-1)
                                .MarkLabel(call)
                                .LoadLocal(x)
