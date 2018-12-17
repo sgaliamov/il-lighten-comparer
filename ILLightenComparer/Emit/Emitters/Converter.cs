@@ -45,10 +45,15 @@ namespace ILLightenComparer.Emit.Emitters
         public ArrayItemComparison CreateArrayItemComparison(IVariable variable, LocalBuilder index)
         {
             var itemVariable = ArrayItemVariable.Create(variable.VariableType, variable.OwnerType, index);
+            if (itemVariable == null)
+            {
+                throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not array.");
+            }
 
             var comparison = VariableConverters
                              .Select(factory => factory(itemVariable))
                              .FirstOrDefault(x => x != null);
+
             if (comparison == null)
             {
                 throw new NotSupportedException($"{itemVariable.VariableType.DisplayName()} is not supported.");
