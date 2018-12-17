@@ -42,7 +42,7 @@ namespace ILLightenComparer.Emit.Emitters
             return comparison;
         }
 
-        public ArrayItemComparison CreateArrayItemComparison(IVariable variable, LocalBuilder index)
+        public IComparisonAcceptor CreateArrayItemComparison(IVariable variable, LocalBuilder index)
         {
             var itemVariable = ArrayItemVariable.Create(variable.VariableType, variable.OwnerType, index);
             if (itemVariable == null)
