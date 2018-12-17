@@ -46,14 +46,14 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             il.LoadConstant(0)
               .Store(typeof(int), LocalIndex, out var index)
               .DefineLabel(out var loopStart)
+              .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
             var itemComparison = Magic(variable, index);
-            itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+            itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
             itemComparison.Accept(_compareVisitor, il)
-                          .DefineLabel(out var continueLoop)
                           .EmitReturnNotZero(continueLoop);
 
             il.MarkLabel(continueLoop)
@@ -93,7 +93,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
               .LoadLocal(isDoneY)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br_S, gotoNextMember)
+              .Branch(OpCodes.Br, gotoNextMember)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkIsDoneY)
