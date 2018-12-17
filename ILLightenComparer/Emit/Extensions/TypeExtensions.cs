@@ -92,44 +92,5 @@ namespace ILLightenComparer.Emit.Extensions
             return type.GetInterfaces()
                        .Any(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
-
-        public static ComparisonType GetComparisonType(this Type type)
-        {
-            type = type.GetUnderlyingType();
-
-            if (type == typeof(string))
-            {
-                return ComparisonType.Strings;
-            }
-
-            if (type.IsSmallIntegral())
-            {
-                return ComparisonType.Integrals;
-            }
-
-            var isComparable = type.ImplementsGeneric(typeof(IComparable<>));
-            if (isComparable)
-            {
-                return ComparisonType.Comparables;
-            }
-
-            if (type.IsArray)
-            {
-                if (type.GetArrayRank() > 1)
-                {
-                    return ComparisonType.NotSupported;
-                }
-
-                return ComparisonType.Arrays;
-            }
-
-            var isEnumerable = type.ImplementsGeneric(typeof(IEnumerable<>));
-            if (isEnumerable)
-            {
-                return ComparisonType.Enumerables;
-            }
-
-            return ComparisonType.Hierarchicals;
-        }
     }
 }

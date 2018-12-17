@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
@@ -9,7 +10,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
     {
         private CollectionComparison(IVariable variable)
         {
-            Variable = variable;
+            Variable = variable ?? throw new ArgumentNullException(nameof(variable));
             GetLengthMethod = variable.VariableType.GetPropertyGetter(MethodName.ArrayLength);
         }
 

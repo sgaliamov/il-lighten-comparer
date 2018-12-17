@@ -50,11 +50,8 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            var itemVariable = ArrayItemVariable.Create(variable.VariableType, index);
-            var itemComparison = ArrayItemComparison.Create(itemVariable);
-
+            var itemComparison = Magic(variable.VariableType, index);
             itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
-
             itemComparison.Accept(_compareVisitor, il)
                           .DefineLabel(out var continueLoop)
                           .EmitReturnNotZero(continueLoop);
@@ -68,6 +65,13 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .MarkLabel(gotoNextMember);
 
             return il;
+        }
+
+        private static IComparisonAcceptor Magic(Type variableType, LocalBuilder index)
+        {
+            var itemVariable = ArrayItemVariable.Create(variableType, index);
+
+            return ArrayItemComparison.Create(itemVariable);
         }
 
         private static void EmitCheckIfLoopsAreDone(

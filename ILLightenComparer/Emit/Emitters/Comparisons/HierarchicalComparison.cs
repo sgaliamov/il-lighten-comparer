@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
@@ -10,7 +11,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
     {
         private HierarchicalComparison(IVariable variable)
         {
-            Variable = variable;
+            Variable = variable ?? throw new ArgumentNullException(nameof(variable));
         }
 
         public IVariable Variable { get; }

@@ -11,7 +11,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
     {
         private ComparableComparison(IVariable variable)
         {
-            Variable = variable;
+            Variable = variable ?? throw new ArgumentNullException(nameof(variable));
         }
 
         public IVariable Variable { get; }
