@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
+using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
@@ -44,6 +45,11 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             var comparison = Factories
                              .Select(factory => factory(itemVariable))
                              .FirstOrDefault(x => x != null);
+
+            if (comparison == null)
+            {
+                throw new NotSupportedException($"{itemVariable.VariableType.DisplayName()} is not supported.");
+            }
 
             return new ArrayItemComparison(itemVariable, comparison);
         }

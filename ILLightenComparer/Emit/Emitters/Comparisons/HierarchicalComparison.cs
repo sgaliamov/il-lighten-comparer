@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
@@ -40,7 +41,8 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public static HierarchicalComparison Create(IVariable variable)
         {
-            if (variable.VariableType.GetUnderlyingType().IsPrimitive())
+            var underlyingType = variable.VariableType.GetUnderlyingType();
+            if (underlyingType.IsPrimitive() || underlyingType.ImplementsGeneric(typeof(IEnumerable<>)))
             {
                 return null;
             }

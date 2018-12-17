@@ -24,12 +24,13 @@ namespace ILLightenComparer.Emit.Reflection
                              .Select(factory => factory(memberInfo))
                              .FirstOrDefault(x => x != null);
 
-            if (comparison != null)
+            if (comparison == null)
             {
-                return comparison;
+                throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
             }
 
-            throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
+            return comparison;
+
         }
     }
 }
