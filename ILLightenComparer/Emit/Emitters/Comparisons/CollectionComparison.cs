@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters.Variables;
-using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class CollectionComparison : ICompareVisitorAcceptor, ICompareEmitterAcceptor
+    internal sealed class CollectionComparison : ICompareEmitterAcceptor
     {
         private CollectionComparison(IVariable variable)
         {
@@ -29,11 +28,6 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         }
 
         public IVariable Variable { get; }
-
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
-        {
-            return visitor.Visit(this, il);
-        }
 
         public static CollectionComparison Create(MemberInfo memberInfo)
         {

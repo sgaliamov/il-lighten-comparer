@@ -23,7 +23,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)
         {
-            return visitor.Visit(this, il, gotoNext);
+            return visitor.LoadVariables(this, il, gotoNext);
         }
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)

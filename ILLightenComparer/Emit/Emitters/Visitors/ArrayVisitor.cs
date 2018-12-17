@@ -49,11 +49,11 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            _stackVisitor.Visit(comparison, il, x, y, index, gotoNextMember);
+            _stackVisitor.LoadVariables(comparison, il, x, y, index, gotoNextMember);
 
-            comparison.Accept(_compareVisitor, il)
-                      .DefineLabel(out var continueLoop)
-                      .EmitReturnNotZero(continueLoop);
+            _compareVisitor.Visit(comparison, il)
+                           .DefineLabel(out var continueLoop)
+                           .EmitReturnNotZero(continueLoop);
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)

@@ -15,7 +15,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             _loader = loader;
         }
 
-        public ILEmitter Visit(HierarchicalComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter LoadVariables(HierarchicalComparison comparison, ILEmitter il, Label gotoNextMember)
         {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
@@ -37,7 +37,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                      .LoadArgument(Arg.SetY);
         }
 
-        public ILEmitter Visit(ComparableComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter LoadVariables(ComparableComparison comparison, ILEmitter il, Label gotoNextMember)
         {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
@@ -79,7 +79,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il;
         }
 
-        public ILEmitter Visit(IStaticComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter LoadVariables(IStaticComparison comparison, ILEmitter il, Label gotoNextMember)
         {
             var variable = comparison.Variable;
             if (variable.VariableType.IsNullable())
@@ -93,7 +93,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il;
         }
 
-        public void Visit(
+        public void LoadVariables(
             CollectionComparison comparison,
             ILEmitter il,
             LocalBuilder x,
