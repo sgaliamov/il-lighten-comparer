@@ -50,7 +50,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            var itemComparison = Magic(variable.VariableType, index);
+            var itemComparison = Magic(variable, index);
             itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
             itemComparison.Accept(_compareVisitor, il)
                           .DefineLabel(out var continueLoop)
@@ -67,9 +67,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il;
         }
 
-        private static IComparisonAcceptor Magic(Type variableType, LocalBuilder index)
+        private static IComparisonAcceptor Magic(IVariable variable, LocalBuilder index)
         {
-            var itemVariable = ArrayItemVariable.Create(variableType, index);
+            var itemVariable = ArrayItemVariable.Create(variable.VariableType, variable.OwnerType, index);
 
             return ArrayItemComparison.Create(itemVariable);
         }

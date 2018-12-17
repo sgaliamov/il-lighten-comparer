@@ -8,12 +8,16 @@ namespace ILLightenComparer.Emit.Emitters.Variables
 {
     internal sealed class ArrayItemVariable : IVariable
     {
-        private ArrayItemVariable(Type arrayMemberType, LocalBuilder indexVariable)
+        private ArrayItemVariable(Type arrayMemberType, Type ownerType, LocalBuilder indexVariable)
         {
-            OwnerType = arrayMemberType.DeclaringType;
-            VariableType = arrayMemberType.GetElementType();
-            GetItemMethod = arrayMemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
-            IndexVariable = indexVariable;
+            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
+            if (arrayMemberType != null)
+            {
+                VariableType = arrayMemberType.GetElementType();
+                GetItemMethod = arrayMemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
+            }
+
+            IndexVariable = indexVariable ?? throw new ArgumentNullException(nameof(indexVariable));
         }
 
         public MethodInfo GetItemMethod { get; }
@@ -39,10 +43,10 @@ namespace ILLightenComparer.Emit.Emitters.Variables
             return visitor.LoadAddress(this, il, arg);
         }
 
-        public static IVariable Create(Type arrayMemberType, LocalBuilder indexVariable)
+        public static IVariable Create(Type arrayType, Type ownerType, LocalBuilder indexVariable)
         {
-            return arrayMemberType.IsArray && arrayMemberType.GetArrayRank() == 1
-                       ? new ArrayItemVariable(arrayMemberType, indexVariable)
+            return arrayType.IsArray && arrayType.GetArrayRank() == 1
+                       ? new ArrayItemVariable(arrayType, ownerType, indexVariable)
                        : null;
         }
     }
