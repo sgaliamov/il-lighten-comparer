@@ -200,15 +200,20 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter LoadLocal(LocalBuilder local)
         {
-            switch (local.LocalIndex)
+            return LoadLocal(local.LocalIndex);
+        }
+
+        public ILEmitter LoadLocal(int localIndex)
+        {
+            switch (localIndex)
             {
                 case 0: return Emit(OpCodes.Ldloc_0);
                 case 1: return Emit(OpCodes.Ldloc_1);
                 case 2: return Emit(OpCodes.Ldloc_2);
                 case 3: return Emit(OpCodes.Ldloc_3);
                 default:
-                    var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Ldloc_S : OpCodes.Ldloc;
-                    return Emit(opCode, local.LocalIndex);
+                    var opCode = localIndex <= ShortFormLimit ? OpCodes.Ldloc_S : OpCodes.Ldloc;
+                    return Emit(opCode, localIndex);
             }
         }
 
@@ -222,9 +227,11 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter LoadAddress(LocalBuilder local)
         {
-            var opCode = local.LocalIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
-            DebugLine($"\t\t{opCode} {local.LocalIndex}");
-            _il.Emit(opCode, local);
+            var localIndex = local.LocalIndex;
+            var opCode = localIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
+
+            DebugLine($"\t\t{opCode} {localIndex}");
+            _il.Emit(opCode, localIndex);
 
             return this;
         }

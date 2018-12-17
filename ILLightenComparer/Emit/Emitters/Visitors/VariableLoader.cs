@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 
@@ -45,6 +46,22 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             }
 
             return il.Emit(OpCodes.Ldflda, variable.FieldInfo);
+        }
+
+        public ILEmitter Load(ArrayItemVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadLocal(arg)
+                     .LoadLocal(variable.IndexVariable)
+                     .Call(variable.GetItemMethod);
+        }
+
+        public ILEmitter LoadAddress(ArrayItemVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadLocal(arg)
+                     .LoadLocal(variable.IndexVariable)
+                     .Call(variable.GetItemMethod)
+                     .Store(variable.VariableType.GetUnderlyingType(), out var local)
+                     .LoadAddress(local);
         }
     }
 }
