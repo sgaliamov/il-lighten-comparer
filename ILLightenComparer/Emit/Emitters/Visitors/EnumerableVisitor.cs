@@ -49,30 +49,29 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Call(comparison.GetEnumeratorMethod)
               .Store(comparison.EnumeratorType, LocalY, out var yEnumerator);
 
-            using (il.TryBlock())
-            {
-                il.MarkLabel(startLoop);
-                var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
+            il.BeginExceptionBlock()
+              .MarkLabel(startLoop);
 
-                EmitIfLoopIsDone(il, xDone, yDone, result, returnResult, gotoNextMember);
+            var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
+            EmitIfLoopIsDone(il, xDone, yDone, result, returnResult, gotoNextMember);
 
-                var itemComparison = _converter.CreateEnumerableItemComparison(
-                    variable.OwnerType,
-                    xEnumerator,
-                    yEnumerator);
+            var itemComparison = _converter.CreateEnumerableItemComparison(
+                variable.OwnerType,
+                xEnumerator,
+                yEnumerator);
 
-                itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
-                itemComparison.Accept(_compareVisitor, il)
-                              .Store(result)
-                              .LoadLocal(result)
-                              .Branch(OpCodes.Brfalse_S, startLoop)
-                              .Branch(OpCodes.Leave_S, returnResult);
+            itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+            itemComparison.Accept(_compareVisitor, il)
+                          .Store(result)
+                          .LoadLocal(result)
+                          .Branch(OpCodes.Brfalse_S, startLoop)
+                          .Branch(OpCodes.Leave_S, returnResult);
 
-                il.BeginFinallyBlock();
-                EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
-            }
+            il.BeginFinallyBlock();
+            EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
 
-            il.MarkLabel(returnResult)
+            il.EndExceptionBlock()
+              .MarkLabel(returnResult)
               .LoadLocal(result)
               .Branch(OpCodes.Brfalse_S, gotoNextMember)
               .LoadLocal(result)
