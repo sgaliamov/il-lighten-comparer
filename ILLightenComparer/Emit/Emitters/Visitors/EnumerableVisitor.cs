@@ -56,7 +56,8 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
                 var itemComparison = _converter.CreateEnumerableItemComparison(
                     variable.OwnerType,
-                    comparison.EnumeratorType);
+                    xEnumerator, 
+                    yEnumerator);
 
                 itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
                 itemComparison.Accept(_compareVisitor, il)

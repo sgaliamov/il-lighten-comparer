@@ -54,13 +54,12 @@ namespace ILLightenComparer.Emit.Emitters
             return CreateCollectionItemComparison(itemVariable);
         }
 
-        public IComparisonAcceptor CreateEnumerableItemComparison(Type ownerType, Type enumeratorType)
+        public IComparisonAcceptor CreateEnumerableItemComparison(
+            Type ownerType,
+            LocalBuilder xEnumerator,
+            LocalBuilder yEnumerator)
         {
-            var itemVariable = EnumerableItemVariable.Create(enumeratorType, ownerType);
-            if (itemVariable == null)
-            {
-                throw new NotSupportedException($"{enumeratorType.DisplayName()} is not enumerator.");
-            }
+            var itemVariable = new EnumerableItemVariable(ownerType, xEnumerator, yEnumerator);
 
             return CreateCollectionItemComparison(itemVariable);
         }
