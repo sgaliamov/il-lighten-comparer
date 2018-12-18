@@ -51,21 +51,31 @@ namespace ILLightenComparer.Emit.Emitters
                 throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not array.");
             }
 
+            return CreateCollectionItemComparison(itemVariable);
+        }
+
+        public IComparisonAcceptor CreateEnumerableItemComparison(Type ownerType, Type enumeratorType)
+        {
+            var itemVariable = EnumerableItemVariable.Create(enumeratorType, ownerType);
+            if (itemVariable == null)
+            {
+                throw new NotSupportedException($"{enumeratorType.DisplayName()} is not enumerator.");
+            }
+
+            return CreateCollectionItemComparison(itemVariable);
+        }
+
+        private static IComparisonAcceptor CreateCollectionItemComparison(IVariable itemVariable)
+        {
             var comparison = VariableConverters
                              .Select(factory => factory(itemVariable))
                              .FirstOrDefault(x => x != null);
-
             if (comparison == null)
             {
                 throw new NotSupportedException($"{itemVariable.VariableType.DisplayName()} is not supported.");
             }
 
-            return new ArrayItemComparison(itemVariable, comparison);
-        }
-
-        public IComparisonAcceptor CreateEnumerableItemComparison(IVariable variable)
-        {
-            throw new NotImplementedException();
+            return new CollectionItemComparison(itemVariable, comparison);
         }
     }
 }

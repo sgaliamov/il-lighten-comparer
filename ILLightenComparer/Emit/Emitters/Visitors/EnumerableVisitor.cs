@@ -54,7 +54,10 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
                 EmitIfLoopIsDone(il, xDone, yDone, gotoNextMember);
 
-                var itemComparison = _converter.CreateEnumerableItemComparison(variable);
+                var itemComparison = _converter.CreateEnumerableItemComparison(
+                    variable.OwnerType,
+                    comparison.EnumeratorType);
+
                 itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
                 itemComparison.Accept(_compareVisitor, il)
                               .EmitReturnNotZero(startLoop);

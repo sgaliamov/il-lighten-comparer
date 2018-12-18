@@ -59,7 +59,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il.LoadConstant(comparisonType).Call(Method.StringCompare);
         }
 
-        public ILEmitter Visit(ArrayItemComparison comparison, ILEmitter il)
+        public ILEmitter Visit(CollectionItemComparison comparison, ILEmitter il)
         {
             return comparison.ItemAcceptor.Accept(this, il);
         }
