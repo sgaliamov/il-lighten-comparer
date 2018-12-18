@@ -29,7 +29,7 @@ namespace ILLightenComparer.Emit.Emitters
                              .MarkLabel(gotoNextMember);
         }
 
-        public ILEmitter Visit(CollectionComparison comparison, ILEmitter il)
+        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
         {
             return _arrayVisitor.Visit(comparison, il);
         }

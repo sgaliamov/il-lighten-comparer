@@ -10,14 +10,13 @@ namespace ILLightenComparer.Emit.Emitters.Variables
     {
         private ArrayItemVariable(Type arrayMemberType, Type ownerType, LocalBuilder indexVariable)
         {
-            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
-            if (arrayMemberType != null)
-            {
-                VariableType = arrayMemberType.GetElementType();
-                GetItemMethod = arrayMemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) });
-            }
+            if (arrayMemberType == null) { throw new ArgumentNullException(nameof(arrayMemberType)); }
 
+            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
+            VariableType = arrayMemberType.GetElementType();
             IndexVariable = indexVariable ?? throw new ArgumentNullException(nameof(indexVariable));
+            GetItemMethod = arrayMemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) })
+                            ?? throw new ArgumentException(nameof(arrayMemberType));
         }
 
         public MethodInfo GetItemMethod { get; }

@@ -12,5 +12,6 @@ namespace ILLightenComparer.Emit.Reflection
         public const string ArrayLength = nameof(Array.Length);
         public const string Compare = nameof(IComparer.Compare);
         public const string CompareTo = nameof(IComparable.CompareTo);
+        public const string GetEnumerator = nameof(IEnumerable.GetEnumerator);
     }
 }
