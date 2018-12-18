@@ -71,8 +71,8 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             Label gotoNextMember,
             IVariable variable)
         {
-            il.BeginExceptionBlock()
-              .MarkLabel(startLoop);
+            il.BeginExceptionBlock();
+            il.MarkLabel(startLoop);
 
             var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
             EmitIfLoopIsDone(il, xDone, yDone, result, returnResult, gotoNextMember);
