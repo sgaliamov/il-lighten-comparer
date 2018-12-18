@@ -166,7 +166,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructArrayOf(nullableComparer);
         }
 
-        private const int ItemsCount = 20;
+        private const int ItemsCount = 100;
 
         private T[] CreateArray<T>()
         {

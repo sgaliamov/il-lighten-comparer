@@ -176,7 +176,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructEnumerableOf(nullableComparer);
         }
 
-        private const int ItemsCount = 20;
+        private const int ItemsCount = 100;
 
         private IEnumerable<T> CreateEnumerable<T>()
         {
