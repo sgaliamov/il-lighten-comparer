@@ -176,7 +176,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructEnumerableOf(nullableComparer);
         }
 
-        private const int ItemsCount = 100;
+        private const int ItemsCount = 20;
 
         private IEnumerable<T> CreateEnumerable<T>()
         {
@@ -190,10 +190,9 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             if (_random.NextDouble() < 0.2)
             {
                 list = list.Append(default);
-                list = list.Append(default);
             }
 
-            return list.OrderBy(_ => _random.Next());
+            return list.OrderBy(_ => _random.Next()).ToHashSet();
         }
 
         private IEnumerable<SampleObject<IEnumerable<T>>> CreateObjects<T>(int itemsCount)
