@@ -62,5 +62,19 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                      .Store(variable.VariableType, out var local)
                      .LoadAddress(local);
         }
+
+        public ILEmitter Load(EnumerableItemVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadLocal(arg)
+                     .Call(variable.GetCurrentMethod);
+        }
+
+        public ILEmitter LoadAddress(EnumerableItemVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadLocal(arg)
+                     .Call(variable.GetCurrentMethod)
+                     .Store(variable.VariableType, out var local)
+                     .LoadAddress(local);
+        }
     }
 }

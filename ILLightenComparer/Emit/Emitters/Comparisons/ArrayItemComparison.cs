@@ -20,9 +20,6 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             return visitor.Visit(this, il);
         }
 
-        /// <summary>
-        ///     ArrayItemVariable.
-        /// </summary>
         public IVariable Variable { get; }
 
         public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)
