@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
@@ -49,6 +50,27 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Call(comparison.GetEnumeratorMethod)
               .Store(comparison.EnumeratorType, LocalY, out var yEnumerator);
 
+            Loop(il, xEnumerator, yEnumerator, result, startLoop, returnResult, gotoNextMember, variable);
+
+            il.MarkLabel(returnResult)
+              .LoadLocal(result)
+              .Branch(OpCodes.Brfalse_S, gotoNextMember)
+              .LoadLocal(result)
+              .Return();
+
+            return il.MarkLabel(gotoNextMember);
+        }
+
+        private void Loop(
+            ILEmitter il,
+            LocalBuilder xEnumerator,
+            LocalBuilder yEnumerator,
+            LocalBuilder result,
+            Label startLoop,
+            Label returnResult,
+            Label gotoNextMember,
+            IVariable variable)
+        {
             il.BeginExceptionBlock()
               .MarkLabel(startLoop);
 
@@ -64,20 +86,13 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             itemComparison.Accept(_compareVisitor, il)
                           .Store(result)
                           .LoadLocal(result)
-                          .Branch(OpCodes.Brfalse_S, startLoop)
+                          .Branch(OpCodes.Brfalse, startLoop)
                           .Branch(OpCodes.Leave_S, returnResult);
 
             il.BeginFinallyBlock();
             EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
 
-            il.EndExceptionBlock()
-              .MarkLabel(returnResult)
-              .LoadLocal(result)
-              .Branch(OpCodes.Brfalse_S, gotoNextMember)
-              .LoadLocal(result)
-              .Return();
-
-            return il.MarkLabel(gotoNextMember);
+            il.EndExceptionBlock();
         }
 
         private static void EmitIfLoopIsDone(
@@ -85,24 +100,24 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             LocalBuilder xDone,
             LocalBuilder yDone,
             LocalBuilder result,
-            Label end,
+            Label returnResult,
             Label gotoNextMember)
         {
             il.LoadLocal(xDone)
               .Branch(OpCodes.Brfalse_S, out var checkY)
               .LoadLocal(yDone)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Leave_S, gotoNextMember)
+              .Branch(OpCodes.Leave, gotoNextMember)
               .MarkLabel(returnM1)
               .LoadConstant(-1)
               .Store(result)
-              .Branch(OpCodes.Leave_S, end)
+              .Branch(OpCodes.Leave, returnResult)
               .MarkLabel(checkY)
               .LoadLocal(yDone)
               .Branch(OpCodes.Brfalse_S, out var compare)
               .LoadConstant(1)
               .Store(result)
-              .Branch(OpCodes.Leave_S, end)
+              .Branch(OpCodes.Leave, returnResult)
               .MarkLabel(compare);
         }
 
