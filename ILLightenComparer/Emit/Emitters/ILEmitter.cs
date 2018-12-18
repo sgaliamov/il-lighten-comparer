@@ -323,7 +323,6 @@ namespace ILLightenComparer.Emit.Emitters
 
             public void Dispose()
             {
-                _il.Emit(OpCodes.Endfinally);
                 _il.DebugLine("\t\t} // end .finally");
             }
 
