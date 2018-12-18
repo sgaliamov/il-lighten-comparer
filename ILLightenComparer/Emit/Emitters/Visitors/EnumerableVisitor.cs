@@ -34,7 +34,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             var variable = comparison.Variable;
             il.DefineLabel(out var gotoNextMember)
               .DefineLabel(out var startLoop)
-              .DefineLabel(out var end)
+              .DefineLabel(out var returnResult)
               .DeclareLocal(typeof(int), 0, out var result);
 
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var xEnumerable);
@@ -54,7 +54,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                 il.MarkLabel(startLoop);
                 var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
 
-                EmitIfLoopIsDone(il, xDone, yDone, result, end, gotoNextMember);
+                EmitIfLoopIsDone(il, xDone, yDone, result, returnResult, gotoNextMember);
 
                 var itemComparison = _converter.CreateEnumerableItemComparison(
                     variable.OwnerType,
@@ -65,18 +65,18 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                 itemComparison.Accept(_compareVisitor, il)
                               .Store(result)
                               .LoadLocal(result)
-                              .Emit(OpCodes.Brfalse_S, startLoop)
-                              .Branch(OpCodes.Leave_S, end);
+                              .Branch(OpCodes.Brfalse_S, startLoop)
+                              .Branch(OpCodes.Leave_S, returnResult);
 
-                using (il.FinallyBlock())
-                {
-                    EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
-                }
+                il.BeginFinallyBlock();
+                EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
             }
 
-            il.MarkLabel(end)
+            il.MarkLabel(returnResult)
               .LoadLocal(result)
-              .EmitReturnNotZero(gotoNextMember);
+              .Branch(OpCodes.Brfalse_S, gotoNextMember)
+              .LoadLocal(result)
+              .Return();
 
             return il.MarkLabel(gotoNextMember);
         }

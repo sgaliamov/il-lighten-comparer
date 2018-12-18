@@ -101,9 +101,12 @@ namespace ILLightenComparer.Emit.Emitters
             return new TryBlockHandler(this);
         }
 
-        public IDisposable FinallyBlock()
+        public ILEmitter BeginFinallyBlock()
         {
-            return new FinallyBlockHandler(this);
+            DebugLine(".finally");
+            _il.BeginFinallyBlock();
+
+            return this;
         }
 
         public ILEmitter Call(MethodInfo methodInfo)
@@ -308,28 +311,6 @@ namespace ILLightenComparer.Emit.Emitters
             {
                 _il._il.BeginExceptionBlock();
                 _il.DebugLine("\t\t.try {");
-            }
-        }
-
-        private sealed class FinallyBlockHandler : IDisposable
-        {
-            private readonly ILEmitter _il;
-
-            public FinallyBlockHandler(ILEmitter il)
-            {
-                _il = il;
-                Begin();
-            }
-
-            public void Dispose()
-            {
-                _il.DebugLine("\t\t} // end .finally");
-            }
-
-            private void Begin()
-            {
-                _il._il.BeginFinallyBlock();
-                _il.DebugLine("\t\t.finally {");
             }
         }
 
