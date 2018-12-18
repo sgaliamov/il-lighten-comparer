@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Reflection;
 using ILLightenComparer.Emit.Shared;
 
@@ -28,6 +29,12 @@ namespace ILLightenComparer.Emit.Reflection
 
         public static MethodInfo DelayedCompare =
             typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
+
+        public static MethodInfo MoveNext = typeof(IEnumerator)
+            .GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
+
+        public static MethodInfo Dispose = typeof(IDisposable)
+            .GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
 
         public static Type[] StaticCompareMethodParameters(Type objectType)
         {

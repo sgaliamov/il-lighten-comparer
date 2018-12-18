@@ -21,19 +21,11 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
                           ?? throw new ArgumentException(nameof(variable));
 
             EnumeratorType = typeof(IEnumerator<>).MakeGenericType(ElementType);
-
-            MoveNextMethod = EnumeratorType.GetMethod(MethodName.MoveNext, Type.EmptyTypes)
-                             ?? throw new ArgumentException(nameof(variable));
-
-            DisposeMethod = EnumeratorType.GetMethod(MethodName.Dispose, Type.EmptyTypes)
-                            ?? throw new ArgumentException(nameof(variable));
         }
 
-        public MethodInfo DisposeMethod { get; }
         public Type ElementType { get; }
         public Type EnumeratorType { get; }
         public MethodInfo GetEnumeratorMethod { get; }
-        public MethodInfo MoveNextMethod { get; }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
         {

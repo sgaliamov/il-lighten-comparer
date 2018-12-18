@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
 {
@@ -50,7 +50,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             using (il.TryBlock())
             {
                 il.MarkLabel(startLoop);
-                var (xDone, yDone) = EmitMoveNext(il, comparison.MoveNextMethod, xEnumerator, yEnumerator);
+                var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
 
                 EmitIfLoopIsDone(il, xDone, yDone, gotoNextMember);
 
@@ -64,7 +64,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
                 using (il.FinallyBlock())
                 {
-                    EmitDisposeEnumerators(il, xEnumerator, yEnumerator, comparison.DisposeMethod, gotoNextMember);
+                    EmitDisposeEnumerators(il, xEnumerator, yEnumerator, gotoNextMember);
                 }
             }
 
@@ -93,17 +93,16 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         private static (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(
             ILEmitter il,
-            MethodInfo moveNextMethod,
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator)
         {
             il.LoadLocal(xEnumerator)
-              .Call(moveNextMethod)
+              .Call(Method.MoveNext)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
               .Store(typeof(int), LocalDoneX, out var xDone)
               .LoadLocal(yEnumerator)
-              .Call(moveNextMethod)
+              .Call(Method.MoveNext)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
               .Store(typeof(int), LocalDoneY, out var yDone);
@@ -115,18 +114,17 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             ILEmitter il,
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator,
-            MethodInfo disposeMethod,
             Label gotoNextMember)
         {
             il.LoadLocal(xEnumerator)
               .Branch(OpCodes.Brfalse_S, out var yDispose)
               .LoadLocal(xEnumerator)
-              .Call(disposeMethod)
+              .Call(Method.Dispose)
               .MarkLabel(yDispose)
               .LoadLocal(yEnumerator)
               .Branch(OpCodes.Brfalse_S, gotoNextMember)
               .LoadLocal(yEnumerator)
-              .Call(disposeMethod);
+              .Call(Method.Dispose);
         }
     }
 }
