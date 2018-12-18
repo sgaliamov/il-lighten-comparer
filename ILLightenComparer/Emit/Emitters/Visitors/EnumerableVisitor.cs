@@ -68,7 +68,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                 }
             }
 
-            return il;
+            return il.MarkLabel(gotoNextMember);
         }
 
         private static void EmitIfLoopIsDone(
