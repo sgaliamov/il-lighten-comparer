@@ -17,6 +17,7 @@ namespace ILLightenComparer.Emit.Emitters
             StringComparison.Create,
             ComparableComparison.Create,
             ArrayComparison.Create,
+            EnumerableComparison.Create,
             HierarchicalComparison.Create
         };
 

@@ -34,7 +34,9 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static MethodInfo GetPropertyGetter(this Type type, string name)
         {
-            return type.GetProperty(name)?.GetGetMethod()
+            return type
+                   .GetProperty(name)
+                   ?.GetGetMethod()
                    ?? throw new ArgumentException(
                        $"{type.DisplayName()} does not have {name} property.");
         }
