@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
@@ -12,11 +13,27 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         private EnumerableComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
+
             GetEnumeratorMethod = variable.VariableType.GetMethod(MethodName.GetEnumerator, Type.EmptyTypes)
                                   ?? throw new ArgumentException(nameof(variable));
+
+            ElementType = variable.VariableType.GetGenericArguments().FirstOrDefault()
+                          ?? throw new ArgumentException(nameof(variable));
+
+            EnumeratorType = typeof(IEnumerator<>).MakeGenericType(ElementType);
+
+            MoveNextMethod = EnumeratorType.GetMethod(MethodName.MoveNext, Type.EmptyTypes)
+                             ?? throw new ArgumentException(nameof(variable));
+
+            DisposeMethod = EnumeratorType.GetMethod(MethodName.Dispose, Type.EmptyTypes)
+                            ?? throw new ArgumentException(nameof(variable));
         }
 
+        public MethodInfo DisposeMethod { get; }
+        public Type ElementType { get; }
+        public Type EnumeratorType { get; }
         public MethodInfo GetEnumeratorMethod { get; }
+        public MethodInfo MoveNextMethod { get; }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
         {
@@ -34,8 +51,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public static EnumerableComparison Create(IVariable variable)
         {
-            var underlyingType = variable.VariableType.GetUnderlyingType();
-            if (underlyingType.ImplementsGeneric(typeof(IEnumerable<>)))
+            if (variable.VariableType.ImplementsGeneric(typeof(IEnumerable<>)))
             {
                 return new EnumerableComparison(variable);
             }

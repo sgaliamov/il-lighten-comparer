@@ -62,5 +62,10 @@ namespace ILLightenComparer.Emit.Emitters
 
             return new ArrayItemComparison(itemVariable, comparison);
         }
+
+        public IComparisonAcceptor CreateEnumerableItemComparison(IVariable variable)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

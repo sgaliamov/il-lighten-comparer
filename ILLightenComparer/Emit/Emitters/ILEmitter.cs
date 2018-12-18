@@ -96,6 +96,16 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
+        public IDisposable TryBlock()
+        {
+            return new TryBlockHandler(this);
+        }
+
+        public IDisposable FinallyBlock()
+        {
+            return new FinallyBlockHandler(this);
+        }
+
         public ILEmitter Call(MethodInfo methodInfo)
         {
             var owner = methodInfo.DeclaringType;
@@ -275,6 +285,52 @@ namespace ILLightenComparer.Emit.Emitters
             if (!locals.TryGetValue(localType, out local))
             {
                 local = locals[localType] = _il.DeclareLocal(localType);
+            }
+        }
+
+        private sealed class TryBlockHandler : IDisposable
+        {
+            private readonly ILEmitter _il;
+
+            public TryBlockHandler(ILEmitter il)
+            {
+                _il = il;
+                Begin();
+            }
+
+            public void Dispose()
+            {
+                _il._il.EndExceptionBlock();
+                _il.DebugLine("\t\t} // end .try");
+            }
+
+            private void Begin()
+            {
+                _il._il.BeginExceptionBlock();
+                _il.DebugLine("\t\t.try {");
+            }
+        }
+
+        private sealed class FinallyBlockHandler : IDisposable
+        {
+            private readonly ILEmitter _il;
+
+            public FinallyBlockHandler(ILEmitter il)
+            {
+                _il = il;
+                Begin();
+            }
+
+            public void Dispose()
+            {
+                _il.Emit(OpCodes.Endfinally);
+                _il.DebugLine("\t\t} // end .finally");
+            }
+
+            private void Begin()
+            {
+                _il._il.BeginFinallyBlock();
+                _il.DebugLine("\t\t.finally {");
             }
         }
 
