@@ -11,7 +11,7 @@ namespace ILLightenComparer.Emit.Extensions
         {
             return il.Emit(OpCodes.Stloc_0)
                      .Emit(OpCodes.Ldloc_0)
-                     .Emit(OpCodes.Brfalse_S, next)
+                     .Emit(OpCodes.Brfalse, next)
                      .Emit(OpCodes.Ldloc_0)
                      .Return();
         }

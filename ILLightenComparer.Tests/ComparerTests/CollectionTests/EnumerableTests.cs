@@ -36,7 +36,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructEnumerableOf<ComparableObject>();
 
             CompareObjectEnumerableOf<ComparableChildObject>();
-            //CompareStructEnumerableOf<ComparableChildObject>();
+            CompareStructEnumerableOf<ComparableChildObject>();
         }
 
         [Fact]

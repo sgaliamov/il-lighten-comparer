@@ -48,7 +48,14 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Call(comparison.GetEnumeratorMethod)
               .Store(comparison.EnumeratorType, LocalY, out var yEnumerator);
 
+            //il.BeginExceptionBlock(); // todo: think how to use it, the problem now with inner `return` statements, it has to be `leave` instruction
+
             Loop(il, xEnumerator, yEnumerator, startLoop, gotoNextMember, variable);
+
+            //il.BeginFinallyBlock();
+            EmitDisposeEnumerators(il, xEnumerator, yEnumerator, gotoNextMember);
+
+            //il.EndExceptionBlock();
 
             return il.MarkLabel(gotoNextMember);
         }
@@ -61,9 +68,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             Label gotoNextMember,
             IVariable variable)
         {
-            //il.BeginExceptionBlock(); // todo: think how to use it, the problem now with inner `return` statements, it has to be `leave` instruction
             il.MarkLabel(startLoop);
-            il.EmitWriteLine("start");
 
             var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
             EmitIfLoopIsDone(il, xDone, yDone, gotoNextMember);
@@ -76,11 +81,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             itemComparison.LoadVariables(_stackVisitor, il, startLoop);
             itemComparison.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(startLoop);
-
-            //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
-
-            //il.EndExceptionBlock();
         }
 
         private static void EmitIfLoopIsDone(
@@ -125,7 +125,8 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         private static void EmitDisposeEnumerators(
             ILEmitter il,
             LocalBuilder xEnumerator,
-            LocalBuilder yEnumerator)
+            LocalBuilder yEnumerator,
+            Label gotoNextMember)
         {
             il.LoadLocal(xEnumerator)
               .Branch(OpCodes.Brfalse_S, out var check)
@@ -133,10 +134,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Call(Method.Dispose)
               .MarkLabel(check)
               .LoadLocal(yEnumerator)
-              .Branch(OpCodes.Brfalse_S, out var next)
+              .Branch(OpCodes.Brfalse_S, gotoNextMember)
               .LoadLocal(yEnumerator)
-              .Call(Method.Dispose)
-              .MarkLabel(next);
+              .Call(Method.Dispose);
         }
     }
 }
