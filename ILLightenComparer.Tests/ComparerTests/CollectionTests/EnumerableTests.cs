@@ -132,14 +132,22 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructEnumerableOf(comparer);
         }
 
-        private void CompareObjectEnumerableOf<T>(IComparer<T> itemComparer = null)
+        [Fact]
+        public void Compare_Enumerable_Of_Unsorted_Comparable_Objects()
+        {
+            CompareObjectEnumerableOf<ComparableObject>(null, true);
+
+            CompareStructEnumerableOf<ComparableObject>(null, true);
+        }
+
+        private void CompareObjectEnumerableOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
             var target = _builder.For<SampleObject<IEnumerable<T>>>().GetComparer();
 
             var one = CreateObjects<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
-            var collectionComparer = new CollectionComparer<IEnumerable<T>, T>(itemComparer);
+            var collectionComparer = new CollectionComparer<IEnumerable<T>, T>(itemComparer, sort);
             var referenceComparer = new SampleObjectComparer<IEnumerable<T>>(collectionComparer);
 
             Array.Sort(one, referenceComparer);
@@ -155,14 +163,14 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareObjectEnumerableOf(nullableComparer);
         }
 
-        private void CompareStructEnumerableOf<T>(IComparer<T> itemComparer = null)
+        private void CompareStructEnumerableOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
             var target = _builder.For<SampleStruct<IEnumerable<T>>>().GetComparer();
 
             var one = CreateStructs<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
-            var collectionComparer = new CollectionComparer<IEnumerable<T>, T>(itemComparer);
+            var collectionComparer = new CollectionComparer<IEnumerable<T>, T>(itemComparer, sort);
             var referenceComparer = new SampleStructComparer<IEnumerable<T>>(collectionComparer);
 
             Array.Sort(one, referenceComparer);

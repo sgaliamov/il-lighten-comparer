@@ -122,14 +122,22 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructArrayOf(comparer);
         }
 
-        private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null)
+        [Fact]
+        public void Compare_Array_Of_Unsorted_Comparable_Objects()
+        {
+            CompareObjectArrayOf<ComparableObject>(null, true);
+
+            CompareStructArrayOf<ComparableObject>(null, true);
+        }
+
+        private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
             var target = _builder.For<SampleObject<T[]>>().GetComparer();
 
             var one = CreateObjects<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
-            var collectionComparer = new CollectionComparer<T[], T>(itemComparer);
+            var collectionComparer = new CollectionComparer<T[], T>(itemComparer, sort);
             var referenceComparer = new SampleObjectComparer<T[]>(collectionComparer);
 
             Array.Sort(one, referenceComparer);
@@ -138,21 +146,23 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
-        private void CompareObjectArrayOfNullable<T>(IComparer<T> itemComparer = null) where T : struct
+        private void CompareObjectArrayOfNullable<T>(
+            IComparer<T> itemComparer = null,
+            bool sort = false) where T : struct
         {
             var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
 
-            CompareObjectArrayOf(nullableComparer);
+            CompareObjectArrayOf(nullableComparer, sort);
         }
 
-        private void CompareStructArrayOf<T>(IComparer<T> itemComparer = null)
+        private void CompareStructArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
             var target = _builder.For<SampleStruct<T[]>>().GetComparer();
 
             var one = CreateStructs<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
-            var collectionComparer = new CollectionComparer<T[], T>(itemComparer);
+            var collectionComparer = new CollectionComparer<T[], T>(itemComparer, sort);
             var referenceComparer = new SampleStructComparer<T[]>(collectionComparer);
 
             Array.Sort(one, referenceComparer);
@@ -161,11 +171,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
-        private void CompareStructArrayOfNullable<T>(IComparer<T> itemComparer = null) where T : struct
+        private void CompareStructArrayOfNullable<T>(IComparer<T> itemComparer = null, bool sort = false) where T : struct
         {
             var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
 
-            CompareStructArrayOf(nullableComparer);
+            CompareStructArrayOf(nullableComparer, sort);
         }
 
         private const int ItemsCount = 100;
