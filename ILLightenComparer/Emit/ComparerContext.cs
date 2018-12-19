@@ -68,7 +68,7 @@ namespace ILLightenComparer.Emit
         // todo: move comparer instances comparison to context
         public IComparer<T> GetComparer<T>()
         {
-            var comparerType = GetOrStartBuild(typeof(T)).Method.DeclaringType;
+            var comparerType = GetOrBuildComparerType(typeof(T));
 
             var comparer = comparerType.CreateInstance<IComparerContext, IComparer>(this);
 

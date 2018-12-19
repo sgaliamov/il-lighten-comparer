@@ -45,13 +45,20 @@ namespace ILLightenComparer.Emit.Reflection
 
         public static MethodInfo GetArraySort(Type elementType)
         {
-            return typeof(Array).GetMethod(nameof(Array.Sort),
-                new[]
-                {
-                    elementType,
-                    elementType,
-                    typeof(IComparer<>).MakeGenericType(elementType)
-                });
+            return typeof(Array)
+                   .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                   .Where(x => x.Name == nameof(Array.Sort))
+                   .Where(x => x.IsGenericMethodDefinition)
+                   .Single(x =>
+                   {
+                       var parameters = x.GetParameters();
+
+                       return parameters.Length == 2
+                              && parameters[0].ParameterType.IsArray
+                              && parameters[1].ParameterType.IsGenericType
+                              && parameters[1].ParameterType.GetGenericTypeDefinition() == typeof(IComparer<>);
+                   })
+                   .MakeGenericMethod(elementType);
         }
 
         public static Type[] StaticCompareMethodParameters(Type objectType)

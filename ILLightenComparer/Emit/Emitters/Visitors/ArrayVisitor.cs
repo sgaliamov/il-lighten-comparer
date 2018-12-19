@@ -69,21 +69,31 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             LocalBuilder yArray)
         {
             var elementType = arrayType.GetElementType();
-            var toArrayMethod = Method.ToArray.MakeGenericMethod(elementType);
-            var arraySortMethod = Method.GetArraySort(elementType);
             var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
             il.LoadArgument(Arg.Context)
               .Call(getComparerMethod)
-              .Emit(OpCodes.Dup)
-              .LoadLocal(xArray)
-              .Call(toArrayMethod)
-              .Call(arraySortMethod)
-              .Store(xArray)
-              .LoadLocal(yArray)
-              .Call(toArrayMethod)
-              .Call(arraySortMethod)
-              .Store(yArray);
+              .Store(getComparerMethod.ReturnType, out var comparer);
+
+            EmitSortArray(il, elementType, xArray, comparer);
+            EmitSortArray(il, elementType, yArray, comparer);
+        }
+
+        private static void EmitSortArray(
+            ILEmitter il,
+            Type elementType,
+            LocalBuilder array,
+            LocalBuilder comparer)
+        {
+            var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
+            var sortMethod = Method.GetArraySort(elementType);
+
+            il.LoadLocal(array)
+              .Call(copyMethod)
+              .Store(array)
+              .LoadLocal(array)
+              .LoadLocal(comparer)
+              .Call(sortMethod);
         }
 
         private void Loop(
