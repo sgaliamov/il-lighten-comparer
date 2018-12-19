@@ -194,7 +194,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
                 list = list.Append(default);
             }
 
-            return list.OrderBy(_ => _random.Next()).ToHashSet(); // todo: try without hash set
+            return list.OrderBy(_ => _random.Next()).ToArray().AsEnumerable();
         }
 
         private IEnumerable<SampleObject<IEnumerable<T>>> CreateObjects<T>(int itemsCount)

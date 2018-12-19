@@ -52,7 +52,7 @@
 - [x] compare arrays
 - [x] compare array of `ComparableStruct`
 - [x] refactor variables loading
-- [ ] compare `IEnumarable`
+- [x] compare `IEnumarable`
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
 

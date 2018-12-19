@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
@@ -47,6 +48,18 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
 
+            Loop(il, variable, countX, countY, gotoNextMember);
+
+            return il.MarkLabel(gotoNextMember);
+        }
+
+        private void Loop(
+            ILEmitter il,
+            IVariable variable,
+            LocalBuilder countX,
+            LocalBuilder countY,
+            Label gotoNextMember)
+        {
             il.LoadConstant(0)
               .Store(typeof(int), LocalIndex, out var index)
               .DefineLabel(out var loopStart)
@@ -65,10 +78,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .LoadConstant(1)
               .Emit(OpCodes.Add)
               .Store(index)
-              .Branch(OpCodes.Br, loopStart)
-              .MarkLabel(gotoNextMember);
-
-            return il;
+              .Branch(OpCodes.Br, loopStart);
         }
 
         private static void EmitCheckIfLoopsAreDone(

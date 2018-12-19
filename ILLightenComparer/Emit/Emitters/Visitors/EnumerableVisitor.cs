@@ -48,7 +48,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Call(comparison.GetEnumeratorMethod)
               .Store(comparison.EnumeratorType, LocalY, out var yEnumerator);
 
-            //il.BeginExceptionBlock(); // todo: think how to use it, the problem now with inner `return` statements, it has to be `leave` instruction
+            // todo: think how to use it, the problem now with the inner `return` statements, it has to be `leave` instruction
+            // todo: use dynamic function to encapsulate all branching
+            //il.BeginExceptionBlock(); 
 
             Loop(il, xEnumerator, yEnumerator, startLoop, gotoNextMember, variable);
 
