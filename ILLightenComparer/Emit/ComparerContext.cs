@@ -96,9 +96,9 @@ namespace ILLightenComparer.Emit
             return _configurationBuilder.GetConfiguration(type);
         }
 
-        internal MethodInfo GetStaticCompareMethod(Type memberType)
+        internal MethodInfo GetStaticCompareMethod(Type type)
         {
-            return GetOrStartBuild(memberType).Method;
+            return GetOrStartBuild(type).Method;
         }
 
         private void FinalizeStartedBuilds()

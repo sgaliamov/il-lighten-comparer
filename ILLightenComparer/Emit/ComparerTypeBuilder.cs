@@ -207,7 +207,7 @@ namespace ILLightenComparer.Emit
             }
 
             var methodBuilder = typeBuilder.DefineStaticMethod(
-                MethodName.Factory,
+                MethodName.CreateInstance,
                 typeBuilder,
                 parameters);
 

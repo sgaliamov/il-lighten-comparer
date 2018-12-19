@@ -18,7 +18,7 @@ namespace ILLightenComparer.Emit.Emitters.Variables
             
             IndexVariable = indexVariable ?? throw new ArgumentNullException(nameof(indexVariable));
 
-            GetItemMethod = arrayMemberType.GetMethod(MethodName.ArrayGet, new[] { typeof(int) })
+            GetItemMethod = arrayMemberType.GetMethod(MethodName.Get, new[] { typeof(int) })
                             ?? throw new ArgumentException(nameof(arrayMemberType));
         }
 
