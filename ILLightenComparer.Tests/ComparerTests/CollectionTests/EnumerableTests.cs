@@ -14,14 +14,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
     public sealed class EnumerableTests
     {
         [Fact]
-        public void Compare_Array_Of_Unsorted_Nullable_Enums()
-        {
-            CompareObjectEnumerableOfNullable<EnumSmall>(null, true);
-
-            CompareStructEnumerableOfNullable<EnumSmall>(null, true);
-        }
-
-        [Fact]
         public void Compare_Enumerable_Of_Bytes()
         {
             CompareObjectEnumerableOf<byte>();
@@ -143,9 +135,27 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Enumerable_Of_Unsorted_Comparable_Objects()
         {
-            CompareObjectEnumerableOf<ComparableObject>(null, true);
+            _builder.For<SampleObject<IEnumerable<ComparableObject>>>()
+                    .DefineConfiguration(new ComparerSettings
+                    {
+                        IgnoreCollectionOrder = true
+                    });
 
+            CompareObjectEnumerableOf<ComparableObject>(null, true);
             CompareStructEnumerableOf<ComparableObject>(null, true);
+        }
+
+        [Fact]
+        public void Compare_Enumerable_Of_Unsorted_Nullable_Enums()
+        {
+            _builder.For<SampleStruct<IEnumerable<EnumSmall?>>>()
+                    .DefineConfiguration(new ComparerSettings
+                    {
+                        IgnoreCollectionOrder = true
+                    });
+
+            CompareObjectEnumerableOfNullable<EnumSmall>(null, true);
+            CompareStructEnumerableOfNullable<EnumSmall>(null, true);
         }
 
         private void CompareObjectEnumerableOf<T>(IComparer<T> itemComparer = null, bool sort = false)

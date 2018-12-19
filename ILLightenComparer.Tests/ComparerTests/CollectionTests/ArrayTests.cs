@@ -132,16 +132,19 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
                     });
 
             CompareObjectArrayOf<ComparableObject>(null, true);
-
-
             CompareStructArrayOf<ComparableObject>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Unsorted_Nullable_Enums()
         {
-            CompareObjectArrayOfNullable<EnumSmall>(null, true);
+            _builder.For<SampleStruct<EnumSmall?[]>>()
+                    .DefineConfiguration(new ComparerSettings
+                    {
+                        IgnoreCollectionOrder = true
+                    });
 
+            CompareObjectArrayOfNullable<EnumSmall>(null, true);
             CompareStructArrayOfNullable<EnumSmall>(null, true);
         }
 
