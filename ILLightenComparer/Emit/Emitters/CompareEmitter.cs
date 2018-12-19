@@ -17,8 +17,8 @@ namespace ILLightenComparer.Emit.Emitters
         {
             _compareVisitor = new CompareVisitor(context);
             _stackVisitor = new StackVisitor(_loader);
-            _arrayVisitor = new ArrayVisitor(_stackVisitor, _compareVisitor, _loader, converter);
-            _enumerableVisitor = new EnumerableVisitor(_stackVisitor, _compareVisitor, _loader, converter);
+            _arrayVisitor = new ArrayVisitor(context, _stackVisitor, _compareVisitor, _loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(context, _stackVisitor, _compareVisitor, _loader, converter);
         }
 
         public ILEmitter Visit(IMemberComparison comparison, ILEmitter il)

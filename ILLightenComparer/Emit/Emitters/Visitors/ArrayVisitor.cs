@@ -18,16 +18,19 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         private const int LocalIndex = 7;
 
         private readonly CompareVisitor _compareVisitor;
+        private readonly ComparerContext _context;
         private readonly Converter _converter;
         private readonly VariableLoader _loader;
         private readonly StackVisitor _stackVisitor;
 
         public ArrayVisitor(
+            ComparerContext context,
             StackVisitor stackVisitor,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
         {
+            _context = context;
             _compareVisitor = compareVisitor;
             _loader = loader;
             _converter = converter;
@@ -48,9 +51,19 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
 
+            if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
+            {
+                EmitCollectionsSorting(il, variable.VariableType, x, y);
+            }
+
             Loop(il, variable, countX, countY, gotoNextMember);
 
             return il.MarkLabel(gotoNextMember);
+        }
+
+        private void EmitCollectionsSorting(ILEmitter il, Type arrayType, LocalBuilder x, LocalBuilder y)
+        {
+            throw new NotImplementedException();
         }
 
         private void Loop(
