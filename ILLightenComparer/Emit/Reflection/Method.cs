@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Emit.Shared;
 
@@ -30,11 +32,27 @@ namespace ILLightenComparer.Emit.Reflection
         public static MethodInfo DelayedCompare =
             typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
 
+        public static MethodInfo GetComparer =
+            typeof(IComparerContext).GetMethod(nameof(IComparerContext.GetComparer));
+
         public static MethodInfo MoveNext = typeof(IEnumerator)
             .GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
 
         public static MethodInfo Dispose = typeof(IDisposable)
             .GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
+
+        public static MethodInfo ToArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray));
+
+        public static MethodInfo GetArraySort(Type elementType)
+        {
+            return typeof(Array).GetMethod(nameof(Array.Sort),
+                new[]
+                {
+                    elementType,
+                    elementType,
+                    typeof(IComparer<>).MakeGenericType(elementType)
+                });
+        }
 
         public static Type[] StaticCompareMethodParameters(Type objectType)
         {

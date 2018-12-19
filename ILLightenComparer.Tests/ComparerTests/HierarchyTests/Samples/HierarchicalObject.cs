@@ -11,7 +11,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
         public NestedStruct? NestedNullableStructField;
         public NestedStruct NestedStructField;
 
-        public static IComparer<HierarchicalObject> Comparer { get; } = new ValueRelationalComparer();
+        public static IComparer<HierarchicalObject> Comparer { get; } = new RelationalComparer();
 
         public SealedNestedObject FirstProperty { get; set; }
         public NestedStruct? NestedNullableStructProperty { get; set; }
@@ -19,7 +19,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
         public SealedNestedObject SecondProperty { get; set; }
         public int Value { get; set; }
 
-        private sealed class ValueRelationalComparer : IComparer<HierarchicalObject>
+        private sealed class RelationalComparer : IComparer<HierarchicalObject>
         {
             public int Compare(HierarchicalObject x, HierarchicalObject y)
             {

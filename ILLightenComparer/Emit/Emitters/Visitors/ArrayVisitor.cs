@@ -4,6 +4,7 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
 {
@@ -61,9 +62,28 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il.MarkLabel(gotoNextMember);
         }
 
-        private void EmitCollectionsSorting(ILEmitter il, Type arrayType, LocalBuilder xArray, LocalBuilder yArray)
+        private static void EmitCollectionsSorting(
+            ILEmitter il,
+            Type arrayType,
+            LocalBuilder xArray,
+            LocalBuilder yArray)
         {
-            throw new NotImplementedException();
+            var elementType = arrayType.GetElementType();
+            var toArrayMethod = Method.ToArray.MakeGenericMethod(elementType);
+            var arraySortMethod = Method.GetArraySort(elementType);
+            var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
+
+            il.LoadArgument(Arg.Context)
+              .Call(getComparerMethod)
+              .Emit(OpCodes.Dup)
+              .LoadLocal(xArray)
+              .Call(toArrayMethod)
+              .Call(arraySortMethod)
+              .Store(xArray)
+              .LoadLocal(yArray)
+              .Call(toArrayMethod)
+              .Call(arraySortMethod)
+              .Store(yArray);
         }
 
         private void Loop(

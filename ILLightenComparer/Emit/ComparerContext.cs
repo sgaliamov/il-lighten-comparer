@@ -18,6 +18,7 @@ namespace ILLightenComparer.Emit
     public interface IComparerContext
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
+        IComparer<T> GetComparer<T>();
     }
 
     internal sealed class ComparerContext : IComparerContext
@@ -62,6 +63,16 @@ namespace ILLightenComparer.Emit
             }
 
             return Compare(xType, x, y, xSet, ySet);
+        }
+
+        // todo: move comparer instances comparison to context
+        public IComparer<T> GetComparer<T>()
+        {
+            var comparerType = GetOrStartBuild(typeof(T)).Method.DeclaringType;
+
+            var comparer = comparerType.CreateInstance<IComparerContext, IComparer>(this);
+
+            return (IComparer<T>)comparer;
         }
 
         public Type GetOrBuildComparerType(Type objectType)
