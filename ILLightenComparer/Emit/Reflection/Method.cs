@@ -43,7 +43,7 @@ namespace ILLightenComparer.Emit.Reflection
 
         public static MethodInfo ToArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray));
 
-        public static MethodInfo GetArraySort(Type elementType)
+        public static MethodInfo GetArraySortWithComparer(Type elementType)
         {
             return typeof(Array)
                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
@@ -57,6 +57,20 @@ namespace ILLightenComparer.Emit.Reflection
                               && parameters[0].ParameterType.IsArray
                               && parameters[1].ParameterType.IsGenericType
                               && parameters[1].ParameterType.GetGenericTypeDefinition() == typeof(IComparer<>);
+                   })
+                   .MakeGenericMethod(elementType);
+        }
+
+        public static MethodInfo GetArraySort(Type elementType)
+        {
+            return typeof(Array)
+                   .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                   .Where(x => x.Name == nameof(Array.Sort))
+                   .Where(x => x.IsGenericMethodDefinition)
+                   .Single(x =>
+                   {
+                       var parameters = x.GetParameters();
+                       return parameters.Length == 1 && parameters[0].ParameterType.IsArray;
                    })
                    .MakeGenericMethod(elementType);
         }

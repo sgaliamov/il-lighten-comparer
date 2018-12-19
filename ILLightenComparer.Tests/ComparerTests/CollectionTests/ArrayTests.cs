@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
+using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.Samples;
@@ -77,7 +78,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = new SampleObjectComparer<SampleObject<int>>(nestedComparer);
 
             CompareObjectArrayOf(comparer);
-
             CompareStructArrayOf(comparer);
         }
 
@@ -116,21 +116,70 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Unsorted_Comparable_Objects()
         {
-            _builder.For<SampleObject<ComparableObject[]>>()
-                    .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = true });
-
             CompareObjectArrayOf<ComparableObject>(null, true);
             CompareStructArrayOf<ComparableObject>(null, true);
         }
 
         [Fact]
+        public void Compare_Array_Of_Unsorted_Ints()
+        {
+            CompareObjectArrayOf<int>(null, true);
+            CompareStructArrayOf<int>(null, true);
+        }
+
+        [Fact]
+        public void Compare_Array_Of_Unsorted_Nested_Objects()
+        {
+            var nestedComparer = new SampleObjectComparer<int>();
+            var comparer = new SampleObjectComparer<SampleObject<int>>(nestedComparer);
+
+            CompareObjectArrayOf(comparer, true);
+            CompareStructArrayOf(comparer, true);
+        }
+
+        [Fact]
         public void Compare_Array_Of_Unsorted_Nullable_Enums()
         {
-            _builder.For<SampleStruct<EnumSmall?[]>>()
-                    .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = true });
-
             CompareObjectArrayOfNullable<EnumSmall>(null, true);
             CompareStructArrayOfNullable<EnumSmall>(null, true);
+        }
+
+        [Fact]
+        public void Compare_Array_Of_Unsorted_Nullable_Structs()
+        {
+            var comparer = new SampleStructComparer<int>();
+
+            CompareObjectArrayOfNullable(comparer, true);
+            CompareStructArrayOfNullable(comparer, true);
+        }
+
+        [Fact]
+        public void Test()
+        {
+            var target = _builder
+                         .For<SampleObject<int[]>>()
+                         .DefineConfiguration(new ComparerSettings
+                         {
+                             IgnoreCollectionOrder = true,
+                             IncludeFields = false,
+                             DetectCycles = false
+                         })
+                         .GetComparer();
+
+            var x = new SampleObject<int[]>
+            {
+                Property = new int[0]
+            };
+
+            var y = new SampleObject<int[]>
+            {
+                Property = new[] { 4, 2, 1 }
+            };
+            target.Compare(x, y).Should().Be(-1);
+
+            var collectionComparer = new CollectionComparer<int[], int>(null, true);
+            var referenceComparer = new SampleObjectComparer<int[]>(collectionComparer);
+            referenceComparer.Compare(x, y).Should().Be(-1);
         }
 
         private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)

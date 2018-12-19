@@ -125,19 +125,20 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Enumerable_Of_Unsorted_Comparable_Objects()
         {
-            _builder.For<SampleObject<IEnumerable<ComparableObject>>>()
-                    .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = true });
-
             CompareObjectEnumerableOf<ComparableObject>(null, true);
             CompareStructEnumerableOf<ComparableObject>(null, true);
         }
 
         [Fact]
+        public void Compare_Enumerable_Of_Unsorted_Ints()
+        {
+            CompareObjectEnumerableOf<int>(null, true);
+            CompareStructEnumerableOf<int>(null, true);
+        }
+
+        [Fact]
         public void Compare_Enumerable_Of_Unsorted_Nullable_Enums()
         {
-            _builder.For<SampleStruct<IEnumerable<EnumSmall?>>>()
-                    .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = true });
-
             CompareObjectEnumerableOfNullable<EnumSmall>(null, true);
             CompareStructEnumerableOfNullable<EnumSmall>(null, true);
         }

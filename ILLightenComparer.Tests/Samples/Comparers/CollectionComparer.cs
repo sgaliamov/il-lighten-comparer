@@ -39,7 +39,7 @@ namespace ILLightenComparer.Tests.Samples.Comparers
                 Array.Sort(ax, _itemComparer);
                 x = (TCollection)ax.AsEnumerable();
 
-                var ay = x.ToArray();
+                var ay = y.ToArray();
                 Array.Sort(ay, _itemComparer);
                 y = (TCollection)ay.AsEnumerable();
             }
