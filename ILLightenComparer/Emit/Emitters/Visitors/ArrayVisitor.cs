@@ -57,7 +57,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                 EmitCollectionsSorting(il, variable.VariableType, x, y);
             }
 
-            Loop(il, variable, countX, countY, gotoNextMember);
+            Loop(il, variable, x, y, countX, countY, gotoNextMember);
 
             return il.MarkLabel(gotoNextMember);
         }
@@ -72,7 +72,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
             il.LoadArgument(Arg.Context)
-              .Call(getComparerMethod)
+              .Emit(OpCodes.Call, getComparerMethod)
               .Store(getComparerMethod.ReturnType, out var comparer);
 
             EmitSortArray(il, elementType, xArray, comparer);
@@ -99,6 +99,8 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         private void Loop(
             ILEmitter il,
             IVariable variable,
+            LocalBuilder xArray,
+            LocalBuilder yArray,
             LocalBuilder countX,
             LocalBuilder countY,
             Label gotoNextMember)
@@ -111,7 +113,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            var itemComparison = _converter.CreateArrayItemComparison(variable, index);
+            var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
             itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
             itemComparison.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(continueLoop);

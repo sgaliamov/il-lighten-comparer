@@ -49,14 +49,14 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         public ILEmitter Load(ArrayItemVariable variable, ILEmitter il, ushort arg)
         {
-            return il.LoadLocal(arg)
+            return il.LoadLocal(variable.Arrays[arg])
                      .LoadLocal(variable.IndexVariable)
                      .Call(variable.GetItemMethod);
         }
 
         public ILEmitter LoadAddress(ArrayItemVariable variable, ILEmitter il, ushort arg)
         {
-            return il.LoadLocal(arg)
+            return il.LoadLocal(variable.Arrays[arg])
                      .LoadLocal(variable.IndexVariable)
                      .Call(variable.GetItemMethod)
                      .Store(variable.VariableType, out var local)

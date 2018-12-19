@@ -34,7 +34,6 @@ namespace ILLightenComparer.Emit.Emitters
             var comparison = MemberConverters
                              .Select(factory => factory(memberInfo))
                              .FirstOrDefault(x => x != null);
-
             if (comparison == null)
             {
                 throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
@@ -43,9 +42,18 @@ namespace ILLightenComparer.Emit.Emitters
             return comparison;
         }
 
-        public IComparisonAcceptor CreateArrayItemComparison(IVariable variable, LocalBuilder index)
+        public IComparisonAcceptor CreateArrayItemComparison(
+            IVariable variable,
+            LocalBuilder xArray,
+            LocalBuilder yArray,
+            LocalBuilder index)
         {
-            var itemVariable = ArrayItemVariable.Create(variable.VariableType, variable.OwnerType, index);
+            var itemVariable = ArrayItemVariable.Create(
+                variable.VariableType,
+                variable.OwnerType,
+                xArray,
+                yArray,
+                index);
             if (itemVariable == null)
             {
                 throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not array.");
