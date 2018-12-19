@@ -91,7 +91,7 @@ namespace ILLightenComparer.Emit.Extensions
                 throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
             }
 
-            if (type.IsInterface && type.GetGenericTypeDefinition() == generic)
+            if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == generic)
             {
                 return true;
             }
