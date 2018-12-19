@@ -125,7 +125,14 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Unsorted_Comparable_Objects()
         {
+            _builder.For<SampleObject<ComparableObject[]>>()
+                    .DefineConfiguration(new ComparerSettings
+                    {
+                        IgnoreCollectionOrder = true
+                    });
+
             CompareObjectArrayOf<ComparableObject>(null, true);
+
 
             CompareStructArrayOf<ComparableObject>(null, true);
         }
@@ -140,7 +147,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
-            var target = _builder.For<SampleObject<T[]>>().GetComparer();
+            var target = _builder
+                         .For<SampleObject<T[]>>()
+                         .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
+                         .GetComparer();
 
             var one = CreateObjects<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
@@ -165,7 +175,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private void CompareStructArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
-            var target = _builder.For<SampleStruct<T[]>>().GetComparer();
+            var target = _builder
+                         .For<SampleStruct<T[]>>()
+                         .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
+                         .GetComparer();
 
             var one = CreateStructs<T>(ItemsCount).ToArray();
             var other = one.DeepClone();

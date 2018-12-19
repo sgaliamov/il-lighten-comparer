@@ -14,6 +14,14 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
     public sealed class EnumerableTests
     {
         [Fact]
+        public void Compare_Array_Of_Unsorted_Nullable_Enums()
+        {
+            CompareObjectEnumerableOfNullable<EnumSmall>(null, true);
+
+            CompareStructEnumerableOfNullable<EnumSmall>(null, true);
+        }
+
+        [Fact]
         public void Compare_Enumerable_Of_Bytes()
         {
             CompareObjectEnumerableOf<byte>();
@@ -140,17 +148,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructEnumerableOf<ComparableObject>(null, true);
         }
 
-        [Fact]
-        public void Compare_Array_Of_Unsorted_Nullable_Enums()
-        {
-            CompareObjectEnumerableOfNullable<EnumSmall>(null, true);
-
-            CompareStructEnumerableOfNullable<EnumSmall>(null, true);
-        }
-
         private void CompareObjectEnumerableOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
-            var target = _builder.For<SampleObject<IEnumerable<T>>>().GetComparer();
+            var target = _builder
+                         .For<SampleObject<IEnumerable<T>>>()
+                         .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
+                         .GetComparer();
 
             var one = CreateObjects<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
@@ -173,7 +176,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private void CompareStructEnumerableOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
-            var target = _builder.For<SampleStruct<IEnumerable<T>>>().GetComparer();
+            var target = _builder
+                         .For<SampleStruct<IEnumerable<T>>>()
+                         .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
+                         .GetComparer();
 
             var one = CreateStructs<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
