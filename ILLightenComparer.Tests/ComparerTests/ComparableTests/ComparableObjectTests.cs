@@ -10,20 +10,6 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 {
     public class ComparableObjectTests : BaseComparerTests<ContainerObject>
     {
-        public ComparableObjectTests()
-        {
-            ComparersBuilder.For<ComparableChildObject>()
-                            .DefineConfiguration(new ComparerSettings
-                            {
-                                // todo: remove this configuration when simplified comparer will be implemented
-                                MembersOrder = new[]
-                                {
-                                    nameof(ComparableChildObject.Property),
-                                    nameof(ComparableChildObject.Field)
-                                }
-                            });
-        }
-
         [Fact(Timeout = Constants.DefaultTimeout)]
         public void Custom_Comparable_Implementation_Should_Be_Used()
         {
@@ -62,6 +48,20 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         [Fact(Timeout = Constants.DefaultTimeout)]
         public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
         {
+            ComparersBuilder.For<ComparableChildObject>()
+                            .DefineConfiguration(new ComparerSettings
+                            {
+                                // todo: remove this configuration when simplified comparer will be implemented.
+                                // because `ComparableObject` is not sealed, delayed comparison is used.
+                                // so, new comparer for `ComparableChildObject` is generated.
+                                // it does not use custom implementation, but should.
+                                MembersOrder = new[]
+                                {
+                                    nameof(ComparableChildObject.Property),
+                                    nameof(ComparableChildObject.Field)
+                                }
+                            });
+
             var one = new ContainerObject
             {
                 ComparableProperty = Fixture.Create<ComparableObject>()

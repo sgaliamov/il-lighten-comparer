@@ -6,9 +6,9 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class CollectionComparison : ICompareEmitterAcceptor
+    internal sealed class ArrayComparison : ICompareEmitterAcceptor
     {
-        private CollectionComparison(IVariable variable)
+        private ArrayComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
             GetLengthMethod = variable.VariableType.GetPropertyGetter(MethodName.ArrayLength);
@@ -23,19 +23,19 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public IVariable Variable { get; }
 
-        public static CollectionComparison Create(MemberInfo memberInfo)
+        public static ArrayComparison Create(MemberInfo memberInfo)
         {
             var variable = VariableFactory.Create(memberInfo);
 
             return Create(variable);
         }
 
-        public static CollectionComparison Create(IVariable variable)
+        public static ArrayComparison Create(IVariable variable)
         {
             var underlyingType = variable.VariableType.GetUnderlyingType();
             if (underlyingType.IsArray && underlyingType.GetArrayRank() == 1)
             {
-                return new CollectionComparison(variable);
+                return new ArrayComparison(variable);
             }
 
             return null;

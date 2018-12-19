@@ -96,6 +96,30 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
+        public ILEmitter BeginFinallyBlock()
+        {
+            DebugLine("\t.finally");
+            _il.BeginFinallyBlock();
+
+            return this;
+        }
+
+        public ILEmitter BeginExceptionBlock()
+        {
+            DebugLine("\t.try {");
+            _il.BeginExceptionBlock();
+
+            return this;
+        }
+
+        public ILEmitter EndExceptionBlock()
+        {
+            DebugLine("\t} // .try");
+            _il.EndExceptionBlock();
+
+            return this;
+        }
+
         public ILEmitter Call(MethodInfo methodInfo)
         {
             var owner = methodInfo.DeclaringType;

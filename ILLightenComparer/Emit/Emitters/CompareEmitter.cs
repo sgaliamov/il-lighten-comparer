@@ -9,6 +9,7 @@ namespace ILLightenComparer.Emit.Emitters
     {
         private readonly ArrayVisitor _arrayVisitor;
         private readonly CompareVisitor _compareVisitor;
+        private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
         private readonly StackVisitor _stackVisitor;
 
@@ -17,6 +18,7 @@ namespace ILLightenComparer.Emit.Emitters
             _compareVisitor = new CompareVisitor(context);
             _stackVisitor = new StackVisitor(_loader);
             _arrayVisitor = new ArrayVisitor(_stackVisitor, _compareVisitor, _loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(_stackVisitor, _compareVisitor, _loader, converter);
         }
 
         public ILEmitter Visit(IMemberComparison comparison, ILEmitter il)
@@ -29,7 +31,7 @@ namespace ILLightenComparer.Emit.Emitters
                              .MarkLabel(gotoNextMember);
         }
 
-        public ILEmitter Visit(CollectionComparison comparison, ILEmitter il)
+        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
         {
             return _arrayVisitor.Visit(comparison, il);
         }
@@ -51,6 +53,11 @@ namespace ILLightenComparer.Emit.Emitters
               .Branch(OpCodes.Brtrue_S, out var next)
               .Return(-1)
               .MarkLabel(next);
+        }
+
+        public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il)
+        {
+            return _enumerableVisitor.Visit(comparison, il);
         }
     }
 }

@@ -16,7 +16,8 @@ namespace ILLightenComparer.Emit.Emitters
             IntegralComparison.Create,
             StringComparison.Create,
             ComparableComparison.Create,
-            CollectionComparison.Create,
+            ArrayComparison.Create,
+            EnumerableComparison.Create,
             HierarchicalComparison.Create
         };
 
@@ -50,16 +51,30 @@ namespace ILLightenComparer.Emit.Emitters
                 throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not array.");
             }
 
+            return CreateCollectionItemComparison(itemVariable);
+        }
+
+        public IComparisonAcceptor CreateEnumerableItemComparison(
+            Type ownerType,
+            LocalBuilder xEnumerator,
+            LocalBuilder yEnumerator)
+        {
+            var itemVariable = new EnumerableItemVariable(ownerType, xEnumerator, yEnumerator);
+
+            return CreateCollectionItemComparison(itemVariable);
+        }
+
+        private static IComparisonAcceptor CreateCollectionItemComparison(IVariable itemVariable)
+        {
             var comparison = VariableConverters
                              .Select(factory => factory(itemVariable))
                              .FirstOrDefault(x => x != null);
-
             if (comparison == null)
             {
                 throw new NotSupportedException($"{itemVariable.VariableType.DisplayName()} is not supported.");
             }
 
-            return new ArrayItemComparison(itemVariable, comparison);
+            return new CollectionItemComparison(itemVariable, comparison);
         }
     }
 }

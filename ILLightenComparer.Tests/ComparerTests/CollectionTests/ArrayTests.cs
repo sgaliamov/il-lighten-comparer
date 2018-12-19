@@ -44,8 +44,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Comparable_Objects()
         {
-            CompareObjectArrayOf<ComparableChildObject>();
+            CompareObjectArrayOf<ComparableObject>();
+            CompareObjectArrayOf<ComparableObject>();
 
+            CompareObjectArrayOf<ComparableChildObject>();
             CompareStructArrayOf<ComparableChildObject>();
         }
 

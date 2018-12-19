@@ -5,9 +5,9 @@ using ILLightenComparer.Emit.Emitters.Visitors;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class ArrayItemComparison : IComparisonAcceptor
+    internal sealed class CollectionItemComparison : IComparisonAcceptor
     {
-        public ArrayItemComparison(IVariable itemVariable, IComparisonAcceptor itemAcceptor)
+        public CollectionItemComparison(IVariable itemVariable, IComparisonAcceptor itemAcceptor)
         {
             Variable = itemVariable ?? throw new ArgumentNullException(nameof(itemVariable));
             ItemAcceptor = itemAcceptor ?? throw new ArgumentNullException(nameof(itemAcceptor));
@@ -20,9 +20,6 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             return visitor.Visit(this, il);
         }
 
-        /// <summary>
-        ///     ArrayItemVariable.
-        /// </summary>
         public IVariable Variable { get; }
 
         public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)

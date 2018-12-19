@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
@@ -33,7 +34,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             _stackVisitor = stackVisitor;
         }
 
-        public ILEmitter Visit(CollectionComparison comparison, ILEmitter il)
+        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
         {
             var variable = comparison.Variable;
             il.DefineLabel(out var gotoNextMember);
@@ -41,10 +42,24 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
             variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var y);
 
-            EmitCheckMemberReferenceComparison(il, x, y, gotoNextMember);
+            il.EmitCheckReferenceComparison(x, y, gotoNextMember);
 
             var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
 
+            EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
+
+            Loop(il, variable, countX, countY, gotoNextMember);
+
+            return il.MarkLabel(gotoNextMember);
+        }
+
+        private void Loop(
+            ILEmitter il,
+            IVariable variable,
+            LocalBuilder countX,
+            LocalBuilder countY,
+            Label gotoNextMember)
+        {
             il.LoadConstant(0)
               .Store(typeof(int), LocalIndex, out var index)
               .DefineLabel(out var loopStart)
@@ -63,10 +78,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .LoadConstant(1)
               .Emit(OpCodes.Add)
               .Store(index)
-              .Branch(OpCodes.Br, loopStart)
-              .MarkLabel(gotoNextMember);
-
-            return il;
+              .Branch(OpCodes.Br, loopStart);
         }
 
         private static void EmitCheckIfLoopsAreDone(
@@ -100,7 +112,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         private static (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
             ILEmitter il,
-            CollectionComparison comparison,
+            ArrayComparison comparison,
             LocalBuilder x,
             LocalBuilder y)
         {
@@ -110,8 +122,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .LoadLocal(y)
               .Call(comparison.GetLengthMethod)
               .Store(typeof(int), LocalCountY, out var countY);
-
-            EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
 
             return (countX, countY);
         }
@@ -133,27 +143,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Emit(OpCodes.Newobj, typeof(IndexOutOfRangeException).GetConstructor(new[] { typeof(string) }))
               .Emit(OpCodes.Throw)
               .MarkLabel(loopInit);
-        }
-
-        private static void EmitCheckMemberReferenceComparison(
-            ILEmitter il,
-            LocalBuilder x,
-            LocalBuilder y,
-            Label gotoNextMember)
-        {
-            il.LoadLocal(x)
-              .LoadLocal(y)
-              .Branch(OpCodes.Bne_Un_S, out var checkX)
-              .Branch(OpCodes.Br, gotoNextMember)
-              .MarkLabel(checkX)
-              .LoadLocal(x)
-              .Branch(OpCodes.Brtrue_S, out var checkY)
-              .Return(-1)
-              .MarkLabel(checkY)
-              .LoadLocal(y)
-              .Branch(OpCodes.Brtrue_S, out var next)
-              .Return(1)
-              .MarkLabel(next);
         }
     }
 }

@@ -34,7 +34,9 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static MethodInfo GetPropertyGetter(this Type type, string name)
         {
-            return type.GetProperty(name)?.GetGetMethod()
+            return type
+                   .GetProperty(name)
+                   ?.GetGetMethod()
                    ?? throw new ArgumentException(
                        $"{type.DisplayName()} does not have {name} property.");
         }
@@ -87,6 +89,11 @@ namespace ILLightenComparer.Emit.Extensions
             if (!generic.IsGenericType)
             {
                 throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
+            }
+
+            if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == generic)
+            {
+                return true;
             }
 
             return type.GetInterfaces()
