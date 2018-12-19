@@ -54,8 +54,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             il.MarkLabel(returnResult)
               .LoadLocal(result)
-              .Branch(OpCodes.Brfalse_S, gotoNextMember)
-              .LoadLocal(result)
               .Return();
 
             return il.MarkLabel(gotoNextMember);
@@ -71,7 +69,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             Label gotoNextMember,
             IVariable variable)
         {
-            il.BeginExceptionBlock();
+            //il.BeginExceptionBlock(); // todo: think how to use it, the problem now with inner `return` statements, it has to be `leave` instruction
             il.MarkLabel(startLoop);
 
             var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
@@ -89,10 +87,10 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                           .Branch(OpCodes.Brfalse, startLoop)
                           .Branch(OpCodes.Leave_S, returnResult);
 
-            il.BeginFinallyBlock();
+            //il.BeginFinallyBlock();
             EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
 
-            il.EndExceptionBlock();
+            //il.EndExceptionBlock();
         }
 
         private static void EmitIfLoopIsDone(

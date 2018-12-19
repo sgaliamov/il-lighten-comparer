@@ -32,9 +32,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Enumerable_Of_Comparable_Objects()
         {
-            CompareObjectEnumerableOf<ComparableChildObject>();
+            CompareObjectEnumerableOf<ComparableObject>();
+            CompareStructEnumerableOf<ComparableObject>();
 
-            CompareStructEnumerableOf<ComparableChildObject>();
+            CompareObjectEnumerableOf<ComparableChildObject>();
+            //CompareStructEnumerableOf<ComparableChildObject>();
         }
 
         [Fact]
