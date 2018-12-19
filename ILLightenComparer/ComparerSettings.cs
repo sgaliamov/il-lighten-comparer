@@ -10,6 +10,7 @@ namespace ILLightenComparer
     public sealed class ComparerSettings
     {
         public bool? DetectCycles { get; set; }
+        public bool? IgnoreCollectionOrder { get; set; }
         public string[] IgnoredMembers { get; set; }
         public bool? IncludeFields { get; set; }
         public string[] MembersOrder { get; set; }

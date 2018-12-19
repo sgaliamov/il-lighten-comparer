@@ -11,6 +11,7 @@ namespace ILLightenComparer.Config
         public readonly string[] MembersOrder;
         public readonly StringComparison StringComparisonType;
         public readonly bool DetectCycles;
+        public readonly bool IgnoreCollectionOrder;
 
         public Configuration Mutate(ComparerSettings settings)
         {
@@ -21,7 +22,8 @@ namespace ILLightenComparer.Config
                 settings.IncludeFields ?? IncludeFields,
                 settings.MembersOrder ?? MembersOrder,
                 settings.StringComparisonType ?? StringComparisonType,
-                settings.DetectCycles ?? DetectCycles);
+                settings.DetectCycles ?? DetectCycles,
+                settings.IgnoreCollectionOrder ?? IgnoreCollectionOrder);
         }
 
         public Configuration(
@@ -29,7 +31,8 @@ namespace ILLightenComparer.Config
             bool includeFields,
             string[] membersOrder,
             StringComparison stringComparisonType,
-            bool detectCycles)
+            bool detectCycles,
+            bool ignoreCollectionOrder)
         {
             IgnoredMembers = ignoredMembers ?? throw new ArgumentNullException(nameof(ignoredMembers));
             IncludeFields = includeFields;
@@ -37,6 +40,7 @@ namespace ILLightenComparer.Config
                            ?? throw new ArgumentNullException(nameof(membersOrder));
             StringComparisonType = stringComparisonType;
             DetectCycles = detectCycles;
+            IgnoreCollectionOrder = ignoreCollectionOrder;
         }
     }
 }
