@@ -61,7 +61,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il.MarkLabel(gotoNextMember);
         }
 
-        private void EmitCollectionsSorting(ILEmitter il, Type arrayType, LocalBuilder x, LocalBuilder y)
+        private void EmitCollectionsSorting(ILEmitter il, Type arrayType, LocalBuilder xArray, LocalBuilder yArray)
         {
             throw new NotImplementedException();
         }

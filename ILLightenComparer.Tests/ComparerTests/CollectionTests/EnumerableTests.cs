@@ -140,6 +140,14 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructEnumerableOf<ComparableObject>(null, true);
         }
 
+        [Fact]
+        public void Compare_Array_Of_Unsorted_Nullable_Enums()
+        {
+            CompareObjectEnumerableOfNullable<EnumSmall>(null, true);
+
+            CompareStructEnumerableOfNullable<EnumSmall>(null, true);
+        }
+
         private void CompareObjectEnumerableOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
             var target = _builder.For<SampleObject<IEnumerable<T>>>().GetComparer();
@@ -156,11 +164,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
-        private void CompareObjectEnumerableOfNullable<T>(IComparer<T> itemComparer = null) where T : struct
+        private void CompareObjectEnumerableOfNullable<T>(IComparer<T> itemComparer = null, bool sort = false) where T : struct
         {
             var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
 
-            CompareObjectEnumerableOf(nullableComparer);
+            CompareObjectEnumerableOf(nullableComparer, sort);
         }
 
         private void CompareStructEnumerableOf<T>(IComparer<T> itemComparer = null, bool sort = false)
@@ -179,11 +187,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
-        private void CompareStructEnumerableOfNullable<T>(IComparer<T> itemComparer = null) where T : struct
+        private void CompareStructEnumerableOfNullable<T>(IComparer<T> itemComparer = null, bool sort = false) where T : struct
         {
             var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
 
-            CompareStructEnumerableOf(nullableComparer);
+            CompareStructEnumerableOf(nullableComparer, sort);
         }
 
         private const int ItemsCount = 100;

@@ -130,6 +130,14 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             CompareStructArrayOf<ComparableObject>(null, true);
         }
 
+        [Fact]
+        public void Compare_Array_Of_Unsorted_Nullable_Enums()
+        {
+            CompareObjectArrayOfNullable<EnumSmall>(null, true);
+
+            CompareStructArrayOfNullable<EnumSmall>(null, true);
+        }
+
         private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
             var target = _builder.For<SampleObject<T[]>>().GetComparer();
