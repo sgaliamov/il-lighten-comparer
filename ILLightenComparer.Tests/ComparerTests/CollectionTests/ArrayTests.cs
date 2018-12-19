@@ -29,7 +29,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Bytes()
         {
             CompareObjectArrayOf<byte>();
-
             CompareStructArrayOf<byte>();
         }
 
@@ -37,7 +36,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Comparable_Nullable_Struct()
         {
             CompareObjectArrayOfNullable<ComparableStruct<EnumSmall>>();
-
             CompareStructArrayOfNullable<ComparableStruct<string>>();
         }
 
@@ -55,7 +53,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Comparable_Struct()
         {
             CompareObjectArrayOf<ComparableStruct<int>>();
-
             CompareStructArrayOf<ComparableStruct<decimal>>();
         }
 
@@ -63,7 +60,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Enums()
         {
             CompareObjectArrayOf<EnumSmall>();
-
             CompareStructArrayOf<EnumSmall>();
         }
 
@@ -71,7 +67,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Longs()
         {
             CompareObjectArrayOf<long>();
-
             CompareStructArrayOf<long>();
         }
 
@@ -90,7 +85,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Nullable_Enums()
         {
             CompareObjectArrayOfNullable<EnumSmall>();
-
             CompareStructArrayOfNullable<EnumSmall>();
         }
 
@@ -100,7 +94,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = new SampleStructComparer<int>();
 
             CompareObjectArrayOfNullable(comparer);
-
             CompareStructArrayOfNullable(comparer);
         }
 
@@ -108,7 +101,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Strings()
         {
             CompareObjectArrayOf<string>();
-
             CompareStructArrayOf<string>();
         }
 
@@ -118,7 +110,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = new SampleStructComparer<int>();
 
             CompareObjectArrayOf(comparer);
-
             CompareStructArrayOf(comparer);
         }
 
@@ -126,10 +117,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Unsorted_Comparable_Objects()
         {
             _builder.For<SampleObject<ComparableObject[]>>()
-                    .DefineConfiguration(new ComparerSettings
-                    {
-                        IgnoreCollectionOrder = true
-                    });
+                    .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = true });
 
             CompareObjectArrayOf<ComparableObject>(null, true);
             CompareStructArrayOf<ComparableObject>(null, true);
@@ -139,10 +127,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Array_Of_Unsorted_Nullable_Enums()
         {
             _builder.For<SampleStruct<EnumSmall?[]>>()
-                    .DefineConfiguration(new ComparerSettings
-                    {
-                        IgnoreCollectionOrder = true
-                    });
+                    .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = true });
 
             CompareObjectArrayOfNullable<EnumSmall>(null, true);
             CompareStructArrayOfNullable<EnumSmall>(null, true);

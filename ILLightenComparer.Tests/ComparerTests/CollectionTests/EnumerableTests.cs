@@ -17,7 +17,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Bytes()
         {
             CompareObjectEnumerableOf<byte>();
-
             CompareStructEnumerableOf<byte>();
         }
 
@@ -25,7 +24,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Comparable_Nullable_Struct()
         {
             CompareObjectEnumerableOfNullable<ComparableStruct<EnumSmall>>();
-
             CompareStructEnumerableOfNullable<ComparableStruct<string>>();
         }
 
@@ -43,7 +41,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Comparable_Struct()
         {
             CompareObjectEnumerableOf<ComparableStruct<int>>();
-
             CompareStructEnumerableOf<ComparableStruct<decimal>>();
         }
 
@@ -73,7 +70,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Enums()
         {
             CompareObjectEnumerableOf<EnumSmall>();
-
             CompareStructEnumerableOf<EnumSmall>();
         }
 
@@ -81,7 +77,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Longs()
         {
             CompareObjectEnumerableOf<long>();
-
             CompareStructEnumerableOf<long>();
         }
 
@@ -92,7 +87,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = new SampleObjectComparer<SampleObject<int>>(nestedComparer);
 
             CompareObjectEnumerableOf(comparer);
-
             CompareStructEnumerableOf(comparer);
         }
 
@@ -100,7 +94,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Nullable_Enums()
         {
             CompareObjectEnumerableOfNullable<EnumSmall>();
-
             CompareStructEnumerableOfNullable<EnumSmall>();
         }
 
@@ -110,7 +103,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = new SampleStructComparer<int>();
 
             CompareObjectEnumerableOfNullable(comparer);
-
             CompareStructEnumerableOfNullable(comparer);
         }
 
@@ -118,7 +110,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Strings()
         {
             CompareObjectEnumerableOf<string>();
-
             CompareStructEnumerableOf<string>();
         }
 
@@ -128,7 +119,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = new SampleStructComparer<int>();
 
             CompareObjectEnumerableOf(comparer);
-
             CompareStructEnumerableOf(comparer);
         }
 
@@ -136,10 +126,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Unsorted_Comparable_Objects()
         {
             _builder.For<SampleObject<IEnumerable<ComparableObject>>>()
-                    .DefineConfiguration(new ComparerSettings
-                    {
-                        IgnoreCollectionOrder = true
-                    });
+                    .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = true });
 
             CompareObjectEnumerableOf<ComparableObject>(null, true);
             CompareStructEnumerableOf<ComparableObject>(null, true);
@@ -149,10 +136,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         public void Compare_Enumerable_Of_Unsorted_Nullable_Enums()
         {
             _builder.For<SampleStruct<IEnumerable<EnumSmall?>>>()
-                    .DefineConfiguration(new ComparerSettings
-                    {
-                        IgnoreCollectionOrder = true
-                    });
+                    .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = true });
 
             CompareObjectEnumerableOfNullable<EnumSmall>(null, true);
             CompareStructEnumerableOfNullable<EnumSmall>(null, true);
