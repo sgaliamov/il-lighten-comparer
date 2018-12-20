@@ -33,6 +33,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
             variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
 
+            // todo: move implementation here
             il.CheckNullableValuesForNull(nullableX, nullableY, variableType, gotoNextMember);
 
             var itemComparison = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);

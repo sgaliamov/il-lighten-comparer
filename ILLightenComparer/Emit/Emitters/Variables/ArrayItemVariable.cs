@@ -9,7 +9,7 @@ namespace ILLightenComparer.Emit.Emitters.Variables
 {
     internal sealed class ArrayItemVariable : IVariable
     {
-        private ArrayItemVariable(
+        public ArrayItemVariable(
             Type arrayMemberType,
             Type ownerType,
             LocalBuilder xArray,
@@ -29,8 +29,8 @@ namespace ILLightenComparer.Emit.Emitters.Variables
 
             Arrays = new Dictionary<ushort, LocalBuilder>(2)
             {
-                { Arg.X, xArray },
-                { Arg.Y, yArray }
+                { Arg.X, xArray ?? throw new ArgumentNullException(nameof(xArray)) },
+                { Arg.Y, yArray ?? throw new ArgumentNullException(nameof(yArray)) }
             };
         }
 
@@ -48,18 +48,6 @@ namespace ILLightenComparer.Emit.Emitters.Variables
         public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
         {
             return visitor.LoadAddress(this, il, arg);
-        }
-
-        public static IVariable Create(
-            Type arrayType,
-            Type ownerType,
-            LocalBuilder xArray,
-            LocalBuilder yArray,
-            LocalBuilder indexVariable)
-        {
-            return arrayType.IsArray && arrayType.GetArrayRank() == 1
-                       ? new ArrayItemVariable(arrayType, ownerType, xArray, yArray, indexVariable)
-                       : null;
         }
     }
 }

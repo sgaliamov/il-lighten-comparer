@@ -14,13 +14,12 @@ namespace ILLightenComparer.Emit.Emitters.Variables
         {
             OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
             VariableType = variableType ?? throw new ArgumentNullException(nameof(variableType));
-            GetValueMethod = variableType.GetPropertyGetter(MethodName.Value);
-
             Nullables = new Dictionary<ushort, LocalBuilder>(2)
             {
-                { Arg.X, x },
-                { Arg.Y, y }
+                { Arg.X, x ?? throw new ArgumentNullException(nameof(x)) },
+                { Arg.Y, y ?? throw new ArgumentNullException(nameof(y)) }
             };
+            GetValueMethod = variableType.GetPropertyGetter(MethodName.Value);
         }
 
         public MethodInfo GetValueMethod { get; set; }

@@ -49,18 +49,14 @@ namespace ILLightenComparer.Emit.Emitters
             LocalBuilder yArray,
             LocalBuilder index)
         {
-            var itemVariable = ArrayItemVariable.Create(
+            var itemVariable = new ArrayItemVariable(
                 variable.VariableType,
                 variable.OwnerType,
                 xArray,
                 yArray,
                 index);
-            if (itemVariable == null)
-            {
-                throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not array.");
-            }
 
-            return CreateCollectionItemComparison(itemVariable);
+            return CreateVariableComparison(itemVariable);
         }
 
         public IComparisonAcceptor CreateEnumerableItemComparison(
@@ -70,7 +66,7 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var itemVariable = new EnumerableItemVariable(ownerType, xEnumerator, yEnumerator);
 
-            return CreateCollectionItemComparison(itemVariable);
+            return CreateVariableComparison(itemVariable);
         }
 
         public IComparisonAcceptor CreateNullableVariableComparison(
@@ -78,14 +74,17 @@ namespace ILLightenComparer.Emit.Emitters
             LocalBuilder nullableX,
             LocalBuilder nullableY)
         {
-            throw new NotImplementedException();
+            var itemVariable = new NullableVariable(variable.OwnerType, variable.VariableType, nullableX, nullableY);
+
+            return CreateVariableComparison(itemVariable);
         }
 
-        private static IComparisonAcceptor CreateCollectionItemComparison(IVariable itemVariable)
+        private static IComparisonAcceptor CreateVariableComparison(IVariable itemVariable)
         {
             var comparison = VariableConverters
                              .Select(factory => factory(itemVariable))
                              .FirstOrDefault(x => x != null);
+
             if (comparison == null)
             {
                 throw new NotSupportedException($"{itemVariable.VariableType.DisplayName()} is not supported.");
