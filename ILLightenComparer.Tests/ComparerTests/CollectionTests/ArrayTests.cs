@@ -142,7 +142,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Structs()
         {
-            var comparer = new SampleStructComparer<int>();
+            var comparer = new SampleStructComparer<int?>();
 
             CompareObjectArrayOf(comparer);
             CompareStructArrayOf(comparer);
@@ -159,7 +159,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
                          .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
                          .GetComparer();
 
-            var one = CreateObjects<T>(ItemsCount).ToArray();
+            var one = CreateObjects<T>(ItemsCount).OrderBy(_ => _random.Next()).ToArray();
             var other = one.DeepClone();
 
             var collectionComparer = new CollectionComparer<T[], T>(itemComparer, sort);
@@ -229,6 +229,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private IEnumerable<SampleObject<T[]>> CreateObjects<T>(int itemsCount)
         {
+            for (var i = 0; i < itemsCount / 10; i++)
+            {
+                yield return null;
+            }
+
             for (var index = 0; index < itemsCount; index++)
             {
                 yield return new SampleObject<T[]>
