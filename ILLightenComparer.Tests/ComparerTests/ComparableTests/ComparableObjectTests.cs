@@ -16,7 +16,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var other = new ContainerObject
             {
-                ComparableProperty = Fixture.Create<SampleComparableObject>()
+                ComparableProperty = Fixture.Create<SampleComparableBaseObject<EnumSmall>>()
             };
 
             var one = other.DeepClone();
@@ -27,7 +27,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 
             actual.Should().Be(expected);
 
-            SampleComparableObject.UsedCompareTo.Should().BeTrue();
+            SampleComparableBaseObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
         }
 
         [Fact(Timeout = Constants.DefaultTimeout)]
@@ -35,7 +35,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var other = new ContainerObject
             {
-                ComparableProperty = Fixture.Create<SampleComparableObject>()
+                ComparableProperty = Fixture.Create<SampleComparableBaseObject<EnumSmall>>()
             };
 
             var one = other.DeepClone();
@@ -51,16 +51,16 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var one = new ContainerObject
             {
-                ComparableProperty = Fixture.Create<SampleComparableObject>()
+                ComparableProperty = Fixture.Create<SampleComparableBaseObject<EnumSmall>>()
             };
             TypedComparer.Compare(one, one.DeepClone()).Should().Be(0);
 
             for (var i = 0; i < 100; i++)
             {
-                one.ComparableProperty = Fixture.Create<SampleComparableChildObject>();
+                one.ComparableProperty = Fixture.Create<SampleComparableChildObject<EnumSmall>>();
                 var other = new ContainerObject
                 {
-                    ComparableProperty = Fixture.Create<SampleComparableChildObject>()
+                    ComparableProperty = Fixture.Create<SampleComparableChildObject<EnumSmall>>()
                 };
 
                 var expected = ContainerObject.Comparer.Compare(one, other).Normalize();
@@ -69,7 +69,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
                 actual.Should().Be(expected);
             }
 
-            SampleComparableObject.UsedCompareTo.Should().BeTrue();
+            SampleComparableChildObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
         }
 
         protected override IComparer<ContainerObject> ReferenceComparer => ContainerObject.Comparer;

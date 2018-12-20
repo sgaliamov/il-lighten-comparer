@@ -6,13 +6,13 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
     public struct ContainerStruct
     {
-        public SampleComparableObject ComparableField;
+        public SampleComparableBaseObject<EnumSmall> ComparableField;
         public SampleComparableStruct<EnumBig> ComparableStructField;
         public SampleComparableStruct<EnumSmall>? ComparableStructNullableField;
 
         public static IComparer<ContainerStruct> Comparer { get; } = new RelationalComparer();
 
-        public SampleComparableChildObject ComparableProperty { get; set; }
+        public SampleComparableChildObject<int> ComparableProperty { get; set; }
         public SampleComparableStruct<decimal>? ComparableStructNullableProperty { get; set; }
         public SampleComparableStruct<string> ComparableStructProperty { get; set; }
 
@@ -20,7 +20,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
         {
             public int Compare(ContainerStruct x, ContainerStruct y)
             {
-                var compare = Comparer<SampleComparableObject>.Default.Compare(
+                var compare = Comparer<SampleComparableBaseObject<EnumSmall>>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0) { return compare; }
@@ -33,7 +33,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
                     y.ComparableStructNullableField);
                 if (compare != 0) { return compare; }
 
-                compare = Comparer<SampleComparableChildObject>.Default.Compare(
+                compare = Comparer<SampleComparableChildObject<int>>.Default.Compare(
                     x.ComparableProperty,
                     y.ComparableProperty);
                 if (compare != 0) { return compare; }

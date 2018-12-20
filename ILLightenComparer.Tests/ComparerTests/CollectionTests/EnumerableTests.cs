@@ -29,11 +29,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Enumerable_Of_Comparable_Objects()
         {
-            CompareObjectEnumerableOf<SampleComparableObject>();
-            CompareStructEnumerableOf<SampleComparableObject>();
+            CompareObjectEnumerableOf<SampleComparableBaseObject<EnumSmall>>();
+            CompareStructEnumerableOf<SampleComparableBaseObject<EnumSmall>>();
 
-            CompareObjectEnumerableOf<SampleComparableChildObject>();
-            CompareStructEnumerableOf<SampleComparableChildObject>();
+            CompareObjectEnumerableOf<SampleComparableChildObject<EnumSmall>>();
+            CompareStructEnumerableOf<SampleComparableChildObject<EnumSmall>>();
         }
 
         [Fact]
@@ -124,8 +124,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Enumerable_Of_Unsorted_Comparable_Objects()
         {
-            CompareObjectEnumerableOf<SampleComparableObject>(null, true);
-            CompareStructEnumerableOf<SampleComparableObject>(null, true);
+            CompareObjectEnumerableOf<SampleComparableBaseObject<EnumSmall>>(null, true);
+            CompareStructEnumerableOf<SampleComparableBaseObject<EnumSmall>>(null, true);
         }
 
         [Fact]

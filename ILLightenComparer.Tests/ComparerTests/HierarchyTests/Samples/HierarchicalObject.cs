@@ -6,7 +6,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
     public sealed class HierarchicalObject
     {
-        public SampleComparableObject ComparableField;
+        public SampleComparableBaseObject<EnumSmall> ComparableField;
         public SealedNestedObject NestedField;
         public NestedStruct? NestedNullableStructField;
         public NestedStruct NestedStructField;
@@ -38,7 +38,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return -1;
                 }
 
-                var compare = Comparer<SampleComparableObject>.Default.Compare(
+                var compare = Comparer<SampleComparableBaseObject<EnumSmall>>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0) { return compare; }

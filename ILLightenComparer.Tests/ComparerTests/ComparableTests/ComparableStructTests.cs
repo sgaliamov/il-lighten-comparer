@@ -16,16 +16,16 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var one = new ContainerStruct
             {
-                ComparableField = Fixture.Create<SampleComparableObject>()
+                ComparableField = Fixture.Create<SampleComparableBaseObject<EnumSmall>>()
             };
             TypedComparer.Compare(one, one.DeepClone()).Should().Be(0);
 
             for (var i = 0; i < 100; i++)
             {
-                one.ComparableField = Fixture.Create<SampleComparableChildObject>();
+                one.ComparableField = Fixture.Create<SampleComparableChildObject<EnumSmall>>();
                 var other = new ContainerStruct
                 {
-                    ComparableField = Fixture.Create<SampleComparableChildObject>()
+                    ComparableField = Fixture.Create<SampleComparableChildObject<EnumSmall>>()
                 };
 
                 var expected = ContainerStruct.Comparer.Compare(one, other).Normalize();
@@ -34,7 +34,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
                 actual.Should().Be(expected);
             }
 
-            SampleComparableObject.UsedCompareTo.Should().BeTrue();
+            SampleComparableBaseObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
         }
 
         protected override IComparer<ContainerStruct> ReferenceComparer => ContainerStruct.Comparer;

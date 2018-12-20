@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleComparableChildObject : SampleComparableObject, IComparable<SampleComparableChildObject>
+    public sealed class SampleComparableChildObject<TMember> : SampleComparableBaseObject<TMember>, IComparable<SampleComparableChildObject<TMember>>
     {
-        public EnumSmall? Field;
+        public readonly IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
 
-        public int CompareTo(SampleComparableChildObject other)
+        public TMember ChildField;
+        public TMember ChildProperty { get; set; }
+
+        public int CompareTo(SampleComparableChildObject<TMember> other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -24,12 +28,18 @@ namespace ILLightenComparer.Tests.Samples
                 return compare;
             }
 
-            return Nullable.Compare(Field, other.Field);
+            compare = Comparer.Compare(ChildField, other.ChildField);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            return Comparer.Compare(ChildProperty, other.ChildProperty);
         }
 
-        public override int CompareTo(SampleComparableObject other)
+        public override int CompareTo(SampleComparableBaseObject<TMember> other)
         {
-            return CompareTo(other as SampleComparableChildObject);
+            return CompareTo(other as SampleComparableChildObject<TMember>);
         }
     }
 }

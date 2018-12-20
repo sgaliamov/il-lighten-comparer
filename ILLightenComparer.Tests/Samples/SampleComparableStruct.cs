@@ -5,17 +5,10 @@ namespace ILLightenComparer.Tests.Samples
 {
     public struct SampleComparableStruct<TMember> : IComparable<SampleComparableStruct<TMember>>
     {
+        public static IComparer<TMember> Comparer = Comparer<TMember>.Default;
+
         public TMember Field;
         public TMember Property { get; set; }
-
-        static SampleComparableStruct()
-        {
-            Comparer = typeof(TMember) == typeof(string)
-                           ? (IComparer<TMember>)StringComparer.Ordinal
-                           : Comparer<TMember>.Default;
-        }
-
-        private static readonly IComparer<TMember> Comparer;
 
         public int CompareTo(SampleComparableStruct<TMember> other)
         {

@@ -50,17 +50,17 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Comparable_Objects()
         {
-            CompareObjectArrayOf<SampleComparableObject>();
-            CompareStructArrayOf<SampleComparableObject>();
+            CompareObjectArrayOf<SampleComparableBaseObject<int>>();
+            CompareStructArrayOf<SampleComparableBaseObject<int>>();
 
-            CompareObjectArrayOf<SampleComparableChildObject>();
-            CompareStructArrayOf<SampleComparableChildObject>();
+            CompareObjectArrayOf<SampleComparableChildObject<int>>();
+            CompareStructArrayOf<SampleComparableChildObject<int>>();
 
-            CompareObjectArrayOf<SampleComparableObject>(null, true);
-            CompareStructArrayOf<SampleComparableObject>(null, true);
+            CompareObjectArrayOf<SampleComparableBaseObject<int>>(null, true);
+            CompareStructArrayOf<SampleComparableBaseObject<int>>(null, true);
 
-            CompareObjectArrayOf<SampleComparableChildObject>(null, true);
-            CompareStructArrayOf<SampleComparableChildObject>(null, true);
+            CompareObjectArrayOf<SampleComparableChildObject<int>>(null, true);
+            CompareStructArrayOf<SampleComparableChildObject<int>>(null, true);
         }
 
         [Fact]
