@@ -69,14 +69,35 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             LocalBuilder yArray)
         {
             var elementType = arrayType.GetElementType();
-            var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
+            if (!elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
+            {
+                var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
-            //il.LoadArgument(Arg.Context)
-            //  .Emit(OpCodes.Call, getComparerMethod)
-            //  .Store(getComparerMethod.ReturnType, out var comparer);
+                il.LoadArgument(Arg.Context)
+                  .Emit(OpCodes.Call, getComparerMethod)
+                  .Store(getComparerMethod.ReturnType, out var comparer);
 
-            EmitSortArray(il, elementType, xArray);
-            EmitSortArray(il, elementType, yArray);
+                EmitSortArray(il, elementType, xArray, comparer);
+                EmitSortArray(il, elementType, yArray, comparer);
+            }
+            else
+            {
+                EmitSortArray(il, elementType, xArray);
+                EmitSortArray(il, elementType, yArray);
+            }
+        }
+
+        private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
+        {
+            var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
+            var sortMethod = Method.GetArraySortWithComparer(elementType);
+
+            il.LoadLocal(array)
+              .Call(copyMethod)
+              .Store(array)
+              .LoadLocal(array)
+              .LoadLocal(comparer)
+              .Call(sortMethod);
         }
 
         private static void EmitSortArray(

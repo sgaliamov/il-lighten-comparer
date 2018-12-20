@@ -68,11 +68,16 @@ namespace ILLightenComparer.Emit
         // todo: move comparer instances comparison to context
         public IComparer<T> GetComparer<T>()
         {
+            //if (typeof(T).GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
+            //{
+            //    // todo: test
+            //    // todo: generate comparer for simple types
+            //    return Comparer<T>.Default;
+            //}
+
             var comparerType = GetOrBuildComparerType(typeof(T));
 
-            var comparer = comparerType.CreateInstance<IComparerContext, IComparer>(this);
-
-            return (IComparer<T>)comparer;
+            return comparerType.CreateInstance<IComparerContext, IComparer<T>>(this);
         }
 
         public Type GetOrBuildComparerType(Type objectType)
