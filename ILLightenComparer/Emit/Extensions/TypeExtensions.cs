@@ -74,6 +74,12 @@ namespace ILLightenComparer.Emit.Extensions
             return SmallIntegralTypes.Contains(type);
         }
 
+        public static bool IsSealedComparable(this Type type)
+        {
+            return type.ImplementsGeneric(typeof(IComparable<>))
+                   && (type.IsValueType || type.IsSealed);
+        }
+
         public static bool IsPrimitive(this Type type)
         {
             return type.IsPrimitive

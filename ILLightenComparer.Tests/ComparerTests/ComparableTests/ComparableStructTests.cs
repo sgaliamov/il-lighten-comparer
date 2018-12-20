@@ -10,20 +10,6 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 {
     public sealed class ComparableStructTests : BaseComparerTests<ContainerStruct>
     {
-        public ComparableStructTests()
-        {
-            ComparersBuilder.For<ComparableChildObject>()
-                            .DefineConfiguration(new ComparerSettings
-                            {
-                                // todo: remove this configuration when simplified comparer will be implemented
-                                MembersOrder = new[]
-                                {
-                                    nameof(ComparableChildObject.Property),
-                                    nameof(ComparableChildObject.Field)
-                                }
-                            });
-        }
-
         [Fact(Timeout = Constants.DefaultTimeout)]
         public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
         {

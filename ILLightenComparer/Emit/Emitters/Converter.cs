@@ -34,18 +34,25 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var variable = new ArgumentVariable(argumentType);
 
-            var comparison = IntegralComparison.Create(variable)
-                             ?? StringComparison.Create(variable)
-                             ?? (IComparisonAcceptor)ComparableComparison.Create(variable);
-
-            if (comparison == null)
+            if (argumentType.IsNullable())
             {
-                return NullableComparison.Create(variable)
-                       ?? ArrayComparison.Create(variable)
-                       ?? EnumerableComparison.Create(variable);
+                return NullableComparison.Create(variable);
             }
 
-            return new VariableComparison(variable, comparison);
+            var comparison = IntegralComparison.Create(variable)
+                             ?? (IComparisonAcceptor)StringComparison.Create(variable);
+            if (comparison != null)
+            {
+                return new VariableComparison(variable, comparison);
+            }
+
+            if (argumentType.ImplementsGeneric(typeof(IComparable<>))
+                && (argumentType.IsSealed || argumentType.IsPrimitive()))
+            {
+                return ComparableComparison.Create(variable);
+            }
+
+            return ArrayComparison.Create(variable) ?? EnumerableComparison.Create(variable);
         }
 
         public ICompareEmitterAcceptor CreateMemberComparison(MemberInfo memberInfo)

@@ -205,7 +205,8 @@ namespace ILLightenComparer.Emit
         {
             return objectType.IsClass
                    && _context.GetConfiguration(objectType).DetectCycles
-                   && !objectType.IsPrimitive();
+                   && !objectType.IsPrimitive()
+                   && !objectType.IsSealedComparable();
         }
 
         private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)
