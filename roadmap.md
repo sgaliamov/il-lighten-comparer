@@ -84,6 +84,7 @@
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
 - [ ] cache instances by type and configuration in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
+- [ ] same for simple types, when arguments are compared directly
 - [ ] change behavior then types are not matched but castable
 - [ ] do reference comparison only once
 - [ ] introduce variables scope to not have to track variable buckets, try `BeginScope` method
