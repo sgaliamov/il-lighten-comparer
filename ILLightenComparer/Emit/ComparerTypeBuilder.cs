@@ -14,14 +14,15 @@ namespace ILLightenComparer.Emit
     {
         private readonly CompareEmitter _compareEmitter;
         private readonly ComparerContext _context;
+        private readonly Converter _converter;
         private readonly MembersProvider _membersProvider;
 
         public ComparerTypeBuilder(ComparerContext context)
         {
             _context = context;
-            var converter = new Converter();
-            _compareEmitter = new CompareEmitter(context, converter);
-            _membersProvider = new MembersProvider(context, converter);
+            _converter = new Converter();
+            _compareEmitter = new CompareEmitter(context, _converter);
+            _membersProvider = new MembersProvider(context, _converter);
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -59,12 +60,12 @@ namespace ILLightenComparer.Emit
                     _compareEmitter.EmitArgumentsReferenceComparison(il);
                 }
 
-                if (IsDetectCyclesEnabled(objectType))
+                if (DetectCyclesIsEnabled(objectType))
                 {
                     EmitCycleDetection(il);
                 }
 
-                EmitMembersComparison(il, objectType);
+                EmitComparison(il, objectType);
             }
         }
 
@@ -116,22 +117,40 @@ namespace ILLightenComparer.Emit
             }
         }
 
-        private void EmitMembersComparison(ILEmitter il, Type objectType)
+        private void EmitComparison(ILEmitter il, Type objectType)
         {
-            var members = _membersProvider.GetMembers(objectType);
-
             InitFirstLocalToKeepComparisonsResult(il);
-            foreach (var member in members)
+
+            var argumentComparison = _converter.CreateArgumentComparison(objectType);
+            if (argumentComparison == null)
             {
-                member.Accept(_compareEmitter, il);
+                EmitMembersComparison(il, objectType);
+            }
+            else
+            {
+                argumentComparison.Accept(_compareEmitter, il);
             }
 
             il.Return(0);
         }
 
+        private void EmitMembersComparison(ILEmitter il, Type objectType)
+        {
+            if (objectType.GetUnderlyingType().IsPrimitive())
+            {
+                throw new InvalidOperationException($"{objectType.DisplayName()} is not expected.");
+            }
+
+            var members = _membersProvider.GetMembers(objectType);
+            foreach (var member in members)
+            {
+                member.Accept(_compareEmitter, il);
+            }
+        }
+
         private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
-            if (!_context.GetConfiguration(objectType).DetectCycles)
+            if (!_context.GetConfiguration(objectType).DetectCycles || objectType.GetUnderlyingType().IsPrimitive())
             {
                 il.Emit(OpCodes.Ldnull)
                   .Emit(OpCodes.Ldnull)
@@ -182,7 +201,7 @@ namespace ILLightenComparer.Emit
               .MarkLabel(next);
         }
 
-        private bool IsDetectCyclesEnabled(Type objectType)
+        private bool DetectCyclesIsEnabled(Type objectType)
         {
             return objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
         }

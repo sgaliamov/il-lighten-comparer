@@ -5,7 +5,7 @@ using ILLightenComparer.Emit.Emitters.Visitors;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class VariableComparison : IComparisonAcceptor
+    internal sealed class VariableComparison : IMemberComparison
     {
         public VariableComparison(IVariable itemVariable, IComparisonAcceptor itemAcceptor)
         {
@@ -14,13 +14,17 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         }
 
         public IComparisonAcceptor Acceptor { get; }
+        public IVariable Variable { get; }
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
         {
             return visitor.Visit(this, il);
         }
 
-        public IVariable Variable { get; }
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
 
         public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)
         {
