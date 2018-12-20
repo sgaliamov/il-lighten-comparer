@@ -58,6 +58,8 @@
 
 - [x] separate settings for each comparable type
 - [x] string options (case, culture)
+- [ ] nullable comparison class
+- [ ] generate comparers for simple members
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
 - [ ] smart configuration builder
@@ -66,7 +68,6 @@
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
 - [ ] customization setting to override comparer with specific implementation
-- [ ] generate simplified comparer if root object implements `IComparable`?
 - [ ] ignore existing `IComparable` implementation
 - [ ] use `DetectCycles` setting
 - [ ] `checked` subs
@@ -85,7 +86,6 @@
 - [ ] optimization for a last member - just return its result
 - [ ] change behavior then types are not matched but castable
 - [ ] do reference comparison only once
-- [ ] create visitor for nullable as for arrays
 - [ ] introduce variables scope to not have to track variable buckets, try `BeginScope` method
 - [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?
