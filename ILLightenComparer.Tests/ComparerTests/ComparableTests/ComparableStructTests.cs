@@ -3,6 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
+using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -15,16 +16,16 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var one = new ContainerStruct
             {
-                ComparableField = Fixture.Create<ComparableObject>()
+                ComparableField = Fixture.Create<SampleComparableObject>()
             };
             TypedComparer.Compare(one, one.DeepClone()).Should().Be(0);
 
             for (var i = 0; i < 100; i++)
             {
-                one.ComparableField = Fixture.Create<ComparableChildObject>();
+                one.ComparableField = Fixture.Create<SampleComparableChildObject>();
                 var other = new ContainerStruct
                 {
-                    ComparableField = Fixture.Create<ComparableChildObject>()
+                    ComparableField = Fixture.Create<SampleComparableChildObject>()
                 };
 
                 var expected = ContainerStruct.Comparer.Compare(one, other).Normalize();
@@ -33,7 +34,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
                 actual.Should().Be(expected);
             }
 
-            ComparableObject.UsedCompareTo.Should().BeTrue();
+            SampleComparableObject.UsedCompareTo.Should().BeTrue();
         }
 
         protected override IComparer<ContainerStruct> ReferenceComparer => ContainerStruct.Comparer;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using Force.DeepCloner;
-using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -41,37 +40,37 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Comparable_Nullable_Struct()
         {
-            CompareObjectArrayOfNullable<ComparableStruct<EnumSmall>>();
-            CompareStructArrayOfNullable<ComparableStruct<string>>();
+            CompareObjectArrayOfNullable<SampleComparableStruct<EnumSmall>>();
+            CompareStructArrayOfNullable<SampleComparableStruct<string>>();
 
-            CompareObjectArrayOfNullable<ComparableStruct<EnumSmall>>(null, true);
-            CompareStructArrayOfNullable<ComparableStruct<string>>(null, true);
+            CompareObjectArrayOfNullable<SampleComparableStruct<EnumSmall>>(null, true);
+            CompareStructArrayOfNullable<SampleComparableStruct<string>>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Comparable_Objects()
         {
-            CompareObjectArrayOf<ComparableObject>();
-            CompareStructArrayOf<ComparableObject>();
+            CompareObjectArrayOf<SampleComparableObject>();
+            CompareStructArrayOf<SampleComparableObject>();
 
-            CompareObjectArrayOf<ComparableChildObject>();
-            CompareStructArrayOf<ComparableChildObject>();
+            CompareObjectArrayOf<SampleComparableChildObject>();
+            CompareStructArrayOf<SampleComparableChildObject>();
 
-            CompareObjectArrayOf<ComparableObject>(null, true);
-            CompareStructArrayOf<ComparableObject>(null, true);
+            CompareObjectArrayOf<SampleComparableObject>(null, true);
+            CompareStructArrayOf<SampleComparableObject>(null, true);
 
-            CompareObjectArrayOf<ComparableChildObject>(null, true);
-            CompareStructArrayOf<ComparableChildObject>(null, true);
+            CompareObjectArrayOf<SampleComparableChildObject>(null, true);
+            CompareStructArrayOf<SampleComparableChildObject>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Comparable_Struct()
         {
-            CompareObjectArrayOf<ComparableStruct<int>>();
-            CompareStructArrayOf<ComparableStruct<decimal>>();
+            CompareObjectArrayOf<SampleComparableStruct<int>>();
+            CompareStructArrayOf<SampleComparableStruct<decimal>>();
 
-            CompareObjectArrayOf<ComparableStruct<int>>(null, true);
-            CompareStructArrayOf<ComparableStruct<decimal>>(null, true);
+            CompareObjectArrayOf<SampleComparableStruct<int>>(null, true);
+            CompareStructArrayOf<SampleComparableStruct<decimal>>(null, true);
         }
 
         [Fact]

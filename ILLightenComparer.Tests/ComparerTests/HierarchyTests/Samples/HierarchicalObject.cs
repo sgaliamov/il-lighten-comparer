@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
+using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
     public sealed class HierarchicalObject
     {
-        public ComparableObject ComparableField;
+        public SampleComparableObject ComparableField;
         public SealedNestedObject NestedField;
         public NestedStruct? NestedNullableStructField;
         public NestedStruct NestedStructField;
@@ -38,7 +38,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return -1;
                 }
 
-                var compare = Comparer<ComparableObject>.Default.Compare(
+                var compare = Comparer<SampleComparableObject>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0) { return compare; }

@@ -6,7 +6,7 @@ namespace ILLightenComparer.Emit.Reflection
     internal static class MethodName
     {
         public const string CreateInstance = nameof(CreateInstance);
-        
+
         public const string HasValue = nameof(Nullable<byte>.HasValue);
         public const string Value = nameof(Nullable<byte>.Value);
 

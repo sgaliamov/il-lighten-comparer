@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 
 namespace ILLightenComparer.Tests.Samples
@@ -12,23 +11,26 @@ namespace ILLightenComparer.Tests.Samples
         {
             Types = new Dictionary<Type, IComparer>
             {
+                { typeof(sbyte), null },
                 { typeof(byte), null },
-                { typeof(ComparableStruct<EnumSmall>), null },
-                { typeof(ComparableObject), null },
-                { typeof(ComparableChildObject), null },
-                { typeof(EnumSmall), null },
-                { typeof(EnumBig), null },
+                { typeof(char), null },
+                { typeof(short), null },
+                { typeof(ushort), null },
+                { typeof(int), null },
                 { typeof(long), null },
                 { typeof(ulong), null },
+                { typeof(float), null },
+                { typeof(double), null },
                 { typeof(decimal), null },
+                { typeof(EnumSmall), null },
+                { typeof(EnumBig), null },
                 { typeof(string), StringComparer.Ordinal },
+                { typeof(SampleComparableObject), null },
+                { typeof(SampleComparableChildObject), null },
+                { typeof(SampleComparableStruct<EnumSmall>), null },
                 {
-                    typeof(SampleObject<SampleObject<int>>),
-                    new SampleObjectComparer<SampleObject<int>>(new SampleObjectComparer<int>())
-                },
-                {
-                    typeof(SampleObject<int>),
-                    new SampleObjectComparer<int>()
+                    typeof(SampleObject<EnumSmall?>),
+                    new SampleObjectComparer<EnumSmall?>(new NullableComparer<EnumSmall>())
                 },
                 {
                     typeof(SampleStruct<int>),

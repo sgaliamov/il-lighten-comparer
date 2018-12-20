@@ -7,8 +7,8 @@ namespace ILLightenComparer.Tests.Samples.Comparers
     internal sealed class CollectionComparer<TCollection, TItem> : IComparer<TCollection>
         where TCollection : IEnumerable<TItem>
     {
-        private readonly bool _sort;
         private readonly IComparer<TItem> _itemComparer;
+        private readonly bool _sort;
 
         public CollectionComparer(IComparer<TItem> itemComparer = null, bool sort = false)
         {

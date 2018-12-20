@@ -3,6 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
+using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -15,7 +16,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var other = new ContainerObject
             {
-                ComparableProperty = Fixture.Create<ComparableObject>()
+                ComparableProperty = Fixture.Create<SampleComparableObject>()
             };
 
             var one = other.DeepClone();
@@ -26,7 +27,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 
             actual.Should().Be(expected);
 
-            ComparableObject.UsedCompareTo.Should().BeTrue();
+            SampleComparableObject.UsedCompareTo.Should().BeTrue();
         }
 
         [Fact(Timeout = Constants.DefaultTimeout)]
@@ -34,7 +35,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var other = new ContainerObject
             {
-                ComparableProperty = Fixture.Create<ComparableObject>()
+                ComparableProperty = Fixture.Create<SampleComparableObject>()
             };
 
             var one = other.DeepClone();
@@ -50,16 +51,16 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
         {
             var one = new ContainerObject
             {
-                ComparableProperty = Fixture.Create<ComparableObject>()
+                ComparableProperty = Fixture.Create<SampleComparableObject>()
             };
             TypedComparer.Compare(one, one.DeepClone()).Should().Be(0);
 
             for (var i = 0; i < 100; i++)
             {
-                one.ComparableProperty = Fixture.Create<ComparableChildObject>();
+                one.ComparableProperty = Fixture.Create<SampleComparableChildObject>();
                 var other = new ContainerObject
                 {
-                    ComparableProperty = Fixture.Create<ComparableChildObject>()
+                    ComparableProperty = Fixture.Create<SampleComparableChildObject>()
                 };
 
                 var expected = ContainerObject.Comparer.Compare(one, other).Normalize();
@@ -68,7 +69,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
                 actual.Should().Be(expected);
             }
 
-            ComparableObject.UsedCompareTo.Should().BeTrue();
+            SampleComparableObject.UsedCompareTo.Should().BeTrue();
         }
 
         protected override IComparer<ContainerObject> ReferenceComparer => ContainerObject.Comparer;

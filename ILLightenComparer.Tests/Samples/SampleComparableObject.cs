@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
+namespace ILLightenComparer.Tests.Samples
 {
-    public class ComparableObject : IComparable<ComparableObject>
+    public class SampleComparableObject : IComparable<SampleComparableObject>
     {
         public static bool UsedCompareTo { get; private set; }
 
         public int Property { get; set; }
 
-        public virtual int CompareTo(ComparableObject other)
+        public virtual int CompareTo(SampleComparableObject other)
         {
             if (ReferenceEquals(this, other))
             {

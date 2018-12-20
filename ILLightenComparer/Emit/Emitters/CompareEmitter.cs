@@ -11,8 +11,8 @@ namespace ILLightenComparer.Emit.Emitters
         private readonly CompareVisitor _compareVisitor;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
-        private readonly StackVisitor _stackVisitor;
         private readonly NullableVisitor _nullableVisitor;
+        private readonly StackVisitor _stackVisitor;
 
         public CompareEmitter(ComparerContext context, Converter converter)
         {

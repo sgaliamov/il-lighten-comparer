@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using Force.DeepCloner;
-using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -23,25 +22,25 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Enumerable_Of_Comparable_Nullable_Struct()
         {
-            CompareObjectEnumerableOfNullable<ComparableStruct<EnumSmall>>();
-            CompareStructEnumerableOfNullable<ComparableStruct<string>>();
+            CompareObjectEnumerableOfNullable<SampleComparableStruct<EnumSmall>>();
+            CompareStructEnumerableOfNullable<SampleComparableStruct<string>>();
         }
 
         [Fact]
         public void Compare_Enumerable_Of_Comparable_Objects()
         {
-            CompareObjectEnumerableOf<ComparableObject>();
-            CompareStructEnumerableOf<ComparableObject>();
+            CompareObjectEnumerableOf<SampleComparableObject>();
+            CompareStructEnumerableOf<SampleComparableObject>();
 
-            CompareObjectEnumerableOf<ComparableChildObject>();
-            CompareStructEnumerableOf<ComparableChildObject>();
+            CompareObjectEnumerableOf<SampleComparableChildObject>();
+            CompareStructEnumerableOf<SampleComparableChildObject>();
         }
 
         [Fact]
         public void Compare_Enumerable_Of_Comparable_Struct()
         {
-            CompareObjectEnumerableOf<ComparableStruct<int>>();
-            CompareStructEnumerableOf<ComparableStruct<decimal>>();
+            CompareObjectEnumerableOf<SampleComparableStruct<int>>();
+            CompareStructEnumerableOf<SampleComparableStruct<decimal>>();
         }
 
         [Fact]
@@ -125,8 +124,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Enumerable_Of_Unsorted_Comparable_Objects()
         {
-            CompareObjectEnumerableOf<ComparableObject>(null, true);
-            CompareStructEnumerableOf<ComparableObject>(null, true);
+            CompareObjectEnumerableOf<SampleComparableObject>(null, true);
+            CompareStructEnumerableOf<SampleComparableObject>(null, true);
         }
 
         [Fact]

@@ -1,13 +1,12 @@
 ﻿using System;
-using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
+namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class ComparableChildObject : ComparableObject, IComparable<ComparableChildObject>
+    public sealed class SampleComparableChildObject : SampleComparableObject, IComparable<SampleComparableChildObject>
     {
         public EnumSmall? Field;
 
-        public int CompareTo(ComparableChildObject other)
+        public int CompareTo(SampleComparableChildObject other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -28,9 +27,9 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
             return Nullable.Compare(Field, other.Field);
         }
 
-        public override int CompareTo(ComparableObject other)
+        public override int CompareTo(SampleComparableObject other)
         {
-            return CompareTo(other as ComparableChildObject);
+            return CompareTo(other as SampleComparableChildObject);
         }
     }
 }

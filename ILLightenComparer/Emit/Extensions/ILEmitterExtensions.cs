@@ -1,7 +1,5 @@
-﻿using System;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Extensions
 {
@@ -36,7 +34,5 @@ namespace ILLightenComparer.Emit.Extensions
               .Return(1)
               .MarkLabel(next);
         }
-
-        
     }
 }
