@@ -16,13 +16,16 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Arrays()
         {
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[][]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[][,]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[,]>>().GetComparer());
+            var builder = new ComparersBuilder()
+                .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true });
 
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleStruct<int[][]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleStruct<int[][,]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleStruct<int[,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[,]>>().GetComparer());
+
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
         }
 
         [Fact]
@@ -150,7 +153,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
-            var target = _builder
+            var target = new ComparersBuilder()
+                         .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true })
                          .For<SampleObject<T[]>>()
                          .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
                          .GetComparer();
@@ -167,18 +171,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
-        private void CompareObjectArrayOfNullable<T>(
-            IComparer<T> itemComparer = null,
-            bool sort = false) where T : struct
-        {
-            var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
-
-            CompareObjectArrayOf(nullableComparer, sort);
-        }
-
         private void CompareStructArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
-            var target = _builder
+            var target = new ComparersBuilder()
+                         .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true })
                          .For<SampleStruct<T[]>>()
                          .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
                          .GetComparer();
@@ -193,6 +189,15 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             Array.Sort(other, target);
 
             one.ShouldBeSameOrder(other);
+        }
+
+        private void CompareObjectArrayOfNullable<T>(
+            IComparer<T> itemComparer = null,
+            bool sort = false) where T : struct
+        {
+            var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
+
+            CompareObjectArrayOf(nullableComparer, sort);
         }
 
         private void CompareStructArrayOfNullable<T>(IComparer<T> itemComparer = null, bool sort = false) where T : struct
@@ -247,9 +252,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
-
-        private readonly IContextBuilder _builder = new ComparersBuilder()
-            .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true });
 
         private readonly Random _random = new Random();
     }
