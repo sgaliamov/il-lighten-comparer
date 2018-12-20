@@ -93,9 +93,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il;
         }
 
-        public ILEmitter LoadVariables(CollectionItemComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter LoadVariables(VariableComparison comparison, ILEmitter il, Label gotoNextMember)
         {
-            return comparison.ItemAcceptor.LoadVariables(this, il, gotoNextMember);
+            return comparison.Acceptor.LoadVariables(this, il, gotoNextMember);
         }
 
         private ILEmitter LoadNullableMembers(

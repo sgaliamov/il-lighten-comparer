@@ -5,15 +5,15 @@ using ILLightenComparer.Emit.Emitters.Visitors;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class CollectionItemComparison : IComparisonAcceptor
+    internal sealed class VariableComparison : IComparisonAcceptor
     {
-        public CollectionItemComparison(IVariable itemVariable, IComparisonAcceptor itemAcceptor)
+        public VariableComparison(IVariable itemVariable, IComparisonAcceptor itemAcceptor)
         {
             Variable = itemVariable ?? throw new ArgumentNullException(nameof(itemVariable));
-            ItemAcceptor = itemAcceptor ?? throw new ArgumentNullException(nameof(itemAcceptor));
+            Acceptor = itemAcceptor ?? throw new ArgumentNullException(nameof(itemAcceptor));
         }
 
-        public IComparisonAcceptor ItemAcceptor { get; }
+        public IComparisonAcceptor Acceptor { get; }
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
         {

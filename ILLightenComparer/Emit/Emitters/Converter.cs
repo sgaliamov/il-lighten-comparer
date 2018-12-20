@@ -82,7 +82,7 @@ namespace ILLightenComparer.Emit.Emitters
                 throw new NotSupportedException($"{itemVariable.VariableType.DisplayName()} is not supported.");
             }
 
-            return new CollectionItemComparison(itemVariable, comparison);
+            return new VariableComparison(itemVariable, comparison);
         }
     }
 }
