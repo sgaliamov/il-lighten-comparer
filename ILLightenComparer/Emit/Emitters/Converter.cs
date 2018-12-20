@@ -30,27 +30,19 @@ namespace ILLightenComparer.Emit.Emitters
             HierarchicalComparison.Create
         };
 
-        private static readonly Func<IVariable, IComparisonAcceptor>[] ArgumentConverters =
-        {
-            //NullableComparison.Create,
-            IntegralComparison.Create,
-            StringComparison.Create,
-            //ComparableComparison.Create,
-            //ArrayComparison.Create,
-            //EnumerableComparison.Create
-        };
-
         public ICompareEmitterAcceptor CreateArgumentComparison(Type argumentType)
         {
             var variable = new ArgumentVariable(argumentType);
 
-            var comparison = ArgumentConverters
-                             .Select(factory => factory(variable))
-                             .FirstOrDefault(x => x != null);
+            var comparison = IntegralComparison.Create(variable)
+                             ?? StringComparison.Create(variable)
+                             ?? (IComparisonAcceptor)ComparableComparison.Create(variable);
 
             if (comparison == null)
             {
-                return null;
+                return NullableComparison.Create(variable)
+                       ?? ArrayComparison.Create(variable)
+                       ?? EnumerableComparison.Create(variable);
             }
 
             return new VariableComparison(variable, comparison);

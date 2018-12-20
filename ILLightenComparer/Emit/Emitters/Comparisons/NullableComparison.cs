@@ -19,14 +19,14 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             return visitor.Visit(this, il);
         }
 
-        public static NullableComparison Create(MemberInfo memberInfo)
+        public static ICompareEmitterAcceptor Create(MemberInfo memberInfo)
         {
             var variable = VariableFactory.Create(memberInfo);
 
             return Create(variable);
         }
 
-        public static NullableComparison Create(IVariable variable)
+        public static ICompareEmitterAcceptor Create(IVariable variable)
         {
             if (variable.VariableType.IsNullable())
             {

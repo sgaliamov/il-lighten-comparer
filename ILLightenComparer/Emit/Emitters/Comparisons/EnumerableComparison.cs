@@ -34,14 +34,14 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public IVariable Variable { get; }
 
-        public static EnumerableComparison Create(MemberInfo memberInfo)
+        public static ICompareEmitterAcceptor Create(MemberInfo memberInfo)
         {
             var variable = VariableFactory.Create(memberInfo);
 
             return Create(variable);
         }
 
-        public static EnumerableComparison Create(IVariable variable)
+        public static ICompareEmitterAcceptor Create(IVariable variable)
         {
             if (variable.VariableType.ImplementsGeneric(typeof(IEnumerable<>)))
             {
