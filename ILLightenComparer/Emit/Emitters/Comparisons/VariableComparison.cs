@@ -18,7 +18,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
         {
-            return visitor.Visit(this, il);
+            return Acceptor.Accept(visitor, il);
         }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
@@ -28,7 +28,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)
         {
-            return visitor.LoadVariables(this, il, gotoNext);
+            return Acceptor.LoadVariables(visitor, il, gotoNext);
         }
     }
 }

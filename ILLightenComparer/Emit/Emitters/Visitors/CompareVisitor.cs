@@ -59,11 +59,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il.LoadConstant(comparisonType).Call(Method.StringCompare);
         }
 
-        public ILEmitter Visit(VariableComparison comparison, ILEmitter il)
-        {
-            return comparison.Acceptor.Accept(this, il);
-        }
-
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type underlyingType)
         {
             var delayedCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
