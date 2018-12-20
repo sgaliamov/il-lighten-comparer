@@ -40,9 +40,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
         {
-            var variable = comparison.Variable;
             il.DefineLabel(out var gotoNextMember);
 
+            var variable = comparison.Variable;
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
             variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var y);
 
