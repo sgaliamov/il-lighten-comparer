@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.InheritanceTests
 {
-    public class FlattenHierarchyTests : BaseComparerTests<ChildObject>
+    public sealed class FlattenHierarchyTests : BaseComparerTests<ChildObject>
     {
         public FlattenHierarchyTests()
         {

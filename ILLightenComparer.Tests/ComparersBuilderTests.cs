@@ -5,7 +5,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests
 {
-    public class ComparersBuilderTests
+    public sealed class ComparersBuilderTests
     {
         public ComparersBuilderTests()
         {

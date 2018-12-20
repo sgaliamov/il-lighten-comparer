@@ -3,7 +3,7 @@ using ILLightenComparer.Tests.ComparerTests.BasicMembersTests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.BasicMembersTests
 {
-    public class StructTests : BaseComparerTests<SampleStruct>
+    public sealed class StructTests : BaseComparerTests<SampleStruct>
     {
         protected override IComparer<SampleStruct> ReferenceComparer { get; } =
             SampleStruct.Comparer;

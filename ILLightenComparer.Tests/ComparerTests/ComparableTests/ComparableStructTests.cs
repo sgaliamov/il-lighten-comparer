@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 {
-    public class ComparableStructTests : BaseComparerTests<ContainerStruct>
+    public sealed class ComparableStructTests : BaseComparerTests<ContainerStruct>
     {
         public ComparableStructTests()
         {

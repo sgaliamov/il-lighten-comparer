@@ -13,11 +13,6 @@ namespace ILLightenComparer.Emit.Extensions
                    .Replace("\\, ILLightenComparer.Tests\\, Version=1.0.0.0\\, Culture=neutral\\, PublicKeyToken=null", "")
                    .Replace("\\[\\[", "<")
                    .Replace("\\]\\]", ">");
-
-            if (memberInfo.ReflectedType?.Namespace != null)
-            {
-                name = name.Replace(memberInfo.ReflectedType.Namespace + ".", "");
-            }
 #endif
             return name;
         }

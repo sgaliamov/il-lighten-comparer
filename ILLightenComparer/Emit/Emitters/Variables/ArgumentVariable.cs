@@ -5,9 +5,9 @@ namespace ILLightenComparer.Emit.Emitters.Variables
 {
     internal sealed class ArgumentVariable : IVariable
     {
-        public ArgumentVariable(Type ownerType, Type variableType)
+        public ArgumentVariable(Type variableType)
         {
-            OwnerType = ownerType;
+            OwnerType = variableType;
             VariableType = variableType;
         }
 

@@ -164,11 +164,6 @@ namespace ILLightenComparer.Emit
               .Return();
         }
 
-        private bool IsDetectCyclesEnabled(Type objectType)
-        {
-            return objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
-        }
-
         private static void EmitCycleDetection(ILEmitter il)
         {
             il.LoadArgument(Arg.SetX)
@@ -185,6 +180,11 @@ namespace ILLightenComparer.Emit
               .Branch(OpCodes.Brfalse_S, out var next)
               .Return(0)
               .MarkLabel(next);
+        }
+
+        private bool IsDetectCyclesEnabled(Type objectType)
+        {
+            return objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
         }
 
         private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 {
-    public class CycledObjectsTests
+    public sealed class CycledObjectsTests
     {
         public CycledObjectsTests()
         {

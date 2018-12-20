@@ -3,7 +3,7 @@ using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
 {
-    public class IntegralFieldsSampleObject
+    public sealed class IntegralFieldsSampleObject
     {
         public byte ByteField;
         public char CharField;

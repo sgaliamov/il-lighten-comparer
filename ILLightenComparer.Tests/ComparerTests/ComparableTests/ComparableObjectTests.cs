@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 {
-    public class ComparableObjectTests : BaseComparerTests<ContainerObject>
+    public sealed class ComparableObjectTests : BaseComparerTests<ContainerObject>
     {
         [Fact(Timeout = Constants.DefaultTimeout)]
         public void Custom_Comparable_Implementation_Should_Be_Used()

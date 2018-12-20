@@ -6,7 +6,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 {
-    public class CycledStructTests
+    public sealed class CycledStructTests
     {
         public CycledStructTests()
         {

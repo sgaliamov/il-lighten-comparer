@@ -9,7 +9,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
-    public class MultiThreadingTests
+    public sealed class MultiThreadingTests
     {
         public MultiThreadingTests()
         {
