@@ -91,7 +91,7 @@ namespace ILLightenComparer.Emit
                   .LoadArgument(Arg.Y)
                   .EmitCast(objectType);
 
-                EmitStaticCompareMethod(il, staticCompareMethod, objectType);
+                EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
             }
         }
 
@@ -112,7 +112,7 @@ namespace ILLightenComparer.Emit
                   .LoadArgument(Arg.X)
                   .LoadArgument(Arg.Y);
 
-                EmitStaticCompareMethod(il, staticCompareMethod, objectType);
+                EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
             }
         }
 
@@ -129,7 +129,7 @@ namespace ILLightenComparer.Emit
             il.Return(0);
         }
 
-        private void EmitStaticCompareMethod(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
+        private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
             if (!_context.GetConfiguration(objectType).DetectCycles)
             {

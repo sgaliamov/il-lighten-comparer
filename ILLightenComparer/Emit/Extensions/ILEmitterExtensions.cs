@@ -37,29 +37,6 @@ namespace ILLightenComparer.Emit.Extensions
               .MarkLabel(next);
         }
 
-        public static void CheckNullableValuesForNull(
-            this ILEmitter il,
-            LocalBuilder nullableX,
-            LocalBuilder nullableY,
-            Type variableType,
-            Label ifBothNull)
-        {
-            var hasValueMethod = variableType.GetPropertyGetter(MethodName.HasValue);
-
-            il.LoadAddress(nullableY)
-              .Call(hasValueMethod)
-              .Store(typeof(bool), out var secondHasValue)
-              .LoadAddress(nullableX)
-              .Call(hasValueMethod)
-              .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Branch(OpCodes.Brfalse_S, ifBothNull)
-              .Return(-1)
-              .MarkLabel(ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Branch(OpCodes.Brtrue_S, out var getValues)
-              .Return(1)
-              .MarkLabel(getValues);
-        }
+        
     }
 }

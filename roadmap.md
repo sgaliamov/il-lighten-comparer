@@ -58,7 +58,7 @@
 
 - [x] separate settings for each comparable type
 - [x] string options (case, culture)
-- [ ] nullable comparison class
+- [x] nullable comparison class
 - [ ] generate comparers for simple members
 - [ ] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution

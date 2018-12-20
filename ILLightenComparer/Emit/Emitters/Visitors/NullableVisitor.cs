@@ -1,4 +1,6 @@
-﻿using ILLightenComparer.Emit.Emitters.Comparisons;
+﻿using System;
+using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
@@ -33,8 +35,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
             variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
 
-            // todo: move implementation here
-            il.CheckNullableValuesForNull(nullableX, nullableY, variableType, gotoNextMember);
+            CheckNullableValuesForNull(il, nullableX, nullableY, variableType, gotoNextMember);
 
             var itemComparison = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
 
@@ -43,6 +44,31 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return itemComparison.Accept(_compareVisitor, il)
                                  .EmitReturnNotZero(gotoNextMember)
                                  .MarkLabel(gotoNextMember);
+        }
+
+        private static void CheckNullableValuesForNull(
+            ILEmitter il,
+            LocalBuilder nullableX,
+            LocalBuilder nullableY,
+            Type variableType,
+            Label ifBothNull)
+        {
+            var hasValueMethod = variableType.GetPropertyGetter(MethodName.HasValue);
+
+            il.LoadAddress(nullableY)
+              .Call(hasValueMethod)
+              .Store(typeof(bool), out var secondHasValue)
+              .LoadAddress(nullableX)
+              .Call(hasValueMethod)
+              .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
+              .LoadLocal(secondHasValue)
+              .Branch(OpCodes.Brfalse_S, ifBothNull)
+              .Return(-1)
+              .MarkLabel(ifFirstHasValue)
+              .LoadLocal(secondHasValue)
+              .Branch(OpCodes.Brtrue_S, out var next)
+              .Return(1)
+              .MarkLabel(next);
         }
     }
 }

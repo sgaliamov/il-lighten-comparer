@@ -68,7 +68,13 @@ namespace ILLightenComparer.Emit
         // todo: move comparer instances comparison to context
         public IComparer<T> GetComparer<T>()
         {
-            //if (typeof(T).GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
+            //if (objectType.GetUnderlyingType().IsPrimitive())
+            //{
+            //    throw new NotSupportedException(
+            //        $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
+            //}
+
+            //if (objectType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
             //{
             //    // todo: test
             //    // todo: generate comparer for simple types
