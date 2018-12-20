@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit.Emitters
             HierarchicalComparison.Create
         };
 
-        public ICompareEmitterAcceptor Convert(MemberInfo memberInfo)
+        public ICompareEmitterAcceptor CreateMemberComparison(MemberInfo memberInfo)
         {
             var comparison = MemberConverters
                              .Select(factory => factory(memberInfo))

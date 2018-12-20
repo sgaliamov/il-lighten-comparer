@@ -28,7 +28,7 @@ namespace ILLightenComparer.Emit.Reflection
 
         private ICompareEmitterAcceptor[] Convert(IEnumerable<MemberInfo> members)
         {
-            return members.Select(_converter.Convert).ToArray();
+            return members.Select(_converter.CreateMemberComparison).ToArray();
         }
 
         private IEnumerable<MemberInfo> Filter(IReflect type)
