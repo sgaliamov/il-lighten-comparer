@@ -203,7 +203,9 @@ namespace ILLightenComparer.Emit
 
         private bool DetectCyclesIsEnabled(Type objectType)
         {
-            return objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
+            return objectType.IsClass
+                   && _context.GetConfiguration(objectType).DetectCycles
+                   && !objectType.IsPrimitive();
         }
 
         private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)
