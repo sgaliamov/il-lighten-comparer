@@ -92,5 +92,15 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                      .Store(underlyingType, out var x)
                      .LoadAddress(x);
         }
+
+        public ILEmitter Load(ArgumentVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadArgument(arg);
+        }
+
+        public ILEmitter LoadAddress(ArgumentVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadArgumentAddress(arg);
+        }
     }
 }
