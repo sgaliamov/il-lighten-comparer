@@ -10,7 +10,7 @@ namespace ILLightenComparer.Tests.Samples.Comparers
         private readonly bool _sort;
         private readonly IComparer<TItem> _itemComparer;
 
-        public CollectionComparer(IComparer<TItem> itemComparer, bool sort)
+        public CollectionComparer(IComparer<TItem> itemComparer = null, bool sort = false)
         {
             _sort = sort;
             _itemComparer = itemComparer ?? Comparer<TItem>.Default;

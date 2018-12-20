@@ -6,7 +6,7 @@ namespace ILLightenComparer.Tests.Samples.Comparers
     {
         private readonly IComparer<TValue> _valueComparer;
 
-        public NullableComparer(IComparer<TValue> valueComparer)
+        public NullableComparer(IComparer<TValue> valueComparer = null)
         {
             _valueComparer = valueComparer ?? Comparer<TValue>.Default;
         }
