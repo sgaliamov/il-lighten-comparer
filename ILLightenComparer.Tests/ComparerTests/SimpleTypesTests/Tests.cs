@@ -12,6 +12,7 @@ namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
 {
     public sealed class Tests
     {
+        // todo: test with interface, abstract class and object
         [Fact]
         public void Compare_Sample_Types_Directly()
         {
@@ -40,7 +41,12 @@ namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
 
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
-            var comparer = new ComparersBuilder().GetComparer<T>();
+            var comparer = new ComparersBuilder()
+                           .DefineDefaultConfiguration(new ComparerSettings
+                           {
+                               IncludeFields = true
+                           })
+                           .GetComparer<T>();
 
             for (var i = 0; i < 10; i++)
             {
