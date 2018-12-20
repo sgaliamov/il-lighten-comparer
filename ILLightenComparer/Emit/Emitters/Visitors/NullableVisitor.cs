@@ -37,11 +37,12 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             il.CheckNullableValuesForNull(nullableX, nullableY, variableType, gotoNextMember);
 
             var itemComparison = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
-            itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
-            itemComparison.Accept(_compareVisitor, il)
-                          .EmitReturnNotZero(gotoNextMember);
 
-            return il;
+            itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+
+            return itemComparison.Accept(_compareVisitor, il)
+                                 .EmitReturnNotZero(gotoNextMember)
+                                 .MarkLabel(gotoNextMember);
         }
     }
 }
