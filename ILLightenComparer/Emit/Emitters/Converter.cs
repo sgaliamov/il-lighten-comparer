@@ -18,6 +18,7 @@ namespace ILLightenComparer.Emit.Emitters
             ComparableComparison.Create,
             ArrayComparison.Create,
             EnumerableComparison.Create,
+            NullableComparison.Create,
             HierarchicalComparison.Create
         };
 
@@ -70,6 +71,14 @@ namespace ILLightenComparer.Emit.Emitters
             var itemVariable = new EnumerableItemVariable(ownerType, xEnumerator, yEnumerator);
 
             return CreateCollectionItemComparison(itemVariable);
+        }
+
+        public IComparisonAcceptor CreateNullableVariableComparison(
+            IVariable variable,
+            LocalBuilder nullableX,
+            LocalBuilder nullableY)
+        {
+            throw new NotImplementedException();
         }
 
         private static IComparisonAcceptor CreateCollectionItemComparison(IVariable itemVariable)
