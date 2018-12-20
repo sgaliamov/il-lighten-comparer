@@ -33,7 +33,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         {
             var variableType = comparison.Variable.VariableType;
             var underlyingType = variableType.GetUnderlyingType();
-            if (!underlyingType.IsValueType && !underlyingType.IsSealed)
+            if (!underlyingType.IsSealedComparable())
             {
                 return EmitCallForDelayedCompareMethod(il, underlyingType);
             }
