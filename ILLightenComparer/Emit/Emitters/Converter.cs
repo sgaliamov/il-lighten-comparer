@@ -46,7 +46,7 @@ namespace ILLightenComparer.Emit.Emitters
                 return new VariableComparison(variable, comparison);
             }
 
-            if (argumentType.IsSealedComparable())
+            if (argumentType.GetUnderlyingType().IsSealedComparable())
             {
                 return ComparableComparison.Create(variable);
             }

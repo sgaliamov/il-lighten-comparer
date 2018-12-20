@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
@@ -10,41 +13,49 @@ namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
     public sealed class Tests
     {
         [Fact]
-        public void Create_Comparer_For_EnumSmall()
+        public void Compare_Sample_Types_Directly()
         {
-            Test<EnumSmall>();
+            foreach (var item in SampleTypes.Types)
+            {
+                var testMethod = typeof(Tests)
+                                 .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                                 .Single(x => x.Name == nameof(Test) && x.IsGenericMethodDefinition)
+                                 .MakeGenericMethod(item.Key);
+
+                testMethod.Invoke(this, new object[] { item.Value });
+            }
         }
 
-        [Fact]
-        public void Create_Comparer_For_Short()
+        private void Test<T>(IComparer<T> referenceComparer)
         {
-            Test<short>();
-        }
+            T Create()
+            {
+                if (!typeof(T).IsValueType && _random.NextDouble() < 0.1)
+                {
+                    return default;
+                }
 
-        [Fact]
-        public void Create_Comparer_For_String()
-        {
-            Test<string>();
-        }
+                return _fixture.Create<T>();
+            }
 
-        private void Test<T>()
-        {
+            if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
+
             var comparer = new ComparersBuilder().GetComparer<T>();
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 10; i++)
             {
-                var x = _fixture.Create<T>();
-                var y = _fixture.Create<T>();
+                var x = Create();
+                var y = Create();
 
-                var expected = typeof(T) == typeof(string)
-                                   ? string.CompareOrdinal(x as string, y as string)
-                                   : Comparer<T>.Default.Compare(x, y).Normalize();
+                var expected = referenceComparer.Compare(x, y).Normalize();
                 var actual = comparer.Compare(x, y).Normalize();
 
-                actual.Should().Be(expected.Normalize());
+                var message = $"{typeof(T).DisplayName()} should be supported.\nx: {x},\ny: {y}";
+                actual.Should().Be(expected, message);
             }
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly Random _random = new Random();
     }
 }
