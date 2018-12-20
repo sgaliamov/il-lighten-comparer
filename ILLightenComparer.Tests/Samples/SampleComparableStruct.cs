@@ -20,5 +20,10 @@ namespace ILLightenComparer.Tests.Samples
 
             return Comparer.Compare(Property, other.Property);
         }
+
+        public override string ToString()
+        {
+            return $"{{ {Field}, {Property} }}";
+        }
     }
 }

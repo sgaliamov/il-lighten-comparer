@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleComparableChildObject<TMember> : SampleComparableBaseObject<TMember>, IComparable<SampleComparableChildObject<TMember>>
+    public sealed class SampleComparableChildObject<TMember> :
+        SampleComparableBaseObject<TMember>,
+        IComparable<SampleComparableChildObject<TMember>>
     {
         public readonly IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
 
@@ -35,6 +37,11 @@ namespace ILLightenComparer.Tests.Samples
             }
 
             return Comparer.Compare(ChildProperty, other.ChildProperty);
+        }
+
+        public override string ToString()
+        {
+            return $"{{ {Field}, {Property}, {ChildField}, {ChildProperty} }}";
         }
 
         public override int CompareTo(SampleComparableBaseObject<TMember> other)

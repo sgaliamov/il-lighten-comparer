@@ -25,16 +25,16 @@ namespace ILLightenComparer.Tests.Samples
                 { typeof(EnumSmall), null },
                 { typeof(EnumBig), null },
                 { typeof(string), StringComparer.Ordinal },
-                { typeof(SampleComparableBaseObject<EnumSmall>), null },
-                { typeof(SampleComparableChildObject<EnumSmall>), null },
-                { typeof(SampleComparableStruct<EnumSmall>), null },
+                { typeof(SampleComparableBaseObject<EnumSmall?>), null },
+                { typeof(SampleComparableChildObject<EnumSmall?>), null },
+                { typeof(SampleComparableStruct<EnumSmall?>), null },
                 {
                     typeof(SampleObject<EnumSmall?>),
-                    new SampleObjectComparer<EnumSmall?>(new NullableComparer<EnumSmall>())
+                    new SampleObjectComparer<EnumSmall?>()
                 },
                 {
-                    typeof(SampleStruct<int>),
-                    new SampleStructComparer<int>()
+                    typeof(SampleStruct<EnumSmall?>),
+                    new SampleStructComparer<EnumSmall?>()
                 }
             };
         }

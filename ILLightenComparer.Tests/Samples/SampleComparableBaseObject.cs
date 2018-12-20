@@ -6,7 +6,7 @@ namespace ILLightenComparer.Tests.Samples
     public class SampleComparableBaseObject<TMember> : IComparable<SampleComparableBaseObject<TMember>>
     {
         public static IComparer<TMember> Comparer = Comparer<TMember>.Default;
-        
+
         // ReSharper disable once StaticMemberInGenericType
         public static bool UsedCompareTo;
 
@@ -34,6 +34,11 @@ namespace ILLightenComparer.Tests.Samples
             }
 
             return Comparer.Compare(Property, other.Property);
+        }
+
+        public override string ToString()
+        {
+            return $"{{ {Field}, {Property} }}";
         }
     }
 }
