@@ -32,8 +32,8 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public static ArrayComparison Create(IVariable variable)
         {
-            var underlyingType = variable.VariableType.GetUnderlyingType();
-            if (underlyingType.IsArray && underlyingType.GetArrayRank() == 1)
+            var variableType = variable.VariableType;
+            if (variableType.IsArray && variableType.GetArrayRank() == 1)
             {
                 return new ArrayComparison(variable);
             }

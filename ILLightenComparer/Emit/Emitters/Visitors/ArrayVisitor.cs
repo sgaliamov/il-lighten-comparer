@@ -69,7 +69,12 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             LocalBuilder yArray)
         {
             var elementType = arrayType.GetElementType();
-            if (!elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
+            if (elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
+            {
+                EmitSortArray(il, elementType, xArray);
+                EmitSortArray(il, elementType, yArray);
+            }
+            else
             {
                 var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
@@ -79,11 +84,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
                 EmitSortArray(il, elementType, xArray, comparer);
                 EmitSortArray(il, elementType, yArray, comparer);
-            }
-            else
-            {
-                EmitSortArray(il, elementType, xArray);
-                EmitSortArray(il, elementType, yArray);
             }
         }
 

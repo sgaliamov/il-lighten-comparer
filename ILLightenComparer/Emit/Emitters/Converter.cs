@@ -13,12 +13,12 @@ namespace ILLightenComparer.Emit.Emitters
     {
         private static readonly Func<MemberInfo, ICompareEmitterAcceptor>[] MemberConverters =
         {
+            NullableComparison.Create,
             IntegralComparison.Create,
             StringComparison.Create,
             ComparableComparison.Create,
             ArrayComparison.Create,
             EnumerableComparison.Create,
-            NullableComparison.Create,
             HierarchicalComparison.Create
         };
 
