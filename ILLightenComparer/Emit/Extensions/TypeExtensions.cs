@@ -102,8 +102,7 @@ namespace ILLightenComparer.Emit.Extensions
                 return true;
             }
 
-            return type.GetInterfaces()
-                       .Any(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
+            return type.GetInterfaces().Any(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -14,6 +15,20 @@ namespace ILLightenComparer.Tests.ComparerTests
     // todo: test with interface, abstract class and object
     public sealed class SampleTypesTests
     {
+        [Fact]
+        public void Compare_Arrays_Directly()
+        {
+            foreach (var item in SampleTypes.Types)
+            {
+                var arrayType = item.Key.MakeArrayType();
+                var comparerType = typeof(CollectionComparer<,>).MakeGenericType(arrayType, item.Key);
+                var comparer = Activator.CreateInstance(comparerType, item.Value, false);
+                var testMethod = GetTestMethod().MakeGenericMethod(arrayType);
+
+                testMethod.Invoke(this, new[] { comparer, 10 });
+            }
+        }
+
         [Fact]
         public void Compare_Sample_Objects()
         {
@@ -60,14 +75,26 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private void GenericTest<T>(IComparer<T> referenceComparer, int times)
         {
+            var type = typeof(T);
+
             T Create()
             {
-                if ((!typeof(T).IsValueType || typeof(T).IsNullable()) && _random.NextDouble() < 0.1)
+                if ((!type.IsValueType || type.IsNullable()) && _random.NextDouble() < 0.1)
                 {
                     return default;
                 }
 
-                return _fixture.Create<T>();
+                var result = _fixture.Create<T>();
+                if (result is IList list)
+                {
+                    var count = Math.Max(list.Count / 10, 1);
+                    for (var i = 0; i < count; i++)
+                    {
+                        list[_random.Next(list.Count)] = null;
+                    }
+                }
+
+                return result;
             }
 
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
@@ -82,7 +109,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var expected = referenceComparer.Compare(x, y).Normalize();
                 var actual = comparer.Compare(x, y).Normalize();
 
-                var message = $"{typeof(T).DisplayName()} should be supported.\nx: {x},\ny: {y}";
+                var message = $"{type.DisplayName()} should be supported.\nx: {x},\ny: {y}";
                 actual.Should().Be(expected, message);
             }
         }
