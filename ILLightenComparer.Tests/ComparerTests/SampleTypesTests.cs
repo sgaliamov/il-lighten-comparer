@@ -18,15 +18,13 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Compare_Arrays_Directly()
         {
-            foreach (var item in SampleTypes.Types)
-            {
-                var arrayType = item.Key.MakeArrayType();
-                var comparerType = typeof(CollectionComparer<,>).MakeGenericType(arrayType, item.Key);
-                var comparer = Activator.CreateInstance(comparerType, item.Value, false);
-                var testMethod = GetTestMethod().MakeGenericMethod(arrayType);
+            TestCollection();
+        }
 
-                testMethod.Invoke(this, new[] { comparer, 10 });
-            }
+        [Fact]
+        public void Compare_Enumerables_Directly()
+        {
+            TestCollection(typeof(IEnumerable<>));
         }
 
         [Fact]
@@ -49,6 +47,21 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var testMethod = GetTestMethod().MakeGenericMethod(item.Key);
 
                 testMethod.Invoke(this, new object[] { item.Value, 10 });
+            }
+        }
+
+        private void TestCollection(Type genericCollectionType = null)
+        {
+            foreach (var item in SampleTypes.Types)
+            {
+                var collectionType = genericCollectionType == null
+                                         ? item.Key.MakeArrayType()
+                                         : genericCollectionType.MakeGenericType(item.Key);
+                var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, item.Key);
+                var comparer = Activator.CreateInstance(comparerType, item.Value, false);
+                var testMethod = GetTestMethod().MakeGenericMethod(collectionType);
+
+                testMethod.Invoke(this, new[] { comparer, 10 });
             }
         }
 
