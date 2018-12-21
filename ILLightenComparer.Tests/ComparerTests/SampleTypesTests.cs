@@ -89,7 +89,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var comparer = Activator.CreateInstance(comparerType, itemComparer, false);
             var testMethod = GetTestMethod().MakeGenericMethod(collectionType);
 
-            testMethod.Invoke(this, new[] { comparer, 10 });
+            testMethod.Invoke(this, new[] { comparer, 100 });
         }
 
         private void Test(Type objectGenericType, Type comparerGenericType)

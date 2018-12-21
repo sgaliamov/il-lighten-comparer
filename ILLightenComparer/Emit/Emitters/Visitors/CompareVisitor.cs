@@ -47,6 +47,12 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         public ILEmitter Visit(IntegralComparison comparison, ILEmitter il)
         {
+            if (!comparison.Variable.VariableType.GetUnderlyingType().IsSmallIntegral())
+            {
+                throw new InvalidOperationException(
+                    $"Integral type is expected but: {comparison.Variable.VariableType.DisplayName()}.");
+            }
+
             return il.Emit(OpCodes.Sub);
         }
 

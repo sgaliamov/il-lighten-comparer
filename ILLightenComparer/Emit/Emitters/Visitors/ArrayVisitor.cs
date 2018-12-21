@@ -16,7 +16,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         private const int LocalCountY = 4;
         private const int LocalDoneX = 5;
         private const int LocalDoneY = 6;
-        private const int LocalIndex = 7;
+        private const int LocalNullableX = 7;
+        private const int LocalNullableY = 8;
+        private const int LocalIndex = 9;
 
         private readonly CompareVisitor _compareVisitor;
         private readonly ComparerContext _context;
@@ -134,6 +136,18 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
             itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
+
+            var elementType = itemComparison.Variable.VariableType;
+            if (elementType.IsNullable())
+            {
+                il.Store(elementType, LocalNullableY, out var nullableY)
+                  .Store(elementType, LocalNullableX, out var nullableX)
+                  .CheckNullableValuesForNull(nullableX, nullableY, elementType, continueLoop);
+
+                itemComparison = _converter.CreateNullableVariableComparison(itemComparison.Variable, nullableX, nullableY);
+                itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+            }
+
             itemComparison.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(continueLoop);
 
