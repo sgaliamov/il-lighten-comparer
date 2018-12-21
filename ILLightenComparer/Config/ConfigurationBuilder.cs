@@ -11,7 +11,7 @@ namespace ILLightenComparer.Config
 
         private Configuration _defaultConfiguration = new Configuration(
             new HashSet<string>(),
-            false,
+            true,
             new string[0],
             StringComparison.Ordinal,
             true,

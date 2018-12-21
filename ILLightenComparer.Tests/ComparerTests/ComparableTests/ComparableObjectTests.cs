@@ -22,8 +22,8 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
             var one = other.DeepClone();
             one.ComparableProperty.Property = other.ComparableProperty.Property + 1;
 
-            var expected = ContainerObject.Comparer.Compare(one, other);
-            var actual = TypedComparer.Compare(one, other);
+            var expected = ContainerObject.Comparer.Compare(one, other).Normalize();
+            var actual = TypedComparer.Compare(one, other).Normalize();
 
             actual.Should().Be(expected);
 

@@ -162,10 +162,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         private readonly IComparer<AbstractMembers> _comparer =
             new ComparersBuilder()
-                .DefineDefaultConfiguration(new ComparerSettings
-                {
-                    IncludeFields = true
-                })
                 .For<SealedNestedObject>()
                 .DefineConfiguration(new ComparerSettings
                 {

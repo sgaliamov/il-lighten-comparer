@@ -7,17 +7,6 @@ namespace ILLightenComparer.Tests
 {
     public sealed class ComparersBuilderTests
     {
-        public ComparersBuilderTests()
-        {
-            var configuration = new ComparerSettings
-            {
-                IncludeFields = false
-            };
-
-            _builder = new ComparersBuilder()
-                .DefineDefaultConfiguration(configuration);
-        }
-
         [Fact(Timeout = Constants.DefaultTimeout)]
         public void Create_Generic_Comparer()
         {
@@ -63,6 +52,7 @@ namespace ILLightenComparer.Tests
             Test(_builder.GetComparer<DummyObject>(), _builder.GetComparer(typeof(DummyObject)));
         }
 
-        private readonly IContextBuilder _builder;
+        private readonly IContextBuilder _builder = new ComparersBuilder()
+            .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = false });
     }
 }

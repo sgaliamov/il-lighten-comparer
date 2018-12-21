@@ -51,10 +51,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 });
 
             _nestedStructComparer = new ComparersBuilder()
-                                    .DefineDefaultConfiguration(new ComparerSettings
-                                    {
-                                        IncludeFields = true
-                                    })
                                     .For<NestedStruct>()
                                     .DefineConfiguration(new ComparerSettings
                                     {

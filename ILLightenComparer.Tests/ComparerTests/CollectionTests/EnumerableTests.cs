@@ -238,10 +238,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
-
-        private readonly IContextBuilder _builder = new ComparersBuilder()
-            .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true });
-
+        private readonly IContextBuilder _builder = new ComparersBuilder();
         private readonly Random _random = new Random();
     }
 }

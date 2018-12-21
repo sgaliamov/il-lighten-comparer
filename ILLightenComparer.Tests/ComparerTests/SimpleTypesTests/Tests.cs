@@ -41,12 +41,7 @@ namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
 
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
-            var comparer = new ComparersBuilder()
-                           .DefineDefaultConfiguration(new ComparerSettings
-                           {
-                               IncludeFields = true
-                           })
-                           .GetComparer<T>();
+            var comparer = new ComparersBuilder().GetComparer<T>();
 
             for (var i = 0; i < 10; i++)
             {

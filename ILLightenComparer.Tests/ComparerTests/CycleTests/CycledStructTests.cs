@@ -11,11 +11,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         public CycledStructTests()
         {
             _builder = new ComparersBuilder()
-                       .DefineDefaultConfiguration(new ComparerSettings
-                       {
-                           IncludeFields = true,
-                           DetectCycles = true
-                       })
                        .DefineConfiguration(typeof(CycledStruct),
                            new ComparerSettings
                            {

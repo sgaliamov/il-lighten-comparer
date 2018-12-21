@@ -25,7 +25,7 @@ namespace ILLightenComparer
         public string[] IgnoredMembers { get; set; }
 
         /// <summary>
-        ///     Default: false.
+        ///     Default: true.
         /// </summary>
         public bool? IncludeFields { get; set; }
 

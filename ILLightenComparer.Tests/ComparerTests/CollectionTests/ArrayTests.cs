@@ -15,8 +15,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Arrays()
         {
-            var builder = new ComparersBuilder()
-                .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true });
+            var builder = new ComparersBuilder();
 
             Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][]>>().GetComparer());
             Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][,]>>().GetComparer());
@@ -153,7 +152,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
             var target = new ComparersBuilder()
-                         .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true })
                          .For<SampleObject<T[]>>()
                          .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
                          .GetComparer();
@@ -173,7 +171,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         private void CompareStructArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
             var target = new ComparersBuilder()
-                         .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true })
                          .For<SampleStruct<T[]>>()
                          .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
                          .GetComparer();
