@@ -146,13 +146,13 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
                 var itemComparison = _converter.CreateNullableVariableComparison(arrayItemVariable, nullableX, nullableY);
 
-                Visit(il, itemComparison, continueLoop, gotoNextMember);
+                Visit(il, itemComparison, continueLoop);
             }
             else
             {
                 var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
 
-                Visit(il, itemComparison, continueLoop, gotoNextMember);
+                Visit(il, itemComparison, continueLoop);
             }
 
             il.MarkLabel(continueLoop)
@@ -163,9 +163,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Branch(OpCodes.Br, loopStart);
         }
 
-        private void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Label continueLoop, Label gotoNext)
+        private void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Label continueLoop)
         {
-            itemComparison.LoadVariables(_stackVisitor, il, gotoNext);
+            itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
             itemComparison.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(continueLoop);
         }

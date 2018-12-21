@@ -122,7 +122,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             T Create()
             {
-                if ((!type.IsValueType || type.IsNullable()) && _random.NextDouble() < 0.1)
+                if ((!type.IsValueType || type.IsNullable()) && _random.NextDouble() < 0.2)
                 {
                     return default;
                 }
@@ -130,7 +130,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var result = _fixture.Create<T>();
                 if (result is IList list)
                 {
-                    var count = Math.Max(list.Count / 10, 1);
+                    var count = Math.Max(list.Count / 5, 1);
                     for (var i = 0; i < count; i++)
                     {
                         list[_random.Next(list.Count)] = null;
@@ -149,8 +149,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var x = Create();
                 var y = Create();
 
-                var expected = referenceComparer.Compare(x, y).Normalize();
                 var actual = comparer.Compare(x, y).Normalize();
+                var expected = referenceComparer.Compare(x, y).Normalize();
 
                 var message = $"{type.DisplayName()} should be supported.\nx: {x},\ny: {y}";
                 actual.Should().Be(expected, message);
