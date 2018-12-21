@@ -9,24 +9,35 @@ using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
-namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
+namespace ILLightenComparer.Tests.ComparerTests
 {
     // todo: test with interface, abstract class and object
-    public sealed class SimpleComparerTests
+    public sealed class SampleTypesTests
     {
         [Fact]
         public void Compare_Sample_Objects()
         {
-            SampleTest(typeof(SampleObject<>), typeof(SampleObjectComparer<>));
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>));
         }
 
         [Fact]
         public void Compare_Sample_Structs()
         {
-            SampleTest(typeof(SampleStruct<>), typeof(SampleStructComparer<>));
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>));
         }
 
-        private void SampleTest(Type objectGenericType, Type comparerGenericType)
+        [Fact]
+        public void Compare_Types_Directly()
+        {
+            foreach (var item in SampleTypes.Types)
+            {
+                var testMethod = GetTestMethod().MakeGenericMethod(item.Key);
+
+                testMethod.Invoke(this, new object[] { item.Value, 10 });
+            }
+        }
+
+        private void Test(Type objectGenericType, Type comparerGenericType)
         {
             foreach (var item in SampleTypes.Types)
             {
@@ -40,29 +51,18 @@ namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
             }
         }
 
-        [Fact]
-        public void Compare_Sample_Types_Directly()
-        {
-            foreach (var item in SampleTypes.Types)
-            {
-                var testMethod = GetTestMethod().MakeGenericMethod(item.Key);
-
-                testMethod.Invoke(this, new object[] { item.Value, 10 });
-            }
-        }
-
         private MethodInfo GetTestMethod()
         {
-            return typeof(SimpleComparerTests)
+            return typeof(SampleTypesTests)
                    .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-                   .Single(x => x.Name == nameof(Test) && x.IsGenericMethodDefinition);
+                   .Single(x => x.Name == nameof(GenericTest) && x.IsGenericMethodDefinition);
         }
 
-        private void Test<T>(IComparer<T> referenceComparer, int times)
+        private void GenericTest<T>(IComparer<T> referenceComparer, int times)
         {
             T Create()
             {
-                if (!typeof(T).IsValueType && _random.NextDouble() < 0.1)
+                if ((!typeof(T).IsValueType || typeof(T).IsNullable()) && _random.NextDouble() < 0.1)
                 {
                     return default;
                 }
