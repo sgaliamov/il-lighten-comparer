@@ -8,6 +8,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 {
     internal abstract class CollectionVisitor
     {
+        protected const int LocalX = Arg.X; // 1
+        protected const int LocalY = Arg.Y; // 2
+
         private readonly CompareVisitor _compareVisitor;
         private readonly VariableLoader _loader;
         private readonly StackVisitor _stackVisitor;
@@ -22,8 +25,8 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         protected (LocalBuilder x, LocalBuilder y, Label gotoNext) EmitLoad(ILEmitter il, IComparison comparison)
         {
             var variable = comparison.Variable;
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, Arg.X, out var x);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, Arg.Y, out var y);
+            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
+            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var y);
 
             il.DefineLabel(out var gotoNext)
               .EmitCheckReferenceComparison(x, y, gotoNext);

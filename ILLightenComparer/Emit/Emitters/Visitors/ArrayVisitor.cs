@@ -9,8 +9,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 {
     internal sealed class ArrayVisitor : CollectionVisitor
     {
-        private const int LocalX = Arg.X; // 1
-        private const int LocalY = Arg.Y; // 2
         private const int LocalCountX = 3;
         private const int LocalCountY = 4;
         private const int LocalDoneX = 5;
@@ -36,13 +34,12 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
         {
+            var variable = comparison.Variable;
             var (x, y, gotoNext) = EmitLoad(il, comparison);
-
             var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
 
             EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
 
-            var variable = comparison.Variable;
             if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
             {
                 EmitArraySorting(il, variable.VariableType, x, y);

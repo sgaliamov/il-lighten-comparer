@@ -7,17 +7,14 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
 {
-    internal sealed class EnumerableVisitor
+    internal sealed class EnumerableVisitor : CollectionVisitor
     {
-        private const int LocalX = Arg.X; // 1
-        private const int LocalY = Arg.Y; // 2
         private const int LocalDoneX = 3;
         private const int LocalDoneY = 4;
 
         private readonly CompareVisitor _compareVisitor;
         private readonly ComparerContext _context;
         private readonly Converter _converter;
-        private readonly VariableLoader _loader;
         private readonly StackVisitor _stackVisitor;
 
         public EnumerableVisitor(
@@ -26,43 +23,38 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
+            : base(stackVisitor, compareVisitor, loader)
         {
             _context = context;
             _compareVisitor = compareVisitor;
-            _loader = loader;
             _converter = converter;
             _stackVisitor = stackVisitor;
         }
 
         public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNextMember);
-
             var variable = comparison.Variable;
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var xEnumerable);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var yEnumerable);
-
-            il.EmitCheckReferenceComparison(xEnumerable, yEnumerable, gotoNextMember);
+            var (x, y, gotoNext) = EmitLoad(il, comparison);
 
             if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
             {
-                EmitCollectionsSorting(il, variable.VariableType, xEnumerable, yEnumerable);
+                EmitCollectionsSorting(il, variable.VariableType, x, y);
             }
 
-            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(il, comparison, xEnumerable, yEnumerable);
+            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(il, comparison, x, y);
 
             // todo: think how to use it, the problem now with the inner `return` statements, it has to be `leave` instruction
             // todo: use dynamic function to encapsulate all branching
             //il.BeginExceptionBlock(); 
 
-            Loop(il, variable, xEnumerator, yEnumerator, gotoNextMember);
+            Loop(il, variable, xEnumerator, yEnumerator, gotoNext);
 
             //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(il, xEnumerator, yEnumerator, gotoNextMember);
+            EmitDisposeEnumerators(il, xEnumerator, yEnumerator, gotoNext);
 
             //il.EndExceptionBlock();
 
-            return il.MarkLabel(gotoNextMember);
+            return il.MarkLabel(gotoNext);
         }
 
         private void EmitCollectionsSorting(
