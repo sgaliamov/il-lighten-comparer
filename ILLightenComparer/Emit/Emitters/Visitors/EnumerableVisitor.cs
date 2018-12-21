@@ -1,7 +1,5 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
-using ILLightenComparer.Emit.Emitters.Variables;
-using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
@@ -82,21 +80,12 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             EmitCheckIfLoopsAreDone(il, xDone, yDone, gotoNextMember);
 
             var elementType = comparison.ElementType;
-            if (elementType.IsNullable())
-            {
-                var itemVariable = new EnumerableItemVariable(comparison.Variable.OwnerType, xEnumerator, yEnumerator);
+            var itemComparison = _converter.CreateEnumerableItemComparison(
+                comparison.Variable.OwnerType,
+                xEnumerator,
+                yEnumerator);
 
-                VisitNullable(il, itemVariable, continueLoop);
-            }
-            else
-            {
-                var itemComparison = _converter.CreateEnumerableItemComparison(
-                    comparison.Variable.OwnerType,
-                    xEnumerator,
-                    yEnumerator);
-
-                Visit(il, itemComparison, continueLoop);
-            }
+            Visit(il, itemComparison, elementType, continueLoop);
         }
 
         private static void EmitCheckIfLoopsAreDone(

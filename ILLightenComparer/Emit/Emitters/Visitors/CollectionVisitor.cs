@@ -66,14 +66,26 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             }
         }
 
-        protected void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Label continueLoop)
+        protected void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Type elementType, Label continueLoop)
+        {
+            if (elementType.IsNullable())
+            {
+                VisitNullable(il, itemComparison.Variable, continueLoop);
+            }
+            else
+            {
+                Visit(il, itemComparison, continueLoop);
+            }
+        }
+
+        private void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Label continueLoop)
         {
             itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
             itemComparison.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(continueLoop);
         }
 
-        protected void VisitNullable(ILEmitter il, IVariable itemVariable, Label continueLoop)
+        private void VisitNullable(ILEmitter il, IVariable itemVariable, Label continueLoop)
         {
             itemVariable.Load(_loader, il, Arg.X);
             il.Store(itemVariable.VariableType, LocalX, out var nullableX);

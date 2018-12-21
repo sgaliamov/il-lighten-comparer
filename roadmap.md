@@ -61,6 +61,7 @@
 - [x] nullable comparison class
 - [x] generate comparers for simple members
 - [x] `IgnoreCollectionOrder` setting
+- [x] use `DetectCycles` setting
 - [ ] refactor tests - ensure all branch execution
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting
@@ -69,7 +70,6 @@
 - [ ] float, double, date time precision
 - [ ] customization setting to override comparer with specific implementation
 - [ ] ignore existing `IComparable` implementation
-- [ ] use `DetectCycles` setting
 - [ ] `checked` subs
 - [ ] compare references and the end?
 - [ ] how to rebuild after set new configuration?

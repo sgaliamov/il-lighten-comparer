@@ -66,18 +66,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNext);
 
             var elementType = variable.VariableType.GetElementType();
-            if (elementType.IsNullable())
-            {
-                var itemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
+            var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
 
-                VisitNullable(il, itemVariable, continueLoop);
-            }
-            else
-            {
-                var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
-
-                Visit(il, itemComparison, continueLoop);
-            }
+            Visit(il, itemComparison, elementType, continueLoop);
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)

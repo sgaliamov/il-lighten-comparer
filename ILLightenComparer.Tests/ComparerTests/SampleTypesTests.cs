@@ -66,8 +66,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             foreach (var item in SampleTypes.Types)
             {
-                var objectType = item.Key;
-                TestCollection(objectType, item.Value, genericCollectionType, false);
+                TestCollection(item.Key, item.Value, genericCollectionType, false);
             }
         }
 
@@ -93,7 +92,6 @@ namespace ILLightenComparer.Tests.ComparerTests
                                      : genericCollectionType.MakeGenericType(objectType);
             var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, objectType);
             var constructor = comparerType.GetConstructor(new[] { typeof(IComparer<>).MakeGenericType(objectType), typeof(bool) });
-
 
             var comparer = constructor.Invoke(new object[] { itemComparer, false });
 
