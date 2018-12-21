@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ILLightenComparer.Tests.Samples.Comparers
 {
@@ -6,9 +8,11 @@ namespace ILLightenComparer.Tests.Samples.Comparers
         where TCollection : IEnumerable<TItem>
     {
         private readonly IComparer<TItem> _itemComparer;
+        private readonly bool _sort;
 
-        public CollectionComparer(IComparer<TItem> itemComparer)
+        public CollectionComparer(IComparer<TItem> itemComparer = null, bool sort = false)
         {
+            _sort = sort;
             _itemComparer = itemComparer ?? Comparer<TItem>.Default;
         }
 
@@ -27,6 +31,17 @@ namespace ILLightenComparer.Tests.Samples.Comparers
             if (y == null)
             {
                 return 1;
+            }
+
+            if (_sort)
+            {
+                var ax = x.ToArray();
+                Array.Sort(ax, _itemComparer);
+                x = (TCollection)ax.AsEnumerable();
+
+                var ay = y.ToArray();
+                Array.Sort(ay, _itemComparer);
+                y = (TCollection)ay.AsEnumerable();
             }
 
             using (var enumeratorX = x.GetEnumerator())

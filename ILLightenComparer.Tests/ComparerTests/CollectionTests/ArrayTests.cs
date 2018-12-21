@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using Force.DeepCloner;
-using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -16,63 +15,81 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         [Fact]
         public void Compare_Array_Of_Arrays()
         {
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[][]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[][,]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleObject<int[,]>>().GetComparer());
+            var builder = new ComparersBuilder();
 
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleStruct<int[][]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleStruct<int[][,]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => _builder.For<SampleStruct<int[,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[,]>>().GetComparer());
+
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
         }
 
         [Fact]
         public void Compare_Array_Of_Bytes()
         {
             CompareObjectArrayOf<byte>();
-
             CompareStructArrayOf<byte>();
+
+            CompareObjectArrayOf<byte>(null, true);
+            CompareStructArrayOf<byte>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Comparable_Nullable_Struct()
         {
-            CompareObjectArrayOfNullable<ComparableStruct<EnumSmall>>();
+            CompareObjectArrayOfNullable<SampleComparableStruct<EnumSmall>>();
+            CompareStructArrayOfNullable<SampleComparableStruct<string>>();
 
-            CompareStructArrayOfNullable<ComparableStruct<string>>();
+            CompareObjectArrayOfNullable<SampleComparableStruct<EnumSmall>>(null, true);
+            CompareStructArrayOfNullable<SampleComparableStruct<string>>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Comparable_Objects()
         {
-            CompareObjectArrayOf<ComparableObject>();
-            CompareObjectArrayOf<ComparableObject>();
+            CompareObjectArrayOf<SampleComparableBaseObject<int>>();
+            CompareStructArrayOf<SampleComparableBaseObject<int>>();
 
-            CompareObjectArrayOf<ComparableChildObject>();
-            CompareStructArrayOf<ComparableChildObject>();
+            CompareObjectArrayOf<SampleComparableChildObject<int>>();
+            CompareStructArrayOf<SampleComparableChildObject<int>>();
+
+            CompareObjectArrayOf<SampleComparableBaseObject<int>>(null, true);
+            CompareStructArrayOf<SampleComparableBaseObject<int>>(null, true);
+
+            CompareObjectArrayOf<SampleComparableChildObject<int>>(null, true);
+            CompareStructArrayOf<SampleComparableChildObject<int>>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Comparable_Struct()
         {
-            CompareObjectArrayOf<ComparableStruct<int>>();
+            CompareObjectArrayOf<SampleComparableStruct<int>>();
+            CompareStructArrayOf<SampleComparableStruct<decimal>>();
 
-            CompareStructArrayOf<ComparableStruct<decimal>>();
+            CompareObjectArrayOf<SampleComparableStruct<int>>(null, true);
+            CompareStructArrayOf<SampleComparableStruct<decimal>>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Enums()
         {
             CompareObjectArrayOf<EnumSmall>();
-
             CompareStructArrayOf<EnumSmall>();
+
+            CompareObjectArrayOf<EnumSmall>(null, true);
+            CompareStructArrayOf<EnumSmall>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Longs()
         {
             CompareObjectArrayOf<long>();
+            CompareStructArrayOf<ulong>();
 
-            CompareStructArrayOf<long>();
+            CompareObjectArrayOf<ulong>(null, true);
+            CompareStructArrayOf<long>(null, true);
         }
 
         [Fact]
@@ -82,16 +99,20 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = new SampleObjectComparer<SampleObject<int>>(nestedComparer);
 
             CompareObjectArrayOf(comparer);
-
             CompareStructArrayOf(comparer);
+
+            CompareObjectArrayOf(comparer, true);
+            CompareStructArrayOf(comparer, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Nullable_Enums()
         {
             CompareObjectArrayOfNullable<EnumSmall>();
-
             CompareStructArrayOfNullable<EnumSmall>();
+
+            CompareObjectArrayOfNullable<EnumSmall>(null, true);
+            CompareStructArrayOfNullable<EnumSmall>(null, true);
         }
 
         [Fact]
@@ -100,36 +121,45 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             var comparer = new SampleStructComparer<int>();
 
             CompareObjectArrayOfNullable(comparer);
-
             CompareStructArrayOfNullable(comparer);
+
+            CompareObjectArrayOfNullable(comparer, true);
+            CompareStructArrayOfNullable(comparer, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Strings()
         {
             CompareObjectArrayOf<string>();
-
             CompareStructArrayOf<string>();
+
+            CompareObjectArrayOf<string>(null, true);
+            CompareStructArrayOf<string>(null, true);
         }
 
         [Fact]
         public void Compare_Array_Of_Structs()
         {
-            var comparer = new SampleStructComparer<int>();
+            var comparer = new SampleStructComparer<int?>();
 
             CompareObjectArrayOf(comparer);
-
             CompareStructArrayOf(comparer);
+
+            CompareObjectArrayOf(comparer, true);
+            CompareStructArrayOf(comparer, true);
         }
 
-        private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null)
+        private void CompareObjectArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
-            var target = _builder.For<SampleObject<T[]>>().GetComparer();
+            var target = new ComparersBuilder()
+                         .For<SampleObject<T[]>>()
+                         .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
+                         .GetComparer();
 
-            var one = CreateObjects<T>(ItemsCount).ToArray();
+            var one = CreateObjects<T>(ItemsCount).OrderBy(_ => _random.Next()).ToArray();
             var other = one.DeepClone();
 
-            var collectionComparer = new CollectionComparer<T[], T>(itemComparer);
+            var collectionComparer = new CollectionComparer<T[], T>(itemComparer, sort);
             var referenceComparer = new SampleObjectComparer<T[]>(collectionComparer);
 
             Array.Sort(one, referenceComparer);
@@ -138,21 +168,17 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
-        private void CompareObjectArrayOfNullable<T>(IComparer<T> itemComparer = null) where T : struct
+        private void CompareStructArrayOf<T>(IComparer<T> itemComparer = null, bool sort = false)
         {
-            var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
-
-            CompareObjectArrayOf(nullableComparer);
-        }
-
-        private void CompareStructArrayOf<T>(IComparer<T> itemComparer = null)
-        {
-            var target = _builder.For<SampleStruct<T[]>>().GetComparer();
+            var target = new ComparersBuilder()
+                         .For<SampleStruct<T[]>>()
+                         .DefineConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort })
+                         .GetComparer();
 
             var one = CreateStructs<T>(ItemsCount).ToArray();
             var other = one.DeepClone();
 
-            var collectionComparer = new CollectionComparer<T[], T>(itemComparer);
+            var collectionComparer = new CollectionComparer<T[], T>(itemComparer, sort);
             var referenceComparer = new SampleStructComparer<T[]>(collectionComparer);
 
             Array.Sort(one, referenceComparer);
@@ -161,14 +187,23 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
             one.ShouldBeSameOrder(other);
         }
 
-        private void CompareStructArrayOfNullable<T>(IComparer<T> itemComparer = null) where T : struct
+        private void CompareObjectArrayOfNullable<T>(
+            IComparer<T> itemComparer = null,
+            bool sort = false) where T : struct
         {
             var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
 
-            CompareStructArrayOf(nullableComparer);
+            CompareObjectArrayOf(nullableComparer, sort);
         }
 
-        private const int ItemsCount = 100;
+        private void CompareStructArrayOfNullable<T>(IComparer<T> itemComparer = null, bool sort = false) where T : struct
+        {
+            var nullableComparer = new NullableComparer<T>(itemComparer ?? Comparer<T>.Default);
+
+            CompareStructArrayOf(nullableComparer, sort);
+        }
+
+        private const int ItemsCount = 1000;
 
         private T[] CreateArray<T>()
         {
@@ -190,6 +225,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
 
         private IEnumerable<SampleObject<T[]>> CreateObjects<T>(int itemsCount)
         {
+            for (var i = 0; i < itemsCount / 10; i++)
+            {
+                yield return null;
+            }
+
             for (var index = 0; index < itemsCount; index++)
             {
                 yield return new SampleObject<T[]>
@@ -213,9 +253,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CollectionTests
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
-
-        private readonly IContextBuilder _builder = new ComparersBuilder()
-            .DefineDefaultConfiguration(new ComparerSettings { IncludeFields = true });
 
         private readonly Random _random = new Random();
     }

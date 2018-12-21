@@ -22,14 +22,13 @@ namespace ILLightenComparer.Emit.Reflection
         {
             var filtered = Filter(type);
             var sorted = Sort(type, filtered);
-            var converted = Convert(sorted);
 
-            return converted;
+            return Convert(sorted);
         }
 
         private ICompareEmitterAcceptor[] Convert(IEnumerable<MemberInfo> members)
         {
-            return members.Select(_converter.Convert).ToArray();
+            return members.Select(_converter.CreateMemberComparison).ToArray();
         }
 
         private IEnumerable<MemberInfo> Filter(IReflect type)

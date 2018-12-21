@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
+using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 {
     public sealed class HierarchicalObject
     {
-        public ComparableObject ComparableField;
+        public SampleComparableBaseObject<EnumSmall> ComparableField;
         public SealedNestedObject NestedField;
         public NestedStruct? NestedNullableStructField;
         public NestedStruct NestedStructField;
 
-        public static IComparer<HierarchicalObject> Comparer { get; } = new ValueRelationalComparer();
+        public static IComparer<HierarchicalObject> Comparer { get; } = new RelationalComparer();
 
         public SealedNestedObject FirstProperty { get; set; }
         public NestedStruct? NestedNullableStructProperty { get; set; }
@@ -19,7 +19,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
         public SealedNestedObject SecondProperty { get; set; }
         public int Value { get; set; }
 
-        private sealed class ValueRelationalComparer : IComparer<HierarchicalObject>
+        private sealed class RelationalComparer : IComparer<HierarchicalObject>
         {
             public int Compare(HierarchicalObject x, HierarchicalObject y)
             {
@@ -38,7 +38,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return -1;
                 }
 
-                var compare = Comparer<ComparableObject>.Default.Compare(
+                var compare = Comparer<SampleComparableBaseObject<EnumSmall>>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0) { return compare; }

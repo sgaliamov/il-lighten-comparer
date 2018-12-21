@@ -109,11 +109,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         protected IContextBuilder ComparersBuilder =>
             _comparersBuilder
-            ?? (_comparersBuilder = new ComparersBuilder()
-                    .DefineDefaultConfiguration(new ComparerSettings
-                    {
-                        IncludeFields = true
-                    }));
+            ?? (_comparersBuilder = new ComparersBuilder());
 
         protected abstract IComparer<T> ReferenceComparer { get; }
 

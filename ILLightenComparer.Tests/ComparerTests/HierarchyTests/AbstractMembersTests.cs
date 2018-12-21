@@ -11,7 +11,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
-    public class AbstractMembersTests
+    public sealed class AbstractMembersTests
     {
         [Fact(Timeout = Constants.DefaultTimeout)]
         public void AbstractProperty_Comparison()
@@ -162,10 +162,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         private readonly IComparer<AbstractMembers> _comparer =
             new ComparersBuilder()
-                .DefineDefaultConfiguration(new ComparerSettings
-                {
-                    IncludeFields = true
-                })
                 .For<SealedNestedObject>()
                 .DefineConfiguration(new ComparerSettings
                 {

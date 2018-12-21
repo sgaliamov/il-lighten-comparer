@@ -33,7 +33,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         {
             var variableType = comparison.Variable.VariableType;
             var underlyingType = variableType.GetUnderlyingType();
-            if (!underlyingType.IsValueType && !underlyingType.IsSealed)
+            if (!underlyingType.IsSealedComparable())
             {
                 return EmitCallForDelayedCompareMethod(il, underlyingType);
             }
@@ -47,6 +47,12 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         public ILEmitter Visit(IntegralComparison comparison, ILEmitter il)
         {
+            if (!comparison.Variable.VariableType.GetUnderlyingType().IsSmallIntegral())
+            {
+                throw new InvalidOperationException(
+                    $"Integral type is expected but: {comparison.Variable.VariableType.DisplayName()}.");
+            }
+
             return il.Emit(OpCodes.Sub);
         }
 
@@ -57,11 +63,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                                       .StringComparisonType;
 
             return il.LoadConstant(comparisonType).Call(Method.StringCompare);
-        }
-
-        public ILEmitter Visit(CollectionItemComparison comparison, ILEmitter il)
-        {
-            return comparison.ItemAcceptor.Accept(this, il);
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type underlyingType)

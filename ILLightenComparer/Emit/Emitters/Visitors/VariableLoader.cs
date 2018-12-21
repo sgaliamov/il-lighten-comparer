@@ -49,14 +49,14 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         public ILEmitter Load(ArrayItemVariable variable, ILEmitter il, ushort arg)
         {
-            return il.LoadLocal(arg)
+            return il.LoadLocal(variable.Arrays[arg])
                      .LoadLocal(variable.IndexVariable)
                      .Call(variable.GetItemMethod);
         }
 
         public ILEmitter LoadAddress(ArrayItemVariable variable, ILEmitter il, ushort arg)
         {
-            return il.LoadLocal(arg)
+            return il.LoadLocal(variable.Arrays[arg])
                      .LoadLocal(variable.IndexVariable)
                      .Call(variable.GetItemMethod)
                      .Store(variable.VariableType, out var local)
@@ -75,6 +75,32 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                      .Call(variable.GetCurrentMethod)
                      .Store(variable.VariableType, out var local)
                      .LoadAddress(local);
+        }
+
+        public ILEmitter Load(NullableVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadAddress(variable.Nullables[arg])
+                     .Call(variable.GetValueMethod);
+        }
+
+        public ILEmitter LoadAddress(NullableVariable variable, ILEmitter il, ushort arg)
+        {
+            var underlyingType = variable.VariableType.GetUnderlyingType();
+
+            return il.LoadAddress(variable.Nullables[arg])
+                     .Call(variable.GetValueMethod)
+                     .Store(underlyingType, out var x)
+                     .LoadAddress(x);
+        }
+
+        public ILEmitter Load(ArgumentVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadArgument(arg);
+        }
+
+        public ILEmitter LoadAddress(ArgumentVariable variable, ILEmitter il, ushort arg)
+        {
+            return il.LoadArgumentAddress(arg);
         }
     }
 }

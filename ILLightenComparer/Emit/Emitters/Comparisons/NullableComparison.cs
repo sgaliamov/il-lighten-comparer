@@ -2,26 +2,22 @@
 using System.Reflection;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class ArrayComparison : ICompareEmitterAcceptor
+    internal sealed class NullableComparison : ICompareEmitterAcceptor
     {
-        private ArrayComparison(IVariable variable)
+        private NullableComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
-            GetLengthMethod = variable.VariableType.GetPropertyGetter(MethodName.Length);
         }
 
-        public MethodInfo GetLengthMethod { get; }
+        public IVariable Variable { get; }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
         {
             return visitor.Visit(this, il);
         }
-
-        public IVariable Variable { get; }
 
         public static ICompareEmitterAcceptor Create(MemberInfo memberInfo)
         {
@@ -32,10 +28,9 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public static ICompareEmitterAcceptor Create(IVariable variable)
         {
-            var variableType = variable.VariableType;
-            if (variableType.IsArray && variableType.GetArrayRank() == 1)
+            if (variable.VariableType.IsNullable())
             {
-                return new ArrayComparison(variable);
+                return new NullableComparison(variable);
             }
 
             return null;

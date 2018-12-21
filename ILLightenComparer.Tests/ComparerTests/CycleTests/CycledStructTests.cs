@@ -6,16 +6,11 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 {
-    public class CycledStructTests
+    public sealed class CycledStructTests
     {
         public CycledStructTests()
         {
             _builder = new ComparersBuilder()
-                       .DefineDefaultConfiguration(new ComparerSettings
-                       {
-                           IncludeFields = true,
-                           DetectCycles = true
-                       })
                        .DefineConfiguration(typeof(CycledStruct),
                            new ComparerSettings
                            {

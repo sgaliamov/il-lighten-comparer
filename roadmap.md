@@ -53,20 +53,21 @@
 - [x] compare array of `ComparableStruct`
 - [x] refactor variables loading
 - [x] compare `IEnumarable`
-- [ ] `IgnoreCollectionOrder` setting
-- [ ] refactor tests - ensure all branch execution
 
 ## Phase 4 Settings
 
 - [x] separate settings for each comparable type
 - [x] string options (case, culture)
+- [x] nullable comparison class
+- [x] generate comparers for simple members
+- [x] `IgnoreCollectionOrder` setting
+- [ ] refactor tests - ensure all branch execution
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
 - [ ] customization setting to override comparer with specific implementation
-- [ ] generate simplified comparer if root object implements `IComparable`?
 - [ ] ignore existing `IComparable` implementation
 - [ ] use `DetectCycles` setting
 - [ ] `checked` subs
@@ -80,12 +81,13 @@
 - [x] caching for assembly
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
+- [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need have deal with addresses?
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
 - [ ] cache instances by type and configuration in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
+- [ ] same for simple types, when arguments are compared directly
 - [ ] change behavior then types are not matched but castable
 - [ ] do reference comparison only once
-- [ ] create visitor for nullable as for arrays
 - [ ] introduce variables scope to not have to track variable buckets, try `BeginScope` method
 - [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?

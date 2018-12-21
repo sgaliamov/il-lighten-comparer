@@ -14,14 +14,15 @@ namespace ILLightenComparer.Emit
     {
         private readonly CompareEmitter _compareEmitter;
         private readonly ComparerContext _context;
+        private readonly Converter _converter;
         private readonly MembersProvider _membersProvider;
 
         public ComparerTypeBuilder(ComparerContext context)
         {
             _context = context;
-            var converter = new Converter();
-            _compareEmitter = new CompareEmitter(context, converter);
-            _membersProvider = new MembersProvider(context, converter);
+            _converter = new Converter();
+            _compareEmitter = new CompareEmitter(context, _converter);
+            _membersProvider = new MembersProvider(context, _converter);
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -54,17 +55,17 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
-                if (objectType.IsClass)
+                if (IsEmitReferenceComparison(objectType))
                 {
                     _compareEmitter.EmitArgumentsReferenceComparison(il);
                 }
 
-                if (IsDetectCyclesEnabled(objectType))
+                if (IsDetectCycles(objectType))
                 {
                     EmitCycleDetection(il);
                 }
 
-                EmitMembersComparison(il, objectType);
+                EmitComparison(il, objectType);
             }
         }
 
@@ -91,7 +92,7 @@ namespace ILLightenComparer.Emit
                   .LoadArgument(Arg.Y)
                   .EmitCast(objectType);
 
-                EmitStaticCompareMethod(il, staticCompareMethod, objectType);
+                EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
             }
         }
 
@@ -112,26 +113,44 @@ namespace ILLightenComparer.Emit
                   .LoadArgument(Arg.X)
                   .LoadArgument(Arg.Y);
 
-                EmitStaticCompareMethod(il, staticCompareMethod, objectType);
+                EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
             }
         }
 
-        private void EmitMembersComparison(ILEmitter il, Type objectType)
+        private void EmitComparison(ILEmitter il, Type objectType)
         {
-            var members = _membersProvider.GetMembers(objectType);
-
             InitFirstLocalToKeepComparisonsResult(il);
-            foreach (var member in members)
+
+            var argumentComparison = _converter.CreateArgumentComparison(objectType);
+            if (argumentComparison == null)
             {
-                member.Accept(_compareEmitter, il);
+                EmitMembersComparison(il, objectType);
+            }
+            else
+            {
+                argumentComparison.Accept(_compareEmitter, il);
             }
 
             il.Return(0);
         }
 
-        private void EmitStaticCompareMethod(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
+        private void EmitMembersComparison(ILEmitter il, Type objectType)
         {
-            if (!_context.GetConfiguration(objectType).DetectCycles)
+            if (objectType.GetUnderlyingType().IsPrimitive())
+            {
+                throw new InvalidOperationException($"{objectType.DisplayName()} is not expected.");
+            }
+
+            var members = _membersProvider.GetMembers(objectType);
+            foreach (var member in members)
+            {
+                member.Accept(_compareEmitter, il);
+            }
+        }
+
+        private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
+        {
+            if (!IsCreateCycleDetectionSets(objectType))
             {
                 il.Emit(OpCodes.Ldnull)
                   .Emit(OpCodes.Ldnull)
@@ -164,11 +183,6 @@ namespace ILLightenComparer.Emit
               .Return();
         }
 
-        private bool IsDetectCyclesEnabled(Type objectType)
-        {
-            return objectType.IsClass && _context.GetConfiguration(objectType).DetectCycles;
-        }
-
         private static void EmitCycleDetection(ILEmitter il)
         {
             il.LoadArgument(Arg.SetX)
@@ -185,6 +199,38 @@ namespace ILLightenComparer.Emit
               .Branch(OpCodes.Brfalse_S, out var next)
               .Return(0)
               .MarkLabel(next);
+        }
+
+        private static bool IsEmitReferenceComparison(Type objectType)
+        {
+            return objectType.IsClass && !IsCollectionOfSealed(objectType); // todo: revise this checks
+        }
+
+        private bool IsCreateCycleDetectionSets(Type objectType)
+        {
+            return _context.GetConfiguration(objectType).DetectCycles
+                   && !objectType.GetUnderlyingType().IsPrimitive()
+                   && !IsCollectionOfSealed(objectType)
+                   && !objectType.IsSealedComparable(); // todo: test when a sealed comparable has member with cycle
+        }
+
+        private bool IsDetectCycles(Type objectType)
+        {
+            return objectType.IsClass
+                   && IsCreateCycleDetectionSets(objectType);
+        }
+
+        private static bool IsCollectionOfSealed(Type objectType)
+        {
+            var generic = objectType.GetGenericInterface(typeof(IEnumerable<>));
+            if (generic == null)
+            {
+                return false;
+            }
+
+            var itemType = generic.GetGenericArguments()[0].GetUnderlyingType();
+
+            return itemType.IsPrimitive() || itemType.IsSealedComparable();
         }
 
         private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)
@@ -207,7 +253,7 @@ namespace ILLightenComparer.Emit
             }
 
             var methodBuilder = typeBuilder.DefineStaticMethod(
-                MethodName.Factory,
+                MethodName.CreateInstance,
                 typeBuilder,
                 parameters);
 

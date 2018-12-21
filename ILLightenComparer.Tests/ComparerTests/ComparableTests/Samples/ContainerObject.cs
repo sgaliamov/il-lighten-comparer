@@ -6,15 +6,15 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
     public class ContainerObject
     {
-        public ComparableChildObject ComparableField;
-        public ComparableStruct<EnumBig> ComparableStructField;
-        public ComparableStruct<EnumSmall>? ComparableStructNullableField;
+        public SampleComparableChildObject<int?> ComparableField;
+        public SampleComparableStruct<EnumBig> ComparableStructField;
+        public SampleComparableStruct<EnumSmall>? ComparableStructNullableField;
 
         public static IComparer<ContainerObject> Comparer { get; } = new RelationalComparer();
 
-        public ComparableObject ComparableProperty { get; set; }
-        public ComparableStruct<decimal>? ComparableStructNullableProperty { get; set; }
-        public ComparableStruct<string> ComparableStructProperty { get; set; }
+        public SampleComparableBaseObject<EnumSmall> ComparableProperty { get; set; }
+        public SampleComparableStruct<decimal>? ComparableStructNullableProperty { get; set; }
+        public SampleComparableStruct<string> ComparableStructProperty { get; set; }
 
         private sealed class RelationalComparer : IComparer<ContainerObject>
         {
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 
                 if (ReferenceEquals(null, x)) { return -1; }
 
-                var compare = Comparer<ComparableObject>.Default.Compare(
+                var compare = Comparer<SampleComparableChildObject<int?>>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0) { return compare; }
@@ -39,7 +39,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
                     y.ComparableStructNullableField);
                 if (compare != 0) { return compare; }
 
-                compare = Comparer<ComparableObject>.Default.Compare(
+                compare = Comparer<SampleComparableBaseObject<EnumSmall>>.Default.Compare(
                     x.ComparableProperty,
                     y.ComparableProperty);
                 if (compare != 0) { return compare; }

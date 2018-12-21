@@ -17,27 +17,16 @@ namespace ILLightenComparer.Emit.Emitters.Variables
             LocalBuilder yEnumerator)
         {
             OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
-
-            if (xEnumerator == null)
+            Enumerators = new Dictionary<ushort, LocalBuilder>(2)
             {
-                throw new ArgumentNullException(nameof(xEnumerator));
-            }
-
-            if (yEnumerator == null)
-            {
-                throw new ArgumentNullException(nameof(yEnumerator));
-            }
+                { Arg.X, xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)) },
+                { Arg.Y, yEnumerator ?? throw new ArgumentNullException(nameof(yEnumerator)) }
+            };
 
             if (yEnumerator.LocalType != xEnumerator.LocalType)
             {
                 throw new ArgumentException($"Enumerator types are not matched: {xEnumerator}, {yEnumerator}.");
             }
-
-            Enumerators = new Dictionary<ushort, LocalBuilder>(2)
-            {
-                { Arg.X, xEnumerator },
-                { Arg.Y, yEnumerator }
-            };
 
             var enumeratorType = xEnumerator.LocalType;
 

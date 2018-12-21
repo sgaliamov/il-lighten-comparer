@@ -21,7 +21,7 @@ namespace ILLightenComparer.Emit.Extensions
         // todo: cache delegates
         public static TReturnType CreateInstance<T, TReturnType>(this Type type, T arg)
         {
-            return type.GetMethod(MethodName.Factory)
+            return type.GetMethod(MethodName.CreateInstance)
                        .CreateDelegate<Func<T, TReturnType>>()(arg);
         }
 
@@ -74,6 +74,12 @@ namespace ILLightenComparer.Emit.Extensions
             return SmallIntegralTypes.Contains(type);
         }
 
+        public static bool IsSealedComparable(this Type type)
+        {
+            return type.ImplementsGeneric(typeof(IComparable<>))
+                   && (type.IsValueType || type.IsSealed);
+        }
+
         public static bool IsPrimitive(this Type type)
         {
             return type.IsPrimitive
@@ -86,6 +92,11 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static bool ImplementsGeneric(this Type type, Type generic)
         {
+            return type.GetGenericInterface(generic) != null;
+        }
+
+        public static Type GetGenericInterface(this Type type, Type generic)
+        {
             if (!generic.IsGenericType)
             {
                 throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
@@ -93,11 +104,10 @@ namespace ILLightenComparer.Emit.Extensions
 
             if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == generic)
             {
-                return true;
+                return type;
             }
 
-            return type.GetInterfaces()
-                       .Any(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
+            return type.GetInterfaces().FirstOrDefault(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
     }
 }

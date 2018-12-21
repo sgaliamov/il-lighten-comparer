@@ -13,7 +13,7 @@ namespace ILLightenComparer.Tests.Utilities
         private static readonly Lazy<Fixture> Fixture = new Lazy<Fixture>(
             () =>
             {
-                var f = new Fixture { RepeatCount = 2 };
+                var f = new Fixture { RepeatCount = 10 };
 
                 f.Customize(new DomainCustomization());
                 f.Behaviors.Add(new OmitOnRecursionBehavior());
@@ -34,8 +34,6 @@ namespace ILLightenComparer.Tests.Utilities
                 throw new ArgumentException("T should be a class.", nameof(T));
             }
 
-            var context = new SpecimenContext(fixture);
-
             var clone = prototype.DeepClone();
             foreach (var member in new ObjectWalker(new Member(clone)))
             {
@@ -53,12 +51,19 @@ namespace ILLightenComparer.Tests.Utilities
 
                 setValue(
                     member.Parent,
-                    GetNewValue(context, member.ValueType, member.Value));
+                    GetNewValue(fixture, member.ValueType, member.Value));
 
                 yield return clone.DeepClone();
 
                 setValue(member.Parent, member.Value);
             }
+        }
+
+        public static object Create(this Fixture fixture, Type type)
+        {
+            var context = fixture.GetOrAddValue(nameof(SpecimenContext), () => new SpecimenContext(fixture));
+
+            return context.Resolve(type);
         }
 
         private static Action<object, object> GetSetValueAction(Member member)
@@ -71,11 +76,11 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        private static object GetNewValue(ISpecimenContext context, Type type, object oldValue)
+        private static object GetNewValue(Fixture fixture, Type type, object oldValue)
         {
             while (true)
             {
-                var newValue = context.Resolve(type);
+                var newValue = fixture.Create(type);
                 if (!newValue.Equals(oldValue))
                 {
                     return newValue;

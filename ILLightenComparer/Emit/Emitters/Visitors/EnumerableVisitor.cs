@@ -6,41 +6,57 @@ using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
 {
-    internal sealed class EnumerableVisitor
+    internal sealed class EnumerableVisitor : CollectionVisitor
     {
-        private const int LocalX = Arg.X; // 1
-        private const int LocalY = Arg.Y; // 2
         private const int LocalDoneX = 3;
         private const int LocalDoneY = 4;
 
-        private readonly CompareVisitor _compareVisitor;
+        private readonly ComparerContext _context;
         private readonly Converter _converter;
-        private readonly VariableLoader _loader;
-        private readonly StackVisitor _stackVisitor;
 
         public EnumerableVisitor(
+            ComparerContext context,
             StackVisitor stackVisitor,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
+            : base(stackVisitor, compareVisitor, loader, converter)
         {
-            _compareVisitor = compareVisitor;
-            _loader = loader;
+            _context = context;
             _converter = converter;
-            _stackVisitor = stackVisitor;
         }
 
         public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il)
         {
-            var variable = comparison.Variable;
-            il.DefineLabel(out var gotoNextMember)
-              .DefineLabel(out var startLoop);
+            var (x, y, gotoNext) = EmitLoad(il, comparison);
 
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var xEnumerable);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var yEnumerable);
+            if (_context.GetConfiguration(comparison.Variable.OwnerType).IgnoreCollectionOrder)
+            {
+                EmitArraySorting(il, comparison.ElementType, x, y);
+            }
 
-            il.EmitCheckReferenceComparison(xEnumerable, yEnumerable, gotoNextMember);
+            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(il, comparison, x, y);
 
+            // todo: think how to use try/finally block
+            // the problem now with the inner `return` statements, it has to be `leave` instruction
+            //il.BeginExceptionBlock(); 
+
+            Loop(il, comparison, xEnumerator, yEnumerator, gotoNext);
+
+            //il.BeginFinallyBlock();
+            EmitDisposeEnumerators(il, xEnumerator, yEnumerator, gotoNext);
+
+            //il.EndExceptionBlock();
+
+            return il.MarkLabel(gotoNext);
+        }
+
+        private static (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(
+            ILEmitter il,
+            EnumerableComparison comparison,
+            LocalBuilder xEnumerable,
+            LocalBuilder yEnumerable)
+        {
             il.LoadLocal(xEnumerable)
               .Call(comparison.GetEnumeratorMethod)
               .Store(comparison.EnumeratorType, LocalX, out var xEnumerator)
@@ -48,44 +64,42 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Call(comparison.GetEnumeratorMethod)
               .Store(comparison.EnumeratorType, LocalY, out var yEnumerator);
 
-            // todo: think how to use it, the problem now with the inner `return` statements, it has to be `leave` instruction
-            // todo: use dynamic function to encapsulate all branching
-            //il.BeginExceptionBlock(); 
-
-            Loop(il, xEnumerator, yEnumerator, startLoop, gotoNextMember, variable);
-
-            //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(il, xEnumerator, yEnumerator, gotoNextMember);
-
-            //il.EndExceptionBlock();
-
-            return il.MarkLabel(gotoNextMember);
+            return (xEnumerator, yEnumerator);
         }
 
         private void Loop(
             ILEmitter il,
+            EnumerableComparison comparison,
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator,
-            Label startLoop,
-            Label gotoNextMember,
-            IVariable variable)
+            Label gotoNextMember)
         {
-            il.MarkLabel(startLoop);
+            il.DefineLabel(out var continueLoop)
+              .MarkLabel(continueLoop);
 
             var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
-            EmitIfLoopIsDone(il, xDone, yDone, gotoNextMember);
 
-            var itemComparison = _converter.CreateEnumerableItemComparison(
-                variable.OwnerType,
-                xEnumerator,
-                yEnumerator);
+            EmitCheckIfLoopsAreDone(il, xDone, yDone, gotoNextMember);
 
-            itemComparison.LoadVariables(_stackVisitor, il, startLoop);
-            itemComparison.Accept(_compareVisitor, il)
-                          .EmitReturnNotZero(startLoop);
+            var elementType = comparison.ElementType;
+            if (elementType.IsNullable())
+            {
+                var itemVariable = new EnumerableItemVariable(comparison.Variable.OwnerType, xEnumerator, yEnumerator);
+
+                VisitNullable(il, itemVariable, continueLoop);
+            }
+            else
+            {
+                var itemComparison = _converter.CreateEnumerableItemComparison(
+                    comparison.Variable.OwnerType,
+                    xEnumerator,
+                    yEnumerator);
+
+                Visit(il, itemComparison, continueLoop);
+            }
         }
 
-        private static void EmitIfLoopIsDone(
+        private static void EmitCheckIfLoopsAreDone(
             ILEmitter il,
             LocalBuilder xDone,
             LocalBuilder yDone,

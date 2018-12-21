@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.StringTests
 {
-    public class ClassWithStringTests : BaseComparerTests<StringSampleObject>
+    public sealed class ClassWithStringTests : BaseComparerTests<StringSampleObject>
     {
         protected override IComparer<StringSampleObject> ReferenceComparer { get; } =
             StringSampleObject.Comparer;

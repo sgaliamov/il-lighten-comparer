@@ -7,58 +7,55 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
 {
-    internal sealed class ArrayVisitor
+    internal sealed class ArrayVisitor : CollectionVisitor
     {
-        private const int LocalX = Arg.X; // 1
-        private const int LocalY = Arg.Y; // 2
         private const int LocalCountX = 3;
         private const int LocalCountY = 4;
         private const int LocalDoneX = 5;
         private const int LocalDoneY = 6;
         private const int LocalIndex = 7;
 
-        private readonly CompareVisitor _compareVisitor;
+        private readonly ComparerContext _context;
         private readonly Converter _converter;
-        private readonly VariableLoader _loader;
-        private readonly StackVisitor _stackVisitor;
 
         public ArrayVisitor(
+            ComparerContext context,
             StackVisitor stackVisitor,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
+            : base(stackVisitor, compareVisitor, loader, converter)
         {
-            _compareVisitor = compareVisitor;
-            _loader = loader;
+            _context = context;
             _converter = converter;
-            _stackVisitor = stackVisitor;
         }
 
         public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
         {
             var variable = comparison.Variable;
-            il.DefineLabel(out var gotoNextMember);
-
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var y);
-
-            il.EmitCheckReferenceComparison(x, y, gotoNextMember);
-
+            var (x, y, gotoNext) = EmitLoad(il, comparison);
             var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
 
             EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
 
-            Loop(il, variable, countX, countY, gotoNextMember);
+            if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
+            {
+                EmitArraySorting(il, variable.VariableType.GetElementType(), x, y);
+            }
 
-            return il.MarkLabel(gotoNextMember);
+            Loop(il, variable, x, y, countX, countY, gotoNext);
+
+            return il.MarkLabel(gotoNext);
         }
 
         private void Loop(
             ILEmitter il,
             IVariable variable,
+            LocalBuilder xArray,
+            LocalBuilder yArray,
             LocalBuilder countX,
             LocalBuilder countY,
-            Label gotoNextMember)
+            Label gotoNext)
         {
             il.LoadConstant(0)
               .Store(typeof(int), LocalIndex, out var index)
@@ -66,12 +63,21 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
 
-            EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
+            EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNext);
 
-            var itemComparison = _converter.CreateArrayItemComparison(variable, index);
-            itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
-            itemComparison.Accept(_compareVisitor, il)
-                          .EmitReturnNotZero(continueLoop);
+            var elementType = variable.VariableType.GetElementType();
+            if (elementType.IsNullable())
+            {
+                var itemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
+
+                VisitNullable(il, itemVariable, continueLoop);
+            }
+            else
+            {
+                var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
+
+                Visit(il, itemComparison, continueLoop);
+            }
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)

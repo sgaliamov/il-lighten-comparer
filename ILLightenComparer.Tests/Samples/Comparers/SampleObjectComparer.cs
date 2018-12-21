@@ -1,14 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples.Comparers
 {
-    internal sealed class SampleObjectComparer<TMember> : IComparer<SampleObject<TMember>>
+    internal sealed class SampleObjectComparer<TMember> : IComparer<SampleObject<TMember>>, IComparer
     {
         private readonly IComparer<TMember> _memberComparer;
 
         public SampleObjectComparer(IComparer<TMember> memberComparer = null)
         {
             _memberComparer = memberComparer ?? Comparer<TMember>.Default;
+        }
+
+        public int Compare(object x, object y)
+        {
+            return Compare(x as SampleObject<TMember>, y as SampleObject<TMember>);
         }
 
         public int Compare(SampleObject<TMember> x, SampleObject<TMember> y)

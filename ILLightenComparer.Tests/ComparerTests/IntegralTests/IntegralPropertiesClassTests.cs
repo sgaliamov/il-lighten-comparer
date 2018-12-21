@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.IntegralTests
 {
-    public class IntegralPropertiesClassTests : BaseComparerTests<IntegralPropertiesSampleObject>
+    public sealed class IntegralPropertiesClassTests : BaseComparerTests<IntegralPropertiesSampleObject>
     {
         protected override IComparer<IntegralPropertiesSampleObject> ReferenceComparer { get; } =
             IntegralPropertiesSampleObject.Comparer;

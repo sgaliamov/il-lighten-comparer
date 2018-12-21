@@ -2,7 +2,7 @@
 
 namespace ILLightenComparer.Tests.ComparerTests.NullableTests
 {
-    public class StructWithNullableTests : BaseComparerTests<NullableSampleStruct>
+    public sealed class StructWithNullableTests : BaseComparerTests<NullableSampleStruct>
     {
         protected override IComparer<NullableSampleStruct> ReferenceComparer { get; } =
             NullableSampleStruct.Comparer;

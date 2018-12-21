@@ -13,6 +13,7 @@ namespace ILLightenComparer.Emit.Emitters
     {
         private static readonly Func<MemberInfo, ICompareEmitterAcceptor>[] MemberConverters =
         {
+            NullableComparison.Create,
             IntegralComparison.Create,
             StringComparison.Create,
             ComparableComparison.Create,
@@ -29,12 +30,35 @@ namespace ILLightenComparer.Emit.Emitters
             HierarchicalComparison.Create
         };
 
-        public ICompareEmitterAcceptor Convert(MemberInfo memberInfo)
+        public ICompareEmitterAcceptor CreateArgumentComparison(Type argumentType)
+        {
+            var variable = new ArgumentVariable(argumentType);
+
+            if (argumentType.IsNullable())
+            {
+                return NullableComparison.Create(variable);
+            }
+
+            var comparison = IntegralComparison.Create(variable)
+                             ?? (IComparisonAcceptor)StringComparison.Create(variable);
+            if (comparison != null)
+            {
+                return new VariableComparison(variable, comparison);
+            }
+
+            if (argumentType.GetUnderlyingType().IsSealedComparable())
+            {
+                return ComparableComparison.Create(variable);
+            }
+
+            return ArrayComparison.Create(variable) ?? EnumerableComparison.Create(variable);
+        }
+
+        public ICompareEmitterAcceptor CreateMemberComparison(MemberInfo memberInfo)
         {
             var comparison = MemberConverters
                              .Select(factory => factory(memberInfo))
                              .FirstOrDefault(x => x != null);
-
             if (comparison == null)
             {
                 throw new NotSupportedException($"{memberInfo.DisplayName()} is not supported.");
@@ -43,15 +67,20 @@ namespace ILLightenComparer.Emit.Emitters
             return comparison;
         }
 
-        public IComparisonAcceptor CreateArrayItemComparison(IVariable variable, LocalBuilder index)
+        public IComparisonAcceptor CreateArrayItemComparison(
+            IVariable variable,
+            LocalBuilder xArray,
+            LocalBuilder yArray,
+            LocalBuilder index)
         {
-            var itemVariable = ArrayItemVariable.Create(variable.VariableType, variable.OwnerType, index);
-            if (itemVariable == null)
-            {
-                throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not array.");
-            }
+            var itemVariable = new ArrayItemVariable(
+                variable.VariableType,
+                variable.OwnerType,
+                xArray,
+                yArray,
+                index);
 
-            return CreateCollectionItemComparison(itemVariable);
+            return CreateVariableComparison(itemVariable);
         }
 
         public IComparisonAcceptor CreateEnumerableItemComparison(
@@ -61,20 +90,31 @@ namespace ILLightenComparer.Emit.Emitters
         {
             var itemVariable = new EnumerableItemVariable(ownerType, xEnumerator, yEnumerator);
 
-            return CreateCollectionItemComparison(itemVariable);
+            return CreateVariableComparison(itemVariable);
         }
 
-        private static IComparisonAcceptor CreateCollectionItemComparison(IVariable itemVariable)
+        public IComparisonAcceptor CreateNullableVariableComparison(
+            IVariable variable,
+            LocalBuilder nullableX,
+            LocalBuilder nullableY)
+        {
+            var itemVariable = new NullableVariable(variable.OwnerType, variable.VariableType, nullableX, nullableY);
+
+            return CreateVariableComparison(itemVariable);
+        }
+
+        private static IComparisonAcceptor CreateVariableComparison(IVariable itemVariable)
         {
             var comparison = VariableConverters
                              .Select(factory => factory(itemVariable))
                              .FirstOrDefault(x => x != null);
+
             if (comparison == null)
             {
                 throw new NotSupportedException($"{itemVariable.VariableType.DisplayName()} is not supported.");
             }
 
-            return new CollectionItemComparison(itemVariable, comparison);
+            return new VariableComparison(itemVariable, comparison);
         }
     }
 }

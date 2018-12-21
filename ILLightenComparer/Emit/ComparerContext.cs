@@ -18,6 +18,7 @@ namespace ILLightenComparer.Emit
     public interface IComparerContext
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
+        IComparer<T> GetComparer<T>();
     }
 
     internal sealed class ComparerContext : IComparerContext
@@ -64,6 +65,27 @@ namespace ILLightenComparer.Emit
             return Compare(xType, x, y, xSet, ySet);
         }
 
+        // todo: move comparer instances comparison to context
+        public IComparer<T> GetComparer<T>()
+        {
+            //if (objectType.GetUnderlyingType().IsPrimitive())
+            //{
+            //    throw new NotSupportedException(
+            //        $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
+            //}
+
+            //if (objectType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
+            //{
+            //    // todo: test
+            //    // todo: generate comparer for simple types
+            //    return Comparer<T>.Default;
+            //}
+
+            var comparerType = GetOrBuildComparerType(typeof(T));
+
+            return comparerType.CreateInstance<IComparerContext, IComparer<T>>(this);
+        }
+
         public Type GetOrBuildComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
@@ -96,9 +118,9 @@ namespace ILLightenComparer.Emit
             return _configurationBuilder.GetConfiguration(type);
         }
 
-        internal MethodInfo GetStaticCompareMethod(Type memberType)
+        internal MethodInfo GetStaticCompareMethod(Type type)
         {
-            return GetOrStartBuild(memberType).Method;
+            return GetOrStartBuild(type).Method;
         }
 
         private void FinalizeStartedBuilds()
