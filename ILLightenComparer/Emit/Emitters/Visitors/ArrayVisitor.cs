@@ -4,11 +4,10 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.Reflection;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors
 {
-    internal sealed class ArrayVisitor
+    internal sealed class ArrayVisitor : CollectionVisitor
     {
         private const int LocalX = Arg.X; // 1
         private const int LocalY = Arg.Y; // 2
@@ -18,11 +17,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         private const int LocalDoneY = 6;
         private const int LocalIndex = 7;
 
-        private readonly CompareVisitor _compareVisitor;
         private readonly ComparerContext _context;
         private readonly Converter _converter;
         private readonly VariableLoader _loader;
-        private readonly StackVisitor _stackVisitor;
 
         public ArrayVisitor(
             ComparerContext context,
@@ -30,28 +27,22 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
+            : base(stackVisitor, compareVisitor, loader)
         {
             _context = context;
-            _compareVisitor = compareVisitor;
             _loader = loader;
             _converter = converter;
-            _stackVisitor = stackVisitor;
         }
 
         public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNext);
-
-            var variable = comparison.Variable;
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var y);
-
-            il.EmitCheckReferenceComparison(x, y, gotoNext);
+            var (x, y, gotoNext) = EmitLoad(il, comparison);
 
             var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
 
             EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
 
+            var variable = comparison.Variable;
             if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
             {
                 EmitArraySorting(il, variable.VariableType, x, y);
@@ -60,60 +51,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             Loop(il, variable, x, y, countX, countY, gotoNext);
 
             return il.MarkLabel(gotoNext);
-        }
-
-        private static void EmitArraySorting(
-            ILEmitter il,
-            Type arrayType,
-            LocalBuilder xArray,
-            LocalBuilder yArray)
-        {
-            var elementType = arrayType.GetElementType();
-            // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
-            if (elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
-            {
-                EmitSortArray(il, elementType, xArray);
-                EmitSortArray(il, elementType, yArray);
-            }
-            else
-            {
-                var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
-
-                il.LoadArgument(Arg.Context)
-                  .Emit(OpCodes.Call, getComparerMethod)
-                  .Store(getComparerMethod.ReturnType, out var comparer);
-
-                EmitSortArray(il, elementType, xArray, comparer);
-                EmitSortArray(il, elementType, yArray, comparer);
-            }
-        }
-
-        private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
-        {
-            var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
-            var sortMethod = Method.GetArraySortWithComparer(elementType);
-
-            il.LoadLocal(array)
-              .Call(copyMethod)
-              .Store(array)
-              .LoadLocal(array)
-              .LoadLocal(comparer)
-              .Call(sortMethod);
-        }
-
-        private static void EmitSortArray(
-            ILEmitter il,
-            Type elementType,
-            LocalBuilder array)
-        {
-            var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
-            var sortMethod = Method.GetArraySort(elementType);
-
-            il.LoadLocal(array)
-              .Call(copyMethod)
-              .Store(array)
-              .LoadLocal(array)
-              .Call(sortMethod);
         }
 
         private void Loop(
@@ -160,13 +97,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Emit(OpCodes.Add)
               .Store(index)
               .Branch(OpCodes.Br, loopStart);
-        }
-
-        private void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Label continueLoop)
-        {
-            itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
-            itemComparison.Accept(_compareVisitor, il)
-                          .EmitReturnNotZero(continueLoop);
         }
 
         private static void EmitCheckIfLoopsAreDone(
