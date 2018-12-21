@@ -71,6 +71,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             LocalBuilder yArray)
         {
             var elementType = arrayType.GetElementType();
+            // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
             if (elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
             {
                 EmitSortArray(il, elementType, xArray);

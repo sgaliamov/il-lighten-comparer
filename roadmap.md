@@ -81,6 +81,7 @@
 - [x] caching for assembly
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
+- [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need have deal with addresses?
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
 - [ ] cache instances by type and configuration in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
