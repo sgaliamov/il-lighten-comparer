@@ -30,13 +30,13 @@ namespace ILLightenComparer.Tests.Samples
                 return compare;
             }
 
-            compare = Comparer.Compare(ChildField, other.ChildField);
+            compare = ChildComparer.Compare(ChildField, other.ChildField);
             if (compare != 0)
             {
                 return compare;
             }
 
-            return Comparer.Compare(ChildProperty, other.ChildProperty);
+            return ChildComparer.Compare(ChildProperty, other.ChildProperty);
         }
 
         public override string ToString()

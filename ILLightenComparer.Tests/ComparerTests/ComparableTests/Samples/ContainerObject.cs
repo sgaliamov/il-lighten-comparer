@@ -6,7 +6,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
     public class ContainerObject
     {
-        public SampleComparableChildObject<int> ComparableField;
+        public SampleComparableChildObject<int?> ComparableField;
         public SampleComparableStruct<EnumBig> ComparableStructField;
         public SampleComparableStruct<EnumSmall>? ComparableStructNullableField;
 
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 
                 if (ReferenceEquals(null, x)) { return -1; }
 
-                var compare = Comparer<SampleComparableChildObject<int>>.Default.Compare(
+                var compare = Comparer<SampleComparableChildObject<int?>>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0) { return compare; }

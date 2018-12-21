@@ -56,12 +56,12 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
-                if (objectType.IsClass)
+                if (IsEmitReferenceComparison(objectType))
                 {
                     _compareEmitter.EmitArgumentsReferenceComparison(il);
                 }
 
-                if (DetectCyclesIsEnabled(objectType))
+                if (IsDetectCycles(objectType))
                 {
                     EmitCycleDetection(il);
                 }
@@ -151,7 +151,7 @@ namespace ILLightenComparer.Emit
 
         private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
-            if (!CreateCycleDetectionSets(objectType))
+            if (!IsCreateCycleDetectionSets(objectType))
             {
                 il.Emit(OpCodes.Ldnull)
                   .Emit(OpCodes.Ldnull)
@@ -202,29 +202,39 @@ namespace ILLightenComparer.Emit
               .MarkLabel(next);
         }
 
-        private bool CreateCycleDetectionSets(Type objectType)
+        private static bool IsEmitReferenceComparison(Type objectType)
         {
-            if (objectType.ImplementsGeneric(typeof(IEnumerable<>)))
-            {
-                var isCollectionOfPrimitive = objectType
-                                              .GetInterfaces()
-                                              .Single(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                                              .GetGenericArguments()[0]
-                                              .GetUnderlyingType()
-                                              .IsPrimitive();
-
-                return !isCollectionOfPrimitive;
-            }
-
-            return _context.GetConfiguration(objectType).DetectCycles
-                   && !objectType.GetUnderlyingType().IsPrimitive();
+            return objectType.IsClass && !IsCollectionOfSealed(objectType);
         }
 
-        private bool DetectCyclesIsEnabled(Type objectType)
+        private bool IsCreateCycleDetectionSets(Type objectType)
+        {
+            return _context.GetConfiguration(objectType).DetectCycles
+                   && !objectType.GetUnderlyingType().IsPrimitive()
+                   && !IsCollectionOfSealed(objectType)
+                   && !objectType.IsSealedComparable(); // todo: test when a sealed comparable has member with cycle
+        }
+
+        private bool IsDetectCycles(Type objectType)
         {
             return objectType.IsClass
-                   && CreateCycleDetectionSets(objectType)
-                   && !objectType.IsSealedComparable(); // todo: test when a sealed comparable has member with cycle
+                   && IsCreateCycleDetectionSets(objectType);
+        }
+
+        private static bool IsCollectionOfSealed(Type objectType)
+        {
+            if (!objectType.ImplementsGeneric(typeof(IEnumerable<>)))
+            {
+                return false;
+            }
+
+            var itemType = objectType
+                           .GetInterfaces()
+                           .Single(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                           .GetGenericArguments()[0]
+                           .GetUnderlyingType();
+
+            return itemType.IsPrimitive() || itemType.IsSealedComparable();
         }
 
         private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)

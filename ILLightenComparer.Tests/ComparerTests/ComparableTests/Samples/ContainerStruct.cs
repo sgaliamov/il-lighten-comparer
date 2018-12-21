@@ -6,7 +6,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
 {
     public struct ContainerStruct
     {
-        public SampleComparableBaseObject<EnumSmall> ComparableField;
+        public SampleComparableBaseObject<EnumSmall?> ComparableField;
         public SampleComparableStruct<EnumBig> ComparableStructField;
         public SampleComparableStruct<EnumSmall>? ComparableStructNullableField;
 
@@ -20,7 +20,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests.Samples
         {
             public int Compare(ContainerStruct x, ContainerStruct y)
             {
-                var compare = Comparer<SampleComparableBaseObject<EnumSmall>>.Default.Compare(
+                var compare = Comparer<SampleComparableBaseObject<EnumSmall?>>.Default.Compare(
                     x.ComparableField,
                     y.ComparableField);
                 if (compare != 0) { return compare; }
