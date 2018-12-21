@@ -152,7 +152,7 @@ namespace ILLightenComparer.Emit.Emitters
                              ? OpCodes.Unbox_Any
                              : OpCodes.Castclass;
 
-            DebugLine($"\t\t{castOp} {objectType.Name}");
+            DebugLine($"\t\t{castOp} {objectType.DisplayName()}");
             _il.Emit(castOp, objectType);
 
             return this;
