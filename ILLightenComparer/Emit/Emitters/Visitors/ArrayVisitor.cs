@@ -40,7 +40,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
             {
-                EmitArraySorting(il, variable.VariableType, x, y);
+                EmitArraySorting(il, variable.VariableType.GetElementType(), x, y);
             }
 
             Loop(il, variable, x, y, countX, countY, gotoNext);

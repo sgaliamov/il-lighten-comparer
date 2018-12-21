@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
@@ -32,7 +33,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             if (_context.GetConfiguration(comparison.Variable.OwnerType).IgnoreCollectionOrder)
             {
-                EmitArraySorting(il, comparison.Variable.VariableType, x, y);
+                EmitArraySorting(il, comparison.ElementType, x, y);
             }
 
             var (xEnumerator, yEnumerator) = EmitLoadEnumerators(il, comparison, x, y);
