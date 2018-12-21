@@ -204,7 +204,7 @@ namespace ILLightenComparer.Emit
 
         private static bool IsEmitReferenceComparison(Type objectType)
         {
-            return objectType.IsClass && !IsCollectionOfSealed(objectType);
+            return objectType.IsClass && !IsCollectionOfSealed(objectType); // todo: revise this checks
         }
 
         private bool IsCreateCycleDetectionSets(Type objectType)

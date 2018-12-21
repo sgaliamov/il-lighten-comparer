@@ -16,9 +16,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
         private const int LocalCountY = 4;
         private const int LocalDoneX = 5;
         private const int LocalDoneY = 6;
-        private const int LocalNullableX = 7;
-        private const int LocalNullableY = 8;
-        private const int LocalIndex = 9;
+        private const int LocalIndex = 7;
 
         private readonly CompareVisitor _compareVisitor;
         private readonly ComparerContext _context;
@@ -42,13 +40,13 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNextMember);
+            il.DefineLabel(out var gotoNext);
 
             var variable = comparison.Variable;
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
             variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var y);
 
-            il.EmitCheckReferenceComparison(x, y, gotoNextMember);
+            il.EmitCheckReferenceComparison(x, y, gotoNext);
 
             var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
 
@@ -56,15 +54,15 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
             {
-                EmitCollectionsSorting(il, variable.VariableType, x, y);
+                EmitArraySorting(il, variable.VariableType, x, y);
             }
 
-            Loop(il, variable, x, y, countX, countY, gotoNextMember);
+            Loop(il, variable, x, y, countX, countY, gotoNext);
 
-            return il.MarkLabel(gotoNextMember);
+            return il.MarkLabel(gotoNext);
         }
 
-        private static void EmitCollectionsSorting(
+        private static void EmitArraySorting(
             ILEmitter il,
             Type arrayType,
             LocalBuilder xArray,
@@ -140,9 +138,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             {
                 var arrayItemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
                 arrayItemVariable.Load(_loader, il, Arg.X);
-                il.Store(elementType, LocalNullableX, out var nullableX);
+                il.Store(elementType, LocalX, out var nullableX);
                 arrayItemVariable.Load(_loader, il, Arg.Y);
-                il.Store(elementType, LocalNullableY, out var nullableY);
+                il.Store(elementType, LocalY, out var nullableY);
                 il.CheckNullableValuesForNull(nullableX, nullableY, elementType, continueLoop);
 
                 var itemComparison = _converter.CreateNullableVariableComparison(arrayItemVariable, nullableX, nullableY);
