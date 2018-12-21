@@ -150,7 +150,7 @@ namespace ILLightenComparer.Emit
 
         private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
-            if (!_context.GetConfiguration(objectType).DetectCycles || objectType.GetUnderlyingType().IsPrimitive())
+            if (!CreateCycleDetectionSets(objectType))
             {
                 il.Emit(OpCodes.Ldnull)
                   .Emit(OpCodes.Ldnull)
@@ -201,12 +201,18 @@ namespace ILLightenComparer.Emit
               .MarkLabel(next);
         }
 
+        private bool CreateCycleDetectionSets(Type objectType)
+        {
+            return _context.GetConfiguration(objectType).DetectCycles
+                   && !objectType.GetUnderlyingType().IsPrimitive()
+                   && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // todo: test when a collection contains cycle
+        }
+
         private bool DetectCyclesIsEnabled(Type objectType)
         {
             return objectType.IsClass
-                   && _context.GetConfiguration(objectType).DetectCycles
-                   && !objectType.IsPrimitive()
-                   && !objectType.IsSealedComparable();
+                   && CreateCycleDetectionSets(objectType)
+                   && !objectType.IsSealedComparable(); // todo: test when a sealed comparable has member with cycle
         }
 
         private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)

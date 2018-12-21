@@ -22,9 +22,21 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
+        public void Compare_Arrays_Of_Nullables_Directly()
+        {
+            TestNullableCollection();
+        }
+
+        [Fact]
         public void Compare_Enumerables_Directly()
         {
             TestCollection(typeof(IEnumerable<>));
+        }
+
+        [Fact]
+        public void Compare_Enumerables_Of_Nullables_Directly()
+        {
+            TestNullableCollection(typeof(IEnumerable<>));
         }
 
         [Fact]
@@ -54,15 +66,30 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             foreach (var item in SampleTypes.Types)
             {
-                var collectionType = genericCollectionType == null
-                                         ? item.Key.MakeArrayType()
-                                         : genericCollectionType.MakeGenericType(item.Key);
-                var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, item.Key);
-                var comparer = Activator.CreateInstance(comparerType, item.Value, false);
-                var testMethod = GetTestMethod().MakeGenericMethod(collectionType);
-
-                testMethod.Invoke(this, new[] { comparer, 10 });
+                var objectType = item.Key;
+                TestCollection(objectType, genericCollectionType, item.Value);
             }
+        }
+
+        private void TestNullableCollection(Type genericCollectionType = null)
+        {
+            foreach (var item in SampleTypes.Types)
+            {
+                var nullableType = typeof(Nullable<>).MakeGenericType(item.Key);
+                TestCollection(nullableType, genericCollectionType, item.Value);
+            }
+        }
+
+        private void TestCollection(Type objectType, Type genericCollectionType, IComparer itemComparer)
+        {
+            var collectionType = genericCollectionType == null
+                                     ? objectType.MakeArrayType()
+                                     : genericCollectionType.MakeGenericType(objectType);
+            var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, objectType);
+            var comparer = Activator.CreateInstance(comparerType, itemComparer, false);
+            var testMethod = GetTestMethod().MakeGenericMethod(collectionType);
+
+            testMethod.Invoke(this, new[] { comparer, 10 });
         }
 
         private void Test(Type objectGenericType, Type comparerGenericType)
@@ -77,13 +104,6 @@ namespace ILLightenComparer.Tests.ComparerTests
 
                 testMethod.Invoke(this, new[] { comparer, 100 });
             }
-        }
-
-        private MethodInfo GetTestMethod()
-        {
-            return typeof(SampleTypesTests)
-                   .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-                   .Single(x => x.Name == nameof(GenericTest) && x.IsGenericMethodDefinition);
         }
 
         private void GenericTest<T>(IComparer<T> referenceComparer, int times)
@@ -125,6 +145,13 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var message = $"{type.DisplayName()} should be supported.\nx: {x},\ny: {y}";
                 actual.Should().Be(expected, message);
             }
+        }
+
+        private MethodInfo GetTestMethod()
+        {
+            return typeof(SampleTypesTests)
+                   .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                   .Single(x => x.Name == nameof(GenericTest) && x.IsGenericMethodDefinition);
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
