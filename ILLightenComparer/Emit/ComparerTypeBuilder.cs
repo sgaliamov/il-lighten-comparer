@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
@@ -55,7 +56,7 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
-                if (objectType.IsClass && !objectType.ImplementsGeneric(typeof(IEnumerable<>)))
+                if (objectType.IsClass)
                 {
                     _compareEmitter.EmitArgumentsReferenceComparison(il);
                 }
@@ -203,9 +204,20 @@ namespace ILLightenComparer.Emit
 
         private bool CreateCycleDetectionSets(Type objectType)
         {
+            if (objectType.ImplementsGeneric(typeof(IEnumerable<>)))
+            {
+                var isCollectionOfPrimitive = objectType
+                                              .GetInterfaces()
+                                              .Single(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                                              .GetGenericArguments()[0]
+                                              .GetUnderlyingType()
+                                              .IsPrimitive();
+
+                return !isCollectionOfPrimitive;
+            }
+
             return _context.GetConfiguration(objectType).DetectCycles
-                   && !objectType.GetUnderlyingType().IsPrimitive()
-                   && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // todo: test when a collection contains cycle
+                   && !objectType.GetUnderlyingType().IsPrimitive();
         }
 
         private bool DetectCyclesIsEnabled(Type objectType)
