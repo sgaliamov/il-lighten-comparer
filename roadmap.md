@@ -60,7 +60,7 @@
 - [x] string options (case, culture)
 - [x] nullable comparison class
 - [x] generate comparers for simple members
-- [ ] `IgnoreCollectionOrder` setting
+- [x] `IgnoreCollectionOrder` setting
 - [ ] refactor tests - ensure all branch execution
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting

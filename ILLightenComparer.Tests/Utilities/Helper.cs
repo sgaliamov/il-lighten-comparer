@@ -104,7 +104,7 @@ namespace ILLightenComparer.Tests.Utilities
         public static string DisplayName(this MemberInfo memberInfo)
         {
             return $"{memberInfo}"
-                   .Replace("\\, ILLightenComparer.Tests\\, Version=1.0.0.0\\, Culture=neutral\\, PublicKeyToken=null", "");
+                .Replace("\\, ILLightenComparer.Tests\\, Version=1.0.0.0\\, Culture=neutral\\, PublicKeyToken=null", "");
         }
     }
 }
