@@ -5,29 +5,49 @@ using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
+using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
 {
-    public sealed class Tests
+    // todo: test with interface, abstract class and object
+    public sealed class SimpleComparerTests
     {
-        // todo: test with interface, abstract class and object
+        [Fact]
+        public void Compare_Sample_Objects()
+        {
+            foreach (var item in SampleTypes.Types)
+            {
+                var comparerType = typeof(SampleObjectComparer<>).MakeGenericType(item.Key);
+                var comparer = Activator.CreateInstance(comparerType, item.Value);
+                var type = typeof(SampleObject<>).MakeGenericType(item.Key);
+
+                var testMethod = GetTestMethod().MakeGenericMethod(type);
+
+                testMethod.Invoke(this, new[] { comparer, 100 });
+            }
+        }
+
         [Fact]
         public void Compare_Sample_Types_Directly()
         {
             foreach (var item in SampleTypes.Types)
             {
-                var testMethod = typeof(Tests)
-                                 .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-                                 .Single(x => x.Name == nameof(Test) && x.IsGenericMethodDefinition)
-                                 .MakeGenericMethod(item.Key);
+                var testMethod = GetTestMethod().MakeGenericMethod(item.Key);
 
-                testMethod.Invoke(this, new object[] { item.Value });
+                testMethod.Invoke(this, new object[] { item.Value, 10 });
             }
         }
 
-        private void Test<T>(IComparer<T> referenceComparer)
+        private MethodInfo GetTestMethod()
+        {
+            return typeof(SimpleComparerTests)
+                   .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                   .Single(x => x.Name == nameof(Test) && x.IsGenericMethodDefinition);
+        }
+
+        private void Test<T>(IComparer<T> referenceComparer, int times)
         {
             T Create()
             {
@@ -43,7 +63,7 @@ namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
 
             var comparer = new ComparersBuilder().GetComparer<T>();
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < times; i++)
             {
                 var x = Create();
                 var y = Create();
