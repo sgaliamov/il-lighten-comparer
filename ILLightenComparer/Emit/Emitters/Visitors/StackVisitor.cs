@@ -13,7 +13,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             _loader = loader;
         }
 
-        public ILEmitter LoadVariables(HierarchicalComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter LoadVariables(HierarchicalComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
 
@@ -25,7 +25,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                      .LoadArgument(Arg.SetY);
         }
 
-        public ILEmitter LoadVariables(ComparableComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter LoadVariables(ComparableComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                                .LoadLocal(x)
                                .Branch(OpCodes.Brtrue_S, out var call)
                                .LoadLocal(y)
-                               .Branch(OpCodes.Brfalse_S, gotoNextMember)
+                               .Branch(OpCodes.Brfalse_S, gotoNext)
                                .Return(-1)
                                .MarkLabel(call)
                                .LoadLocal(x)
@@ -62,7 +62,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             return il;
         }
 
-        public ILEmitter LoadVariables(IStaticComparison comparison, ILEmitter il, Label gotoNextMember)
+        public ILEmitter LoadVariables(IStaticComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
 

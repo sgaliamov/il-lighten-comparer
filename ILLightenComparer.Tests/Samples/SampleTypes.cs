@@ -34,7 +34,7 @@ namespace ILLightenComparer.Tests.Samples
                 },
                 {
                     typeof(SampleStruct<EnumSmall?>),
-                    new SampleStructComparer<EnumSmall?>()
+                    new NullableComparer<SampleStruct<EnumSmall?>>(new SampleStructComparer<EnumSmall?>())
                 }
             };
         }

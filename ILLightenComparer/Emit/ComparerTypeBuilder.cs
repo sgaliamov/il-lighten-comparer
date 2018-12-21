@@ -55,7 +55,7 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
-                if (objectType.IsClass)
+                if (objectType.IsClass && !objectType.ImplementsGeneric(typeof(IEnumerable<>)))
                 {
                     _compareEmitter.EmitArgumentsReferenceComparison(il);
                 }

@@ -73,7 +73,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private void TestNullableCollection(Type genericCollectionType = null)
         {
-            foreach (var item in SampleTypes.Types)
+            foreach (var item in SampleTypes.Types.Where(x => x.Key.IsValueType))
             {
                 var nullableType = typeof(Nullable<>).MakeGenericType(item.Key);
                 TestCollection(nullableType, genericCollectionType, item.Value);
@@ -86,7 +86,10 @@ namespace ILLightenComparer.Tests.ComparerTests
                                      ? objectType.MakeArrayType()
                                      : genericCollectionType.MakeGenericType(objectType);
             var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, objectType);
-            var comparer = Activator.CreateInstance(comparerType, itemComparer, false);
+            var constructor = comparerType.GetConstructor(new[] { typeof(IComparer<>).MakeGenericType(objectType), typeof(bool) });
+
+            var comparer = constructor.Invoke(new object[] { itemComparer, false });
+
             var testMethod = GetTestMethod().MakeGenericMethod(collectionType);
 
             testMethod.Invoke(this, new[] { comparer, 100 });

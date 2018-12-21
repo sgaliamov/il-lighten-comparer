@@ -134,22 +134,26 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
 
-            var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
-            itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
-
-            var elementType = itemComparison.Variable.VariableType;
+            var elementType = variable.VariableType.GetElementType();
             if (elementType.IsNullable())
             {
-                il.Store(elementType, LocalNullableY, out var nullableY)
-                  .Store(elementType, LocalNullableX, out var nullableX)
-                  .CheckNullableValuesForNull(nullableX, nullableY, elementType, continueLoop);
+                var arrayItemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
+                arrayItemVariable.Load(_loader, il, Arg.X);
+                il.Store(elementType, LocalNullableX, out var nullableX);
+                arrayItemVariable.Load(_loader, il, Arg.Y);
+                il.Store(elementType, LocalNullableY, out var nullableY);
+                il.CheckNullableValuesForNull(nullableX, nullableY, elementType, continueLoop);
 
-                itemComparison = _converter.CreateNullableVariableComparison(itemComparison.Variable, nullableX, nullableY);
-                itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+                var itemComparison = _converter.CreateNullableVariableComparison(arrayItemVariable, nullableX, nullableY);
+
+                Visit(il, itemComparison, continueLoop, gotoNextMember);
             }
+            else
+            {
+                var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
 
-            itemComparison.Accept(_compareVisitor, il)
-                          .EmitReturnNotZero(continueLoop);
+                Visit(il, itemComparison, continueLoop, gotoNextMember);
+            }
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)
@@ -157,6 +161,13 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Emit(OpCodes.Add)
               .Store(index)
               .Branch(OpCodes.Br, loopStart);
+        }
+
+        private void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Label continueLoop, Label gotoNext)
+        {
+            itemComparison.LoadVariables(_stackVisitor, il, gotoNext);
+            itemComparison.Accept(_compareVisitor, il)
+                          .EmitReturnNotZero(continueLoop);
         }
 
         private static void EmitCheckIfLoopsAreDone(

@@ -1,15 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples.Comparers
 {
-    // todo: remove as https://referencesource.microsoft.com/#mscorlib/system/collections/generic/comparer.cs,4bdedf7e4e4851ba
-    internal sealed class NullableComparer<TValue> : IComparer<TValue?> where TValue : struct
+    internal sealed class NullableComparer<TValue> : IComparer<TValue?>, IComparer
+        where TValue : struct
     {
         private readonly IComparer<TValue> _valueComparer;
 
         public NullableComparer(IComparer<TValue> valueComparer = null)
         {
             _valueComparer = valueComparer ?? Comparer<TValue>.Default;
+        }
+
+        public int Compare(object x, object y)
+        {
+            return Compare((TValue)x, (TValue)y);
         }
 
         public int Compare(TValue? x, TValue? y)
