@@ -92,6 +92,11 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static bool ImplementsGeneric(this Type type, Type generic)
         {
+            return type.GetGenericInterface(generic) != null;
+        }
+
+        public static Type GetGenericInterface(this Type type, Type generic)
+        {
             if (!generic.IsGenericType)
             {
                 throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
@@ -99,10 +104,10 @@ namespace ILLightenComparer.Emit.Extensions
 
             if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == generic)
             {
-                return true;
+                return type;
             }
 
-            return type.GetInterfaces().Any(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
+            return type.GetInterfaces().FirstOrDefault(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
     }
 }

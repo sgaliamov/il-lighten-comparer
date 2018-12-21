@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters;
@@ -223,16 +222,13 @@ namespace ILLightenComparer.Emit
 
         private static bool IsCollectionOfSealed(Type objectType)
         {
-            if (!objectType.ImplementsGeneric(typeof(IEnumerable<>)))
+            var generic = objectType.GetGenericInterface(typeof(IEnumerable<>));
+            if (generic == null)
             {
                 return false;
             }
 
-            var itemType = objectType
-                           .GetInterfaces()
-                           .Single(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                           .GetGenericArguments()[0]
-                           .GetUnderlyingType();
+            var itemType = generic.GetGenericArguments()[0].GetUnderlyingType();
 
             return itemType.IsPrimitive() || itemType.IsSealedComparable();
         }

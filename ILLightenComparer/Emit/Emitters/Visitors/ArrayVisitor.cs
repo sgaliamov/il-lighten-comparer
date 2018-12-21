@@ -17,7 +17,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         private readonly ComparerContext _context;
         private readonly Converter _converter;
-        private readonly VariableLoader _loader;
 
         public ArrayVisitor(
             ComparerContext context,
@@ -25,10 +24,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
-            : base(stackVisitor, compareVisitor, loader)
+            : base(stackVisitor, compareVisitor, loader, converter)
         {
             _context = context;
-            _loader = loader;
             _converter = converter;
         }
 
@@ -57,7 +55,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             LocalBuilder yArray,
             LocalBuilder countX,
             LocalBuilder countY,
-            Label gotoNextMember)
+            Label gotoNext)
         {
             il.LoadConstant(0)
               .Store(typeof(int), LocalIndex, out var index)
@@ -65,21 +63,14 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
 
-            EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNextMember);
+            EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNext);
 
             var elementType = variable.VariableType.GetElementType();
             if (elementType.IsNullable())
             {
-                var arrayItemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
-                arrayItemVariable.Load(_loader, il, Arg.X);
-                il.Store(elementType, LocalX, out var nullableX);
-                arrayItemVariable.Load(_loader, il, Arg.Y);
-                il.Store(elementType, LocalY, out var nullableY);
-                il.CheckNullableValuesForNull(nullableX, nullableY, elementType, continueLoop);
+                var itemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
 
-                var itemComparison = _converter.CreateNullableVariableComparison(arrayItemVariable, nullableX, nullableY);
-
-                Visit(il, itemComparison, continueLoop);
+                VisitNullable(il, itemVariable, continueLoop);
             }
             else
             {
