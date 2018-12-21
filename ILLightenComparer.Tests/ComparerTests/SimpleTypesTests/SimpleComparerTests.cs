@@ -17,13 +17,24 @@ namespace ILLightenComparer.Tests.ComparerTests.SimpleTypesTests
         [Fact]
         public void Compare_Sample_Objects()
         {
+            SampleTest(typeof(SampleObject<>), typeof(SampleObjectComparer<>));
+        }
+
+        [Fact]
+        public void Compare_Sample_Structs()
+        {
+            SampleTest(typeof(SampleStruct<>), typeof(SampleStructComparer<>));
+        }
+
+        private void SampleTest(Type objectGenericType, Type comparerGenericType)
+        {
             foreach (var item in SampleTypes.Types)
             {
-                var comparerType = typeof(SampleObjectComparer<>).MakeGenericType(item.Key);
+                var objectType = objectGenericType.MakeGenericType(item.Key);
+                var comparerType = comparerGenericType.MakeGenericType(item.Key);
                 var comparer = Activator.CreateInstance(comparerType, item.Value);
-                var type = typeof(SampleObject<>).MakeGenericType(item.Key);
 
-                var testMethod = GetTestMethod().MakeGenericMethod(type);
+                var testMethod = GetTestMethod().MakeGenericMethod(objectType);
 
                 testMethod.Invoke(this, new[] { comparer, 100 });
             }

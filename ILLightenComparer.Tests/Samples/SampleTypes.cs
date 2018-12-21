@@ -24,7 +24,7 @@ namespace ILLightenComparer.Tests.Samples
                 { typeof(decimal), null },
                 { typeof(EnumSmall), null },
                 { typeof(EnumBig), null },
-                { typeof(string), StringComparer.Ordinal },
+                { typeof(string), null },
                 { typeof(SampleComparableBaseObject<EnumSmall?>), null },
                 { typeof(SampleComparableChildObject<EnumSmall?>), null },
                 { typeof(SampleComparableStruct<EnumSmall?>), null },
