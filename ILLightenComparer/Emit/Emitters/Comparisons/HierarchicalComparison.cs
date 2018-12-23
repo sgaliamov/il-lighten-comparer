@@ -8,7 +8,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class HierarchicalComparison : IMemberComparison
+    internal sealed class HierarchicalComparison : IComparison
     {
         private HierarchicalComparison(IVariable variable)
         {

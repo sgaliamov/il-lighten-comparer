@@ -29,7 +29,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             _stackVisitor = stackVisitor;
         }
 
-        protected (LocalBuilder x, LocalBuilder y, Label gotoNext) EmitLoad(ILEmitter il, IComparison comparison)
+        protected (LocalBuilder x, LocalBuilder y, Label gotoNext) EmitLoad(ILEmitter il, IVariableComparison comparison)
         {
             var variable = comparison.Variable;
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
