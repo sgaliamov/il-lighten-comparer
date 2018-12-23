@@ -25,12 +25,12 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(IMemberComparison comparison, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNextMember);
-            comparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+            il.DefineLabel(out var gotoNext);
+            comparison.LoadVariables(_stackVisitor, il, gotoNext);
 
             return comparison.Accept(_compareVisitor, il)
-                             .EmitReturnNotZero(gotoNextMember)
-                             .MarkLabel(gotoNextMember);
+                             .EmitReturnNotZero(gotoNext)
+                             .MarkLabel(gotoNext);
         }
 
         public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)

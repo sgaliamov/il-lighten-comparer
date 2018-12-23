@@ -83,7 +83,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             LocalBuilder index,
             LocalBuilder countX,
             LocalBuilder countY,
-            Label gotoNextMember)
+            Label gotoNext)
         {
             il.LoadLocal(index)
               .LoadLocal(countX)
@@ -97,7 +97,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
               .LoadLocal(isDoneY)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br, gotoNextMember)
+              .Branch(OpCodes.Br, gotoNext)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkIsDoneY)

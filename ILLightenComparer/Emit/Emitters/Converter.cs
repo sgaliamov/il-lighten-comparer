@@ -39,8 +39,7 @@ namespace ILLightenComparer.Emit.Emitters
                 return NullableComparison.Create(variable);
             }
 
-            var comparison = IntegralComparison.Create(variable)
-                             ?? (IComparisonAcceptor)StringComparison.Create(variable);
+            var comparison = IntegralComparison.Create(variable) ?? (IComparisonAcceptor)StringComparison.Create(variable);
             if (comparison != null)
             {
                 return new VariableComparison(variable, comparison);

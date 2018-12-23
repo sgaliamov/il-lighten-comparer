@@ -63,12 +63,12 @@
 - [x] `IgnoreCollectionOrder` setting
 - [x] use `DetectCycles` setting
 - [ ] refactor tests - ensure all branch execution
+- [ ] customization setting to override comparer with specific implementation
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
-- [ ] customization setting to override comparer with specific implementation
 - [ ] ignore existing `IComparable` implementation
 - [ ] `checked` subs
 - [ ] compare references and the end?
@@ -83,7 +83,7 @@
 - [x] use call instead callvirt when possible
 - [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need have deal with addresses?
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
-- [ ] cache instances by type and configuration in `Context.GetComparerType`
+- [ ] cache instances by type and **configuration** in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
 - [ ] same for simple types, when arguments are compared directly
 - [ ] change behavior then types are not matched but castable

@@ -70,14 +70,14 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             EnumerableComparison comparison,
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator,
-            Label gotoNextMember)
+            Label gotoNext)
         {
             il.DefineLabel(out var continueLoop)
               .MarkLabel(continueLoop);
 
             var (xDone, yDone) = EmitMoveNext(il, xEnumerator, yEnumerator);
 
-            EmitCheckIfLoopsAreDone(il, xDone, yDone, gotoNextMember);
+            EmitCheckIfLoopsAreDone(il, xDone, yDone, gotoNext);
 
             var elementType = comparison.ElementType;
             var itemComparison = _converter.CreateEnumerableItemComparison(
@@ -92,13 +92,13 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             ILEmitter il,
             LocalBuilder xDone,
             LocalBuilder yDone,
-            Label gotoNextMember)
+            Label gotoNext)
         {
             il.LoadLocal(xDone)
               .Branch(OpCodes.Brfalse_S, out var checkY)
               .LoadLocal(yDone)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br, gotoNextMember)
+              .Branch(OpCodes.Br, gotoNext)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkY)
@@ -131,7 +131,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             ILEmitter il,
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator,
-            Label gotoNextMember)
+            Label gotoNext)
         {
             il.LoadLocal(xEnumerator)
               .Branch(OpCodes.Brfalse_S, out var check)
@@ -139,7 +139,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Call(Method.Dispose)
               .MarkLabel(check)
               .LoadLocal(yEnumerator)
-              .Branch(OpCodes.Brfalse_S, gotoNextMember)
+              .Branch(OpCodes.Brfalse_S, gotoNext)
               .LoadLocal(yEnumerator)
               .Call(Method.Dispose);
         }

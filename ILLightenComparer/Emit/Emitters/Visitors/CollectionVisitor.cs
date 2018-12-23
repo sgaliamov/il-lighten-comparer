@@ -78,24 +78,23 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             }
         }
 
+        private void VisitNullable(ILEmitter il, IVariable variable, Label continueLoop)
+        {
+            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var nullableX);
+            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var nullableY);
+
+            il.CheckNullableValuesForNull(nullableX, nullableY, variable.VariableType, continueLoop);
+
+            var itemComparison = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
+
+            Visit(il, itemComparison, continueLoop);
+        }
+
         private void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Label continueLoop)
         {
             itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
             itemComparison.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(continueLoop);
-        }
-
-        private void VisitNullable(ILEmitter il, IVariable itemVariable, Label continueLoop)
-        {
-            itemVariable.Load(_loader, il, Arg.X);
-            il.Store(itemVariable.VariableType, LocalX, out var nullableX);
-            itemVariable.Load(_loader, il, Arg.Y);
-            il.Store(itemVariable.VariableType, LocalY, out var nullableY);
-            il.CheckNullableValuesForNull(nullableX, nullableY, itemVariable.VariableType, continueLoop);
-
-            var itemComparison = _converter.CreateNullableVariableComparison(itemVariable, nullableX, nullableY);
-
-            Visit(il, itemComparison, continueLoop);
         }
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
