@@ -114,24 +114,26 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private void GenericTest<T>(IComparer<T> referenceComparer, int times)
+        private static void GenericTest<T>(IComparer<T> referenceComparer, int times)
         {
             var type = typeof(T);
+            var random = new Random();
+            var fixture = FixtureBuilder.GetInstance();
 
             T Create()
             {
-                if ((!type.IsValueType || type.IsNullable()) && _random.NextDouble() < 0.2)
+                if ((!type.IsValueType || type.IsNullable()) && random.NextDouble() < 0.2)
                 {
                     return default;
                 }
 
-                var result = _fixture.Create<T>();
+                var result = fixture.Create<T>();
                 if (result is IList list)
                 {
                     var count = Math.Max(list.Count / 5, 1);
                     for (var i = 0; i < count; i++)
                     {
-                        list[_random.Next(list.Count)] = null;
+                        list[random.Next(list.Count)] = default;
                     }
                 }
 
@@ -161,8 +163,5 @@ namespace ILLightenComparer.Tests.ComparerTests
                    .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
                    .Single(x => x.Name == nameof(GenericTest) && x.IsGenericMethodDefinition);
         }
-
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
-        private readonly Random _random = new Random();
     }
 }
