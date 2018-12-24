@@ -94,7 +94,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var testMethod = GenericTests.GetTestMethod(collectionType);
 
-            testMethod.Invoke(null, new[] { comparer, Constants.BigCount });
+            testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
         }
 
         private static void Test(Type objectGenericType, Type comparerGenericType)

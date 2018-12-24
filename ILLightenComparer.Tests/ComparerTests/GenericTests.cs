@@ -17,7 +17,9 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         public static MethodInfo GetTestMethod(Type objType)
         {
-            return typeof(GenericTests).GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(objType);
+            return typeof(GenericTests)
+                   .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
+                   .MakeGenericMethod(objType);
         }
 
         private static void Test<T>(IComparer<T> referenceComparer, int times)
@@ -113,6 +115,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             IComparer basicComparer)
         {
             if (typeof(T).IsValueType) { return; }
+
+            if (typeof(T).GetGenericInterface(typeof(IEnumerable<>)) != null) { return; }
 
             for (var i = 0; i < Constants.SmallCount; i++)
             {
