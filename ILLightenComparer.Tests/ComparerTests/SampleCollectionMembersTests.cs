@@ -51,13 +51,27 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Compare_Sample_Objects()
         {
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, false, false);
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, false, true);
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, true, false);
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, true, true);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, false, false);
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, false, true);
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, true, false);
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, true, true);
         }
 
         [Fact]
         public void Compare_Sample_Structs()
         {
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, false, false);
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, false, true);
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, true, false);
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, true, true);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, false, false);
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, false, true);
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, true, false);
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, true, true);
         }
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
