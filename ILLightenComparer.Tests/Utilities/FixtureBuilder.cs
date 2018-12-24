@@ -13,7 +13,7 @@ namespace ILLightenComparer.Tests.Utilities
         private static readonly Lazy<Fixture> Fixture = new Lazy<Fixture>(
             () =>
             {
-                var f = new Fixture { RepeatCount = 10 };
+                var f = new Fixture { RepeatCount = Constants.SmallCount };
 
                 f.Customize(new DomainCustomization());
                 f.Behaviors.Add(new OmitOnRecursionBehavior());

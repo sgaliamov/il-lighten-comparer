@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
@@ -52,9 +53,9 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             foreach (var item in SampleTypes.Types)
             {
-                var testMethod = GenericTests.GetTestMethod().MakeGenericMethod(item.Key);
+                var testMethod = GenericTests.GetTestMethod(item.Key);
 
-                testMethod.Invoke(null, new object[] { item.Value, 10 });
+                testMethod.Invoke(null, new object[] { item.Value, Constants.SmallCount });
             }
         }
 
@@ -91,9 +92,9 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var comparer = constructor.Invoke(new object[] { itemComparer, false });
 
-            var testMethod = GenericTests.GetTestMethod().MakeGenericMethod(collectionType);
+            var testMethod = GenericTests.GetTestMethod(collectionType);
 
-            testMethod.Invoke(null, new[] { comparer, 100 });
+            testMethod.Invoke(null, new[] { comparer, Constants.BigCount });
         }
 
         private static void Test(Type objectGenericType, Type comparerGenericType)
@@ -104,9 +105,9 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var comparerType = comparerGenericType.MakeGenericType(item.Key);
                 var comparer = Activator.CreateInstance(comparerType, item.Value);
 
-                var testMethod = GenericTests.GetTestMethod().MakeGenericMethod(objectType);
+                var testMethod = GenericTests.GetTestMethod(objectType);
 
-                testMethod.Invoke(null, new[] { comparer, 100 });
+                testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
             }
         }
     }
