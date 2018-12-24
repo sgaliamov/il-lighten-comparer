@@ -39,9 +39,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             foreach (var item in SampleTypes.Types)
             {
-                var testMethod = GenericTests.GetTestMethod(item.Key);
-
-                testMethod.Invoke(null, new object[] { item.Value, Constants.SmallCount });
+                GenericTests.GenericTest(item.Key, item.Value, Constants.SmallCount);
             }
         }
 

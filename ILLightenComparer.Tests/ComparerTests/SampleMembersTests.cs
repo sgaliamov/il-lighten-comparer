@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -26,11 +27,9 @@ namespace ILLightenComparer.Tests.ComparerTests
             {
                 var objectType = objectGenericType.MakeGenericType(item.Key);
                 var comparerType = comparerGenericType.MakeGenericType(item.Key);
-                var comparer = Activator.CreateInstance(comparerType, item.Value);
+                var comparer = (IComparer)Activator.CreateInstance(comparerType, item.Value);
 
-                var testMethod = GenericTests.GetTestMethod(objectType);
-
-                testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
+                GenericTests.GenericTest(objectType, comparer, Constants.SmallCount);
             }
         }
     }

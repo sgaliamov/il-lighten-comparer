@@ -16,11 +16,17 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static readonly Random Random = new Random();
         private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
 
-        public static MethodInfo GetTestMethod(Type objType)
+        public static void GenericTest(Type type, IComparer referenceComparer, int times)
         {
-            return typeof(GenericTests)
-                   .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
-                   .MakeGenericMethod(objType);
+            var method = type.GetOrAddProperty(
+                nameof(GenericTest),
+                () =>
+                {
+                    var methodInfo = GetTestMethod(type);
+                    return (Action<IComparer, int>)methodInfo.CreateDelegate(typeof(Action<IComparer, int>));
+                });
+
+            method(referenceComparer, times);
         }
 
         public static void TestCollection(Type objectType, IComparer itemComparer, Type genericCollectionType, bool makeNullable, bool sort = false)
@@ -45,7 +51,14 @@ namespace ILLightenComparer.Tests.ComparerTests
             testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
         }
 
-        private static void Test<T>(IComparer<T> referenceComparer, int times)
+        private static MethodInfo GetTestMethod(Type objType)
+        {
+            return typeof(GenericTests)
+                   .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
+                   .MakeGenericMethod(objType);
+        }
+
+        private static void Test<T>(IComparer referenceComparer, int times)
         {
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
@@ -64,7 +77,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         private static void Comparison_Of_Null_With_Object_Produces_Negative_Value<T>(
-            IComparer<T> referenceComparer,
+            IComparer referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer)
         {
@@ -79,7 +92,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         private static void Comparison_Of_Object_With_Null_Produces_Positive_Value<T>(
-            IComparer<T> referenceComparer,
+            IComparer referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer)
         {
@@ -94,7 +107,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         private static void Comparison_When_Both_Null_Produces_0<T>(
-            IComparer<T> referenceComparer,
+            IComparer referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer)
         {
@@ -108,7 +121,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         private static void Comparison_With_Itself_Produces_0<T>(
-            IComparer<T> referenceComparer,
+            IComparer referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer)
         {
@@ -120,7 +133,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         private static void Comparison_With_Same_Produces_0<T>(
-            IComparer<T> referenceComparer,
+            IComparer referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer)
         {
@@ -133,7 +146,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         private static void Mutate_Class_Members_And_Test_Comparison<T>(
-            IComparer<T> referenceComparer,
+            IComparer referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer)
         {
@@ -151,7 +164,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         private static void Sorting_Must_Work_The_Same_As_For_Reference_Comparer<T>(
-            IComparer<T> referenceComparer,
+            IComparer referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer,
             int count)
@@ -171,7 +184,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         private static void Comparisons_Work_Identical<T>(
-            IComparer<T> referenceComparer,
+            IComparer referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer,
             int times)
