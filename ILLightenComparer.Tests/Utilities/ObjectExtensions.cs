@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -16,7 +17,8 @@ namespace ILLightenComparer.Tests.Utilities
             ConcurrentDictionary<string, object>> ObjectCache = new ConditionalWeakTable<object,
             ConcurrentDictionary<string, object>>();
 
-        public static T GetOrAddValue<T>(this object obj, string name, Func<T> value)
+        public static T GetOrAddProperty<T, TTarget>(this TTarget obj, string name, Func<T> value)
+            where TTarget : class
         {
             var properties = ObjectCache.GetOrCreateValue(obj);
 
@@ -26,6 +28,21 @@ namespace ILLightenComparer.Tests.Utilities
         public static int GetObjectId<T>(this T target) where T : class
         {
             return (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
+        }
+
+        public static Type GetGenericInterface(this Type type, Type generic)
+        {
+            if (!generic.IsGenericType)
+            {
+                throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
+            }
+
+            if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == generic)
+            {
+                return type;
+            }
+
+            return type.GetInterfaces().FirstOrDefault(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
     }
 }
