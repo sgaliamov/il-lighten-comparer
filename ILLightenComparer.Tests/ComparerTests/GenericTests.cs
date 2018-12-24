@@ -6,6 +6,7 @@ using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
+using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests
@@ -20,6 +21,28 @@ namespace ILLightenComparer.Tests.ComparerTests
             return typeof(GenericTests)
                    .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
                    .MakeGenericMethod(objType);
+        }
+
+        public static void TestCollection(Type objectType, IComparer itemComparer, Type genericCollectionType, bool makeNullable, bool sort = false)
+        {
+            if (makeNullable)
+            {
+                var nullableComparer = typeof(NullableComparer<>).MakeGenericType(objectType);
+                itemComparer = (IComparer)Activator.CreateInstance(nullableComparer, itemComparer);
+                objectType = typeof(Nullable<>).MakeGenericType(objectType);
+            }
+
+            var collectionType = genericCollectionType == null
+                                     ? objectType.MakeArrayType()
+                                     : genericCollectionType.MakeGenericType(objectType);
+
+            var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, objectType);
+            var constructor = comparerType.GetConstructor(new[] { typeof(IComparer<>).MakeGenericType(objectType), typeof(bool) });
+            var comparer = constructor.Invoke(new object[] { itemComparer, sort });
+
+            var testMethod = GetTestMethod(collectionType);
+
+            testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
         }
 
         private static void Test<T>(IComparer<T> referenceComparer, int times)

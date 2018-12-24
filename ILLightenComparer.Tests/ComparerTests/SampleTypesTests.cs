@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -51,7 +49,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             foreach (var item in SampleTypes.Types)
             {
-                TestCollection(item.Key, item.Value, genericCollectionType, false);
+                GenericTests.TestCollection(item.Key, item.Value, genericCollectionType, false);
             }
         }
 
@@ -59,30 +57,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             foreach (var item in SampleTypes.Types.Where(x => x.Key.IsValueType))
             {
-                TestCollection(item.Key, item.Value, genericCollectionType, true);
+                GenericTests.TestCollection(item.Key, item.Value, genericCollectionType, true);
             }
-        }
-
-        private static void TestCollection(Type objectType, IComparer itemComparer, Type genericCollectionType, bool makeNullable)
-        {
-            if (makeNullable)
-            {
-                var nullableComparer = typeof(NullableComparer<>).MakeGenericType(objectType);
-                itemComparer = (IComparer)Activator.CreateInstance(nullableComparer, itemComparer);
-                objectType = typeof(Nullable<>).MakeGenericType(objectType);
-            }
-
-            var collectionType = genericCollectionType == null
-                                     ? objectType.MakeArrayType()
-                                     : genericCollectionType.MakeGenericType(objectType);
-            var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, objectType);
-            var constructor = comparerType.GetConstructor(new[] { typeof(IComparer<>).MakeGenericType(objectType), typeof(bool) });
-
-            var comparer = constructor.Invoke(new object[] { itemComparer, false });
-
-            var testMethod = GenericTests.GetTestMethod(collectionType);
-
-            testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
         }
     }
 }
