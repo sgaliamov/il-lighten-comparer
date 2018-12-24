@@ -40,8 +40,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
             var type = typeof(T);
-            var builder = new ComparersBuilder()
-                .DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort });
+            var builder = new ComparersBuilder().DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort });
             var typedComparer = builder.GetComparer<T>();
             var basicComparer = builder.GetComparer(type);
 
@@ -196,23 +195,21 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var result = Fixture.Create<T>();
 
-            if (type.IsValueType && !type.IsNullable())
+            if (!type.IsValueType || type.IsNullable())
             {
-                return result;
+                if (result is IList list)
+                {
+                    return (T)AppendNulls(list);
+                }
+
+                var genericInterface = type.GetGenericInterface(typeof(IEnumerable<>));
+                if (genericInterface != null)
+                {
+                    return AppendNulls(result, genericInterface);
+                }
             }
 
-            if (result is IList list)
-            {
-                return (T)AppendNulls(list);
-            }
-
-            var genericInterface = type.GetGenericInterface(typeof(IEnumerable<>));
-            if (genericInterface != null)
-            {
-                return AppendNulls(result, genericInterface);
-            }
-
-            return default;
+            return result;
         }
 
         private static IList AppendNulls(IList list)
