@@ -17,22 +17,23 @@ namespace ILLightenComparer.Tests.Utilities
                     var oneCurrent = enumeratorOne.Current;
                     var otherCurrent = enumeratorOther.Current;
 
-                    if (typeof(T).IsPrimitive())
-                    {
-                        oneCurrent
-                            .Should()
-                            .BeEquivalentTo(otherCurrent, options => options);
-                    }
-                    else
-                    {
-                        oneCurrent
-                            .Should()
-                            .BeEquivalentTo(otherCurrent, options => options.ComparingByMembers<T>());
-                    }
+                    oneCurrent.ShouldBeEquals(otherCurrent);
                 }
 
                 enumeratorOne.MoveNext().Should().BeFalse();
                 enumeratorOther.MoveNext().Should().BeFalse();
+            }
+        }
+
+        public static void ShouldBeEquals<T>(this T x, T y)
+        {
+            if (typeof(T).IsPrimitive() || typeof(T).IsNullable())
+            {
+                x.Should().BeEquivalentTo(y, options => options);
+            }
+            else
+            {
+                x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>());
             }
         }
 

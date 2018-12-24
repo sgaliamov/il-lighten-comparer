@@ -120,14 +120,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             comparer.Compare(sample, fixture.Create<TElement[]>()).Should().NotBe(0);
 
-            if (typeof(TElement).IsPrimitive())
-            {
-                sample.Should().BeEquivalentTo(clone, options => options.WithStrictOrdering());
-            }
-            else
-            {
-                sample.Should().BeEquivalentTo(clone, options => options.WithStrictOrdering().ComparingByMembers<TElement>());
-            }
+            sample.ShouldBeEquals(clone);
         }
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
