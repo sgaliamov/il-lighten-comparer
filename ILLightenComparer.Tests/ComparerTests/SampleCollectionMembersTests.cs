@@ -8,8 +8,22 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
-    public sealed class SampleArrayMembersTests
+    public sealed class SampleCollectionMembersTests
     {
+        [Fact]
+        public void Compare_Array_Of_Arrays()
+        {
+            var builder = new ComparersBuilder();
+
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[,]>>().GetComparer());
+
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
+        }
+
         [Fact]
         public void Compare_Enumerable_Of_Enumerables()
         {
