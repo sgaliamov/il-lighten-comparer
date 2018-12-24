@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
@@ -10,23 +13,32 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Compare_Sample_Objects()
         {
-            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>));
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, false);
         }
 
         [Fact]
         public void Compare_Sample_Structs()
         {
-            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>));
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, false);
         }
 
-        private static void Test(Type objectGenericType, Type genericCollectionType = null)
+        private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort)
         {
             foreach (var item in SampleTypes.Types)
             {
-                var arrayType = item.Key.MakeArrayType();
-                var objectType = objectGenericType.MakeGenericType(arrayType);
+                var collectionType = useArrays
+                                         ? item.Key.MakeArrayType()
+                                         : typeof(IEnumerable<>).MakeGenericType(item.Key);
 
-                GenericTests.TestCollection(objectType, item.Value, genericCollectionType, false);
+                var objectType = genericSampleType.MakeGenericType(collectionType);
+
+                var collectionComparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, item.Key);
+                var collectionComparer = Activator.CreateInstance(collectionComparerType, item.Value, sort);
+
+                var sampleComparerType = genericSampleComparer.MakeGenericType(collectionType);
+                var sampleComparer = (IComparer)Activator.CreateInstance(sampleComparerType, collectionComparer);
+
+                GenericTests.GenericTest(objectType, sampleComparer, Constants.SmallCount);
             }
         }
     }

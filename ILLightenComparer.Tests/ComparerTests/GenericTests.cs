@@ -66,14 +66,15 @@ namespace ILLightenComparer.Tests.ComparerTests
             var typedComparer = new ComparersBuilder().GetComparer<T>();
             var basicComparer = new ComparersBuilder().GetComparer(type);
 
-            Comparisons_Work_Identical(referenceComparer, typedComparer, basicComparer, times);
             Comparison_Of_Null_With_Object_Produces_Negative_Value(referenceComparer, typedComparer, basicComparer);
             Comparison_Of_Object_With_Null_Produces_Positive_Value(referenceComparer, typedComparer, basicComparer);
             Comparison_When_Both_Null_Produces_0(referenceComparer, typedComparer, basicComparer);
             Comparison_With_Itself_Produces_0(referenceComparer, typedComparer, basicComparer);
             Comparison_With_Same_Produces_0(referenceComparer, typedComparer, basicComparer);
-            Mutate_Class_Members_And_Test_Comparison(referenceComparer, typedComparer, basicComparer);
+
+            Comparisons_Work_Identical(referenceComparer, typedComparer, basicComparer, times);
             Sorting_Must_Work_The_Same_As_For_Reference_Comparer(referenceComparer, typedComparer, basicComparer, Constants.BigCount);
+            Mutate_Class_Members_And_Test_Comparison(referenceComparer, typedComparer, basicComparer);
         }
 
         private static void Comparison_Of_Null_With_Object_Produces_Negative_Value<T>(

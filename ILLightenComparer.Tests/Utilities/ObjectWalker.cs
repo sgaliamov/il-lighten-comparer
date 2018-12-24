@@ -79,12 +79,12 @@ namespace ILLightenComparer.Tests.Utilities
                 return;
             }
 
-            _cache.Add(toSchedule);
-
-            if (toSchedule.ValueType.IsAssignableFrom(typeof(IEnumerable)))
+            if (toSchedule.Value is IEnumerable)
             {
-                throw new NotSupportedException();
+                return;
             }
+
+            _cache.Add(toSchedule);
 
             _toWalk.Push(toSchedule);
         }
