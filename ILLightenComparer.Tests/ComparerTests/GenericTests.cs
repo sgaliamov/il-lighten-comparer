@@ -6,7 +6,6 @@ using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
-using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests
@@ -16,39 +15,17 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static readonly Random Random = new Random();
         private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
 
-        public static void GenericTest(Type type, IComparer referenceComparer, int times)
+        public static void GenericTest(Type type, IComparer referenceComparer, bool sort, int times)
         {
             var method = type.GetOrAddProperty(
                 nameof(GenericTest),
                 () =>
                 {
                     var methodInfo = GetTestMethod(type);
-                    return (Action<IComparer, int>)methodInfo.CreateDelegate(typeof(Action<IComparer, int>));
+                    return (Action<IComparer, bool, int>)methodInfo.CreateDelegate(typeof(Action<IComparer, bool, int>));
                 });
 
-            method(referenceComparer, times);
-        }
-
-        public static void TestCollection(Type objectType, IComparer itemComparer, Type genericCollectionType, bool makeNullable, bool sort = false)
-        {
-            if (makeNullable)
-            {
-                var nullableComparer = typeof(NullableComparer<>).MakeGenericType(objectType);
-                itemComparer = (IComparer)Activator.CreateInstance(nullableComparer, itemComparer);
-                objectType = typeof(Nullable<>).MakeGenericType(objectType);
-            }
-
-            var collectionType = genericCollectionType == null
-                                     ? objectType.MakeArrayType()
-                                     : genericCollectionType.MakeGenericType(objectType);
-
-            var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, objectType);
-            var constructor = comparerType.GetConstructor(new[] { typeof(IComparer<>).MakeGenericType(objectType), typeof(bool) });
-            var comparer = constructor.Invoke(new object[] { itemComparer, sort });
-
-            var testMethod = GetTestMethod(collectionType);
-
-            testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
+            method(referenceComparer, sort, times);
         }
 
         private static MethodInfo GetTestMethod(Type objType)
@@ -58,13 +35,15 @@ namespace ILLightenComparer.Tests.ComparerTests
                    .MakeGenericMethod(objType);
         }
 
-        private static void Test<T>(IComparer referenceComparer, int times)
+        private static void Test<T>(IComparer referenceComparer, bool sort, int times)
         {
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
             var type = typeof(T);
-            var typedComparer = new ComparersBuilder().GetComparer<T>();
-            var basicComparer = new ComparersBuilder().GetComparer(type);
+            var builder = new ComparersBuilder()
+                .DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort });
+            var typedComparer = builder.GetComparer<T>();
+            var basicComparer = builder.GetComparer(type);
 
             Comparison_Of_Null_With_Object_Produces_Negative_Value(referenceComparer, typedComparer, basicComparer);
             Comparison_Of_Object_With_Null_Produces_Positive_Value(referenceComparer, typedComparer, basicComparer);

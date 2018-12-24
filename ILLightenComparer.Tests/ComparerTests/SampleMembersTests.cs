@@ -29,7 +29,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var comparerType = comparerGenericType.MakeGenericType(item.Key);
                 var comparer = (IComparer)Activator.CreateInstance(comparerType, item.Value);
 
-                GenericTests.GenericTest(objectType, comparer, Constants.SmallCount);
+                GenericTests.GenericTest(objectType, comparer, false, Constants.SmallCount);
             }
         }
     }
