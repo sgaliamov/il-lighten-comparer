@@ -30,7 +30,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var typedComparer = new ComparersBuilder().GetComparer<T>();
             var basicComparer = new ComparersBuilder().GetComparer(type);
 
-            TestComparison(referenceComparer, typedComparer, basicComparer, times);
+            Comparisons_Work_Identical(referenceComparer, typedComparer, basicComparer, times);
             Comparison_Of_Null_With_Object_Produces_Negative_Value(referenceComparer, typedComparer, basicComparer);
             Comparison_Of_Object_With_Null_Produces_Positive_Value(referenceComparer, typedComparer, basicComparer);
             Comparison_When_Both_Null_Produces_0(referenceComparer, typedComparer, basicComparer);
@@ -118,16 +118,12 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             if (typeof(T).GetGenericInterface(typeof(IEnumerable<>)) != null) { return; }
 
-            for (var i = 0; i < Constants.SmallCount; i++)
+            var original = Fixture.Create<T>();
+            foreach (var mutant in Fixture.CreateMutants(original))
             {
-                var original = Fixture.Create<T>();
-
-                foreach (var mutant in Fixture.CreateMutants(original))
-                {
-                    referenceComparer.Compare(mutant, original).Should().NotBe(0);
-                    basicComparer.Compare(mutant, original).Should().NotBe(0);
-                    typedComparer.Compare(mutant, original).Should().NotBe(0);
-                }
+                referenceComparer.Compare(mutant, original).Should().NotBe(0);
+                basicComparer.Compare(mutant, original).Should().NotBe(0);
+                typedComparer.Compare(mutant, original).Should().NotBe(0);
             }
         }
 
@@ -151,7 +147,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             copy0.ShouldBeSameOrder(copy2);
         }
 
-        private static void TestComparison<T>(
+        private static void Comparisons_Work_Identical<T>(
             IComparer<T> referenceComparer,
             IComparer<T> typedComparer,
             IComparer basicComparer,

@@ -37,18 +37,6 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Sample_Objects()
-        {
-            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>));
-        }
-
-        [Fact]
-        public void Compare_Sample_Structs()
-        {
-            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>));
-        }
-
-        [Fact]
         public void Compare_Types_Directly()
         {
             foreach (var item in SampleTypes.Types)
@@ -95,20 +83,6 @@ namespace ILLightenComparer.Tests.ComparerTests
             var testMethod = GenericTests.GetTestMethod(collectionType);
 
             testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
-        }
-
-        private static void Test(Type objectGenericType, Type comparerGenericType)
-        {
-            foreach (var item in SampleTypes.Types)
-            {
-                var objectType = objectGenericType.MakeGenericType(item.Key);
-                var comparerType = comparerGenericType.MakeGenericType(item.Key);
-                var comparer = Activator.CreateInstance(comparerType, item.Value);
-
-                var testMethod = GenericTests.GetTestMethod(objectType);
-
-                testMethod.Invoke(null, new[] { comparer, Constants.SmallCount });
-            }
         }
     }
 }
