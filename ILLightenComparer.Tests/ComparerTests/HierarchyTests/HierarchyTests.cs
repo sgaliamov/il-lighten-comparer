@@ -75,7 +75,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                                     .GetComparer();
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Compare_Nested_Null_Structs()
         {
             var one = new HierarchicalObject();
@@ -92,7 +92,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Compare_Nested_Structs()
         {
             for (var i = 0; i < 10; i++)

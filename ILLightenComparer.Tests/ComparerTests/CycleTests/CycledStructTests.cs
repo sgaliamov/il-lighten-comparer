@@ -34,7 +34,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
                            });
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Detects_Cycle_In_Object()
         {
             var one = new CycledStructObject();
@@ -50,7 +50,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Detects_Cycle_In_Struct()
         {
             var one = new CycledStruct
@@ -72,7 +72,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Detects_Cycle_On_First_Member()
         {
             var one = new CycledStructObject();
@@ -104,7 +104,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Detects_Cycle_On_Second_Member()
         {
             var one = new CycledStruct { SecondObject = new CycledStructObject() };

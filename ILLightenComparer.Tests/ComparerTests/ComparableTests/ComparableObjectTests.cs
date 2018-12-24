@@ -11,7 +11,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
 {
     public sealed class ComparableObjectTests : BaseComparerTests<ContainerObject>
     {
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Custom_Comparable_Implementation_Should_Be_Used()
         {
             var other = new ContainerObject
@@ -30,7 +30,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
             SampleComparableBaseObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
         {
             var other = new ContainerObject
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Tests.ComparerTests.ComparableTests
                          .BeNegative();
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
         {
             var one = new ContainerObject
