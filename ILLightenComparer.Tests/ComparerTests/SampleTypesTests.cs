@@ -2,12 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using AutoFixture;
-using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
-using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
@@ -56,13 +52,13 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             foreach (var item in SampleTypes.Types)
             {
-                var testMethod = GetTestMethod().MakeGenericMethod(item.Key);
+                var testMethod = GenericTests.GetTestMethod().MakeGenericMethod(item.Key);
 
-                testMethod.Invoke(this, new object[] { item.Value, 10 });
+                testMethod.Invoke(null, new object[] { item.Value, 10 });
             }
         }
 
-        private void TestCollection(Type genericCollectionType = null)
+        private static void TestCollection(Type genericCollectionType = null)
         {
             foreach (var item in SampleTypes.Types)
             {
@@ -70,7 +66,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private void TestNullableCollection(Type genericCollectionType = null)
+        private static void TestNullableCollection(Type genericCollectionType = null)
         {
             foreach (var item in SampleTypes.Types.Where(x => x.Key.IsValueType))
             {
@@ -78,7 +74,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private void TestCollection(Type objectType, IComparer itemComparer, Type genericCollectionType, bool makeNullable)
+        private static void TestCollection(Type objectType, IComparer itemComparer, Type genericCollectionType, bool makeNullable)
         {
             if (makeNullable)
             {
@@ -95,12 +91,12 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var comparer = constructor.Invoke(new object[] { itemComparer, false });
 
-            var testMethod = GetTestMethod().MakeGenericMethod(collectionType);
+            var testMethod = GenericTests.GetTestMethod().MakeGenericMethod(collectionType);
 
-            testMethod.Invoke(this, new[] { comparer, 100 });
+            testMethod.Invoke(null, new[] { comparer, 100 });
         }
 
-        private void Test(Type objectGenericType, Type comparerGenericType)
+        private static void Test(Type objectGenericType, Type comparerGenericType)
         {
             foreach (var item in SampleTypes.Types)
             {
@@ -108,60 +104,10 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var comparerType = comparerGenericType.MakeGenericType(item.Key);
                 var comparer = Activator.CreateInstance(comparerType, item.Value);
 
-                var testMethod = GetTestMethod().MakeGenericMethod(objectType);
+                var testMethod = GenericTests.GetTestMethod().MakeGenericMethod(objectType);
 
-                testMethod.Invoke(this, new[] { comparer, 100 });
+                testMethod.Invoke(null, new[] { comparer, 100 });
             }
-        }
-
-        private static void GenericTest<T>(IComparer<T> referenceComparer, int times)
-        {
-            var type = typeof(T);
-            var random = new Random();
-            var fixture = FixtureBuilder.GetInstance();
-
-            T Create()
-            {
-                if ((!type.IsValueType || type.IsNullable()) && random.NextDouble() < 0.2)
-                {
-                    return default;
-                }
-
-                var result = fixture.Create<T>();
-                if (result is IList list)
-                {
-                    var count = Math.Max(list.Count / 5, 1);
-                    for (var i = 0; i < count; i++)
-                    {
-                        list[random.Next(list.Count)] = default;
-                    }
-                }
-
-                return result;
-            }
-
-            if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
-
-            var comparer = new ComparersBuilder().GetComparer<T>();
-
-            for (var i = 0; i < times; i++)
-            {
-                var x = Create();
-                var y = Create();
-
-                var actual = comparer.Compare(x, y).Normalize();
-                var expected = referenceComparer.Compare(x, y).Normalize();
-
-                var message = $"{type.DisplayName()} should be supported.\nx: {x},\ny: {y}";
-                actual.Should().Be(expected, message);
-            }
-        }
-
-        private MethodInfo GetTestMethod()
-        {
-            return typeof(SampleTypesTests)
-                   .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-                   .Single(x => x.Name == nameof(GenericTest) && x.IsGenericMethodDefinition);
         }
     }
 }
