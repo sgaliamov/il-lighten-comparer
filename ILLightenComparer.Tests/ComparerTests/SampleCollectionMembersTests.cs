@@ -120,7 +120,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             comparer.Compare(sample, fixture.Create<TElement[]>()).Should().NotBe(0);
 
-            sample.ShouldBeEquals(clone);
+            sample.ShouldBeSameOrder(clone);
         }
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
