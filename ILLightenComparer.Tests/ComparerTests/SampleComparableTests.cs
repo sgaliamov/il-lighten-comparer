@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Linq;
 using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Samples;
+using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -12,10 +15,12 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleComparableTests
     {
         [Fact]
-        public void Compare_Sample_Comparable_Objects()
+        public void Compare_Comparable_Objects()
         {
-            Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer));
-            Test(typeof(SampleComparableChildObject<>), nameof(SampleComparableChildObject<object>.ChildComparer));
+            Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer), false);
+            Test(typeof(SampleComparableChildObject<>), nameof(SampleComparableChildObject<object>.ChildComparer), false);
+            Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer), true);
+            Test(typeof(SampleComparableChildObject<>), nameof(SampleComparableChildObject<object>.ChildComparer), true);
 
             foreach (var item in SampleTypes.Types)
             {
@@ -29,9 +34,10 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Sample_Comparable_Structs()
+        public void Compare_Comparable_Structs()
         {
-            Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer));
+            Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer), false);
+            Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer), true);
         }
 
         [Fact]
@@ -79,20 +85,28 @@ namespace ILLightenComparer.Tests.ComparerTests
             SampleComparableChildObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
         }
 
-        private static void Test(Type objectGenericType, string comparerName)
+        private static void Test(Type comparableGenericType, string comparerName, bool makeNullable)
         {
-            foreach (var item in SampleTypes.Types)
+            foreach (var item in SampleTypes.Types.Where(x => makeNullable && x.Key.IsValueType || !makeNullable))
             {
-                var objectType = objectGenericType.MakeGenericType(item.Key);
-
-                if (item.Value != null)
+                var objectType = item.Key;
+                var itemComparer = item.Value;
+                if (makeNullable)
                 {
-                    objectType
-                        .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
-                        .SetValue(null, item.Value);
+                    var nullableComparer = typeof(NullableComparer<>).MakeGenericType(objectType);
+                    itemComparer = (IComparer)Activator.CreateInstance(nullableComparer, itemComparer);
+                    objectType = typeof(Nullable<>).MakeGenericType(objectType);
                 }
 
-                GenericTests.GenericTest(objectType, null, false, Constants.SmallCount);
+                var comparableType = comparableGenericType.MakeGenericType(objectType);
+                if (itemComparer != null)
+                {
+                    comparableType
+                        .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
+                        .SetValue(null, itemComparer);
+                }
+
+                GenericTests.GenericTest(comparableType, null, false, Constants.SmallCount);
             }
         }
     }
