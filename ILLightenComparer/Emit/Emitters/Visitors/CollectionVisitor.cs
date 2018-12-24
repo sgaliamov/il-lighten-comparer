@@ -102,7 +102,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
             var sortMethod = Method.GetArraySortWithComparer(elementType);
 
-            // todo: test that compared objects are not mutated
             il.LoadLocal(array)
               .Call(copyMethod)
               .Store(array)

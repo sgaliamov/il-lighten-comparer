@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -43,6 +44,13 @@ namespace ILLightenComparer.Tests.Utilities
             }
 
             return type.GetInterfaces().FirstOrDefault(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
+        }
+
+        public static MethodInfo GetGenericMethod(this IReflect fromType, string name, BindingFlags bindingFlags)
+        {
+            return fromType
+                   .GetMethods(bindingFlags)
+                   .Single(x => x.Name == name && x.IsGenericMethodDefinition);
         }
     }
 }

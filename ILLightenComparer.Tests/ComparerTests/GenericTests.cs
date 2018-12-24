@@ -265,12 +265,5 @@ namespace ILLightenComparer.Tests.ComparerTests
                 yield return Create<T>();
             }
         }
-
-        private static MethodInfo GetGenericMethod(this IReflect fromType, string name, BindingFlags bindingFlags)
-        {
-            return fromType
-                   .GetMethods(bindingFlags)
-                   .Single(x => x.Name == name && x.IsGenericMethodDefinition);
-        }
     }
 }

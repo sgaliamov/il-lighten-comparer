@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using AutoFixture;
+using FluentAssertions;
+using Force.DeepCloner;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -53,10 +57,15 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, false, false);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, false, true);
-            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, true, false);
-            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, true, true);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, false, false);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, false, true);
+        }
+
+        [Fact]
+        public void Compare_Sample_Objects_Ignore_Order()
+        {
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, true, false);
+            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, true, true);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, true, false);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true, true, true);
         }
@@ -72,6 +81,53 @@ namespace ILLightenComparer.Tests.ComparerTests
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, false, true);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, true, false);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, true, true);
+        }
+
+        [Fact]
+        public void Ignoring_Order_Do_Not_Add_Side_Effect()
+        {
+            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(SampleObject<>), typeof(int));
+            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(SampleStruct<>), typeof(int));
+            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(int), null);
+            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(SampleObject<>), typeof(SampleObject<int>));
+            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(SampleStruct<>), typeof(SampleObject<int>));
+        }
+
+        private static void Ignoring_Order_Do_Not_Add_Side_Effect_For(Type sampleType, Type memberType)
+        {
+            var type = memberType == null
+                           ? sampleType
+                           : sampleType.MakeGenericType(memberType);
+
+            var method = typeof(SampleCollectionMembersTests)
+                         .GetGenericMethod(
+                             nameof(Ignoring_Order_Do_Not_Add_Side_Effect_For),
+                             BindingFlags.NonPublic | BindingFlags.Static)
+                         .MakeGenericMethod(type);
+
+            method.Invoke(null, null);
+        }
+
+        private static void Ignoring_Order_Do_Not_Add_Side_Effect_For<TElement>()
+        {
+            var comparer = new ComparersBuilder()
+                           .DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = true })
+                           .GetComparer<TElement[]>();
+
+            var fixture = FixtureBuilder.GetInstance();
+            var sample = fixture.Create<TElement[]>();
+            var clone = sample.DeepClone();
+
+            comparer.Compare(sample, fixture.Create<TElement[]>()).Should().NotBe(0);
+
+            if (typeof(TElement).IsPrimitive())
+            {
+                sample.Should().BeEquivalentTo(clone, options => options.WithStrictOrdering());
+            }
+            else
+            {
+                sample.Should().BeEquivalentTo(clone, options => options.WithStrictOrdering().ComparingByMembers<TElement>());
+            }
         }
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
