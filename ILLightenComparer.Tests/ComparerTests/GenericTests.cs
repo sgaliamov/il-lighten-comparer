@@ -14,6 +14,9 @@ namespace ILLightenComparer.Tests.ComparerTests
     {
         private static readonly Random Random = new Random();
         private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
+        private static ComparersBuilder _comparersBuilder;
+
+        public static ComparersBuilder ComparersBuilder => _comparersBuilder ?? (_comparersBuilder = new ComparersBuilder());
 
         public static void GenericTest(Type type, IComparer referenceComparer, bool sort, int times)
         {
@@ -40,7 +43,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
             var type = typeof(T);
-            var builder = new ComparersBuilder().DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort });
+            var builder = ComparersBuilder.DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort });
             var typedComparer = builder.GetComparer<T>();
             var basicComparer = builder.GetComparer(type);
 
@@ -174,9 +177,9 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var x = Create<T>();
                 var y = Create<T>();
 
+                var expected = referenceComparer.Compare(x, y).Normalize();
                 var actual1 = typedComparer.Compare(x, y).Normalize();
                 var actual2 = basicComparer.Compare(x, y).Normalize();
-                var expected = referenceComparer.Compare(x, y).Normalize();
 
                 var message = $"{type.DisplayName()} should be supported.\nx: {x},\ny: {y}";
                 actual1.Should().Be(expected, message);
