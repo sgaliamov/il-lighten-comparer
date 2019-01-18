@@ -17,6 +17,11 @@ namespace ILLightenComparer.Tests.Samples.Comparers
             _itemComparer = itemComparer ?? Comparer<TItem>.Default;
         }
 
+        public int Compare(object x, object y)
+        {
+            return Compare((TCollection)x, (TCollection)y);
+        }
+
         public int Compare(TCollection x, TCollection y)
         {
             if (x == null)
@@ -78,11 +83,6 @@ namespace ILLightenComparer.Tests.Samples.Comparers
                     }
                 }
             }
-        }
-
-        public int Compare(object x, object y)
-        {
-            return Compare((TCollection)x, (TCollection)y);
         }
     }
 }

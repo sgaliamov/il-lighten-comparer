@@ -37,24 +37,24 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Types_Directly()
-        {
-            foreach (var item in SampleTypes.Types)
-            {
-                GenericTests.GenericTest(item.Key, item.Value, false, Constants.SmallCount);
-            }
-        }
-
-        [Fact]
         public void Compare_Nullable_Types_Directly()
         {
-            foreach (var item in SampleTypes.Types.Where(x=>x.Key.IsValueType))
+            foreach (var item in SampleTypes.Types.Where(x => x.Key.IsValueType))
             {
                 var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(item.Key);
                 var nullableComparer = (IComparer)Activator.CreateInstance(nullableComparerType, item.Value);
                 var nullableType = typeof(Nullable<>).MakeGenericType(item.Key);
 
                 GenericTests.GenericTest(nullableType, nullableComparer, false, Constants.SmallCount);
+            }
+        }
+
+        [Fact]
+        public void Compare_Types_Directly()
+        {
+            foreach (var item in SampleTypes.Types)
+            {
+                GenericTests.GenericTest(item.Key, item.Value, false, Constants.SmallCount);
             }
         }
 
