@@ -75,10 +75,15 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, false, false);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, false, true);
-            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, true, false);
-            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, true, true);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, false, false);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, false, true);
+        }
+
+        [Fact]
+        public void Compare_Sample_Structs_Ignore_Order()
+        {
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, true, false);
+            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, true, true);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, true, false);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true, true, true);
         }
