@@ -24,17 +24,17 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type objectGenericType, Type comparerGenericType)
         {
-            foreach (var item in SampleTypes.Types.Where(x => x.Key.IsValueType))
+            foreach (var (type, typeComparer) in SampleTypes.Types.Where(x => x.Key.IsValueType))
             {
-                var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(item.Key);
-                var nullableComparer = (IComparer)Activator.CreateInstance(nullableComparerType, item.Value);
-                var nullableType = typeof(Nullable<>).MakeGenericType(item.Key);
+                var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(type);
+                var nullableComparer = (IComparer)Activator.CreateInstance(nullableComparerType, typeComparer);
+                var nullableType = typeof(Nullable<>).MakeGenericType(type);
                 var objectType = objectGenericType.MakeGenericType(nullableType);
 
                 var comparerType = comparerGenericType.MakeGenericType(nullableType);
                 var comparer = (IComparer)Activator.CreateInstance(comparerType, nullableComparer);
 
-                GenericTests.GenericTest(objectType, comparer, false, Constants.SmallCount);
+                new GenericTests().GenericTest(objectType, comparer, false, Constants.SmallCount);
             }
         }
     }

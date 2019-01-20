@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -39,40 +40,62 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Compare_Nullable_Types_Directly()
         {
-            foreach (var item in SampleTypes.Types.Where(x => x.Key.IsValueType))
+            foreach (var (type, comparer) in SampleTypes.Types.Where(x => x.Key.IsValueType))
             {
-                var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(item.Key);
-                var nullableComparer = (IComparer)Activator.CreateInstance(nullableComparerType, item.Value);
-                var nullableType = typeof(Nullable<>).MakeGenericType(item.Key);
+                var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(type);
+                var nullableComparer = (IComparer)Activator.CreateInstance(nullableComparerType, comparer);
+                var nullableType = typeof(Nullable<>).MakeGenericType(type);
 
-                GenericTests.GenericTest(nullableType, nullableComparer, false, Constants.SmallCount);
+                new GenericTests().GenericTest(nullableType, nullableComparer, false, Constants.SmallCount);
             }
         }
 
         [Fact]
         public void Compare_Types_Directly()
         {
-            foreach (var item in SampleTypes.Types)
+            foreach (var (type, referenceComparer) in SampleTypes.Types)
             {
-                GenericTests.GenericTest(item.Key, item.Value, false, Constants.SmallCount);
+                new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
             }
+        }
+
+        [Fact(Skip = "remove me")]
+        public void Test()
+        {
+            var comparer = new ComparersBuilder()
+                           .DefineDefaultConfiguration(new ComparerSettings
+                           {
+                               IgnoreCollectionOrder = true
+                           })
+                           .For<sbyte[]>()
+                           .GetComparer();
+
+            var x = new sbyte[] { 0, -1, 0, -1, 0, -1, -1, -1, 0, 0 };
+            var y = new sbyte[] { 0, 0, -1, -1, 0, 0, -128, -1, 127, 0 };
+
+            var referenceComparer = new CollectionComparer<sbyte[], sbyte>(Comparer<sbyte>.Default, true);
+
+            var expected = referenceComparer.Compare(x, y).Normalize();
+            var actual = comparer.Compare(x, y).Normalize();
+
+            actual.Should().Be(expected);
         }
 
         private static void TestCollection(Type genericCollectionType = null)
         {
-            foreach (var item in SampleTypes.Types)
+            foreach (var (type, comparer) in SampleTypes.Types)
             {
-                TestCollection(item.Key, item.Value, genericCollectionType, false, false);
-                TestCollection(item.Key, item.Value, genericCollectionType, false, true);
+                TestCollection(type, comparer, genericCollectionType, false, false);
+                TestCollection(type, comparer, genericCollectionType, false, true);
             }
         }
 
         private static void TestNullableCollection(Type genericCollectionType = null)
         {
-            foreach (var item in SampleTypes.Types.Where(x => x.Key.IsValueType))
+            foreach (var (type, comparer) in SampleTypes.Types.Where(x => x.Key.IsValueType))
             {
-                TestCollection(item.Key, item.Value, genericCollectionType, true, false);
-                TestCollection(item.Key, item.Value, genericCollectionType, true, true);
+                TestCollection(type, comparer, genericCollectionType, true, false);
+                TestCollection(type, comparer, genericCollectionType, true, true);
             }
         }
 
@@ -98,7 +121,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var constructor = comparerType.GetConstructor(new[] { typeof(IComparer<>).MakeGenericType(objectType), typeof(bool) });
             var comparer = (IComparer)constructor.Invoke(new object[] { itemComparer, sort });
 
-            GenericTests.GenericTest(collectionType, comparer, sort, Constants.SmallCount);
+            new GenericTests().GenericTest(collectionType, comparer, sort, Constants.SmallCount);
         }
     }
 }

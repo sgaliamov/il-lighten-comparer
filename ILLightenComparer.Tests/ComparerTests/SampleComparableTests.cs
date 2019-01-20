@@ -87,10 +87,10 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type comparableGenericType, string comparerName, bool makeNullable)
         {
-            foreach (var item in SampleTypes.Types.Where(x => makeNullable && x.Key.IsValueType || !makeNullable))
+            foreach (var (key, value) in SampleTypes.Types.Where(x => makeNullable && x.Key.IsValueType || !makeNullable))
             {
-                var objectType = item.Key;
-                var itemComparer = item.Value;
+                var objectType = key;
+                var itemComparer = value;
                 if (makeNullable)
                 {
                     var nullableComparer = typeof(NullableComparer<>).MakeGenericType(objectType);
@@ -106,7 +106,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                         .SetValue(null, itemComparer);
                 }
 
-                GenericTests.GenericTest(comparableType, null, false, Constants.SmallCount);
+                new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
             }
         }
     }

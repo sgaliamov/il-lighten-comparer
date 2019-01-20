@@ -11,25 +11,32 @@ using Newtonsoft.Json;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
-    internal static class GenericTests
+    internal sealed class GenericTests
     {
         private static readonly Random Random = new Random();
         private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
-        private static ComparersBuilder _comparersBuilder;
+        private readonly ComparersBuilder _comparersBuilder;
 
-        public static ComparersBuilder ComparersBuilder => _comparersBuilder ?? (_comparersBuilder = new ComparersBuilder());
+        public GenericTests(ComparersBuilder comparersBuilder = null)
+        {
+            _comparersBuilder = comparersBuilder;
+        }
 
-        public static void GenericTest(Type type, IComparer referenceComparer, bool sort, int times)
+        public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times)
         {
             var method = type.GetOrAddProperty(
                 nameof(GenericTest),
                 () =>
                 {
                     var methodInfo = GetTestMethod(type);
-                    return (Action<IComparer, bool, int>)methodInfo.CreateDelegate(typeof(Action<IComparer, bool, int>));
+
+                    return (Action<IComparerProvider, IComparer, int>)methodInfo.CreateDelegate(typeof(Action<IComparerProvider, IComparer, int>));
                 });
 
-            method(referenceComparer, sort, times);
+            var builder = _comparersBuilder ?? new ComparersBuilder();
+            builder.DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort });
+
+            method(builder, referenceComparer, times);
         }
 
         private static MethodInfo GetTestMethod(Type objType)
@@ -39,14 +46,14 @@ namespace ILLightenComparer.Tests.ComparerTests
                    .MakeGenericMethod(objType);
         }
 
-        private static void Test<T>(IComparer referenceComparer, bool sort, int times)
+        private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times)
         {
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
             var type = typeof(T);
-            var builder = ComparersBuilder.DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort });
-            var typedComparer = builder.GetComparer<T>();
-            var basicComparer = builder.GetComparer(type);
+
+            var typedComparer = comparersBuilder.GetComparer<T>();
+            var basicComparer = comparersBuilder.GetComparer(type);
 
             Comparison_Of_Null_With_Object_Produces_Negative_Value(referenceComparer, typedComparer, basicComparer);
             Comparison_Of_Object_With_Null_Produces_Positive_Value(referenceComparer, typedComparer, basicComparer);
@@ -162,8 +169,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             Array.Sort(copy1, typedComparer);
             Array.Sort(copy2, basicComparer);
 
-            copy0.ShouldBeSameOrder(copy1);
-            copy0.ShouldBeSameOrder(copy2);
+            copy1.ShouldBeSameOrder(copy0);
+            copy1.ShouldBeSameOrder(copy0);
         }
 
         private static void Comparisons_Work_Identical<T>(

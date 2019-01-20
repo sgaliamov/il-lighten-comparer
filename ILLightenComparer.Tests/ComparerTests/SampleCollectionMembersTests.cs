@@ -130,13 +130,13 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
         {
-            foreach (var item in SampleTypes.Types)
+            foreach (var (key, value) in SampleTypes.Types)
             {
-                var itemComparer = item.Value;
-                var objectType = item.Key;
-                if (makeNullable && item.Key.IsValueType)
+                var itemComparer = value;
+                var objectType = key;
+                if (makeNullable && key.IsValueType)
                 {
-                    var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(item.Key);
+                    var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(key);
                     itemComparer = (IComparer)Activator.CreateInstance(nullableComparerType, itemComparer);
                     objectType = typeof(Nullable<>).MakeGenericType(objectType);
                 }
@@ -153,7 +153,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var sampleComparerType = genericSampleComparer.MakeGenericType(collectionType);
                 var sampleComparer = (IComparer)Activator.CreateInstance(sampleComparerType, collectionComparer);
 
-                GenericTests.GenericTest(sampleType, sampleComparer, sort, Constants.SmallCount);
+                new GenericTests().GenericTest(sampleType, sampleComparer, sort, Constants.SmallCount);
             }
         }
     }
