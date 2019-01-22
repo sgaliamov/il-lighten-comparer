@@ -161,25 +161,8 @@ namespace ILLightenComparer.Emit
             }
 
             il.Emit(OpCodes.Newobj, Method.SetConstructor)
-              .Store(typeof(ConcurrentSet<object>), 0, out var xSet)
               .Emit(OpCodes.Newobj, Method.SetConstructor)
-              .Store(typeof(ConcurrentSet<object>), 1, out var ySet)
-              .LoadLocal(xSet)
-              .LoadLocal(ySet)
               .Call(staticCompareMethod)
-              // if (compare != 0) return compare;
-              .Store(typeof(int), out var result)
-              .LoadLocal(result)
-              .Branch(OpCodes.Brfalse_S, out var setsDiff)
-              .LoadLocal(result)
-              .Return()
-              .MarkLabel(setsDiff)
-              // else: return setX.Count - setY.Count;
-              .LoadLocal(xSet)
-              .Emit(OpCodes.Call, Method.SetGetCount)
-              .LoadLocal(ySet)
-              .Emit(OpCodes.Call, Method.SetGetCount)
-              .Emit(OpCodes.Sub)
               .Return();
         }
 
@@ -197,13 +180,19 @@ namespace ILLightenComparer.Emit
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
               .Branch(OpCodes.Brfalse_S, out var next)
-              .Return(0)
+              // else: return setX.Count - setY.Count;
+              .LoadArgument(Arg.SetX)
+              .Emit(OpCodes.Call, Method.SetGetCount)
+              .LoadArgument(Arg.SetY)
+              .Emit(OpCodes.Call, Method.SetGetCount)
+              .Emit(OpCodes.Sub)
+              .Return()
               .MarkLabel(next);
         }
 
         private static bool IsEmitReferenceComparison(Type objectType)
         {
-            return objectType.IsClass && !IsCollectionOfSealed(objectType); // todo: revise this checks
+            return objectType.IsClass && !IsCollectionOfSealed(objectType);
         }
 
         private bool IsCreateCycleDetectionSets(Type objectType)
@@ -211,13 +200,12 @@ namespace ILLightenComparer.Emit
             return _context.GetConfiguration(objectType).DetectCycles
                    && !objectType.GetUnderlyingType().IsPrimitive()
                    && !IsCollectionOfSealed(objectType)
-                   && !objectType.IsSealedComparable(); // todo: test when a sealed comparable has member with cycle
+                   && !objectType.IsSealedComparable();
         }
 
         private bool IsDetectCycles(Type objectType)
         {
-            return objectType.IsClass
-                   && IsCreateCycleDetectionSets(objectType);
+            return objectType.IsClass && IsCreateCycleDetectionSets(objectType);
         }
 
         private static bool IsCollectionOfSealed(Type objectType)

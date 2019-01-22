@@ -4,6 +4,7 @@ using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
+using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -23,10 +24,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var one = _fixture.Create<OneSealed>();
             var other = _fixture.Create<OneSealed>();
             one.Two.Three.One = one;
-            other.Two.Three.One = other;
+            other.Two.Three.One = one;
 
             var expected = one.Value.CompareTo(other.Value);
-            var actual = ComparerOneSealed.Compare(one, other);
+            var actual = ComparerForOneSealed.Compare(one, other);
 
             actual.Should().Be(expected);
         }
@@ -41,7 +42,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             other.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
 
             var expected = one.Two.Three.One.Value.CompareTo(other.Two.Three.One.Value);
-            var actual = ComparerOneSealed.Compare(one, other);
+            var actual = ComparerForOneSealed.Compare(one, other);
 
             actual.Should().Be(expected);
         }
@@ -161,7 +162,36 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().Be(expected);
         }
 
-        private readonly Fixture _fixture;
+        [Fact]
+        public void When_Sealed_Comparable_Has_Member_With_Cycle()
+        {
+            var comparer = _builder.For<SampleComparableChildObject<OneSealed>>().GetComparer();
+            SampleComparableChildObject<OneSealed>.ChildComparer = ComparerForOneSealed;
+
+            var one = _fixture.Create<OneSealed>();
+            var other = _fixture.Create<OneSealed>();
+            one.Value = other.Value;
+            one.Two.Three.One = one;
+            other.Two.Three.One = _fixture.Create<OneSealed>();
+            other.Two.Three.One.Value = one.Value;
+            other.Two.Three.One.Two.Three.One = other;
+            var x = new SampleComparableChildObject<OneSealed>
+            {
+                ChildField = null,
+                ChildProperty = other
+            };
+            var y = new SampleComparableChildObject<OneSealed>
+            {
+                ChildField = null,
+                ChildProperty = one
+            };
+
+            var expected = ComparerForOneSealed.Compare(other, one);
+            var actual = comparer.Compare(x, y);
+
+            actual.Should().Be(expected);
+            actual.Should().BePositive();
+        }
 
         private IComparer<SelfSealed> ComparerSelfSealed =>
             _builder
@@ -172,8 +202,9 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
                 })
                 .GetComparer();
 
+        private readonly Fixture _fixture;
         private IComparer<SelfOpened> ComparerSelfOpened => _builder.For<SelfOpened>().GetComparer();
-        private IComparer<OneSealed> ComparerOneSealed => _builder.For<OneSealed>().GetComparer();
+        private IComparer<OneSealed> ComparerForOneSealed => _builder.For<OneSealed>().GetComparer();
         private readonly IContextBuilder _builder = new ComparersBuilder();
     }
 }
