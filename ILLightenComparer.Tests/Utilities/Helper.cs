@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
+using ILLightenComparer.Tests.Samples.Comparers;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -68,6 +71,13 @@ namespace ILLightenComparer.Tests.Utilities
             {
                 thread.Join();
             }
+        }
+
+        public static IComparer CreateNullableComparer(Type type, IComparer valueComparer)
+        {
+            var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(type);
+
+            return (IComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
     }
 }

@@ -136,9 +136,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var objectType = key;
                 if (makeNullable && key.IsValueType)
                 {
-                    var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(key);
-                    itemComparer = (IComparer)Activator.CreateInstance(nullableComparerType, itemComparer);
-                    objectType = typeof(Nullable<>).MakeGenericType(objectType);
+                    itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
+                    objectType = objectType.MakeNullable();
                 }
 
                 var collectionType = useArrays

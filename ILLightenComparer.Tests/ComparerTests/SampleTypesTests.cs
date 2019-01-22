@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -42,9 +41,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             foreach (var (type, comparer) in SampleTypes.Types.Where(x => x.Key.IsValueType))
             {
-                var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(type);
-                var nullableComparer = (IComparer)Activator.CreateInstance(nullableComparerType, comparer);
-                var nullableType = typeof(Nullable<>).MakeGenericType(type);
+                var nullableComparer = Helper.CreateNullableComparer(type, comparer);
+                var nullableType = type.MakeNullable();
 
                 new GenericTests().GenericTest(nullableType, nullableComparer, false, Constants.SmallCount);
             }
@@ -108,9 +106,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             if (makeNullable)
             {
-                var nullableComparer = typeof(NullableComparer<>).MakeGenericType(objectType);
-                itemComparer = (IComparer)Activator.CreateInstance(nullableComparer, itemComparer);
-                objectType = typeof(Nullable<>).MakeGenericType(objectType);
+                itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
+                objectType = objectType.MakeNullable();
             }
 
             var collectionType = genericCollectionType == null
