@@ -62,7 +62,8 @@
 - [x] generate comparers for simple members
 - [x] `IgnoreCollectionOrder` setting
 - [x] use `DetectCycles` setting
-- [ ] refactor tests - ensure all branch execution
+- [x] refactor tests - ensure all branch execution
+- [ ] refactor visitors
 - [ ] customization setting to override comparer with specific implementation
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting

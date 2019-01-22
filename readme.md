@@ -35,6 +35,6 @@ Frequency=2531248 Hz, Resolution=395.0620 ns, Timer=TSC
 
 ### Links
 
-* [Activity diagram](./activity-diagram.html).
+* [Activity diagram](./activity-diagram.md).
 * [Implementation details](./reasoning.md).
 * [Roadmap](./roadmap.md).
