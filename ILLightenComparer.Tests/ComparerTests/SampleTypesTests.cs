@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -10,7 +9,6 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
-    // todo: test with interface, abstract class and object
     public sealed class SampleTypesTests
     {
         [Fact]
@@ -56,28 +54,6 @@ namespace ILLightenComparer.Tests.ComparerTests
             {
                 new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
             }
-        }
-
-        [Fact(Skip = "remove me")]
-        public void Test()
-        {
-            var comparer = new ComparersBuilder()
-                           .DefineDefaultConfiguration(new ComparerSettings
-                           {
-                               IgnoreCollectionOrder = true
-                           })
-                           .For<sbyte[]>()
-                           .GetComparer();
-
-            var x = new sbyte[] { 0, -1, 0, -1, 0, -1, -1, -1, 0, 0 };
-            var y = new sbyte[] { 0, 0, -1, -1, 0, 0, -128, -1, 127, 0 };
-
-            var referenceComparer = new CollectionComparer<sbyte[], sbyte>(Comparer<sbyte>.Default, true);
-
-            var expected = referenceComparer.Compare(x, y).Normalize();
-            var actual = comparer.Compare(x, y).Normalize();
-
-            actual.Should().Be(expected);
         }
 
         private static void TestCollection(Type genericCollectionType = null)
