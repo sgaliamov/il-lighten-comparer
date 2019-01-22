@@ -66,18 +66,9 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNext);
 
             var elementType = variable.VariableType.GetElementType();
-            if (elementType.IsNullable())
-            {
-                var itemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
+            var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
 
-                VisitNullable(il, itemVariable, continueLoop);
-            }
-            else
-            {
-                var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
-
-                Visit(il, itemComparison, continueLoop);
-            }
+            Visit(il, itemComparison, elementType, continueLoop);
 
             il.MarkLabel(continueLoop)
               .LoadLocal(index)
@@ -92,7 +83,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             LocalBuilder index,
             LocalBuilder countX,
             LocalBuilder countY,
-            Label gotoNextMember)
+            Label gotoNext)
         {
             il.LoadLocal(index)
               .LoadLocal(countX)
@@ -106,7 +97,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
               .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
               .LoadLocal(isDoneY)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br, gotoNextMember)
+              .Branch(OpCodes.Br, gotoNext)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkIsDoneY)

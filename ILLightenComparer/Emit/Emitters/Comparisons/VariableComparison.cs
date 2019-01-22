@@ -5,7 +5,7 @@ using ILLightenComparer.Emit.Emitters.Visitors;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class VariableComparison : IMemberComparison
+    internal sealed class VariableComparison : IComparison
     {
         public VariableComparison(IVariable itemVariable, IComparisonAcceptor itemAcceptor)
         {

@@ -13,7 +13,7 @@ namespace ILLightenComparer.Tests.Utilities
         private static readonly Lazy<Fixture> Fixture = new Lazy<Fixture>(
             () =>
             {
-                var f = new Fixture { RepeatCount = 10 };
+                var f = new Fixture { RepeatCount = Constants.SmallCount };
 
                 f.Customize(new DomainCustomization());
                 f.Behaviors.Add(new OmitOnRecursionBehavior());
@@ -61,7 +61,7 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static object Create(this Fixture fixture, Type type)
         {
-            var context = fixture.GetOrAddValue(nameof(SpecimenContext), () => new SpecimenContext(fixture));
+            var context = fixture.GetOrAddProperty(nameof(SpecimenContext), () => new SpecimenContext(fixture));
 
             return context.Resolve(type);
         }

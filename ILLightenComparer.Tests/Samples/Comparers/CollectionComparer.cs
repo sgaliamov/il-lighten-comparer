@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ILLightenComparer.Tests.Samples.Comparers
 {
-    internal sealed class CollectionComparer<TCollection, TItem> : IComparer<TCollection>
+    internal sealed class CollectionComparer<TCollection, TItem> : IComparer<TCollection>, IComparer
         where TCollection : IEnumerable<TItem>
     {
         private readonly IComparer<TItem> _itemComparer;
@@ -14,6 +15,11 @@ namespace ILLightenComparer.Tests.Samples.Comparers
         {
             _sort = sort;
             _itemComparer = itemComparer ?? Comparer<TItem>.Default;
+        }
+
+        public int Compare(object x, object y)
+        {
+            return Compare((TCollection)x, (TCollection)y);
         }
 
         public int Compare(TCollection x, TCollection y)

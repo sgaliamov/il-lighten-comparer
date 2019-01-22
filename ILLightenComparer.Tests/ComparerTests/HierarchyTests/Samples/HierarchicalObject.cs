@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
 using ILLightenComparer.Tests.Samples;
 
@@ -11,7 +12,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
         public NestedStruct? NestedNullableStructField;
         public NestedStruct NestedStructField;
 
-        public static IComparer<HierarchicalObject> Comparer { get; } = new RelationalComparer();
+        public static RelationalComparer Comparer { get; } = new RelationalComparer();
 
         public SealedNestedObject FirstProperty { get; set; }
         public NestedStruct? NestedNullableStructProperty { get; set; }
@@ -19,8 +20,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
         public SealedNestedObject SecondProperty { get; set; }
         public int Value { get; set; }
 
-        private sealed class RelationalComparer : IComparer<HierarchicalObject>
+        public sealed class RelationalComparer : IComparer<HierarchicalObject>, IComparer
         {
+            public int Compare(object x, object y)
+            {
+                return Compare(x as HierarchicalObject, y as HierarchicalObject);
+            }
+
             public int Compare(HierarchicalObject x, HierarchicalObject y)
             {
                 if (ReferenceEquals(x, y))

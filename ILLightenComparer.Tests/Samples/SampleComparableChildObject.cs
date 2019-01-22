@@ -7,7 +7,7 @@ namespace ILLightenComparer.Tests.Samples
         SampleComparableBaseObject<TMember>,
         IComparable<SampleComparableChildObject<TMember>>
     {
-        public readonly IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
+        public static IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
 
         public TMember ChildField;
         public TMember ChildProperty { get; set; }

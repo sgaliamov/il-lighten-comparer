@@ -24,7 +24,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
         public ILEmitter Visit(NullableComparison comparison, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNextMember);
+            il.DefineLabel(out var gotoNext);
 
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
@@ -32,15 +32,15 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
             variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
             variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
 
-            il.CheckNullableValuesForNull(nullableX, nullableY, variableType, gotoNextMember);
+            il.CheckNullableValuesForNull(nullableX, nullableY, variableType, gotoNext);
 
             var itemComparison = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
 
-            itemComparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+            itemComparison.LoadVariables(_stackVisitor, il, gotoNext);
 
             return itemComparison.Accept(_compareVisitor, il)
-                                 .EmitReturnNotZero(gotoNextMember)
-                                 .MarkLabel(gotoNextMember);
+                                 .EmitReturnNotZero(gotoNext)
+                                 .MarkLabel(gotoNext);
         }
     }
 }

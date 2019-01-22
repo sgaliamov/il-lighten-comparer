@@ -1,48 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using FluentAssertions;
+using ILLightenComparer.Tests.Samples.Comparers;
 
 namespace ILLightenComparer.Tests.Utilities
 {
+    public sealed class ConcurrentSet<T> : ConcurrentDictionary<T, byte> { }
+
     internal static class Helper
     {
-        private static int _counter;
-
-        private static readonly ConditionalWeakTable<object, object> ObjectIds =
-            new ConditionalWeakTable<object, object>();
-
-        public static ConditionalWeakTable<object,
-            ConcurrentDictionary<string, object>> ObjectCache = new ConditionalWeakTable<object,
-            ConcurrentDictionary<string, object>>();
-
-        public static T GetOrAddValue<T>(this object obj, string name, Func<T> value)
-        {
-            var properties = ObjectCache.GetOrCreateValue(obj);
-
-            return (T)properties.GetOrAdd(name, (key, x) => x, value());
-        }
-
-        public static bool IsNullable(this Type type)
-        {
-            return type.IsValueType
-                   && type.IsGenericType
-                   && !type.IsGenericTypeDefinition
-                   && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
-        }
-
-        public static bool IsPrimitive(this Type type)
-        {
-            return type.IsPrimitive
-                   || type.IsEnum
-                   || ReferenceEquals(type, typeof(string))
-                   || ReferenceEquals(type, typeof(decimal));
-        }
-
         public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
         {
             using (var enumeratorOne = one.GetEnumerator())
@@ -53,13 +23,23 @@ namespace ILLightenComparer.Tests.Utilities
                     var oneCurrent = enumeratorOne.Current;
                     var otherCurrent = enumeratorOther.Current;
 
-                    oneCurrent
-                        .Should()
-                        .BeEquivalentTo(otherCurrent, options => options.ComparingByMembers<T>());
+                    oneCurrent.ShouldBeEquals(otherCurrent);
                 }
 
                 enumeratorOne.MoveNext().Should().BeFalse();
                 enumeratorOther.MoveNext().Should().BeFalse();
+            }
+        }
+
+        public static void ShouldBeEquals<T>(this T x, T y)
+        {
+            if (typeof(T).IsPrimitive() || typeof(T).IsNullable())
+            {
+                x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
+            }
+            else
+            {
+                x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>().WithStrictOrdering());
             }
         }
 
@@ -76,11 +56,6 @@ namespace ILLightenComparer.Tests.Utilities
             }
 
             return value;
-        }
-
-        public static int GetObjectId<T>(this T target) where T : class
-        {
-            return (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
         }
 
         public static void Parallel(ThreadStart action, int count)
@@ -101,10 +76,11 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static string DisplayName(this MemberInfo memberInfo)
+        public static IComparer CreateNullableComparer(Type type, IComparer valueComparer)
         {
-            return $"{memberInfo}"
-                .Replace("\\, ILLightenComparer.Tests\\, Version=1.0.0.0\\, Culture=neutral\\, PublicKeyToken=null", "");
+            var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(type);
+
+            return (IComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
     }
 }

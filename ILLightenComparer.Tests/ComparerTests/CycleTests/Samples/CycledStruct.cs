@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {

@@ -13,7 +13,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public sealed class AbstractMembersTests
     {
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void AbstractProperty_Comparison()
         {
             Test(x => new AbstractMembers
@@ -22,7 +22,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             });
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Attempt_To_Compare_Different_Sibling_Types_Throws_ArgumentException()
         {
             var sealedNestedObject = _fixture
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             Assert.Throws<ArgumentException>(() => _comparer.Compare(one, another));
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Attempt_To_Compare_Inherited_Types_Throws_ArgumentException()
         {
             var sealedNestedObject = _fixture.Create<BaseNestedObject>();
@@ -65,7 +65,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             Assert.Throws<ArgumentException>(() => _comparer.Compare(one, another));
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void InterfaceField_Comparison()
         {
             Test(x => new AbstractMembers
@@ -74,7 +74,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             });
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void NotSealedProperty_Comparison()
         {
             Test(x => new AbstractMembers
@@ -83,7 +83,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             });
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void ObjectField_Comparison()
         {
             Test(x => new AbstractMembers
@@ -92,7 +92,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             });
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Replaced_Member_Does_Not_Break_Comparison()
         {
             var one = new AbstractMembers
@@ -116,7 +116,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             }
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void When_Left_Member_Is_Null_Comparison_Produces_Negative_Value()
         {
             var one = new AbstractMembers();
@@ -128,7 +128,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             _comparer.Compare(one, other).Should().BeNegative();
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void When_Right_Member_Is_Null_Comparison_Produces_Positive_Value()
         {
             var one = new AbstractMembers

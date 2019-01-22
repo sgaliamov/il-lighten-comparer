@@ -23,14 +23,14 @@ namespace ILLightenComparer.Emit.Emitters
             _nullableVisitor = new NullableVisitor(_stackVisitor, _compareVisitor, _loader, converter);
         }
 
-        public ILEmitter Visit(IMemberComparison comparison, ILEmitter il)
+        public ILEmitter Visit(IComparison comparison, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNextMember);
-            comparison.LoadVariables(_stackVisitor, il, gotoNextMember);
+            il.DefineLabel(out var gotoNext);
+            comparison.LoadVariables(_stackVisitor, il, gotoNext);
 
             return comparison.Accept(_compareVisitor, il)
-                             .EmitReturnNotZero(gotoNextMember)
-                             .MarkLabel(gotoNextMember);
+                             .EmitReturnNotZero(gotoNext)
+                             .MarkLabel(gotoNext);
         }
 
         public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)

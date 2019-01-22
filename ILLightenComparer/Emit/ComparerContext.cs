@@ -39,7 +39,13 @@ namespace ILLightenComparer.Emit
         // todo: cache delegates and benchmark ways
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            // todo: do not check types when T is struct
+#if DEBUG
+            if (typeof(T).IsValueType)
+            {
+                throw new InvalidOperationException($"Unexpected value type {typeof(T)}.");
+            }
+#endif
+
             if (x == null)
             {
                 if (y == null)
@@ -68,19 +74,6 @@ namespace ILLightenComparer.Emit
         // todo: move comparer instances comparison to context
         public IComparer<T> GetComparer<T>()
         {
-            //if (objectType.GetUnderlyingType().IsPrimitive())
-            //{
-            //    throw new NotSupportedException(
-            //        $"Generation a comparer for primitive type {objectType.FullName} is not supported.");
-            //}
-
-            //if (objectType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
-            //{
-            //    // todo: test
-            //    // todo: generate comparer for simple types
-            //    return Comparer<T>.Default;
-            //}
-
             var comparerType = GetOrBuildComparerType(typeof(T));
 
             return comparerType.CreateInstance<IComparerContext, IComparer<T>>(this);

@@ -33,22 +33,19 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return -1;
                 }
 
-                var abstractPropertyComparison = Comparer<AbstractNestedObject>
-                                                 .Default.Compare(x.AbstractProperty, y.AbstractProperty);
+                var abstractPropertyComparison = Comparer<AbstractNestedObject>.Default.Compare(x.AbstractProperty, y.AbstractProperty);
                 if (abstractPropertyComparison != 0)
                 {
                     return abstractPropertyComparison;
                 }
 
-                var interfacePropertyComparison = Comparer<INestedObject>
-                                                  .Default.Compare(x.InterfaceField, y.InterfaceField);
+                var interfacePropertyComparison = Comparer<INestedObject>.Default.Compare(x.InterfaceField, y.InterfaceField);
                 if (interfacePropertyComparison != 0)
                 {
                     return interfacePropertyComparison;
                 }
 
-                var compare = Comparer<BaseNestedObject>
-                              .Default.Compare(x.NotSealedProperty, y.NotSealedProperty);
+                var compare = Comparer<BaseNestedObject>.Default.Compare(x.NotSealedProperty, y.NotSealedProperty);
                 if (compare != 0)
                 {
                     return compare;

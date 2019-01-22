@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
@@ -315,18 +316,25 @@ namespace ILLightenComparer.Emit.Emitters
         // ReSharper restore PartialMethodWithSinglePart
 
 #if DEBUG
-        public ILEmitter EmitWriteLine(LocalBuilder local)
+        public ILEmitter DebugWriteLine(LocalBuilder local)
         {
-            DebugLine($"\t\tWrite: {local.LocalIndex}");
-            _il.EmitWriteLine(local);
+            DebugLine($"\t\tWrite local: {local.LocalIndex}");
+            _il.Emit(OpCodes.Ldloca, local);
+            if (local.LocalType != null && local.LocalType != typeof(string))
+            {
+                _il.Emit(OpCodes.Callvirt, local.LocalType.GetMethod(nameof(ToString), Type.EmptyTypes));
+            }
+
+            _il.Emit(OpCodes.Call, typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) }));
 
             return this;
         }
 
-        public ILEmitter EmitWriteLine(string message)
+        public ILEmitter DebugWriteLine(string message)
         {
             DebugLine($"\t\tWrite: {message}");
-            _il.EmitWriteLine(message);
+            _il.Emit(OpCodes.Ldstr, message);
+            _il.Emit(OpCodes.Call, typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) }));
 
             return this;
         }

@@ -17,7 +17,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
-        [Fact(Timeout = Constants.DefaultTimeout)]
+        [Fact]
         public void Generate_Comparer_For_Not_Sealed_Member_In_Parallel_Still_Works()
         {
             var one = new AbstractMembers
