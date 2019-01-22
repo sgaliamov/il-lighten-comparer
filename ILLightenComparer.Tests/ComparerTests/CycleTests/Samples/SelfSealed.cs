@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
@@ -30,16 +29,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 var setX = new ConcurrentSet<object>();
                 var setY = new ConcurrentSet<object>();
 
-                var compare = Compare(x, y, setX, setY);
-                if (compare != 0)
-                {
-                    return compare;
-                }
-
-                return setX.Count - setY.Count;
+                return Compare(x, y, setX, setY);
             }
 
-            private static int Compare(SelfSealed x, SelfSealed y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
+            private static int Compare(SelfSealed x, SelfSealed y, ConcurrentSet<object> setX, ConcurrentSet<object> setY)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -56,18 +49,18 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                     return -1;
                 }
 
-                if (!xSet.TryAdd(x, 0) & !ySet.TryAdd(y, 0))
+                if (!setX.TryAdd(x, 0) & !setY.TryAdd(y, 0))
                 {
-                    return 0;
+                    return setX.Count - setY.Count;
                 }
 
-                var compareFirst = Compare(x.First, y.First, xSet, ySet);
+                var compareFirst = Compare(x.First, y.First, setX, setY);
                 if (compareFirst != 0)
                 {
                     return compareFirst;
                 }
 
-                var compareSecond = Compare(x.Second, y.Second, xSet, ySet);
+                var compareSecond = Compare(x.Second, y.Second, setX, setY);
                 if (compareSecond != 0)
                 {
                     return compareSecond;

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 

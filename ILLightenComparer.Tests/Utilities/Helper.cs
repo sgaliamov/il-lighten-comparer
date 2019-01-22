@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,6 +9,8 @@ using ILLightenComparer.Tests.Samples.Comparers;
 
 namespace ILLightenComparer.Tests.Utilities
 {
+    public sealed class ConcurrentSet<T> : ConcurrentDictionary<T, byte> { }
+
     internal static class Helper
     {
         public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
