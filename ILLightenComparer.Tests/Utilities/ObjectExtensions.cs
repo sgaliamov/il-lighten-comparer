@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -29,6 +30,11 @@ namespace ILLightenComparer.Tests.Utilities
         public static int GetObjectId<T>(this T target) where T : class
         {
             return (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
+        }
+
+        public static string ToJson<T>(this T target)
+        {
+            return JsonConvert.SerializeObject(target);
         }
 
         public static Type GetGenericInterface(this Type type, Type generic)

@@ -7,7 +7,6 @@ using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
-using Newtonsoft.Json;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
@@ -190,8 +189,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var actual2 = basicComparer.Compare(x, y).Normalize();
 
                 var message = $"{type.DisplayName()} should be supported.\n"
-                              + $"x: {JsonConvert.SerializeObject(x)},\n"
-                              + $"y: {JsonConvert.SerializeObject(y)}";
+                              + $"x: {x.ToJson()},\n"
+                              + $"y: {y.ToJson()}";
                 actual1.Should().Be(expected, message);
                 actual2.Should().Be(expected, message);
             }
