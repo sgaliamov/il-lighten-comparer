@@ -85,6 +85,19 @@ namespace ILLightenComparer.Emit.Extensions
                    && (type.IsValueType || type.IsSealed);
         }
 
+        public static bool IsCollectionOfSealed(this Type objectType)
+        {
+            var generic = objectType.GetGenericInterface(typeof(IEnumerable<>));
+            if (generic == null)
+            {
+                return false;
+            }
+
+            var itemType = generic.GetGenericArguments()[0].GetUnderlyingType();
+
+            return itemType.IsPrimitive() || itemType.IsSealedComparable();
+        }
+
         public static bool IsPrimitive(this Type type)
         {
             return type.IsPrimitive

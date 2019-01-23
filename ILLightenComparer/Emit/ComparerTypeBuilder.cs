@@ -31,7 +31,7 @@ namespace ILLightenComparer.Emit
                 typeof(IComparerContext),
                 FieldAttributes.InitOnly | FieldAttributes.Private);
 
-            BuildFactory(comparerTypeBuilder, contextField);
+            BuildConstructorAndFactoryMethod(comparerTypeBuilder, contextField);
 
             BuildStaticCompareMethod(objectType, staticCompareBuilder);
 
@@ -54,6 +54,7 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
+                // todo: use argument variable
                 if (IsEmitReferenceComparison(objectType))
                 {
                     _compareEmitter.EmitArgumentsReferenceComparison(il);
@@ -165,6 +166,24 @@ namespace ILLightenComparer.Emit
               .Return();
         }
 
+        private bool IsCreateCycleDetectionSets(Type objectType)
+        {
+            return _context.GetConfiguration(objectType).DetectCycles
+                   && !objectType.GetUnderlyingType().IsPrimitive()
+                   && !objectType.IsCollectionOfSealed()
+                   && !objectType.IsSealedComparable();
+        }
+
+        private bool IsDetectCycles(Type objectType)
+        {
+            return objectType.IsClass && IsCreateCycleDetectionSets(objectType);
+        }
+
+        private static bool IsEmitReferenceComparison(Type objectType)
+        {
+            return objectType.IsClass && !objectType.IsCollectionOfSealed();
+        }
+
         private static void EmitCycleDetection(ILEmitter il)
         {
             il.LoadArgument(Arg.SetX)
@@ -189,38 +208,7 @@ namespace ILLightenComparer.Emit
               .MarkLabel(next);
         }
 
-        private static bool IsEmitReferenceComparison(Type objectType)
-        {
-            return objectType.IsClass && !IsCollectionOfSealed(objectType);
-        }
-
-        private bool IsCreateCycleDetectionSets(Type objectType)
-        {
-            return _context.GetConfiguration(objectType).DetectCycles
-                   && !objectType.GetUnderlyingType().IsPrimitive()
-                   && !IsCollectionOfSealed(objectType)
-                   && !objectType.IsSealedComparable();
-        }
-
-        private bool IsDetectCycles(Type objectType)
-        {
-            return objectType.IsClass && IsCreateCycleDetectionSets(objectType);
-        }
-
-        private static bool IsCollectionOfSealed(Type objectType)
-        {
-            var generic = objectType.GetGenericInterface(typeof(IEnumerable<>));
-            if (generic == null)
-            {
-                return false;
-            }
-
-            var itemType = generic.GetGenericArguments()[0].GetUnderlyingType();
-
-            return itemType.IsPrimitive() || itemType.IsSealedComparable();
-        }
-
-        private static void BuildFactory(TypeBuilder typeBuilder, FieldInfo contextField)
+        private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)
         {
             var parameters = new[] { typeof(IComparerContext) };
 
