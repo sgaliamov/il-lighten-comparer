@@ -6,7 +6,7 @@ using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 
-namespace ILLightenComparer.Emit.Emitters.Visitors
+namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal sealed class ArrayVisitor : CollectionVisitor
     {

@@ -3,7 +3,7 @@ using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 
-namespace ILLightenComparer.Emit.Emitters.Visitors
+namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal sealed class EnumerableVisitor : CollectionVisitor
     {

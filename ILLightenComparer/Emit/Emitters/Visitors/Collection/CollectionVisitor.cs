@@ -6,7 +6,7 @@ using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 
-namespace ILLightenComparer.Emit.Emitters.Visitors
+namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal abstract class CollectionVisitor
     {
