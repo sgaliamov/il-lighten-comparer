@@ -30,16 +30,16 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             _stackVisitor = stackVisitor;
         }
 
-        protected (LocalBuilder x, LocalBuilder y, Label gotoNext) EmitLoad(ILEmitter il, IVariableComparison comparison)
+        protected (LocalBuilder collectionX, LocalBuilder collectionY, Label gotoNext) EmitLoad(ILEmitter il, IVariableComparison comparison)
         {
             var variable = comparison.Variable;
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var x);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var y);
+            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var collectionX);
+            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var collectionY);
 
             il.DefineLabel(out var gotoNext)
-              .EmitCheckReferenceComparison(x, y, gotoNext);
+              .EmitCheckReferenceComparison(collectionX, collectionY, gotoNext);
 
-            return (x, y, gotoNext);
+            return (collectionX, collectionY, gotoNext);
         }
 
         protected static void EmitArraySorting(
@@ -81,10 +81,10 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 
         private void VisitNullable(ILEmitter il, IVariable variable, Label continueLoop)
         {
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var nullableX);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var nullableY);
-
-            il.CheckNullableValuesForNull(nullableX, nullableY, variable.VariableType, continueLoop);
+            var variableType = variable.VariableType;
+            variable.Load(_loader, il, Arg.X).Store(variableType, LocalX, out var nullableX);
+            variable.Load(_loader, il, Arg.Y).Store(variableType, LocalY, out var nullableY);
+            il.CheckNullableValuesForNull(nullableX, nullableY, variableType, continueLoop);
 
             var itemComparison = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
 

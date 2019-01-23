@@ -10,11 +10,11 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal sealed class ArrayVisitor : CollectionVisitor
     {
-        private const int LocalCountX = 3;
-        private const int LocalCountY = 4;
-        private const int LocalDoneX = 5;
-        private const int LocalDoneY = 6;
-        private const int LocalIndex = 7;
+        private const int CountX = 3;
+        private const int CountY = 4;
+        private const int DoneX = 5;
+        private const int DoneY = 6;
+        private const int Index = 7;
 
         private readonly ComparerContext _context;
         private readonly Converter _converter;
@@ -59,7 +59,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             Label gotoNext)
         {
             il.LoadConstant(0)
-              .Store(typeof(int), LocalIndex, out var index)
+              .Store(typeof(int), Index, out var index)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
@@ -89,11 +89,11 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             il.LoadLocal(index)
               .LoadLocal(countX)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), LocalDoneX, out var isDoneX)
+              .Store(typeof(int), DoneX, out var isDoneX)
               .LoadLocal(index)
               .LoadLocal(countY)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), LocalDoneY, out var isDoneY)
+              .Store(typeof(int), DoneY, out var isDoneY)
               .LoadLocal(isDoneX)
               .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
               .LoadLocal(isDoneY)
@@ -116,10 +116,10 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
         {
             il.LoadLocal(x)
               .Call(comparison.GetLengthMethod)
-              .Store(typeof(int), LocalCountX, out var countX)
+              .Store(typeof(int), CountX, out var countX)
               .LoadLocal(y)
               .Call(comparison.GetLengthMethod)
-              .Store(typeof(int), LocalCountY, out var countY);
+              .Store(typeof(int), CountY, out var countY);
 
             return (countX, countY);
         }

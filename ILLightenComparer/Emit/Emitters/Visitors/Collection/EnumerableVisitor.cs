@@ -7,8 +7,8 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal sealed class EnumerableVisitor : CollectionVisitor
     {
-        private const int LocalDoneX = 3;
-        private const int LocalDoneY = 4;
+        private const int DoneX = 3;
+        private const int DoneY = 4;
 
         private readonly ComparerContext _context;
         private readonly Converter _converter;
@@ -118,12 +118,12 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
               .Call(Method.MoveNext)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), LocalDoneX, out var xDone)
+              .Store(typeof(int), DoneX, out var xDone)
               .LoadLocal(yEnumerator)
               .Call(Method.MoveNext)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), LocalDoneY, out var yDone);
+              .Store(typeof(int), DoneY, out var yDone);
 
             return (xDone, yDone);
         }
