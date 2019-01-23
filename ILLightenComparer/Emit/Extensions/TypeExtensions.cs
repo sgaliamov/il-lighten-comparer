@@ -95,7 +95,7 @@ namespace ILLightenComparer.Emit.Extensions
 
             var itemType = generic.GetGenericArguments()[0].GetUnderlyingType();
 
-            return itemType.IsPrimitive() || itemType.IsSealedComparable();
+            return itemType.IsPrimitive() || itemType.IsSealedComparable() || itemType.IsValueType;
         }
 
         public static bool IsPrimitive(this Type type)
