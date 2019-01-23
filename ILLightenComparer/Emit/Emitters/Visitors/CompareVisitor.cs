@@ -3,6 +3,7 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
+using ILLightenComparer.Emit.Shared;
 using StringComparison = ILLightenComparer.Emit.Emitters.Comparisons.StringComparison;
 
 namespace ILLightenComparer.Emit.Emitters.Visitors

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 
-namespace ILLightenComparer.Emit.Emitters
+namespace ILLightenComparer.Emit.Shared
 {
     using Locals = Dictionary<byte, Dictionary<Type, LocalBuilder>>;
 

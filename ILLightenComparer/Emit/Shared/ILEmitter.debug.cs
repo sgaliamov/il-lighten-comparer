@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace ILLightenComparer.Emit.Emitters
+namespace ILLightenComparer.Emit.Shared
 {
     internal sealed partial class ILEmitter
     {

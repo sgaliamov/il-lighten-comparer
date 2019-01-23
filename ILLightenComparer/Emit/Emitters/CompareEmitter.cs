@@ -2,6 +2,7 @@
 using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Emitters
 {
