@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Comparisons;
-using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
@@ -42,11 +41,24 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             return (collectionX, collectionY, gotoNext);
         }
 
-        protected static void EmitArraySorting(
-            ILEmitter il,
-            Type elementType,
-            LocalBuilder xArray,
-            LocalBuilder yArray)
+        protected void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Type elementType, Label continueLoop)
+        {
+            if (elementType.IsNullable())
+            {
+                var variableType = itemComparison.Variable.VariableType;
+                itemComparison.Variable.Load(_loader, il, Arg.X).Store(variableType, LocalX, out var nullableX);
+                itemComparison.Variable.Load(_loader, il, Arg.Y).Store(variableType, LocalY, out var nullableY);
+                il.CheckNullableValuesForNull(nullableX, nullableY, variableType, continueLoop);
+
+                itemComparison = _converter.CreateNullableVariableComparison(itemComparison.Variable, nullableX, nullableY);
+            }
+
+            itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
+            itemComparison.Accept(_compareVisitor, il)
+                          .EmitReturnNotZero(continueLoop);
+        }
+
+        protected static void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
         {
             // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
             if (elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
@@ -67,37 +79,6 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             }
         }
 
-        protected void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Type elementType, Label continueLoop)
-        {
-            if (elementType.IsNullable())
-            {
-                VisitNullable(il, itemComparison.Variable, continueLoop);
-            }
-            else
-            {
-                Visit(il, itemComparison, continueLoop);
-            }
-        }
-
-        private void VisitNullable(ILEmitter il, IVariable variable, Label continueLoop)
-        {
-            var variableType = variable.VariableType;
-            variable.Load(_loader, il, Arg.X).Store(variableType, LocalX, out var nullableX);
-            variable.Load(_loader, il, Arg.Y).Store(variableType, LocalY, out var nullableY);
-            il.CheckNullableValuesForNull(nullableX, nullableY, variableType, continueLoop);
-
-            var itemComparison = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
-
-            Visit(il, itemComparison, continueLoop);
-        }
-
-        private void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Label continueLoop)
-        {
-            itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
-            itemComparison.Accept(_compareVisitor, il)
-                          .EmitReturnNotZero(continueLoop);
-        }
-
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
         {
             var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
@@ -111,10 +92,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
               .Call(sortMethod);
         }
 
-        private static void EmitSortArray(
-            ILEmitter il,
-            Type elementType,
-            LocalBuilder array)
+        private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array)
         {
             var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
             var sortMethod = Method.GetArraySort(elementType);
