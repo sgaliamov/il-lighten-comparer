@@ -12,7 +12,7 @@ namespace ILLightenComparer.Emit.Emitters
         private readonly CompareVisitor _compareVisitor;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
-        private readonly NullableVisitor _nullableVisitor;
+        private readonly Converter _converter;
         private readonly StackVisitor _stackVisitor;
 
         public CompareEmitter(ComparerContext context, Converter converter)
@@ -21,7 +21,7 @@ namespace ILLightenComparer.Emit.Emitters
             _stackVisitor = new StackVisitor(_loader);
             _arrayVisitor = new ArrayVisitor(context, _stackVisitor, _compareVisitor, _loader, converter);
             _enumerableVisitor = new EnumerableVisitor(context, _stackVisitor, _compareVisitor, _loader, converter);
-            _nullableVisitor = new NullableVisitor(_stackVisitor, _compareVisitor, _loader, converter);
+            _converter = converter;
         }
 
         public ILEmitter Visit(IComparison comparison, ILEmitter il)
@@ -46,7 +46,21 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(NullableComparison comparison, ILEmitter il)
         {
-            return _nullableVisitor.Visit(comparison, il);
+            il.DefineLabel(out var gotoNext);
+
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
+            variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
+            variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
+            il.CheckNullableValuesForNull(nullableX, nullableY, variableType, gotoNext);
+
+            var itemComparison = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
+            itemComparison.LoadVariables(_stackVisitor, il, gotoNext);
+
+            return itemComparison.Accept(_compareVisitor, il)
+                                 .EmitReturnNotZero(gotoNext)
+                                 .MarkLabel(gotoNext);
         }
 
         public void EmitArgumentsReferenceComparison(ILEmitter il)
