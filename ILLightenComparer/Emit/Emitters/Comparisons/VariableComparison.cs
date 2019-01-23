@@ -8,13 +8,13 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
     internal sealed class VariableComparison : IComparison
     {
-        public VariableComparison(IVariable itemVariable, IComparisonAcceptor itemAcceptor)
+        public VariableComparison(IVariable itemVariable, IVisitorsAcceptor itemAcceptor)
         {
             Variable = itemVariable ?? throw new ArgumentNullException(nameof(itemVariable));
             Acceptor = itemAcceptor ?? throw new ArgumentNullException(nameof(itemAcceptor));
         }
 
-        public IComparisonAcceptor Acceptor { get; }
+        public IVisitorsAcceptor Acceptor { get; }
         public IVariable Variable { get; }
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)

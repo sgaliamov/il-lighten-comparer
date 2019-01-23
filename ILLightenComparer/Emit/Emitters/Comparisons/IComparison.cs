@@ -15,13 +15,13 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
     }
 
-    internal interface IComparisonAcceptor : IVariableComparison
+    internal interface IVisitorsAcceptor : IVariableComparison
     {
         ILEmitter Accept(CompareVisitor visitor, ILEmitter il);
         ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext);
     }
 
-    internal interface IComparison : IComparisonAcceptor, ICompareEmitterAcceptor { }
+    internal interface IComparison : IVisitorsAcceptor, ICompareEmitterAcceptor { }
 
     internal interface IStaticComparison : IComparison { }
 }

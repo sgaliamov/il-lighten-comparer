@@ -67,7 +67,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNext);
 
             var elementType = variable.VariableType.GetElementType();
-            var itemComparison = _converter.CreateArrayItemComparison(variable, xArray, yArray, index);
+            var itemComparison = _converter.CreateArrayItemVariableComparison(variable, xArray, yArray, index);
 
             Visit(il, itemComparison, elementType, continueLoop);
 

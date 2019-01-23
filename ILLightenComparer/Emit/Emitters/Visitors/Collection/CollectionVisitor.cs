@@ -41,20 +41,22 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             return (collectionX, collectionY, gotoNext);
         }
 
-        protected void Visit(ILEmitter il, IComparisonAcceptor itemComparison, Type elementType, Label continueLoop)
+        protected void Visit(ILEmitter il, IVisitorsAcceptor itemVisitors, Type elementType, Label continueLoop)
         {
             if (elementType.IsNullable())
             {
-                var variableType = itemComparison.Variable.VariableType;
-                itemComparison.Variable.Load(_loader, il, Arg.X).Store(variableType, LocalX, out var nullableX);
-                itemComparison.Variable.Load(_loader, il, Arg.Y).Store(variableType, LocalY, out var nullableY);
+                var variable = itemVisitors.Variable;
+                var variableType = variable.VariableType;
+
+                variable.Load(_loader, il, Arg.X).Store(variableType, LocalX, out var nullableX);
+                variable.Load(_loader, il, Arg.Y).Store(variableType, LocalY, out var nullableY);
                 il.CheckNullableValuesForNull(nullableX, nullableY, variableType, continueLoop);
 
-                itemComparison = _converter.CreateNullableVariableComparison(itemComparison.Variable, nullableX, nullableY);
+                itemVisitors = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
             }
 
-            itemComparison.LoadVariables(_stackVisitor, il, continueLoop);
-            itemComparison.Accept(_compareVisitor, il)
+            itemVisitors.LoadVariables(_stackVisitor, il, continueLoop);
+            itemVisitors.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(continueLoop);
         }
 

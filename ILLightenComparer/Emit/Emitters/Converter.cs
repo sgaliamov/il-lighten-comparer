@@ -22,7 +22,7 @@ namespace ILLightenComparer.Emit.Emitters
             HierarchicalComparison.Create
         };
 
-        private static readonly Func<IVariable, IComparisonAcceptor>[] VariableConverters =
+        private static readonly Func<IVariable, IVisitorsAcceptor>[] VariableConverters =
         {
             IntegralComparison.Create,
             StringComparison.Create,
@@ -39,7 +39,7 @@ namespace ILLightenComparer.Emit.Emitters
                 return NullableComparison.Create(variable);
             }
 
-            var comparison = IntegralComparison.Create(variable) ?? (IComparisonAcceptor)StringComparison.Create(variable);
+            var comparison = IntegralComparison.Create(variable) ?? (IVisitorsAcceptor)StringComparison.Create(variable);
             if (comparison != null)
             {
                 return new VariableComparison(variable, comparison);
@@ -66,7 +66,7 @@ namespace ILLightenComparer.Emit.Emitters
             return comparison;
         }
 
-        public IComparisonAcceptor CreateArrayItemComparison(
+        public IVisitorsAcceptor CreateArrayItemVariableComparison(
             IVariable variable,
             LocalBuilder xArray,
             LocalBuilder yArray,
@@ -82,7 +82,7 @@ namespace ILLightenComparer.Emit.Emitters
             return CreateVariableComparison(itemVariable);
         }
 
-        public IComparisonAcceptor CreateEnumerableItemComparison(
+        public IVisitorsAcceptor CreateEnumerableItemVariableComparison(
             Type ownerType,
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator)
@@ -92,7 +92,7 @@ namespace ILLightenComparer.Emit.Emitters
             return CreateVariableComparison(itemVariable);
         }
 
-        public IComparisonAcceptor CreateNullableVariableComparison(
+        public IVisitorsAcceptor CreateNullableVariableComparison(
             IVariable variable,
             LocalBuilder nullableX,
             LocalBuilder nullableY)
@@ -102,7 +102,7 @@ namespace ILLightenComparer.Emit.Emitters
             return CreateVariableComparison(itemVariable);
         }
 
-        private static IComparisonAcceptor CreateVariableComparison(IVariable itemVariable)
+        private static IVisitorsAcceptor CreateVariableComparison(IVariable itemVariable)
         {
             var comparison = VariableConverters
                              .Select(factory => factory(itemVariable))
