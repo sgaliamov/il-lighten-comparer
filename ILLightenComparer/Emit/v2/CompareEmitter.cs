@@ -64,23 +64,7 @@ namespace ILLightenComparer.Emit.v2
                                  .MarkLabel(gotoNext);
         }
 
-        public void EmitArgumentsReferenceComparison(ILEmitter il)
         {
-            il.LoadArgument(Arg.X) // x == y
-              .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Bne_Un_S, out var checkY)
-              .Return(0)
-              .MarkLabel(checkY)
-              // y != null
-              .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Brtrue_S, out var checkX)
-              .Return(1)
-              .MarkLabel(checkX)
-              // x != null
-              .LoadArgument(Arg.X)
-              .Branch(OpCodes.Brtrue_S, out var next)
-              .Return(-1)
-              .MarkLabel(next);
         }
     }
 }
