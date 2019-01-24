@@ -18,7 +18,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             _converter = converter;
         }
 
-        public ILEmitter LoadVariables(HierarchicalComparison comparison, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(HierarchicalsComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
 
@@ -30,9 +30,8 @@ namespace ILLightenComparer.Emit.v2.Visitors
                      .LoadArgument(Arg.SetY);
         }
 
-        public ILEmitter LoadVariables(ComparableComparison comparison, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(SealedComparableVariable variable, ILEmitter il, Label gotoNext)
         {
-            var variable = comparison.Variable;
             var variableType = variable.VariableType;
             var underlyingType = variableType.GetUnderlyingType();
             if (underlyingType.IsValueType)
@@ -77,11 +76,15 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return il;
         }
 
-        public ILEmitter Visit(ArgumentComparison variable, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(ArgumentVariable variable, ILEmitter il, Label gotoNext)
         {
             var variableType = variable.VariableType;
             variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var x);
             variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var y);
+
+            var variables = new Variables.Variables(variableType, x, y);
+
+            variables.lo
 
             if (variableType.IsValueType)
             {
@@ -96,7 +99,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             }
 
 
-            var itemComparison = _converter.CreateNullableVariableComparison(variable, x, y);
+            _converter.CreateVariable(variable, x, y).;
 
             return il;
         }

@@ -4,20 +4,24 @@ using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Comparisons;
-using StringComparison = ILLightenComparer.Emit.v2.Comparisons.StringComparison;
+using ILLightenComparer.Emit.v2.Visitors.Collection;
 
 namespace ILLightenComparer.Emit.v2.Visitors
 {
     internal sealed class CompareVisitor
     {
         private readonly ComparerContext _context;
+        private readonly ArrayVisitor _arrayVisitor;
+        private readonly EnumerableVisitor _enumerableVisitor;
 
         public CompareVisitor(ComparerContext context)
         {
             _context = context;
+            _arrayVisitor = new ArrayVisitor(context, _variablesVisitor, _compareVisitor, _loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(context, _variablesVisitor, _compareVisitor, _loader, converter);
         }
 
-        public ILEmitter Visit(HierarchicalComparison comparison, ILEmitter il)
+        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
         {
             var underlyingType = comparison.VariableType.GetUnderlyingType();
             if (!underlyingType.IsValueType && !underlyingType.IsSealed)
@@ -30,7 +34,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return il.Emit(OpCodes.Call, compareMethod);
         }
 
-        public ILEmitter Visit(ComparableComparison comparison, ILEmitter il)
+        public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il)
         {
             var variableType = comparison.VariableType;
             var underlyingType = variableType.GetUnderlyingType();
@@ -46,7 +50,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return il.Emit(OpCodes.Call, compareToMethod);
         }
 
-        public ILEmitter Visit(IntegralComparison comparison, ILEmitter il)
+        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il)
         {
             if (!comparison.VariableType.GetUnderlyingType().IsIntegral())
             {
@@ -57,7 +61,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return il.Emit(OpCodes.Sub);
         }
 
-        public ILEmitter Visit(StringComparison comparison, ILEmitter il)
+        public ILEmitter Visit(StringsComparison comparison, ILEmitter il)
         {
             return il.LoadConstant(comparison.StringComparisonType).Call(Method.StringCompare);
         }

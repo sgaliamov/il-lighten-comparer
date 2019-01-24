@@ -6,9 +6,9 @@ using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
-    internal sealed class HierarchicalComparison : IComparison
+    internal sealed class HierarchicalsComparison : IComparison
     {
-        private HierarchicalComparison(Type variableType)
+        private HierarchicalsComparison(Type variableType)
         {
             VariableType = variableType;
         }
@@ -20,7 +20,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il);
         }
 
-        public static HierarchicalComparison Create(Type variableType)
+        public static HierarchicalsComparison Create(Type variableType)
         {
             var underlyingType = variableType.GetUnderlyingType();
             if (underlyingType.IsPrimitive()
@@ -31,7 +31,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
                 return null;
             }
 
-            return new HierarchicalComparison(variableType);
+            return new HierarchicalsComparison(variableType);
         }
     }
 }

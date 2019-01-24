@@ -5,9 +5,9 @@ using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
-    internal sealed class ComparableComparison : IComparison
+    internal sealed class ComparablesComparison : IComparison
     {
-        private ComparableComparison(Type variableType)
+        private ComparablesComparison(Type variableType)
         {
             VariableType = variableType;
         }
@@ -19,14 +19,14 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il);
         }
 
-        public static ComparableComparison Create(Type variableType)
+        public static ComparablesComparison Create(Type variableType)
         {
             var isComparable = variableType
                                .GetUnderlyingType()
                                .ImplementsGeneric(typeof(IComparable<>));
             if (isComparable)
             {
-                return new ComparableComparison(variableType);
+                return new ComparablesComparison(variableType);
             }
 
             return null;

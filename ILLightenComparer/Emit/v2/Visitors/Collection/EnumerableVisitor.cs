@@ -1,7 +1,6 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Comparisons;
 
 namespace ILLightenComparer.Emit.v2.Visitors.Collection
 {
