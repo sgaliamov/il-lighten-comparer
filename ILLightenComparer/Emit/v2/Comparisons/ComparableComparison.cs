@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Visitors;
@@ -11,16 +10,6 @@ namespace ILLightenComparer.Emit.v2.Comparisons
         private ComparableComparison(Type variableType)
         {
             VariableType = variableType;
-        }
-
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
-        {
-            return visitor.Visit(this, il);
-        }
-
-        public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)
-        {
-            return visitor.LoadVariables(this, il, gotoNext);
         }
 
         public Type VariableType { get; }

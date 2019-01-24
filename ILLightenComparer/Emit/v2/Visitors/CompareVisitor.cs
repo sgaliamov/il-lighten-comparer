@@ -19,7 +19,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
 
         public ILEmitter Visit(HierarchicalComparison comparison, ILEmitter il)
         {
-            var underlyingType = comparison.Variable.VariableType.GetUnderlyingType();
+            var underlyingType = comparison.VariableType.GetUnderlyingType();
             if (!underlyingType.IsValueType && !underlyingType.IsSealed)
             {
                 return EmitCallForDelayedCompareMethod(il, underlyingType);
@@ -32,9 +32,9 @@ namespace ILLightenComparer.Emit.v2.Visitors
 
         public ILEmitter Visit(ComparableComparison comparison, ILEmitter il)
         {
-            var variableType = comparison.Variable.VariableType;
+            var variableType = comparison.VariableType;
             var underlyingType = variableType.GetUnderlyingType();
-            if (!underlyingType.IsSealedComparable())
+            if (!underlyingType.IsSealedComparable()) // todo: if object implements IComparable, then it should be used anyway?
             {
                 return EmitCallForDelayedCompareMethod(il, underlyingType);
             }
@@ -48,10 +48,10 @@ namespace ILLightenComparer.Emit.v2.Visitors
 
         public ILEmitter Visit(IntegralComparison comparison, ILEmitter il)
         {
-            if (!comparison.Variable.VariableType.GetUnderlyingType().IsSmallIntegral())
+            if (!comparison.VariableType.GetUnderlyingType().IsIntegral())
             {
                 throw new InvalidOperationException(
-                    $"Integral type is expected but: {comparison.Variable.VariableType.DisplayName()}.");
+                    $"Integral type is expected but: {comparison.VariableType.DisplayName()}.");
             }
 
             return il.Emit(OpCodes.Sub);
@@ -59,11 +59,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
 
         public ILEmitter Visit(StringComparison comparison, ILEmitter il)
         {
-            var comparisonType = (int)_context
-                                      .GetConfiguration(comparison.Variable.OwnerType)
-                                      .StringComparisonType;
-
-            return il.LoadConstant(comparisonType).Call(Method.StringCompare);
+            return il.LoadConstant(comparison.StringComparisonType).Call(Method.StringCompare);
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type underlyingType)

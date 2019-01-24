@@ -1,45 +1,29 @@
-﻿using System.Reflection;
-using System.Reflection.Emit;
+﻿using System;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Variables;
-using ILLightenComparer.Emit.v2.Variables.Members;
 using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
-    internal sealed class IntegralComparison : IStaticComparison
+    internal sealed class IntegralComparison : IComparison
     {
-        private IntegralComparison(IVariable variable)
-        { }
-
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        private IntegralComparison(Type variableType)
         {
-            return visitor.Visit(this, il);
+            VariableType = variableType;
         }
 
-        public ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext)
-        {
-            return visitor.LoadVariables(this, il, gotoNext);
-        }
+        public Type VariableType { get; }
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
         {
             return visitor.Visit(this, il);
         }
 
-        public static IntegralComparison Create(MemberInfo memberInfo)
+        public static IntegralComparison Create(Type variableType)
         {
-            var variable = MemberVariableFactory.Create(memberInfo);
-
-            return Create(variable);
-        }
-
-        public static IntegralComparison Create(IVariable variable)
-        {
-            if (variable.VariableType.GetUnderlyingType().IsSmallIntegral())
+            if (variableType.GetUnderlyingType().IsIntegral())
             {
-                return new IntegralComparison(variable);
+                return new IntegralComparison(variableType);
             }
 
             return null;
