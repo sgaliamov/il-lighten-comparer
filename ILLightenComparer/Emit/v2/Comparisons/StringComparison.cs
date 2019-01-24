@@ -1,8 +1,8 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Variables;
+using ILLightenComparer.Emit.v2.Variables.Members;
 using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
@@ -10,11 +10,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
     internal sealed class StringComparison : IStaticComparison
     {
         private StringComparison(IVariable variable)
-        {
-            Variable = variable ?? throw new ArgumentNullException(nameof(variable));
-        }
-
-        public IVariable Variable { get; }
+        { }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
         {
@@ -33,7 +29,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
 
         public static StringComparison Create(MemberInfo memberInfo)
         {
-            var variable = VariableFactory.Create(memberInfo);
+            var variable = MemberVariableFactory.Create(memberInfo);
 
             return Create(variable);
         }

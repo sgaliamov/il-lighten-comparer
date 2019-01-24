@@ -1,22 +1,18 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Variables;
 using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
-    internal interface IVariableComparison
-    {
-        IVariable Variable { get; }
-    }
-
-    internal interface ICompareEmitterAcceptor : IVariableComparison
+    internal interface ICompareEmitterAcceptor
     {
         ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
     }
 
-    internal interface IVisitorsAcceptor : IVariableComparison
+    internal interface IVisitorsAcceptor
     {
+        Type VariableType { get; }
         ILEmitter Accept(CompareVisitor visitor, ILEmitter il);
         ILEmitter LoadVariables(StackVisitor visitor, ILEmitter il, Label gotoNext);
     }
