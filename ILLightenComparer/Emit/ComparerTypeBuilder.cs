@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.v2;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.v2;
 
 namespace ILLightenComparer.Emit
 {
@@ -14,15 +14,11 @@ namespace ILLightenComparer.Emit
     {
         private readonly CompareEmitter _compareEmitter;
         private readonly ComparerContext _context;
-        private readonly Converter _converter;
-        private readonly MembersProvider _membersProvider;
 
         public ComparerTypeBuilder(ComparerContext context)
         {
             _context = context;
-            _converter = new Converter();
-            _compareEmitter = new CompareEmitter(context, _converter);
-            _membersProvider = new MembersProvider(context, _converter);
+            _compareEmitter = new CompareEmitter(context, new Converter());
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -55,18 +51,12 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
-                // todo: use argument variable
-                if (IsEmitReferenceComparison(objectType))
-                {
-                    _compareEmitter.EmitArgumentsReferenceComparison(il);
-                }
-
                 if (IsDetectCycles(objectType))
                 {
                     EmitCycleDetection(il);
                 }
 
-                EmitComparison(il, objectType);
+                _compareEmitter.Emit(objectType, il);
             }
         }
 
@@ -83,7 +73,7 @@ namespace ILLightenComparer.Emit
             {
                 if (objectType.IsValueType)
                 {
-                    _compareEmitter.EmitArgumentsReferenceComparison(il);
+                    il.EmitArgumentsReferenceComparison();
                 }
 
                 il.LoadArgument(Arg.This)
@@ -118,37 +108,6 @@ namespace ILLightenComparer.Emit
             }
         }
 
-        private void EmitComparison(ILEmitter il, Type objectType)
-        {
-            InitFirstLocalToKeepComparisonsResult(il);
-
-            var argumentComparison = _converter.CreateArgumentComparison(objectType);
-            if (argumentComparison == null)
-            {
-                EmitMembersComparison(il, objectType);
-            }
-            else
-            {
-                argumentComparison.Accept(_compareEmitter, il);
-            }
-
-            il.Return(0);
-        }
-
-        private void EmitMembersComparison(ILEmitter il, Type objectType)
-        {
-            if (objectType.GetUnderlyingType().IsPrimitive())
-            {
-                throw new InvalidOperationException($"{objectType.DisplayName()} is not expected.");
-            }
-
-            var members = _membersProvider.GetMembers(objectType);
-            foreach (var member in members)
-            {
-                member.Accept(_compareEmitter, il);
-            }
-        }
-
         private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
             if (!IsCreateCycleDetectionSets(objectType))
@@ -178,11 +137,6 @@ namespace ILLightenComparer.Emit
         private bool IsDetectCycles(Type objectType)
         {
             return objectType.IsClass && IsCreateCycleDetectionSets(objectType);
-        }
-
-        private static bool IsEmitReferenceComparison(Type objectType)
-        {
-            return objectType.IsClass && !objectType.IsCollectionOfSealed();
         }
 
         private static void EmitCycleDetection(ILEmitter il)
@@ -239,11 +193,6 @@ namespace ILLightenComparer.Emit
                   .Emit(OpCodes.Newobj, constructorInfo)
                   .Return();
             }
-        }
-
-        private static void InitFirstLocalToKeepComparisonsResult(ILEmitter il)
-        {
-            il.DeclareLocal(typeof(int), 0, out _);
         }
     }
 }
