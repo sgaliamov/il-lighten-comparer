@@ -6,7 +6,6 @@ namespace ILLightenComparer.Emit.v2.Comparisons
 {
     internal interface IComparison
     {
-        Type VariableType { get; }
         ILEmitter Accept(CompareVisitor visitor, ILEmitter il);
     }
 }
