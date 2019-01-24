@@ -1,17 +1,21 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Comparisons;
+using ILLightenComparer.Emit.v2.Variables;
 
 namespace ILLightenComparer.Emit.v2.Visitors
 {
-    internal sealed class StackVisitor
+    internal sealed class VariablesVisitor
     {
         private readonly VariableLoader _loader;
+        private readonly Converter _converter;
 
-        public StackVisitor(VariableLoader loader)
+        public VariablesVisitor(VariableLoader loader, Converter converter)
         {
             _loader = loader;
+            _converter = converter;
         }
 
         public ILEmitter LoadVariables(HierarchicalComparison comparison, ILEmitter il, Label gotoNext)
@@ -63,7 +67,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return il;
         }
 
-        public ILEmitter LoadVariables(IStaticComparison comparison, ILEmitter il, Label gotoNext)
+        public ILEmitter LoadVariables(IComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
 
@@ -71,6 +75,44 @@ namespace ILLightenComparer.Emit.v2.Visitors
             variable.Load(_loader, il, Arg.Y);
 
             return il;
+        }
+
+        public ILEmitter Visit(ArgumentComparison variable, ILEmitter il, Label gotoNext)
+        {
+            var variableType = variable.VariableType;
+            variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var x);
+            variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var y);
+
+            if (variableType.IsValueType)
+            {
+                if (variableType.IsNullable())
+                {
+                    il.CheckNullableValuesForNull(x, y, variableType, gotoNext);
+                }
+            }
+            else
+            {
+                il.EmitCheckReferenceComparison(x, y, gotoNext);
+            }
+
+
+            var itemComparison = _converter.CreateNullableVariableComparison(variable, x, y);
+
+            return il;
+        }
+
+        private void EmitMembersComparison(ILEmitter il, Type objectType)
+        {
+            if (objectType.GetUnderlyingType().IsPrimitive())
+            {
+                throw new InvalidOperationException($"{objectType.DisplayName()} is not expected.");
+            }
+
+            var members = _membersProvider.GetMembers(objectType);
+            foreach (var member in members)
+            {
+                member.Accept(this, il);
+            }
         }
     }
 }

@@ -15,10 +15,10 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         private readonly CompareVisitor _compareVisitor;
         private readonly Converter _converter;
         private readonly VariableLoader _loader;
-        private readonly StackVisitor _stackVisitor;
+        private readonly VariablesVisitor _variablesVisitor;
 
         protected CollectionVisitor(
-            StackVisitor stackVisitor,
+            VariablesVisitor variablesVisitor,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _compareVisitor = compareVisitor;
             _converter = converter;
             _loader = loader;
-            _stackVisitor = stackVisitor;
+            _variablesVisitor = variablesVisitor;
         }
 
         protected (LocalBuilder collectionX, LocalBuilder collectionY, Label gotoNext) EmitLoad(ILEmitter il, IVariableComparison comparison)
@@ -41,7 +41,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             return (collectionX, collectionY, gotoNext);
         }
 
-        protected void Visit(ILEmitter il, IVisitorsAcceptor itemVisitors, Type elementType, Label continueLoop)
+        protected void Visit(ILEmitter il, IComparison itemVisitors, Type elementType, Label continueLoop)
         {
             if (elementType.IsNullable())
             {
@@ -55,7 +55,6 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
                 itemVisitors = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
             }
 
-            itemVisitors.LoadVariables(_stackVisitor, il, continueLoop);
             itemVisitors.Accept(_compareVisitor, il)
                           .EmitReturnNotZero(continueLoop);
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Emit.v2;
-using ILLightenComparer.Emit.v2.Comparisons;
 
 namespace ILLightenComparer.Emit.Reflection
 {

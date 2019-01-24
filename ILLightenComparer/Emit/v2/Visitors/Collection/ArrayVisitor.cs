@@ -21,11 +21,11 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
         public ArrayVisitor(
             ComparerContext context,
-            StackVisitor stackVisitor,
+            VariablesVisitor variablesVisitor,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
-            : base(stackVisitor, compareVisitor, loader, converter)
+            : base(variablesVisitor, compareVisitor, loader, converter)
         {
             _context = context;
             _converter = converter;

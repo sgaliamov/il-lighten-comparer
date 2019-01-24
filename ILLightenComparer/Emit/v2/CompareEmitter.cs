@@ -1,7 +1,6 @@
-﻿using System.Reflection.Emit;
+﻿using System;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Comparisons;
 using ILLightenComparer.Emit.v2.Visitors;
 using ILLightenComparer.Emit.v2.Visitors.Collection;
 
@@ -11,24 +10,24 @@ namespace ILLightenComparer.Emit.v2
     {
         private readonly ArrayVisitor _arrayVisitor;
         private readonly CompareVisitor _compareVisitor;
+        private readonly Converter _converter;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
-        private readonly Converter _converter;
-        private readonly StackVisitor _stackVisitor;
+        private readonly VariablesVisitor _variablesVisitor;
 
         public CompareEmitter(ComparerContext context, Converter converter)
         {
             _compareVisitor = new CompareVisitor(context);
-            _stackVisitor = new StackVisitor(_loader);
-            _arrayVisitor = new ArrayVisitor(context, _stackVisitor, _compareVisitor, _loader, converter);
-            _enumerableVisitor = new EnumerableVisitor(context, _stackVisitor, _compareVisitor, _loader, converter);
+            _variablesVisitor = new VariablesVisitor(_loader, converter);
+            _arrayVisitor = new ArrayVisitor(context, _variablesVisitor, _compareVisitor, _loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(context, _variablesVisitor, _compareVisitor, _loader, converter);
             _converter = converter;
         }
 
         public ILEmitter Visit(IComparison comparison, ILEmitter il)
         {
             il.DefineLabel(out var gotoNext);
-            comparison.LoadVariables(_stackVisitor, il, gotoNext);
+            arguments.Accept(_variablesVisitor, il, gotoNext);
 
             return comparison.Accept(_compareVisitor, il)
                              .EmitReturnNotZero(gotoNext)
