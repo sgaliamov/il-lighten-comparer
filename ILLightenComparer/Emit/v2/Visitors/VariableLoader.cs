@@ -2,12 +2,14 @@
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Variables;
+using ILLightenComparer.Emit.v2.Variables.Collections;
+using ILLightenComparer.Emit.v2.Variables.Members;
 
 namespace ILLightenComparer.Emit.v2.Visitors
 {
     internal sealed class VariableLoader
     {
-        public ILEmitter Load(PropertyVariable variable, ILEmitter il, ushort arg)
+        public ILEmitter Load(PropertyMemberVariable variable, ILEmitter il, ushort arg)
         {
             if (variable.OwnerType.IsValueType)
             {
@@ -21,20 +23,20 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return il.Call(variable.GetterMethod);
         }
 
-        public ILEmitter LoadAddress(PropertyVariable variable, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(PropertyMemberVariable variable, ILEmitter il, ushort arg)
         {
             return Load(variable, il, arg)
                    .Store(variable.VariableType.GetUnderlyingType(), out var local)
                    .LoadAddress(local);
         }
 
-        public ILEmitter Load(FieldVariable variable, ILEmitter il, ushort arg)
+        public ILEmitter Load(FieldMemberVariable variable, ILEmitter il, ushort arg)
         {
             return il.LoadArgument(arg)
                      .Emit(OpCodes.Ldfld, variable.FieldInfo);
         }
 
-        public ILEmitter LoadAddress(FieldVariable variable, ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(FieldMemberVariable variable, ILEmitter il, ushort arg)
         {
             if (variable.OwnerType.IsValueType)
             {
