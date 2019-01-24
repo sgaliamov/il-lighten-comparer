@@ -5,8 +5,10 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)' != 'DEBUG'">
-    <Compile Remove="Emit\Emitters\ILEmitter.debug.cs" />
+  <ItemGroup>
+    <Compile Remove="Emit\Emitters\**" />
+    <EmbeddedResource Remove="Emit\Emitters\**" />
+    <None Remove="Emit\Emitters\**" />
   </ItemGroup>
 
   <ItemGroup>
