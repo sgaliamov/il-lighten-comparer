@@ -74,7 +74,7 @@ namespace ILLightenComparer.Emit.Extensions
                    && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
         }
 
-        public static bool IsSmallIntegral(this Type type)
+        public static bool IsIntegral(this Type type)
         {
             return SmallIntegralTypes.Contains(type);
         }
@@ -98,6 +98,12 @@ namespace ILLightenComparer.Emit.Extensions
             return itemType.IsPrimitive() || itemType.IsSealedComparable() || itemType.IsValueType;
         }
 
+        /// <summary>
+        ///     Not objects and structs.
+        ///     Extended version of IsPrimitive property.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <returns>true if the <paramref name="type">type</paramref> is one of the primitive types; otherwise, false.</returns>
         public static bool IsPrimitive(this Type type)
         {
             return type.IsPrimitive
