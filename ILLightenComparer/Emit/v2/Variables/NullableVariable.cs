@@ -11,9 +11,8 @@ namespace ILLightenComparer.Emit.v2.Variables
 {
     internal sealed class NullableVariable : IVariable
     {
-        public NullableVariable(Type ownerType, Type variableType, LocalBuilder x, LocalBuilder y)
+        public NullableVariable(Type variableType, LocalBuilder x, LocalBuilder y)
         {
-            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
             VariableType = variableType ?? throw new ArgumentNullException(nameof(variableType));
             Nullables = new Dictionary<ushort, LocalBuilder>(2)
             {
@@ -25,7 +24,6 @@ namespace ILLightenComparer.Emit.v2.Variables
 
         public MethodInfo GetValueMethod { get; set; }
         public Dictionary<ushort, LocalBuilder> Nullables { get; }
-        public Type OwnerType { get; }
         public Type VariableType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)

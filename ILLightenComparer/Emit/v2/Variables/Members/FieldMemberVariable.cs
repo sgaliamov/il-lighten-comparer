@@ -3,11 +3,11 @@ using System.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Visitors;
 
-namespace ILLightenComparer.Emit.v2.Variables
+namespace ILLightenComparer.Emit.v2.Variables.Members
 {
-    internal sealed class FieldVariable : IVariable
+    internal sealed class FieldMemberVariable : IVariable
     {
-        private FieldVariable(FieldInfo fieldInfo)
+        private FieldMemberVariable(FieldInfo fieldInfo)
         {
             FieldInfo = fieldInfo;
         }
@@ -29,7 +29,7 @@ namespace ILLightenComparer.Emit.v2.Variables
         public static IVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is FieldInfo info
-                       ? new FieldVariable(info)
+                       ? new FieldMemberVariable(info)
                        : null;
         }
     }

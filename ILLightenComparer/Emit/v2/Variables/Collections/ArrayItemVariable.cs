@@ -6,27 +6,24 @@ using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Visitors;
 
-namespace ILLightenComparer.Emit.v2.Variables
+namespace ILLightenComparer.Emit.v2.Variables.Collections
 {
     internal sealed class ArrayItemVariable : IVariable
     {
         public ArrayItemVariable(
             Type arrayMemberType,
-            Type ownerType,
             LocalBuilder xArray,
             LocalBuilder yArray,
             LocalBuilder indexVariable)
         {
             if (arrayMemberType == null) { throw new ArgumentNullException(nameof(arrayMemberType)); }
 
-            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
-
-            VariableType = arrayMemberType.GetElementType();
-
             IndexVariable = indexVariable ?? throw new ArgumentNullException(nameof(indexVariable));
 
             GetItemMethod = arrayMemberType.GetMethod(MethodName.Get, new[] { typeof(int) })
                             ?? throw new ArgumentException(nameof(arrayMemberType));
+
+            VariableType = arrayMemberType.GetElementType();
 
             Arrays = new Dictionary<ushort, LocalBuilder>(2)
             {
@@ -38,7 +35,6 @@ namespace ILLightenComparer.Emit.v2.Variables
         public Dictionary<ushort, LocalBuilder> Arrays { get; }
         public MethodInfo GetItemMethod { get; }
         public LocalBuilder IndexVariable { get; }
-        public Type OwnerType { get; }
         public Type VariableType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)

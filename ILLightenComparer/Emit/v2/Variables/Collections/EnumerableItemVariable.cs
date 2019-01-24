@@ -8,16 +8,12 @@ using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Visitors;
 
-namespace ILLightenComparer.Emit.v2.Variables
+namespace ILLightenComparer.Emit.v2.Variables.Collections
 {
     internal sealed class EnumerableItemVariable : IVariable
     {
-        public EnumerableItemVariable(
-            Type ownerType,
-            LocalBuilder xEnumerator,
-            LocalBuilder yEnumerator)
+        public EnumerableItemVariable(LocalBuilder xEnumerator, LocalBuilder yEnumerator)
         {
-            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
             Enumerators = new Dictionary<ushort, LocalBuilder>(2)
             {
                 { Arg.X, xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)) },
@@ -39,7 +35,6 @@ namespace ILLightenComparer.Emit.v2.Variables
 
         public Dictionary<ushort, LocalBuilder> Enumerators { get; }
         public MethodInfo GetCurrentMethod { get; }
-        public Type OwnerType { get; }
         public Type VariableType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)

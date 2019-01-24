@@ -3,20 +3,20 @@ using System.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Visitors;
 
-namespace ILLightenComparer.Emit.v2.Variables
+namespace ILLightenComparer.Emit.v2.Variables.Members
 {
-    internal sealed class PropertyVariable : IVariable
+    internal sealed class PropertyMemberVariable : IVariable
     {
         private readonly PropertyInfo _propertyInfo;
 
-        private PropertyVariable(PropertyInfo propertyInfo)
+        private PropertyMemberVariable(PropertyInfo propertyInfo)
         {
             _propertyInfo = propertyInfo;
         }
 
         public MethodInfo GetterMethod => _propertyInfo.GetMethod;
-        public Type VariableType => _propertyInfo.PropertyType;
         public Type OwnerType => _propertyInfo.DeclaringType;
+        public Type VariableType => _propertyInfo.PropertyType;
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
@@ -31,7 +31,7 @@ namespace ILLightenComparer.Emit.v2.Variables
         public static IVariable Create(MemberInfo memberInfo)
         {
             return memberInfo is PropertyInfo info
-                       ? new PropertyVariable(info)
+                       ? new PropertyMemberVariable(info)
                        : null;
         }
     }
