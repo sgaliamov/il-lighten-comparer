@@ -4,7 +4,6 @@ using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Comparisons;
-using ILLightenComparer.Emit.v2.Sources;
 using ILLightenComparer.Emit.v2.Variables;
 
 namespace ILLightenComparer.Emit.v2.Visitors
@@ -96,7 +95,9 @@ namespace ILLightenComparer.Emit.v2.Visitors
             variable.Load(_loader, il, Arg.X);
             variable.Load(_loader, il, Arg.Y);
 
-            return il.LoadConstant(comparison.StringComparisonType).Call(Method.StringCompare);
+            var stringComparisonType = _context.GetConfiguration(variable.OwnerType).StringComparisonType;
+
+            return il.LoadConstant((int)stringComparisonType).Call(Method.StringCompare);
         }
 
         public ILEmitter Visit(NullableComparison comparison, ILEmitter il, Label gotoNext)

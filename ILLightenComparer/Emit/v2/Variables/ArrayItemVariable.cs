@@ -12,6 +12,7 @@ namespace ILLightenComparer.Emit.v2.Variables
     {
         public ArrayItemVariable(
             Type arrayMemberType,
+            Type ownerType,
             LocalBuilder xArray,
             LocalBuilder yArray,
             LocalBuilder indexVariable)
@@ -19,6 +20,8 @@ namespace ILLightenComparer.Emit.v2.Variables
             if (arrayMemberType == null) { throw new ArgumentNullException(nameof(arrayMemberType)); }
 
             IndexVariable = indexVariable ?? throw new ArgumentNullException(nameof(indexVariable));
+
+            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
 
             GetItemMethod = arrayMemberType.GetMethod(MethodName.Get, new[] { typeof(int) })
                             ?? throw new ArgumentException(nameof(arrayMemberType));
@@ -36,6 +39,7 @@ namespace ILLightenComparer.Emit.v2.Variables
         public MethodInfo GetItemMethod { get; }
         public LocalBuilder IndexVariable { get; }
         public Type VariableType { get; }
+        public Type OwnerType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {

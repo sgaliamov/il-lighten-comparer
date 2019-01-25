@@ -2,7 +2,6 @@
 using System.Linq;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.v2.Comparisons;
-using ILLightenComparer.Emit.v2.Sources;
 using ILLightenComparer.Emit.v2.Variables;
 
 namespace ILLightenComparer.Emit.v2

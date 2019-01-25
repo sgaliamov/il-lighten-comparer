@@ -8,9 +8,12 @@ namespace ILLightenComparer.Emit.v2.Variables
 {
     internal sealed class LocalVariable : IVariable
     {
-        public LocalVariable(Type variableType, LocalBuilder x, LocalBuilder y)
+        public LocalVariable(Type variableType, Type ownerType, LocalBuilder x, LocalBuilder y)
         {
             VariableType = variableType ?? throw new ArgumentNullException(nameof(variableType));
+
+            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
+
             Locals = new Dictionary<ushort, LocalBuilder>(2)
             {
                 { Arg.X, x ?? throw new ArgumentNullException(nameof(x)) },
@@ -20,6 +23,7 @@ namespace ILLightenComparer.Emit.v2.Variables
 
         public Dictionary<ushort, LocalBuilder> Locals { get; }
         public Type VariableType { get; }
+        public Type OwnerType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {

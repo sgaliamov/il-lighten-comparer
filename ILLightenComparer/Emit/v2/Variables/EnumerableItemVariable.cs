@@ -12,8 +12,10 @@ namespace ILLightenComparer.Emit.v2.Variables
 {
     internal sealed class EnumerableItemVariable : IVariable
     {
-        public EnumerableItemVariable(LocalBuilder xEnumerator, LocalBuilder yEnumerator)
+        public EnumerableItemVariable(Type ownerType, LocalBuilder xEnumerator, LocalBuilder yEnumerator)
         {
+            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
+
             Enumerators = new Dictionary<ushort, LocalBuilder>(2)
             {
                 { Arg.X, xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)) },
@@ -27,7 +29,7 @@ namespace ILLightenComparer.Emit.v2.Variables
 
             var enumeratorType = xEnumerator.LocalType;
 
-            VariableType = enumeratorType?.GetGenericArguments().FirstOrDefault()
+            VariableType = enumeratorType?.GetGenericArguments().SingleOrDefault()
                            ?? throw new ArgumentException(nameof(enumeratorType));
 
             GetCurrentMethod = enumeratorType.GetPropertyGetter(MethodName.Current);
@@ -36,6 +38,7 @@ namespace ILLightenComparer.Emit.v2.Variables
         public Dictionary<ushort, LocalBuilder> Enumerators { get; }
         public MethodInfo GetCurrentMethod { get; }
         public Type VariableType { get; }
+        public Type OwnerType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {
