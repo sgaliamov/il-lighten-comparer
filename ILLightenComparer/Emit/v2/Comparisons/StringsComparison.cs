@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Variables;
 using ILLightenComparer.Emit.v2.Visitors;
@@ -8,13 +7,11 @@ namespace ILLightenComparer.Emit.v2.Comparisons
 {
     internal sealed class StringsComparison : IComparison
     {
-        private StringsComparison(IVariable variable, StringComparison stringComparisonType)
+        private StringsComparison(IVariable variable)
         {
             Variable = variable;
-            StringComparisonType = (int)stringComparisonType;
         }
 
-        public int StringComparisonType { get; }
         public IVariable Variable { get; }
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
@@ -22,11 +19,11 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il);
         }
 
-        public static StringsComparison Create(IVariable variable, StringComparison stringComparisonType)
+        public static StringsComparison Create(IVariable variable)
         {
             if (variable.VariableType == typeof(string))
             {
-                return new StringsComparison(variable, stringComparisonType);
+                return new StringsComparison(variable);
             }
 
             return null;

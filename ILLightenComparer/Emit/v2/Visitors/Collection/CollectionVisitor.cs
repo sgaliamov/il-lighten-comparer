@@ -12,24 +12,16 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         protected const int LocalX = Arg.X; // 1
         protected const int LocalY = Arg.Y; // 2
 
-        private readonly CompareVisitor _compareVisitor;
-        private readonly Converter _converter;
         private readonly VariableLoader _loader;
-        private readonly VariablesVisitor _variablesVisitor;
 
-        protected CollectionVisitor(
-            VariablesVisitor variablesVisitor,
-            CompareVisitor compareVisitor,
-            VariableLoader loader,
-            Converter converter)
+        protected CollectionVisitor(VariableLoader loader)
         {
-            _compareVisitor = compareVisitor;
-            _converter = converter;
             _loader = loader;
-            _variablesVisitor = variablesVisitor;
         }
 
-        protected (LocalBuilder collectionX, LocalBuilder collectionY, Label gotoNext) EmitLoad(ILEmitter il, IVariableComparison comparison)
+        protected (LocalBuilder collectionX, LocalBuilder collectionY, Label gotoNext) EmitLoad(
+            ILEmitter il,
+            IVariableComparison comparison)
         {
             var variable = comparison.Variable;
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var collectionX);
@@ -39,24 +31,6 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
               .EmitReferenceComparison(collectionX, collectionY, gotoNext);
 
             return (collectionX, collectionY, gotoNext);
-        }
-
-        protected void Visit(ILEmitter il, IComparison itemVisitors, Type elementType, Label continueLoop)
-        {
-            if (elementType.IsNullable())
-            {
-                var variable = itemVisitors.Variable;
-                var variableType = variable.VariableType;
-
-                variable.Load(_loader, il, Arg.X).Store(variableType, LocalX, out var nullableX);
-                variable.Load(_loader, il, Arg.Y).Store(variableType, LocalY, out var nullableY);
-                il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, continueLoop);
-
-                itemVisitors = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
-            }
-
-            itemVisitors.Accept(_compareVisitor, il)
-                          .EmitReturnNotZero(continueLoop);
         }
 
         protected static void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)

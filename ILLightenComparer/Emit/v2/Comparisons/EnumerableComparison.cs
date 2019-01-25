@@ -16,13 +16,13 @@ namespace ILLightenComparer.Emit.v2.Comparisons
         private EnumerableComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
-
+            
             GetEnumeratorMethod = variable.VariableType.GetMethod(MethodName.GetEnumerator, Type.EmptyTypes)
                                   ?? throw new ArgumentException(nameof(variable));
-
+            
             ElementType = variable.VariableType.GetGenericArguments().FirstOrDefault()
                           ?? throw new ArgumentException(nameof(variable));
-
+            
             EnumeratorType = typeof(IEnumerator<>).MakeGenericType(ElementType);
         }
 
@@ -38,7 +38,8 @@ namespace ILLightenComparer.Emit.v2.Comparisons
 
         public static IComparison Create(IVariable variable)
         {
-            if (variable.VariableType.ImplementsGeneric(typeof(IEnumerable<>)))
+            var variableType = variable.VariableType;
+            if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray)
             {
                 return new EnumerableComparison(variable);
             }

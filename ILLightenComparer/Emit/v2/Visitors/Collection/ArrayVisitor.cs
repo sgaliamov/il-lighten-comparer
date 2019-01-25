@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.v2.Comparisons;
 using ILLightenComparer.Emit.v2.Variables;
 
 namespace ILLightenComparer.Emit.v2.Visitors.Collection
@@ -14,26 +15,27 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         private const int DoneX = 5;
         private const int DoneY = 6;
         private const int Index = 7;
+        private readonly CompareVisitor _compareVisitor;
 
         private readonly ComparerContext _context;
         private readonly Converter _converter;
 
         public ArrayVisitor(
             ComparerContext context,
-            VariablesVisitor variablesVisitor,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
-            : base(variablesVisitor, compareVisitor, loader, converter)
+            : base(loader)
         {
             _context = context;
+            _compareVisitor = compareVisitor;
             _converter = converter;
         }
 
-        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
+        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
-            var (x, y, gotoNext) = EmitLoad(il, comparison);
+            var (x, y, _) = EmitLoad(il, comparison);
             var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
 
             EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
@@ -65,17 +67,17 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
             EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNext);
 
-            var elementType = variable.VariableType.GetElementType();
-            var itemComparison = _converter.CreateArrayItemVariableComparison(variable, xArray, yArray, index);
+            var itemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
 
-            Visit(il, itemComparison, elementType, continueLoop);
-
-            il.MarkLabel(continueLoop)
-              .LoadLocal(index)
-              .LoadConstant(1)
-              .Emit(OpCodes.Add)
-              .Store(index)
-              .Branch(OpCodes.Br, loopStart);
+            _converter.CreateComparison(itemVariable)
+                      .Accept(_compareVisitor, il, continueLoop)
+                      .EmitReturnNotZero(continueLoop)
+                      .MarkLabel(continueLoop)
+                      .LoadLocal(index)
+                      .LoadConstant(1)
+                      .Emit(OpCodes.Add)
+                      .Store(index)
+                      .Branch(OpCodes.Br, loopStart);
         }
 
         private static void EmitCheckIfLoopsAreDone(

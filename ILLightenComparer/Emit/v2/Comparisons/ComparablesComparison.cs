@@ -14,6 +14,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
         private ComparablesComparison(IVariable variable)
         {
             Variable = variable;
+
             CompareToMethod = variable.VariableType.GetUnderlyingCompareToMethod()
                               ?? throw new ArgumentException(
                                   $"{variable.VariableType.DisplayName()} does not have {MethodName.CompareTo} method.");

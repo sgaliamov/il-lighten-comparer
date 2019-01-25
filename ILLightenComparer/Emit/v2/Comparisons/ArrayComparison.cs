@@ -14,6 +14,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
         private ArrayComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
+        
             GetLengthMethod = variable.VariableType.GetPropertyGetter(MethodName.Length);
         }
 

@@ -1,6 +1,9 @@
 ﻿using System.Reflection.Emit;
+using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.v2.Comparisons;
+using ILLightenComparer.Emit.v2.Variables;
 
 namespace ILLightenComparer.Emit.v2.Visitors.Collection
 {
@@ -9,18 +12,19 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         private const int DoneX = 3;
         private const int DoneY = 4;
 
+        private readonly CompareVisitor _compareVisitor;
         private readonly ComparerContext _context;
         private readonly Converter _converter;
 
         public EnumerableVisitor(
             ComparerContext context,
-            VariablesVisitor variablesVisitor,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
-            : base(variablesVisitor, compareVisitor, loader, converter)
+            : base(loader)
         {
             _context = context;
+            _compareVisitor = compareVisitor;
             _converter = converter;
         }
 
@@ -79,10 +83,11 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
             EmitCheckIfLoopsAreDone(il, xDone, yDone, gotoNext);
 
-            var elementType = comparison.ElementType;
-            var itemComparison = _converter.CreateEnumerableItemVariableComparison(xEnumerator, yEnumerator);
+            var itemVariable = new EnumerableItemVariable(comparison.Variable.OwnerType, xEnumerator, yEnumerator);
 
-            Visit(il, itemComparison, elementType, continueLoop);
+            _converter.CreateComparison(itemVariable)
+                      .Accept(_compareVisitor, il, continueLoop)
+                      .EmitReturnNotZero(continueLoop);
         }
 
         private static void EmitCheckIfLoopsAreDone(
