@@ -13,7 +13,17 @@ namespace ILLightenComparer.Emit.v2.Variables
     {
         public NullableVariable(Type variableType, LocalBuilder x, LocalBuilder y)
         {
-            VariableType = variableType ?? throw new ArgumentNullException(nameof(variableType));
+            if (variableType == null)
+            {
+                throw new ArgumentNullException(nameof(variableType));
+            }
+
+            if (!variableType.IsNullable())
+            {
+                throw new ArgumentException(nameof(variableType));
+            }
+
+            VariableType = variableType.GetUnderlyingType();
             Nullables = new Dictionary<ushort, LocalBuilder>(2)
             {
                 { Arg.X, x ?? throw new ArgumentNullException(nameof(x)) },
@@ -24,6 +34,10 @@ namespace ILLightenComparer.Emit.v2.Variables
 
         public MethodInfo GetValueMethod { get; set; }
         public Dictionary<ushort, LocalBuilder> Nullables { get; }
+
+        /// <summary>
+        ///     Underlying type of Nullable.
+        /// </summary>
         public Type VariableType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)

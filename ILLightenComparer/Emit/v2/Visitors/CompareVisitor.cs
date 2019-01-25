@@ -99,6 +99,20 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return il.LoadConstant(comparison.StringComparisonType).Call(Method.StringCompare);
         }
 
+        public ILEmitter Visit(NullableComparison comparison, ILEmitter il, Label gotoNext)
+        {
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
+            variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
+            variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
+            il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, gotoNext);
+            var nullableVariable = new NullableVariable(variableType, nullableX, nullableY);
+
+            return _converter
+                   .CreateComparison(nullableVariable)
+                   .Accept(this, il, gotoNext);
+        }
 
         public ILEmitter LoadVariables(LocalVariable variable, ILEmitter il, Label gotoNext)
         {
