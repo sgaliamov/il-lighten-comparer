@@ -93,7 +93,7 @@ namespace ILLightenComparer.Emit.Extensions
                 return false;
             }
 
-            var itemType = generic.GetGenericArguments()[0].GetUnderlyingType();
+            var itemType = generic.GetGenericArguments()[0];
 
             return itemType.IsPrimitive() || itemType.IsSealedComparable() || itemType.IsValueType;
         }

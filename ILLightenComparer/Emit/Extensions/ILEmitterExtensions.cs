@@ -19,24 +19,22 @@ namespace ILLightenComparer.Emit.Extensions
 
         public static void EmitArgumentsReferenceComparison(this ILEmitter il)
         {
-            il.LoadArgument(Arg.X) // x == y
+            il.LoadArgument(Arg.X)
               .LoadArgument(Arg.Y)
               .Branch(OpCodes.Bne_Un_S, out var checkY)
               .Return(0)
               .MarkLabel(checkY)
-              // y != null
               .LoadArgument(Arg.Y)
               .Branch(OpCodes.Brtrue_S, out var checkX)
               .Return(1)
               .MarkLabel(checkX)
-              // x != null
               .LoadArgument(Arg.X)
               .Branch(OpCodes.Brtrue_S, out var next)
               .Return(-1)
               .MarkLabel(next);
         }
 
-        public static void CheckNullableValuesForNull(
+        public static void EmitCheckNullablesForValue(
             this ILEmitter il,
             LocalBuilder nullableX,
             LocalBuilder nullableY,
@@ -61,16 +59,16 @@ namespace ILLightenComparer.Emit.Extensions
               .MarkLabel(next);
         }
 
-        public static void EmitCheckReferenceComparison(
+        public static void EmitReferenceComparison(
             this ILEmitter il,
             LocalBuilder x,
             LocalBuilder y,
-            Label ifBothNull)
+            Label ifEqual)
         {
             il.LoadLocal(x)
               .LoadLocal(y)
               .Branch(OpCodes.Bne_Un_S, out var checkX)
-              .Branch(OpCodes.Br, ifBothNull)
+              .Branch(OpCodes.Br, ifEqual)
               .MarkLabel(checkX)
               .LoadLocal(x)
               .Branch(OpCodes.Brtrue_S, out var checkY)

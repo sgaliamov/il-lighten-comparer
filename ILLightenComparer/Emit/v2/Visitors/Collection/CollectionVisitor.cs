@@ -36,7 +36,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var collectionY);
 
             il.DefineLabel(out var gotoNext)
-              .EmitCheckReferenceComparison(collectionX, collectionY, gotoNext);
+              .EmitReferenceComparison(collectionX, collectionY, gotoNext);
 
             return (collectionX, collectionY, gotoNext);
         }
@@ -50,7 +50,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
                 variable.Load(_loader, il, Arg.X).Store(variableType, LocalX, out var nullableX);
                 variable.Load(_loader, il, Arg.Y).Store(variableType, LocalY, out var nullableY);
-                il.CheckNullableValuesForNull(nullableX, nullableY, variableType, continueLoop);
+                il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, continueLoop);
 
                 itemVisitors = _converter.CreateNullableVariableComparison(variable, nullableX, nullableY);
             }
