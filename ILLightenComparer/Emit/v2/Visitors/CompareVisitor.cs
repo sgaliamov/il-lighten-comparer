@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
@@ -126,6 +127,23 @@ namespace ILLightenComparer.Emit.v2.Visitors
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label gotoNext)
         {
             return _enumerableVisitor.Visit(comparison, il, gotoNext);
+        }
+
+        public ILEmitter Visit(MembersComparison source, ILEmitter il, Label gotoNext)
+        {
+            if (comparison.VariableType.GetUnderlyingType().IsPrimitive())
+            {
+                throw new InvalidOperationException($"{comparison.VariableType.DisplayName()} is not expected.");
+            }
+
+            var members = _membersProvider.GetMembers(comparison.VariableType)
+                                          .Select(x=>_converter.CreateComparison(x));
+            foreach (var member in members)
+            {
+                member.Accept(this, il);
+            }
+
+            return il;
         }
 
         private ILEmitter LoadVariables(LocalVariable variable, ILEmitter il, Label gotoNext)

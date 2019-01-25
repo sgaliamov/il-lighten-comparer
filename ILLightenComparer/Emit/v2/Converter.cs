@@ -17,6 +17,7 @@ namespace ILLightenComparer.Emit.v2
             EnumerablesComparison.Create,
             ComparablesComparison.Create,
             HierarchicalsComparison.Create,
+            MembersComparison.Create
         };
 
         public IComparison CreateComparison(IVariable variable)
