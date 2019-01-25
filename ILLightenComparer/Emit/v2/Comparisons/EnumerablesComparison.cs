@@ -11,9 +11,9 @@ using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
-    internal sealed class EnumerableComparison : IComparison
+    internal sealed class EnumerablesComparison : IComparison
     {
-        private EnumerableComparison(IVariable variable)
+        private EnumerablesComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
             
@@ -36,12 +36,12 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public static IComparison Create(IVariable variable)
+        public static EnumerablesComparison Create(IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray)
             {
-                return new EnumerableComparison(variable);
+                return new EnumerablesComparison(variable);
             }
 
             return null;

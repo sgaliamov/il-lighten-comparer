@@ -9,9 +9,9 @@ using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
-    internal sealed class ArrayComparison : IComparison
+    internal sealed class ArraysComparison : IComparison
     {
-        private ArrayComparison(IVariable variable)
+        private ArraysComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
         
@@ -26,12 +26,12 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public static IComparison Create(IVariable variable)
+        public static ArraysComparison Create(IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.IsArray && variableType.GetArrayRank() == 1)
             {
-                return new ArrayComparison(variable);
+                return new ArraysComparison(variable);
             }
 
             return null;

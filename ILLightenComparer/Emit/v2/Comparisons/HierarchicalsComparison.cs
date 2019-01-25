@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Variables;
@@ -23,16 +22,12 @@ namespace ILLightenComparer.Emit.v2.Comparisons
 
         public static HierarchicalsComparison Create(IVariable variable)
         {
-            var type = variable.VariableType;
-            if (type.IsPrimitive()
-                || type.ImplementsGeneric(typeof(IEnumerable<>))
-                || type.IsSealedComparable() // todo: IsComparable()?
-                || type.IsNullable())
+            if (variable.VariableType.IsHierarchical())
             {
-                return null;
+                return new HierarchicalsComparison(variable);
             }
 
-            return new HierarchicalsComparison(variable);
+            return null;
         }
     }
 }

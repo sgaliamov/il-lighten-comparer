@@ -108,10 +108,16 @@ namespace ILLightenComparer.Emit.Extensions
         {
             return type.IsPrimitive
                    || type.IsEnum
-                   //|| ReferenceEquals(type, typeof(IntPtr)) // todo: implement comparison for native ints
-                   //|| ReferenceEquals(type, typeof(UIntPtr))
                    || ReferenceEquals(type, typeof(string))
                    || ReferenceEquals(type, typeof(decimal));
+        }
+
+        public static bool IsHierarchical(this Type type)
+        {
+            return !type.IsPrimitive()
+                   && !type.ImplementsGeneric(typeof(IEnumerable<>))
+                   && !type.IsSealedComparable()
+                   && !type.IsNullable();
         }
 
         public static bool ImplementsGeneric(this Type type, Type generic)

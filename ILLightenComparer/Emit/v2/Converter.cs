@@ -13,10 +13,10 @@ namespace ILLightenComparer.Emit.v2
             IntegralsComparison.Create,
             StringsComparison.Create,
             NullableComparison.Create,
-            ArrayComparison.Create,
-            EnumerableComparison.Create,
+            ArraysComparison.Create,
+            EnumerablesComparison.Create,
             ComparablesComparison.Create,
-            HierarchicalsComparison.Create
+            HierarchicalsComparison.Create,
         };
 
         public IComparison CreateComparison(IVariable variable)

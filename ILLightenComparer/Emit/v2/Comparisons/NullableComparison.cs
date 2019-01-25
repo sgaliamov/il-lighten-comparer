@@ -21,7 +21,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il, gotoNext);
         }
 
-        public static IComparison Create(IVariable variable)
+        public static NullableComparison Create(IVariable variable)
         {
             if (variable.VariableType.IsNullable())
             {

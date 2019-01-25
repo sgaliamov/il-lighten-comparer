@@ -32,7 +32,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _converter = converter;
         }
 
-        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il, Label gotoNext)
+        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
             var (x, y, _) = EmitLoad(il, comparison);
@@ -111,7 +111,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
         private static (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
             ILEmitter il,
-            ArrayComparison comparison,
+            ArraysComparison comparison,
             LocalBuilder x,
             LocalBuilder y)
         {

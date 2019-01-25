@@ -28,7 +28,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _converter = converter;
         }
 
-        public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il, Label next)
+        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label next)
         {
             var (x, y, gotoNext) = EmitLoad(il, comparison);
 
@@ -55,7 +55,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
         private static (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(
             ILEmitter il,
-            EnumerableComparison comparison,
+            EnumerablesComparison comparison,
             LocalBuilder xEnumerable,
             LocalBuilder yEnumerable)
         {
@@ -71,7 +71,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
         private void Loop(
             ILEmitter il,
-            EnumerableComparison comparison,
+            EnumerablesComparison comparison,
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator,
             Label gotoNext)

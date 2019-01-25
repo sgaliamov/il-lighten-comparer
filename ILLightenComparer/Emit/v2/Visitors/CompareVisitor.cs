@@ -118,12 +118,12 @@ namespace ILLightenComparer.Emit.v2.Visitors
                    .Accept(this, il, gotoNext);
         }
 
-        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il, Label gotoNext)
+        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label gotoNext)
         {
             return _arrayVisitor.Visit(comparison, il, gotoNext);
         }
 
-        public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il, Label gotoNext)
+        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label gotoNext)
         {
             return _enumerableVisitor.Visit(comparison, il, gotoNext);
         }

@@ -111,7 +111,7 @@
 
 ## Phase 9
 
-- [ ] compare `IntPtr`
+- [ ] compare `IntPtr` and `UIntPtr`
 - [ ] compare dictionary
 - [ ] compare complex collection
 - [ ] compared dynamic?
