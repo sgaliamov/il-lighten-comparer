@@ -2,8 +2,6 @@
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Variables;
-using ILLightenComparer.Emit.v2.Variables.Collections;
-using ILLightenComparer.Emit.v2.Variables.Members;
 
 namespace ILLightenComparer.Emit.v2.Visitors
 {

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.v2.Variables;
-using ILLightenComparer.Emit.v2.Variables.Members;
 
 namespace ILLightenComparer.Emit.Reflection
 {

@@ -51,6 +51,7 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
+                // todo: null checks should be first
                 if (IsDetectCycles(objectType))
                 {
                     EmitCycleDetection(il);

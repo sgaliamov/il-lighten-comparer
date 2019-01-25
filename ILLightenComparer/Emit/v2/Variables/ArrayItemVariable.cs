@@ -6,7 +6,7 @@ using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Visitors;
 
-namespace ILLightenComparer.Emit.v2.Variables.Collections
+namespace ILLightenComparer.Emit.v2.Variables
 {
     internal sealed class ArrayItemVariable : IVariable
     {
