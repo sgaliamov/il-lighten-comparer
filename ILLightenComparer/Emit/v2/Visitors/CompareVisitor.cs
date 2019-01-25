@@ -5,6 +5,7 @@ using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Comparisons;
 using ILLightenComparer.Emit.v2.Variables;
+using ILLightenComparer.Emit.v2.Visitors.Collection;
 
 namespace ILLightenComparer.Emit.v2.Visitors
 {
@@ -14,6 +15,8 @@ namespace ILLightenComparer.Emit.v2.Visitors
         private readonly Converter _converter;
         private readonly VariableLoader _loader;
         private readonly MembersProvider _membersProvider;
+        private readonly ArrayVisitor _arrayVisitor;
+        private readonly EnumerableVisitor _enumerableVisitor;
 
         public CompareVisitor(ComparerContext context, MembersProvider membersProvider, VariableLoader loader, Converter converter)
         {
@@ -108,14 +111,24 @@ namespace ILLightenComparer.Emit.v2.Visitors
             variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
             variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
             il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, gotoNext);
-            var nullableVariable = new NullableVariable(variableType, nullableX, nullableY);
+            var nullableVariable = new NullableVariable(variableType, variable.OwnerType, nullableX, nullableY);
 
             return _converter
                    .CreateComparison(nullableVariable)
                    .Accept(this, il, gotoNext);
         }
 
-        public ILEmitter LoadVariables(LocalVariable variable, ILEmitter il, Label gotoNext)
+        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il, Label gotoNext)
+        {
+            return _arrayVisitor.Visit(comparison, il, gotoNext);
+        }
+
+        public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il, Label gotoNext)
+        {
+            return _enumerableVisitor.Visit(comparison, il, gotoNext);
+        }
+
+        private ILEmitter LoadVariables(LocalVariable variable, ILEmitter il, Label gotoNext)
         {
             var variableType = variable.VariableType;
             var x = variable.Locals[Arg.X];
@@ -136,7 +149,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return il;
         }
 
-        public ILEmitter LoadVariables(Arguments variable, ILEmitter il, Label gotoNext)
+        private ILEmitter LoadVariables(Arguments variable, ILEmitter il, Label gotoNext)
         {
             var variableType = variable.VariableType;
             variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var x);

@@ -28,7 +28,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _converter = converter;
         }
 
-        public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il)
+        public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il, Label next)
         {
             var (x, y, gotoNext) = EmitLoad(il, comparison);
 
