@@ -1,29 +1,30 @@
-﻿using System;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.v2.Variables;
 using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
     internal sealed class IntegralsComparison : IComparison
     {
-        private IntegralsComparison(Type variableType)
+        private IntegralsComparison(IVariable variable)
         {
-            VariableType = variableType;
+            Variable = variable;
         }
 
-        public Type VariableType { get; }
+        public IVariable Variable { get; }
 
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
+        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il);
         }
 
-        public static IntegralsComparison Create(Type variableType)
+        public static IntegralsComparison Create(IVariable variable)
         {
-            if (variableType.GetUnderlyingType().IsIntegral())
+            if (variable.VariableType.IsIntegral())
             {
-                return new IntegralsComparison(variableType);
+                return new IntegralsComparison(variable);
             }
 
             return null;

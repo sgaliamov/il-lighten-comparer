@@ -1,32 +1,30 @@
-﻿using System;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.v2.Variables;
 using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
     internal sealed class ComparablesComparison : IComparison
     {
-        private ComparablesComparison(Type variableType)
+        private ComparablesComparison(IVariable variable)
         {
-            VariableType = variableType;
+            Variable = variable;
         }
 
-        public Type VariableType { get; }
+        public IVariable Variable { get; }
 
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
+        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {
-            return visitor.Visit(this, il);
+            return visitor.Visit(this, il, gotoNext);
         }
 
-        public static ComparablesComparison Create(Type variableType)
+        public static ComparablesComparison Create(IVariable variable)
         {
-            var isComparable = variableType
-                               .GetUnderlyingType()
-                               .ImplementsGeneric(typeof(IComparable<>));
-            if (isComparable)
+            if (variable.VariableType.IsSealedComparable())
             {
-                return new ComparablesComparison(variableType);
+                return new ComparablesComparison(variable);
             }
 
             return null;

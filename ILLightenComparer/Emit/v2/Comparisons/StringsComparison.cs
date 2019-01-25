@@ -1,30 +1,32 @@
 ﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.v2.Variables;
 using ILLightenComparer.Emit.v2.Visitors;
 
 namespace ILLightenComparer.Emit.v2.Comparisons
 {
     internal sealed class StringsComparison : IComparison
     {
-        private StringsComparison(Type variableType, StringComparison stringComparisonType)
+        private StringsComparison(IVariable variable, StringComparison stringComparisonType)
         {
-            VariableType = variableType;
+            Variable = variable;
             StringComparisonType = (int)stringComparisonType;
         }
 
         public int StringComparisonType { get; }
-        public Type VariableType { get; }
+        public IVariable Variable { get; }
 
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il)
+        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {
             return visitor.Visit(this, il);
         }
 
-        public static StringsComparison Create(Type variableType, StringComparison stringComparisonType)
+        public static StringsComparison Create(IVariable variable, StringComparison stringComparisonType)
         {
-            if (variableType == typeof(string))
+            if (variable.VariableType == typeof(string))
             {
-                return new StringsComparison(variableType, stringComparisonType);
+                return new StringsComparison(variable, stringComparisonType);
             }
 
             return null;
