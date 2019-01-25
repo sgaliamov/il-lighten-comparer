@@ -80,10 +80,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             EmitCheckIfLoopsAreDone(il, xDone, yDone, gotoNext);
 
             var elementType = comparison.ElementType;
-            var itemComparison = _converter.CreateEnumerableItemVariableComparison(
-                comparison.Variable.OwnerType,
-                xEnumerator,
-                yEnumerator);
+            var itemComparison = _converter.CreateEnumerableItemVariableComparison(xEnumerator, yEnumerator);
 
             Visit(il, itemComparison, elementType, continueLoop);
         }

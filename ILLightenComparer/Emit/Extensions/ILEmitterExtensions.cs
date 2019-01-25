@@ -17,24 +17,24 @@ namespace ILLightenComparer.Emit.Extensions
                      .Return();
         }
 
-        public static void EmitArgumentsReferenceComparison(this ILEmitter il)
+        public static ILEmitter EmitArgumentsReferenceComparison(this ILEmitter il)
         {
-            il.LoadArgument(Arg.X)
-              .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Bne_Un_S, out var checkY)
-              .Return(0)
-              .MarkLabel(checkY)
-              .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Brtrue_S, out var checkX)
-              .Return(1)
-              .MarkLabel(checkX)
-              .LoadArgument(Arg.X)
-              .Branch(OpCodes.Brtrue_S, out var next)
-              .Return(-1)
-              .MarkLabel(next);
+            return il.LoadArgument(Arg.X)
+                     .LoadArgument(Arg.Y)
+                     .Branch(OpCodes.Bne_Un_S, out var checkY)
+                     .Return(0)
+                     .MarkLabel(checkY)
+                     .LoadArgument(Arg.Y)
+                     .Branch(OpCodes.Brtrue_S, out var checkX)
+                     .Return(1)
+                     .MarkLabel(checkX)
+                     .LoadArgument(Arg.X)
+                     .Branch(OpCodes.Brtrue_S, out var next)
+                     .Return(-1)
+                     .MarkLabel(next);
         }
 
-        public static void EmitCheckNullablesForValue(
+        public static ILEmitter EmitCheckNullablesForValue(
             this ILEmitter il,
             LocalBuilder nullableX,
             LocalBuilder nullableY,
@@ -43,41 +43,41 @@ namespace ILLightenComparer.Emit.Extensions
         {
             var hasValueMethod = nullableType.GetPropertyGetter(MethodName.HasValue);
 
-            il.LoadAddress(nullableY)
-              .Call(hasValueMethod)
-              .Store(typeof(bool), out var secondHasValue)
-              .LoadAddress(nullableX)
-              .Call(hasValueMethod)
-              .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Branch(OpCodes.Brfalse_S, ifBothNull)
-              .Return(-1)
-              .MarkLabel(ifFirstHasValue)
-              .LoadLocal(secondHasValue)
-              .Branch(OpCodes.Brtrue_S, out var next)
-              .Return(1)
-              .MarkLabel(next);
+            return il.LoadAddress(nullableY)
+                     .Call(hasValueMethod)
+                     .Store(typeof(bool), out var secondHasValue)
+                     .LoadAddress(nullableX)
+                     .Call(hasValueMethod)
+                     .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
+                     .LoadLocal(secondHasValue)
+                     .Branch(OpCodes.Brfalse_S, ifBothNull)
+                     .Return(-1)
+                     .MarkLabel(ifFirstHasValue)
+                     .LoadLocal(secondHasValue)
+                     .Branch(OpCodes.Brtrue_S, out var next)
+                     .Return(1)
+                     .MarkLabel(next);
         }
 
-        public static void EmitReferenceComparison(
+        public static ILEmitter EmitReferenceComparison(
             this ILEmitter il,
             LocalBuilder x,
             LocalBuilder y,
             Label ifEqual)
         {
-            il.LoadLocal(x)
-              .LoadLocal(y)
-              .Branch(OpCodes.Bne_Un_S, out var checkX)
-              .Branch(OpCodes.Br, ifEqual)
-              .MarkLabel(checkX)
-              .LoadLocal(x)
-              .Branch(OpCodes.Brtrue_S, out var checkY)
-              .Return(-1)
-              .MarkLabel(checkY)
-              .LoadLocal(y)
-              .Branch(OpCodes.Brtrue_S, out var next)
-              .Return(1)
-              .MarkLabel(next);
+            return il.LoadLocal(x)
+                     .LoadLocal(y)
+                     .Branch(OpCodes.Bne_Un_S, out var checkX)
+                     .Branch(OpCodes.Br, ifEqual)
+                     .MarkLabel(checkX)
+                     .LoadLocal(x)
+                     .Branch(OpCodes.Brtrue_S, out var checkY)
+                     .Return(-1)
+                     .MarkLabel(checkY)
+                     .LoadLocal(y)
+                     .Branch(OpCodes.Brtrue_S, out var next)
+                     .Return(1)
+                     .MarkLabel(next);
         }
     }
 }
