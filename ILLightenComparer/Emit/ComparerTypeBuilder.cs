@@ -18,7 +18,7 @@ namespace ILLightenComparer.Emit
         public ComparerTypeBuilder(ComparerContext context)
         {
             _context = context;
-            _compareEmitter = new CompareEmitter(context, new Converter());
+            _compareEmitter = new CompareEmitter(context);
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -51,7 +51,11 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
-                // todo: null checks should be first
+                if (!objectType.IsValueType)
+                {
+                    il.EmitArgumentsReferenceComparison();
+                }
+
                 if (IsDetectCycles(objectType))
                 {
                     EmitCycleDetection(il);

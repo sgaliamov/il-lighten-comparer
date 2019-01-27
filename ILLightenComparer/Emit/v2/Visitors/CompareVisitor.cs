@@ -12,12 +12,12 @@ namespace ILLightenComparer.Emit.v2.Visitors
 {
     internal sealed class CompareVisitor
     {
+        private readonly ArrayVisitor _arrayVisitor;
         private readonly ComparerContext _context;
         private readonly Converter _converter;
+        private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader;
         private readonly MembersProvider _membersProvider;
-        private readonly ArrayVisitor _arrayVisitor;
-        private readonly EnumerableVisitor _enumerableVisitor;
 
         public CompareVisitor(ComparerContext context, MembersProvider membersProvider, VariableLoader loader, Converter converter)
         {
@@ -129,18 +129,23 @@ namespace ILLightenComparer.Emit.v2.Visitors
             return _enumerableVisitor.Visit(comparison, il, gotoNext);
         }
 
-        public ILEmitter Visit(MembersComparison source, ILEmitter il, Label gotoNext)
+        public ILEmitter Visit(MembersComparison comparison, ILEmitter il)
         {
-            if (comparison.VariableType.GetUnderlyingType().IsPrimitive())
+            var variableType = comparison.Variable.VariableType;
+            if (variableType.IsPrimitive())
             {
-                throw new InvalidOperationException($"{comparison.VariableType.DisplayName()} is not expected.");
+                throw new InvalidOperationException($"{variableType.DisplayName()} is not expected.");
             }
 
-            var members = _membersProvider.GetMembers(comparison.VariableType)
-                                          .Select(x=>_converter.CreateComparison(x));
+            var members = _membersProvider
+                          .GetMembers(variableType)
+                          .Select(x => _converter.CreateComparison(x));
+
+            il.DefineLabel(out var gotoNext);
+
             foreach (var member in members)
             {
-                member.Accept(this, il);
+                member.Accept(this, il, gotoNext);
             }
 
             return il;

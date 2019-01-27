@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {
-            return visitor.Visit(this, il, gotoNext);
+            return visitor.Visit(this, il);
         }
 
         public static MembersComparison Create(IVariable variable)
