@@ -35,7 +35,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
-            var (x, y, _) = EmitLoad(il, comparison);
+            var (x, y) = EmitLoad(il, comparison);
             var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
 
             EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);

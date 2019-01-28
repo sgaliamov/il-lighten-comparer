@@ -19,9 +19,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _loader = loader;
         }
 
-        protected (LocalBuilder collectionX, LocalBuilder collectionY, Label gotoNext) EmitLoad(
-            ILEmitter il,
-            IVariableComparison comparison)
+        protected (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(ILEmitter il, IComparison comparison)
         {
             var variable = comparison.Variable;
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var collectionX);
@@ -30,7 +28,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             il.DefineLabel(out var gotoNext)
               .EmitReferenceComparison(collectionX, collectionY, gotoNext);
 
-            return (collectionX, collectionY, gotoNext);
+            return (collectionX, collectionY);
         }
 
         protected static void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)

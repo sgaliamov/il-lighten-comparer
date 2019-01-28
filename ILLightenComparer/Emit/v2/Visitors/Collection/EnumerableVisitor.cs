@@ -28,9 +28,9 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _converter = converter;
         }
 
-        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label next)
+        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label gotoNext)
         {
-            var (x, y, gotoNext) = EmitLoad(il, comparison);
+            var (x, y) = EmitLoad(il, comparison);
 
             if (_context.GetConfiguration(comparison.Variable.OwnerType).IgnoreCollectionOrder)
             {
