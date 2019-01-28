@@ -42,7 +42,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
             var itemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
 
-            _converter.CreateComparison(itemVariable)
+            return _converter.CreateComparison(itemVariable)
                       .Accept(_compareVisitor, il, continueLoop)
                       .EmitReturnNotZero(continueLoop)
                       .MarkLabel(continueLoop)
@@ -51,8 +51,6 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
                       .Emit(OpCodes.Add)
                       .Store(index)
                       .Branch(OpCodes.Br, loopStart);
-
-            return il.MarkLabel(afterLoop);
         }
 
         public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)

@@ -52,7 +52,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
             //il.EndExceptionBlock();
 
-            return il.MarkLabel(gotoNext);
+            return il;
         }
 
         private ILEmitter EmitCompareAsSortedArrays(EnumerablesComparison comparison, ILEmitter il, Label gotoNext, LocalBuilder x, LocalBuilder y)

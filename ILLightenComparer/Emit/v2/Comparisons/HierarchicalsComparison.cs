@@ -27,7 +27,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
 
         public static HierarchicalsComparison Create(IVariable variable)
         {
-            if (variable.VariableType.IsHierarchical())
+            if (variable.VariableType.IsHierarchical() && !(variable is ArgumentVariable))
             {
                 return new HierarchicalsComparison(variable);
             }
