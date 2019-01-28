@@ -9,5 +9,6 @@ namespace ILLightenComparer.Emit.v2.Comparisons
     {
         IVariable Variable { get; }
         ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext);
+        ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
     }
 }

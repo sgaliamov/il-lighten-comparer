@@ -143,15 +143,15 @@ namespace ILLightenComparer.Emit.v2.Visitors
                           .GetMembers(variableType)
                           .Select(x => _converter.CreateComparison(x));
 
-            il.DefineLabel(out var gotoNext);
-
             foreach (var member in members)
             {
-                member.Accept(this, il, gotoNext);
-                il.MarkLabel(gotoNext);
+                il.DefineLabel(out var gotoNext);
+                member.Accept(this, il, gotoNext)
+                      .EmitReturnNotZero(gotoNext)
+                      .MarkLabel(gotoNext);
             }
 
-            return il;
+            return il.LoadConstant(0);
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)

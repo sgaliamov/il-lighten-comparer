@@ -20,6 +20,11 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il);
         }
 
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
+
         public static IntegralsComparison Create(IVariable variable)
         {
             if (variable.VariableType.IsIntegral())

@@ -97,29 +97,29 @@ namespace ILLightenComparer.Emit.Shared
             return this;
         }
 
-        public ILEmitter BeginFinallyBlock()
-        {
-            DebugLine("\t.finally");
-            _il.BeginFinallyBlock();
+        //public ILEmitter BeginFinallyBlock()
+        //{
+        //    DebugLine("\t.finally");
+        //    _il.BeginFinallyBlock();
 
-            return this;
-        }
+        //    return this;
+        //}
 
-        public ILEmitter BeginExceptionBlock()
-        {
-            DebugLine("\t.try {");
-            _il.BeginExceptionBlock();
+        //public ILEmitter BeginExceptionBlock()
+        //{
+        //    DebugLine("\t.try {");
+        //    _il.BeginExceptionBlock();
 
-            return this;
-        }
+        //    return this;
+        //}
 
-        public ILEmitter EndExceptionBlock()
-        {
-            DebugLine("\t} // .try");
-            _il.EndExceptionBlock();
+        //public ILEmitter EndExceptionBlock()
+        //{
+        //    DebugLine("\t} // .try");
+        //    _il.EndExceptionBlock();
 
-            return this;
-        }
+        //    return this;
+        //}
 
         public ILEmitter Call(MethodInfo methodInfo)
         {

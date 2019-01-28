@@ -28,6 +28,11 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il, gotoNext);
         }
 
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
+
         public static ComparablesComparison Create(IVariable variable)
         {
             // todo: if object implements IComparable, then it should be used anyway?

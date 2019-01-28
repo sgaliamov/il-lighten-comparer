@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             LocalBuilder countX,
             LocalBuilder countY,
             ILEmitter il,
-            Label gotoNext)
+            Label afterLoop)
         {
             il.LoadConstant(0)
               .Store(typeof(int), Index, out var index)
@@ -38,7 +38,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
               .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
 
-            EmitCheckIfLoopsAreDone(index, countX, countY, il, gotoNext);
+            EmitCheckIfLoopsAreDone(index, countX, countY, il, afterLoop);
 
             var itemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
 
@@ -52,7 +52,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
                       .Store(index)
                       .Branch(OpCodes.Br, loopStart);
 
-            return il.MarkLabel(gotoNext);
+            return il.MarkLabel(afterLoop);
         }
 
         public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)
@@ -72,7 +72,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             LocalBuilder countX,
             LocalBuilder countY,
             ILEmitter il,
-            Label gotoNext)
+            Label afterLoop)
         {
             il.LoadLocal(index)
               .LoadLocal(countX)
@@ -86,7 +86,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
               .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
               .LoadLocal(isDoneY)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br, gotoNext)
+              .Branch(OpCodes.Br, afterLoop)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkIsDoneY)

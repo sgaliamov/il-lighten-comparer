@@ -36,6 +36,11 @@ namespace ILLightenComparer.Emit.v2.Comparisons
             return visitor.Visit(this, il, gotoNext);
         }
 
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
+        {
+            return visitor.Visit(this, il);
+        }
+
         public static EnumerablesComparison Create(IVariable variable)
         {
             var variableType = variable.VariableType;

@@ -23,7 +23,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
-        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label gotoNext)
+        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label afterLoop)
         {
             var variable = comparison.Variable;
             var (x, y) = EmitLoad(il, comparison);
@@ -36,7 +36,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
                 EmitArraySorting(il, variable.VariableType.GetElementType(), x, y);
             }
 
-            return _arrayComparer.Compare(variable, x, y, countX, countY, il, gotoNext);
+            return _arrayComparer.Compare(variable, x, y, countX, countY, il, afterLoop);
         }
 
         private static void EmitCheckForNegativeCount(
