@@ -143,7 +143,9 @@ namespace ILLightenComparer.Emit
 
         private bool IsDetectCycles(Type objectType)
         {
-            return objectType.IsClass && IsCreateCycleDetectionSets(objectType);
+            return objectType.IsClass
+                   && IsCreateCycleDetectionSets(objectType)
+                   && !objectType.ImplementsGeneric(typeof(IEnumerable<>));
         }
 
         private static void EmitCycleDetection(ILEmitter il)
