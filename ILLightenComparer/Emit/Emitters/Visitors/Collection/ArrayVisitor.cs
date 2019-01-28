@@ -1,134 +1,51 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Comparisons;
-using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
+using ILLightenComparer.Emit.v2.Comparisons;
 
-namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
+namespace ILLightenComparer.Emit.v2.Visitors.Collection
 {
     internal sealed class ArrayVisitor : CollectionVisitor
     {
-        private const int CountX = 3;
-        private const int CountY = 4;
-        private const int DoneX = 5;
-        private const int DoneY = 6;
-        private const int Index = 7;
-
+        private readonly ArrayComparer _arrayComparer;
         private readonly ComparerContext _context;
-        private readonly Converter _converter;
 
         public ArrayVisitor(
             ComparerContext context,
-            StackVisitor stackVisitor,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
-            : base(stackVisitor, compareVisitor, loader, converter)
+            : base(loader)
         {
             _context = context;
-            _converter = converter;
+            _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
-        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
+        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label afterLoop)
         {
             var variable = comparison.Variable;
-            var (x, y, gotoNext) = EmitLoad(il, comparison);
-            var (countX, countY) = EmitLoadCounts(il, comparison, x, y);
+            var variableType = variable.VariableType;
 
-            EmitCheckForNegativeCount(il, countX, countY, comparison.Variable.VariableType);
+            var (x, y) = EmitLoad(comparison, il, afterLoop);
+            var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
+
+            EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
 
             if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
             {
-                EmitArraySorting(il, variable.VariableType.GetElementType(), x, y);
+                EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 
-            Loop(il, variable, x, y, countX, countY, gotoNext);
-
-            return il.MarkLabel(gotoNext);
-        }
-
-        private void Loop(
-            ILEmitter il,
-            IVariable variable,
-            LocalBuilder xArray,
-            LocalBuilder yArray,
-            LocalBuilder countX,
-            LocalBuilder countY,
-            Label gotoNext)
-        {
-            il.LoadConstant(0)
-              .Store(typeof(int), Index, out var index)
-              .DefineLabel(out var loopStart)
-              .DefineLabel(out var continueLoop)
-              .MarkLabel(loopStart);
-
-            EmitCheckIfLoopsAreDone(il, index, countX, countY, gotoNext);
-
-            var elementType = variable.VariableType.GetElementType();
-            var itemComparison = _converter.CreateArrayItemVariableComparison(variable, xArray, yArray, index);
-
-            Visit(il, itemComparison, elementType, continueLoop);
-
-            il.MarkLabel(continueLoop)
-              .LoadLocal(index)
-              .LoadConstant(1)
-              .Emit(OpCodes.Add)
-              .Store(index)
-              .Branch(OpCodes.Br, loopStart);
-        }
-
-        private static void EmitCheckIfLoopsAreDone(
-            ILEmitter il,
-            LocalBuilder index,
-            LocalBuilder countX,
-            LocalBuilder countY,
-            Label gotoNext)
-        {
-            il.LoadLocal(index)
-              .LoadLocal(countX)
-              .Emit(OpCodes.Ceq)
-              .Store(typeof(int), DoneX, out var isDoneX)
-              .LoadLocal(index)
-              .LoadLocal(countY)
-              .Emit(OpCodes.Ceq)
-              .Store(typeof(int), DoneY, out var isDoneY)
-              .LoadLocal(isDoneX)
-              .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
-              .LoadLocal(isDoneY)
-              .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br, gotoNext)
-              .MarkLabel(returnM1)
-              .Return(-1)
-              .MarkLabel(checkIsDoneY)
-              .LoadLocal(isDoneY)
-              .Branch(OpCodes.Brfalse_S, out var loadValues)
-              .Return(1)
-              .MarkLabel(loadValues);
-        }
-
-        private static (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
-            ILEmitter il,
-            ArrayComparison comparison,
-            LocalBuilder x,
-            LocalBuilder y)
-        {
-            il.LoadLocal(x)
-              .Call(comparison.GetLengthMethod)
-              .Store(typeof(int), CountX, out var countX)
-              .LoadLocal(y)
-              .Call(comparison.GetLengthMethod)
-              .Store(typeof(int), CountY, out var countY);
-
-            return (countX, countY);
+            return _arrayComparer.Compare(variableType, variable.OwnerType, x, y, countX, countY, il, afterLoop);
         }
 
         private static void EmitCheckForNegativeCount(
-            ILEmitter il,
             LocalBuilder countX,
             LocalBuilder countY,
-            MemberInfo memberType)
+            MemberInfo memberType,
+            ILEmitter il)
         {
             il.LoadConstant(0)
               .LoadLocal(countX)

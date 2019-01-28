@@ -63,7 +63,8 @@
 - [x] `IgnoreCollectionOrder` setting
 - [x] use `DetectCycles` setting
 - [x] refactor tests - ensure all branch execution
-- [ ] refactor visitors
+- [x] refactor visitors
+- [ ] introduce variables scope to not have to track variable buckets
 - [ ] customization setting to override comparer with specific implementation
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting
@@ -88,8 +89,7 @@
 - [ ] optimization for a last member - just return its result
 - [ ] same for simple types, when arguments are compared directly
 - [ ] change behavior then types are not matched but castable
-- [ ] do reference comparison only once
-- [ ] introduce variables scope to not have to track variable buckets, try `BeginScope` method
+- [ ] do reference comparison only once? done?
 - [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?
 - [ ] support internal classes to compare?

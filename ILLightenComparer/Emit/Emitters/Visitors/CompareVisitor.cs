@@ -1,74 +1,163 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection.Emit;
-using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
-using StringComparison = ILLightenComparer.Emit.Emitters.Comparisons.StringComparison;
+using ILLightenComparer.Emit.v2.Comparisons;
+using ILLightenComparer.Emit.v2.Variables;
+using ILLightenComparer.Emit.v2.Visitors.Collection;
 
-namespace ILLightenComparer.Emit.Emitters.Visitors
+namespace ILLightenComparer.Emit.v2.Visitors
 {
     internal sealed class CompareVisitor
     {
+        private readonly ArrayVisitor _arrayVisitor;
         private readonly ComparerContext _context;
+        private readonly Converter _converter;
+        private readonly EnumerableVisitor _enumerableVisitor;
+        private readonly VariableLoader _loader;
+        private readonly MembersProvider _membersProvider;
 
-        public CompareVisitor(ComparerContext context)
+        public CompareVisitor(ComparerContext context, MembersProvider membersProvider, VariableLoader loader, Converter converter)
         {
             _context = context;
+            _membersProvider = membersProvider;
+            _loader = loader;
+            _converter = converter;
+            _arrayVisitor = new ArrayVisitor(context, this, loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(context, this, loader, converter);
         }
 
-        public ILEmitter Visit(HierarchicalComparison comparison, ILEmitter il)
+        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
         {
-            var underlyingType = comparison.Variable.VariableType.GetUnderlyingType();
-            if (!underlyingType.IsValueType && !underlyingType.IsSealed)
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
+            il.LoadArgument(Arg.Context);
+            variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y);
+            il.LoadArgument(Arg.SetX)
+              .LoadArgument(Arg.SetY);
+
+            if (!variableType.IsValueType && !variableType.IsSealed)
             {
-                return EmitCallForDelayedCompareMethod(il, underlyingType);
+                return EmitCallForDelayedCompareMethod(il, variableType);
             }
 
-            var compareMethod = _context.GetStaticCompareMethod(underlyingType);
+            var compareMethod = _context.GetStaticCompareMethod(variableType);
 
             return il.Emit(OpCodes.Call, compareMethod);
         }
 
-        public ILEmitter Visit(ComparableComparison comparison, ILEmitter il)
+        public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il, Label gotoNext)
         {
-            var variableType = comparison.Variable.VariableType;
-            var underlyingType = variableType.GetUnderlyingType();
-            if (!underlyingType.IsSealedComparable())
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
+            if (variableType.IsValueType)
             {
-                return EmitCallForDelayedCompareMethod(il, underlyingType);
+                variable.LoadAddress(_loader, il, Arg.X);
+                variable.Load(_loader, il, Arg.Y);
+            }
+            else
+            {
+                variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var x);
+                variable.Load(_loader, il, Arg.Y)
+                        .Store(variableType, 1, out var y)
+                        .LoadLocal(x)
+                        .Branch(OpCodes.Brtrue_S, out var call)
+                        .LoadLocal(y)
+                        .Branch(OpCodes.Brfalse_S, gotoNext)
+                        .Return(-1)
+                        .MarkLabel(call)
+                        .LoadLocal(x)
+                        .LoadLocal(y);
             }
 
-            var compareToMethod = variableType.GetUnderlyingCompareToMethod()
-                                  ?? throw new InvalidOperationException(
-                                      $"{variableType.DisplayName()} does not have {MethodName.CompareTo} method.");
-
-            return il.Emit(OpCodes.Call, compareToMethod);
+            return il.Emit(OpCodes.Call, comparison.CompareToMethod);
         }
 
-        public ILEmitter Visit(IntegralComparison comparison, ILEmitter il)
+        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il)
         {
-            if (!comparison.Variable.VariableType.GetUnderlyingType().IsSmallIntegral())
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
+            if (!variableType.GetUnderlyingType().IsIntegral())
             {
-                throw new InvalidOperationException(
-                    $"Integral type is expected but: {comparison.Variable.VariableType.DisplayName()}.");
+                throw new InvalidOperationException($"Integral type is expected but: {variableType.DisplayName()}.");
             }
+
+            variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y);
 
             return il.Emit(OpCodes.Sub);
         }
 
-        public ILEmitter Visit(StringComparison comparison, ILEmitter il)
+        public ILEmitter Visit(StringsComparison comparison, ILEmitter il)
         {
-            var comparisonType = (int)_context
-                                      .GetConfiguration(comparison.Variable.OwnerType)
-                                      .StringComparisonType;
+            var variable = comparison.Variable;
 
-            return il.LoadConstant(comparisonType).Call(Method.StringCompare);
+            variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y);
+
+            var stringComparisonType = _context.GetConfiguration(variable.OwnerType).StringComparisonType;
+
+            return il.LoadConstant((int)stringComparisonType).Call(Method.StringCompare);
         }
 
-        private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type underlyingType)
+        public ILEmitter Visit(NullableComparison comparison, ILEmitter il, Label gotoNext)
         {
-            var delayedCompare = Method.DelayedCompare.MakeGenericMethod(underlyingType);
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
+            variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
+            variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
+            il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, gotoNext);
+
+            var nullableVariable = new NullableVariable(variableType, variable.OwnerType, nullableX, nullableY);
+
+            return _converter
+                   .CreateComparison(nullableVariable)
+                   .Accept(this, il, gotoNext);
+        }
+
+        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label gotoNext)
+        {
+            return _arrayVisitor.Visit(comparison, il, gotoNext);
+        }
+
+        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label gotoNext)
+        {
+            return _enumerableVisitor.Visit(comparison, il, gotoNext);
+        }
+
+        public ILEmitter Visit(MembersComparison comparison, ILEmitter il)
+        {
+            var variableType = comparison.Variable.VariableType;
+            if (variableType.IsPrimitive())
+            {
+                throw new InvalidOperationException($"{variableType.DisplayName()} is not expected.");
+            }
+
+            var members = _membersProvider
+                          .GetMembers(variableType)
+                          .Select(x => _converter.CreateComparison(x));
+
+            foreach (var member in members)
+            {
+                il.DefineLabel(out var gotoNext);
+                member.Accept(this, il, gotoNext)
+                      .EmitReturnNotZero(gotoNext)
+                      .MarkLabel(gotoNext);
+            }
+
+            return il.LoadConstant(0);
+        }
+
+        private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)
+        {
+            var delayedCompare = Method.DelayedCompare.MakeGenericMethod(type);
 
             return il.Emit(OpCodes.Call, delayedCompare);
         }

@@ -6,12 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Emit\Emitters\**" />
-    <EmbeddedResource Remove="Emit\Emitters\**" />
-    <None Remove="Emit\Emitters\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>
 
