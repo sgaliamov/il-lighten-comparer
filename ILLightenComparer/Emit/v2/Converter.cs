@@ -10,13 +10,13 @@ namespace ILLightenComparer.Emit.v2
     {
         private static readonly Func<IVariable, IComparison>[] ComparisonConverters =
         {
-            IntegralsComparison.Create,
-            StringsComparison.Create,
             NullableComparison.Create,
+            IntegralsComparison.Create,
+            ComparablesComparison.Create,
+            StringsComparison.Create,
+            HierarchicalsComparison.Create,
             ArraysComparison.Create,
             EnumerablesComparison.Create,
-            ComparablesComparison.Create,
-            HierarchicalsComparison.Create,
             MembersComparison.Create
         };
 

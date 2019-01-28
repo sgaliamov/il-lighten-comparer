@@ -27,7 +27,7 @@ namespace ILLightenComparer.Emit.v2.Comparisons
 
         public static IntegralsComparison Create(IVariable variable)
         {
-            if (variable.VariableType.IsIntegral())
+            if (variable.VariableType.GetUnderlyingType().IsIntegral())
             {
                 return new IntegralsComparison(variable);
             }
