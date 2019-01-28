@@ -25,6 +25,8 @@ namespace ILLightenComparer.Emit.v2.Visitors
             _membersProvider = membersProvider;
             _loader = loader;
             _converter = converter;
+            _arrayVisitor = new ArrayVisitor(context, this, loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(context, this, loader, converter);
         }
 
         public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
@@ -147,40 +149,6 @@ namespace ILLightenComparer.Emit.v2.Visitors
             {
                 member.Accept(this, il, gotoNext);
             }
-
-            return il;
-        }
-
-        private ILEmitter LoadVariables(LocalVariable variable, ILEmitter il, Label gotoNext)
-        {
-            var variableType = variable.VariableType;
-            var x = variable.Locals[Arg.X];
-            var y = variable.Locals[Arg.Y];
-
-            if (variableType.IsValueType)
-            {
-                if (variableType.IsNullable())
-                {
-                    return il.EmitCheckNullablesForValue(x, y, variableType, gotoNext);
-                }
-            }
-            else
-            {
-                return il.EmitReferenceComparison(x, y, gotoNext);
-            }
-
-            return il;
-        }
-
-        private ILEmitter LoadVariables(Arguments variable, ILEmitter il, Label gotoNext)
-        {
-            var variableType = variable.VariableType;
-            variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var x);
-            variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var y);
-
-            var variables = new LocalVariable(variableType, x, y);
-
-            LoadVariables(variables, il, gotoNext);
 
             return il;
         }

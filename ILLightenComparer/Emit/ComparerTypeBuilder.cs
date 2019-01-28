@@ -51,7 +51,7 @@ namespace ILLightenComparer.Emit
         {
             using (var il = staticMethodBuilder.CreateILEmitter())
             {
-                if (!objectType.IsValueType)
+                if (!objectType.IsValueType && !objectType.IsSealedComparable())
                 {
                     il.EmitArgumentsReferenceComparison();
                 }

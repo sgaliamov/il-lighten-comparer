@@ -1,5 +1,6 @@
 ﻿using System;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Variables;
 using ILLightenComparer.Emit.v2.Visitors;
@@ -15,7 +16,7 @@ namespace ILLightenComparer.Emit.v2
 
         public CompareEmitter(ComparerContext context)
         {
-            _compareVisitor = new CompareVisitor(context);
+            _compareVisitor = new CompareVisitor(context, new MembersProvider(context), _loader, _converter);
         }
 
         public void Emit(Type objectType, ILEmitter il)
