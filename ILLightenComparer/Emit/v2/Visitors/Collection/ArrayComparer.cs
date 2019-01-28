@@ -45,14 +45,14 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
             return _converter.CreateComparison(itemVariable)
-                      .Accept(_compareVisitor, il, continueLoop)
-                      .EmitReturnNotZero(continueLoop)
-                      .MarkLabel(continueLoop)
-                      .LoadLocal(index)
-                      .LoadConstant(1)
-                      .Emit(OpCodes.Add)
-                      .Store(index)
-                      .Branch(OpCodes.Br, loopStart);
+                             .Accept(_compareVisitor, il, continueLoop)
+                             .EmitReturnNotZero(continueLoop)
+                             .MarkLabel(continueLoop)
+                             .LoadLocal(index)
+                             .LoadConstant(1)
+                             .Emit(OpCodes.Add)
+                             .Store(index)
+                             .Branch(OpCodes.Br, loopStart);
         }
 
         public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(Type arrayType, LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)

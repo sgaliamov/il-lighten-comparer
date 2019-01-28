@@ -6,8 +6,8 @@ namespace ILLightenComparer.Emit.v2.Variables
 {
     internal interface IVariable
     {
-        Type VariableType { get; }
         Type OwnerType { get; }
+        Type VariableType { get; }
 
         ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg);
         ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg);

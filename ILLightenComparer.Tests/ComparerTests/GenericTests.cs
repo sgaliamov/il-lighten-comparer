@@ -254,14 +254,11 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             foreach (var item in (IEnumerable)result)
             {
-                if (!(Random.NextDouble() < Constants.NullProbability))
-                {
-                    addMethod.Invoke(list, new[] { item });
-                }
-                else
-                {
-                    addMethod.Invoke(list, new[] { (object)null });
-                }
+                var parameters = Random.NextDouble() < Constants.NullProbability
+                                     ? new[] { (object)null }
+                                     : new[] { item };
+
+                addMethod.Invoke(list, parameters);
             }
 
             return (T)asEnumerableMethod.Invoke(null, new[] { list });

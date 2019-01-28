@@ -16,13 +16,13 @@ namespace ILLightenComparer.Emit.v2.Comparisons
         private EnumerablesComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
-            
+
             GetEnumeratorMethod = variable.VariableType.GetMethod(MethodName.GetEnumerator, Type.EmptyTypes)
                                   ?? throw new ArgumentException(nameof(variable));
-            
+
             ElementType = variable.VariableType.GetGenericArguments().FirstOrDefault()
                           ?? throw new ArgumentException(nameof(variable));
-            
+
             EnumeratorType = typeof(IEnumerator<>).MakeGenericType(ElementType);
         }
 

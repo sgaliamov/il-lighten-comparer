@@ -12,7 +12,10 @@ namespace ILLightenComparer.Emit.Shared
         private readonly List<Label> _debugLabels = new List<Label>();
         private readonly string _name;
 
-        public ILEmitter(string name, ILGenerator il) : this(il) => _name = name;
+        public ILEmitter(string name, ILGenerator il) : this(il)
+        {
+            _name = name;
+        }
 
         partial void DebugLine(string message)
         {

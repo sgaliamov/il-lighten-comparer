@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -115,9 +116,9 @@ namespace ILLightenComparer.Emit.Extensions
         public static bool IsHierarchical(this Type type)
         {
             return !type.IsPrimitive()
-                   && !type.ImplementsGeneric(typeof(IEnumerable<>))
                    && !type.IsSealedComparable()
-                   && !type.IsNullable();
+                   && !type.IsNullable()
+                   && !typeof(IEnumerable).IsAssignableFrom(type);
         }
 
         public static bool ImplementsGeneric(this Type type, Type generic)
