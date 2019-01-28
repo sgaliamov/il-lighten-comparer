@@ -94,16 +94,6 @@ namespace ILLightenComparer.Emit.v2.Visitors
                      .LoadAddress(x);
         }
 
-        public ILEmitter Load(LocalVariable variable, ILEmitter il, ushort arg)
-        {
-            return il.LoadLocal(variable.Locals[arg]);
-        }
-
-        public ILEmitter LoadAddress(LocalVariable variable, ILEmitter il, ushort arg)
-        {
-            return il.LoadAddress(variable.Locals[arg]);
-        }
-
         public ILEmitter Load(ArgumentVariable variable, ILEmitter il, ushort arg)
         {
             return il.LoadArgument(arg);
