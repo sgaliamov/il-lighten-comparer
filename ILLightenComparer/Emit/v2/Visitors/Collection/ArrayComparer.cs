@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
@@ -24,7 +25,8 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         }
 
         public ILEmitter Compare(
-            IVariable variable,
+            Type arrayType,
+            Type ownerType,
             LocalBuilder xArray,
             LocalBuilder yArray,
             LocalBuilder countX,
@@ -40,7 +42,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
 
             EmitCheckIfLoopsAreDone(index, countX, countY, il, afterLoop);
 
-            var itemVariable = new ArrayItemVariable(variable.VariableType, variable.OwnerType, xArray, yArray, index);
+            var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
             return _converter.CreateComparison(itemVariable)
                       .Accept(_compareVisitor, il, continueLoop)
@@ -53,13 +55,13 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
                       .Branch(OpCodes.Br, loopStart);
         }
 
-        public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)
+        public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(Type arrayType, LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)
         {
             il.LoadLocal(arrayX)
-              .Emit(OpCodes.Call, arrayX.LocalType.GetPropertyGetter(MethodName.Length))
+              .Emit(OpCodes.Call, arrayType.GetPropertyGetter(MethodName.Length))
               .Store(typeof(int), CountX, out var countX)
               .LoadLocal(arrayY)
-              .Emit(OpCodes.Call, arrayY.LocalType.GetPropertyGetter(MethodName.Length))
+              .Emit(OpCodes.Call, arrayType.GetPropertyGetter(MethodName.Length))
               .Store(typeof(int), CountY, out var countY);
 
             return (countX, countY);

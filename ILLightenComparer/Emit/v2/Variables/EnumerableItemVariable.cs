@@ -28,6 +28,10 @@ namespace ILLightenComparer.Emit.v2.Variables
             }
 
             var enumeratorType = xEnumerator.LocalType;
+            if (!enumeratorType.ImplementsGeneric(typeof(IEnumerator<>)))
+            {
+                throw new ArgumentException($"Unexpected type {enumeratorType}.", nameof(enumeratorType));
+            }
 
             VariableType = enumeratorType?.GetGenericArguments().SingleOrDefault()
                            ?? throw new ArgumentException(nameof(enumeratorType));

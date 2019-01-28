@@ -4,6 +4,7 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 using ILLightenComparer.Emit.v2.Comparisons;
+using ILLightenComparer.Emit.v2.Variables;
 
 namespace ILLightenComparer.Emit.v2.Visitors.Collection
 {
@@ -26,17 +27,19 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label afterLoop)
         {
             var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
             var (x, y) = EmitLoad(comparison, il, afterLoop);
-            var (countX, countY) = _arrayComparer.EmitLoadCounts(x, y, il);
+            var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
 
             EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
 
             if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
             {
-                EmitArraySorting(il, variable.VariableType.GetElementType(), x, y);
+                EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 
-            return _arrayComparer.Compare(variable, x, y, countX, countY, il, afterLoop);
+            return _arrayComparer.Compare(variableType, variable.OwnerType, x, y, countX, countY, il, afterLoop);
         }
 
         private static void EmitCheckForNegativeCount(

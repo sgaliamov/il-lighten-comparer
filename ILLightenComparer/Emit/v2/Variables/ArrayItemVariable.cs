@@ -11,22 +11,22 @@ namespace ILLightenComparer.Emit.v2.Variables
     internal sealed class ArrayItemVariable : IVariable
     {
         public ArrayItemVariable(
-            Type arrayMemberType,
+            Type arrayType,
             Type ownerType,
             LocalBuilder xArray,
             LocalBuilder yArray,
             LocalBuilder indexVariable)
         {
-            if (arrayMemberType == null) { throw new ArgumentNullException(nameof(arrayMemberType)); }
+            if (arrayType == null) { throw new ArgumentNullException(nameof(arrayType)); }
 
             IndexVariable = indexVariable ?? throw new ArgumentNullException(nameof(indexVariable));
 
             OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
 
-            GetItemMethod = arrayMemberType.GetMethod(MethodName.Get, new[] { typeof(int) })
-                            ?? throw new ArgumentException(nameof(arrayMemberType));
+            GetItemMethod = arrayType.GetMethod(MethodName.Get, new[] { typeof(int) })
+                            ?? throw new ArgumentException(nameof(arrayType));
 
-            VariableType = arrayMemberType.GetElementType();
+            VariableType = arrayType.GetElementType();
 
             Arrays = new Dictionary<ushort, LocalBuilder>(2)
             {

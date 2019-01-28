@@ -114,6 +114,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
             variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
             il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, gotoNext);
+
             var nullableVariable = new NullableVariable(variableType, variable.OwnerType, nullableX, nullableY);
 
             return _converter

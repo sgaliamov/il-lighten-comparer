@@ -59,9 +59,11 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         {
             EmitArraySorting(il, comparison.ElementType, x, y);
 
-            var (countX, countY) = _arrayComparer.EmitLoadCounts(x, y, il);
+            var arrayType = comparison.ElementType.MakeArrayType();
 
-            return _arrayComparer.Compare(comparison.Variable, x, y, countX, countY, il, gotoNext);
+            var (countX, countY) = _arrayComparer.EmitLoadCounts(arrayType, x, y, il);
+
+            return _arrayComparer.Compare(arrayType, comparison.Variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
         private static (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(
