@@ -30,13 +30,13 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
-        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label gotoNext)
+        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label afterLoop)
         {
-            var (x, y) = EmitLoad(il, comparison);
+            var (x, y) = EmitLoad(comparison, il, afterLoop);
 
             if (_context.GetConfiguration(comparison.Variable.OwnerType).IgnoreCollectionOrder)
             {
-                return EmitCompareAsSortedArrays(comparison, il, gotoNext, x, y);
+                return EmitCompareAsSortedArrays(comparison, il, afterLoop, x, y);
             }
 
             var (xEnumerator, yEnumerator) = EmitLoadEnumerators(comparison, x, y, il);
@@ -45,10 +45,10 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             // the problem now with the inner `return` statements, it has to be `leave` instruction
             //il.BeginExceptionBlock(); 
 
-            Loop(comparison, xEnumerator, yEnumerator, il, gotoNext);
+            Loop(comparison, xEnumerator, yEnumerator, il, afterLoop);
 
             //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(xEnumerator, yEnumerator, il, gotoNext);
+            EmitDisposeEnumerators(xEnumerator, yEnumerator, il, afterLoop);
 
             //il.EndExceptionBlock();
 

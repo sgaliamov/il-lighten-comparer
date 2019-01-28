@@ -19,14 +19,13 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             _loader = loader;
         }
 
-        protected (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(ILEmitter il, IComparison comparison)
+        protected (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var collectionX);
             variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var collectionY);
 
-            il.DefineLabel(out var gotoNext)
-              .EmitReferenceComparison(collectionX, collectionY, gotoNext);
+            il.EmitReferenceComparison(collectionX, collectionY, gotoNext);
 
             return (collectionX, collectionY);
         }

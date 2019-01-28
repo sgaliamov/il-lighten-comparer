@@ -56,10 +56,10 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)
         {
             il.LoadLocal(arrayX)
-              .Call(arrayX.LocalType.GetPropertyGetter(MethodName.Length))
+              .Emit(OpCodes.Call, arrayX.LocalType.GetPropertyGetter(MethodName.Length))
               .Store(typeof(int), CountX, out var countX)
               .LoadLocal(arrayY)
-              .Call(arrayY.LocalType.GetPropertyGetter(MethodName.Length))
+              .Emit(OpCodes.Call, arrayY.LocalType.GetPropertyGetter(MethodName.Length))
               .Store(typeof(int), CountY, out var countY);
 
             return (countX, countY);
