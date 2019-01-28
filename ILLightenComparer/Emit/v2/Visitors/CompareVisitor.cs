@@ -148,6 +148,7 @@ namespace ILLightenComparer.Emit.v2.Visitors
             foreach (var member in members)
             {
                 member.Accept(this, il, gotoNext);
+                il.MarkLabel(gotoNext);
             }
 
             return il;
