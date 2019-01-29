@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Variables;
 
-namespace ILLightenComparer.Emit.v2.Visitors.Collection
+namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal sealed class ArrayComparer
     {
-        private const int CountX = 3;
-        private const int CountY = 4;
-        private const int DoneX = 5;
-        private const int DoneY = 6;
-        private const int Index = 7;
-
         private readonly CompareVisitor _compareVisitor;
         private readonly Converter _converter;
 

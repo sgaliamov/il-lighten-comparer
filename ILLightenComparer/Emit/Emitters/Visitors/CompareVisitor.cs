@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
+using ILLightenComparer.Emit.Emitters.Visitors.Collection;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Comparisons;
-using ILLightenComparer.Emit.v2.Variables;
-using ILLightenComparer.Emit.v2.Visitors.Collection;
 
-namespace ILLightenComparer.Emit.v2.Visitors
+namespace ILLightenComparer.Emit.Emitters.Visitors
 {
     internal sealed class CompareVisitor
     {

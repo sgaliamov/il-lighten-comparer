@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Comparisons;
 
-namespace ILLightenComparer.Emit.v2.Visitors.Collection
+namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal sealed class ArrayVisitor : CollectionVisitor
     {

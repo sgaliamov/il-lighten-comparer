@@ -1,4 +1,4 @@
-﻿namespace ILLightenComparer.Emit.v2
+﻿namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class Arg
     {

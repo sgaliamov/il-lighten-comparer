@@ -1,16 +1,14 @@
 ﻿using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Comparisons;
-using ILLightenComparer.Emit.v2.Variables;
 
-namespace ILLightenComparer.Emit.v2.Visitors.Collection
+namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal sealed class EnumerableVisitor : CollectionVisitor
     {
-        private const int DoneX = 3;
-        private const int DoneY = 4;
         private readonly ArrayComparer _arrayComparer;
 
         private readonly CompareVisitor _compareVisitor;

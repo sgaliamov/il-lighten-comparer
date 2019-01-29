@@ -1,8 +1,8 @@
 ﻿using System;
+using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Visitors;
 
-namespace ILLightenComparer.Emit.v2.Variables
+namespace ILLightenComparer.Emit.Emitters.Variables
 {
     internal sealed class ArgumentVariable : IVariable
     {

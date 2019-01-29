@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
+using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
-using ILLightenComparer.Emit.v2.Comparisons;
-using ILLightenComparer.Emit.v2.Variables;
 
-namespace ILLightenComparer.Emit.v2
+namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class Converter
     {

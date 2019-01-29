@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Visitors;
 
-namespace ILLightenComparer.Emit.v2.Variables
+namespace ILLightenComparer.Emit.Emitters.Variables
 {
     internal sealed class ArrayItemVariable : IVariable
     {

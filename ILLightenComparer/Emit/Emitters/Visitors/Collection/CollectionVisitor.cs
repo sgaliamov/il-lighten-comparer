@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Comparisons;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Comparisons;
 
-namespace ILLightenComparer.Emit.v2.Visitors.Collection
+namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 {
     internal abstract class CollectionVisitor
     {
-        protected const int LocalX = Arg.X; // 1
-        protected const int LocalY = Arg.Y; // 2
-
         private readonly VariableLoader _loader;
 
         protected CollectionVisitor(VariableLoader loader)

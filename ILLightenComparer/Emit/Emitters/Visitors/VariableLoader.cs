@@ -1,9 +1,9 @@
 ﻿using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Variables;
 
-namespace ILLightenComparer.Emit.v2.Visitors
+namespace ILLightenComparer.Emit.Emitters.Visitors
 {
     internal sealed class VariableLoader
     {

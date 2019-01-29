@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Emit.Emitters.Variables;
+using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
-using ILLightenComparer.Emit.v2.Variables;
-using ILLightenComparer.Emit.v2.Visitors;
 
-namespace ILLightenComparer.Emit.v2.Comparisons
+namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
     internal sealed class NullableComparison : IComparison
     {
