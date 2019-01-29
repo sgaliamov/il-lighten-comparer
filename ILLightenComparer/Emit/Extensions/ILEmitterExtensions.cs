@@ -10,10 +10,10 @@ namespace ILLightenComparer.Emit.Extensions
     {
         public static ILEmitter EmitReturnNotZero(this ILEmitter il, Label next)
         {
-            return il.Emit(OpCodes.Stloc_0)
-                     .Emit(OpCodes.Ldloc_0)
+            return il.Store(typeof(int), out var result)
+                     .LoadLocal(result)
                      .Branch(OpCodes.Brfalse, next)
-                     .Emit(OpCodes.Ldloc_0)
+                     .LoadLocal(result)
                      .Return();
         }
 

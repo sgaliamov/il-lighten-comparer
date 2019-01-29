@@ -21,9 +21,6 @@ namespace ILLightenComparer.Emit.v2
 
         public void Emit(Type objectType, ILEmitter il)
         {
-            // todo: refactor
-            il.DeclareLocal(typeof(int), 0, out _);
-
             var comparison = _converter.CreateComparison(new ArgumentVariable(objectType));
 
             comparison.Accept(this, il);

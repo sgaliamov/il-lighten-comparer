@@ -22,8 +22,8 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         protected (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, LocalX, out var collectionX);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, LocalY, out var collectionY);
+            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, out var collectionX);
+            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, out var collectionY);
 
             il.EmitReferenceComparison(collectionX, collectionY, gotoNext);
 

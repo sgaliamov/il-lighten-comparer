@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
@@ -41,8 +42,7 @@ namespace ILLightenComparer.Emit.Shared
         {
             Debug.WriteLine(_name);
 
-            var locals = _localBuckets
-                         .Values.SelectMany(x => x.Values)
+            var locals = _locals
                          .OrderBy(x => x.LocalIndex)
                          .ToArray();
 
@@ -58,6 +58,8 @@ namespace ILLightenComparer.Emit.Shared
             }
 
             Debug.WriteLine(_debugger.ToString().TrimEnd());
+
+            if (_scopes.Count != 0) { throw new InvalidOperationException("Bad locals scope state."); }
         }
     }
 }

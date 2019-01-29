@@ -74,10 +74,10 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         {
             il.LoadLocal(xEnumerable)
               .Call(comparison.GetEnumeratorMethod)
-              .Store(comparison.EnumeratorType, LocalX, out var xEnumerator)
+              .Store(comparison.EnumeratorType, out var xEnumerator)
               .LoadLocal(yEnumerable)
               .Call(comparison.GetEnumeratorMethod)
-              .Store(comparison.EnumeratorType, LocalY, out var yEnumerator);
+              .Store(comparison.EnumeratorType, out var yEnumerator);
 
             return (xEnumerator, yEnumerator);
         }
@@ -132,12 +132,12 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
               .Call(Method.MoveNext)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), DoneX, out var xDone)
+              .Store(typeof(int), out var xDone)
               .LoadLocal(yEnumerator)
               .Call(Method.MoveNext)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), DoneY, out var yDone);
+              .Store(typeof(int), out var yDone);
 
             return (xDone, yDone);
         }

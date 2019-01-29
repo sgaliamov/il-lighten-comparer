@@ -62,9 +62,9 @@ namespace ILLightenComparer.Emit.v2.Visitors
             }
             else
             {
-                variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var x);
+                variable.Load(_loader, il, Arg.X).Store(variableType, out var x);
                 variable.Load(_loader, il, Arg.Y)
-                        .Store(variableType, 1, out var y)
+                        .Store(variableType, out var y)
                         .LoadLocal(x)
                         .Branch(OpCodes.Brtrue_S, out var call)
                         .LoadLocal(y)
@@ -111,8 +111,8 @@ namespace ILLightenComparer.Emit.v2.Visitors
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
-            variable.Load(_loader, il, Arg.X).Store(variableType, 0, out var nullableX);
-            variable.Load(_loader, il, Arg.Y).Store(variableType, 1, out var nullableY);
+            variable.Load(_loader, il, Arg.X).Store(variableType, out var nullableX);
+            variable.Load(_loader, il, Arg.Y).Store(variableType, out var nullableY);
             il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, gotoNext);
 
             var nullableVariable = new NullableVariable(variableType, variable.OwnerType, nullableX, nullableY);

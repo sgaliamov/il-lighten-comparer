@@ -7,30 +7,24 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Shared
 {
-    using Locals = Dictionary<byte, Dictionary<Type, LocalBuilder>>;
-
-    // ReSharper disable once PartialTypeWithSinglePart
     internal sealed partial class ILEmitter : IDisposable
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
 
-        private ILGenerator _il;
-
-        private Locals _localBuckets = new Locals
-        {
-            { 0, new Dictionary<Type, LocalBuilder>() }
-        };
+        private readonly ILGenerator _il;
+        private readonly List<LocalBuilder> _locals = new List<LocalBuilder>();
+        private readonly Stack<LocalsScope> _scopes = new Stack<LocalsScope>();
 
         public ILEmitter(ILGenerator il)
         {
             _il = il;
+            Scope();
         }
 
         public void Dispose()
         {
+            _scopes.Pop();
             DebugOutput();
-            _il = null;
-            _localBuckets = null;
         }
 
         public ILEmitter Emit(OpCode opCode)
@@ -261,18 +255,6 @@ namespace ILLightenComparer.Emit.Shared
             return this;
         }
 
-        public ILEmitter Store(Type localType, out LocalBuilder local)
-        {
-            return Store(localType, 0, out local);
-        }
-
-        public ILEmitter Store(Type localType, byte bucket, out LocalBuilder local)
-        {
-            DeclareLocal(localType, bucket, out local);
-
-            return Store(local);
-        }
-
         public ILEmitter Store(LocalBuilder local)
         {
             switch (local.LocalIndex)
@@ -290,16 +272,54 @@ namespace ILLightenComparer.Emit.Shared
             }
         }
 
-        public void DeclareLocal(Type localType, byte bucket, out LocalBuilder local)
+        public ILEmitter Store(Type localType, out LocalBuilder local)
         {
-            if (!_localBuckets.TryGetValue(bucket, out var locals))
+            local = DeclareLocal(localType);
+
+            return Store(local);
+        }
+
+        public IDisposable Scope()
+        {
+            var scope = new LocalsScope(this);
+            _scopes.Push(scope);
+
+            return scope;
+        }
+
+        private LocalBuilder DeclareLocal(Type localType)
+        {
+            var scope = _scopes.Peek();
+
+            //if (!_localsCounter.TryGetValue(localType, out var max))
+            //{
+            //    _localsCounter[localType] = max = 0;
+            //}
+
+            //scope.Index = max + 1;
+
+            var local = _il.DeclareLocal(localType);
+
+            _locals.Add(local);
+
+            return local;
+        }
+
+        private class LocalsScope : IDisposable
+        {
+            private readonly ILEmitter _il;
+
+            public readonly Dictionary<Type, byte> Counter = new Dictionary<Type, byte>();
+            public int Index;
+
+            public LocalsScope(ILEmitter il)
             {
-                locals = _localBuckets[bucket] = new Dictionary<Type, LocalBuilder>();
+                _il = il;
             }
 
-            if (!locals.TryGetValue(localType, out local))
+            public void Dispose()
             {
-                local = locals[localType] = _il.DeclareLocal(localType);
+                _il._scopes.Pop();
             }
         }
 

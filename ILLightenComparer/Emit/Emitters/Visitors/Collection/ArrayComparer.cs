@@ -35,7 +35,7 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             Label afterLoop)
         {
             il.LoadConstant(0)
-              .Store(typeof(int), Index, out var index)
+              .Store(typeof(int), out var index)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
@@ -59,10 +59,10 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
         {
             il.LoadLocal(arrayX)
               .Emit(OpCodes.Call, arrayType.GetPropertyGetter(MethodName.Length))
-              .Store(typeof(int), CountX, out var countX)
+              .Store(typeof(int), out var countX)
               .LoadLocal(arrayY)
               .Emit(OpCodes.Call, arrayType.GetPropertyGetter(MethodName.Length))
-              .Store(typeof(int), CountY, out var countY);
+              .Store(typeof(int), out var countY);
 
             return (countX, countY);
         }
@@ -77,11 +77,11 @@ namespace ILLightenComparer.Emit.v2.Visitors.Collection
             il.LoadLocal(index)
               .LoadLocal(countX)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), DoneX, out var isDoneX)
+              .Store(typeof(int), out var isDoneX)
               .LoadLocal(index)
               .LoadLocal(countY)
               .Emit(OpCodes.Ceq)
-              .Store(typeof(int), DoneY, out var isDoneY)
+              .Store(typeof(int), out var isDoneY)
               .LoadLocal(isDoneX)
               .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
               .LoadLocal(isDoneY)
