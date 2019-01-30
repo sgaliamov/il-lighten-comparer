@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
@@ -11,14 +12,15 @@ namespace ILLightenComparer.Emit.Shared
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
 
+        private readonly Dictionary<Type, int> _counter = new Dictionary<Type, int>();
         private readonly ILGenerator _il;
-        private readonly List<LocalBuilder> _locals = new List<LocalBuilder>();
-        private readonly Stack<LocalsScope> _scopes = new Stack<LocalsScope>();
+        private readonly Dictionary<Type, List<LocalBuilder>> _locals = new Dictionary<Type, List<LocalBuilder>>();
+        private readonly Stack<Scope> _scopes = new Stack<Scope>();
 
         public ILEmitter(ILGenerator il)
         {
             _il = il;
-            Scope();
+            LocalsScope();
         }
 
         public void Dispose()
@@ -274,52 +276,64 @@ namespace ILLightenComparer.Emit.Shared
 
         public ILEmitter Store(Type localType, out LocalBuilder local)
         {
-            local = DeclareLocal(localType);
+            var scope = _scopes.Peek();
+            local = scope.ResolveLocal(localType);
 
             return Store(local);
         }
 
-        public IDisposable Scope()
+        public IDisposable LocalsScope()
         {
-            var scope = new LocalsScope(this);
+            var scope = new Scope(this);
             _scopes.Push(scope);
 
             return scope;
         }
 
-        private LocalBuilder DeclareLocal(Type localType)
+        private class Scope : IDisposable
         {
-            var scope = _scopes.Peek();
+            private readonly ILEmitter _owner;
+            private readonly Dictionary<Type, int> _state;
 
-            //if (!_localsCounter.TryGetValue(localType, out var max))
-            //{
-            //    _localsCounter[localType] = max = 0;
-            //}
-
-            //scope.Index = max + 1;
-
-            var local = _il.DeclareLocal(localType);
-
-            _locals.Add(local);
-
-            return local;
-        }
-
-        private class LocalsScope : IDisposable
-        {
-            private readonly ILEmitter _il;
-
-            public readonly Dictionary<Type, byte> Counter = new Dictionary<Type, byte>();
-            public int Index;
-
-            public LocalsScope(ILEmitter il)
+            public Scope(ILEmitter owner)
             {
-                _il = il;
+                _owner = owner;
+                _state = _owner._counter.ToDictionary(x => x.Key, x => x.Value);
             }
 
             public void Dispose()
             {
-                _il._scopes.Pop();
+                foreach (var type in new List<Type>(_owner._counter.Keys))
+                {
+                    _owner._counter[type] = _state.TryGetValue(type, out var count) ? count : 0;
+                }
+
+                _owner._scopes.Pop();
+            }
+
+            public LocalBuilder ResolveLocal(Type type)
+            {
+                if (!_owner._locals.TryGetValue(type, out var list))
+                {
+                    _owner._locals[type] = list = new List<LocalBuilder>();
+                }
+
+                if (!_owner._counter.TryGetValue(type, out var count))
+                {
+                    count = 0;
+                }
+
+                _owner._counter[type] = count + 1;
+
+                if (list.Count != count)
+                {
+                    return list[count];
+                }
+
+                var local = _owner._il.DeclareLocal(type);
+                list.Add(local);
+
+                return local;
             }
         }
 

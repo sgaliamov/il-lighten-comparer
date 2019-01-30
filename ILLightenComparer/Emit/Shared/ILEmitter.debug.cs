@@ -42,9 +42,9 @@ namespace ILLightenComparer.Emit.Shared
         {
             Debug.WriteLine(_name);
 
-            var locals = _locals
-                         .OrderBy(x => x.LocalIndex)
-                         .ToArray();
+            var locals = _locals.SelectMany(x => x.Value)
+                                .OrderBy(x => x.LocalIndex)
+                                .ToArray();
 
             if (locals.Length != 0)
             {
