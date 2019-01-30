@@ -207,18 +207,20 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var result = Fixture.Create<T>();
 
-            if (!type.IsValueType || type.IsNullable())
+            if (type.IsValueType)
             {
-                if (result is IList list)
-                {
-                    return (T)AppendNulls(list);
-                }
+                return result;
+            }
 
-                var genericInterface = type.GetGenericInterface(typeof(IEnumerable<>));
-                if (genericInterface != null)
-                {
-                    return AppendNulls(result, genericInterface);
-                }
+            if (type.IsArray && result is IList list)
+            {
+                return (T)AppendNulls(list); // todo: test
+            }
+
+            var genericInterface = type.GetGenericInterface(typeof(IEnumerable<>));
+            if (genericInterface != null)
+            {
+                return AppendNulls(result, genericInterface);
             }
 
             return result;
@@ -230,7 +232,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             {
                 if (Random.NextDouble() < Constants.NullProbability)
                 {
-                    list[i] = default;
+                    list[i] = null;
                 }
             }
 

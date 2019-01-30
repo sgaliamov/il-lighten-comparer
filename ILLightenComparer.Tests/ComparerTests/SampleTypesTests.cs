@@ -91,7 +91,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                                      ? objectType.MakeArrayType()
                                      : genericCollectionType.MakeGenericType(objectType);
 
-            var comparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, objectType);
+            var comparerType = typeof(CollectionComparer<>).MakeGenericType(objectType);
             var constructor = comparerType.GetConstructor(new[] { typeof(IComparer<>).MakeGenericType(objectType), typeof(bool) });
             var comparer = (IComparer)constructor.Invoke(new object[] { itemComparer, sort });
 
