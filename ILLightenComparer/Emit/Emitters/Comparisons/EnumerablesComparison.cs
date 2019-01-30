@@ -30,6 +30,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         public Type EnumeratorType { get; }
         public MethodInfo GetEnumeratorMethod { get; }
         public IVariable Variable { get; }
+        public bool ResultInStack => false;
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {

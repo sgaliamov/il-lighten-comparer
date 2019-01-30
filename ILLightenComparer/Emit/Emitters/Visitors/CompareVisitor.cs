@@ -149,9 +149,15 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                 using (il.LocalsScope())
                 {
                     il.DefineLabel(out var gotoNext);
-                    item.Accept(this, il, gotoNext)
-                        .EmitReturnNotZero(gotoNext)
-                        .MarkLabel(gotoNext);
+                    
+                    item.Accept(this, il, gotoNext);
+
+                    if (item.ResultInStack)
+                    {
+                        il.EmitReturnNotZero(gotoNext);
+                    }
+
+                    il.MarkLabel(gotoNext);
                 }
             }
 

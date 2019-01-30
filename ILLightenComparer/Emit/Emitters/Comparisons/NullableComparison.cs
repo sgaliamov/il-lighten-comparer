@@ -15,6 +15,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         }
 
         public IVariable Variable { get; }
+        public bool ResultInStack => true;
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {
