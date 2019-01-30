@@ -34,22 +34,32 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
               .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
 
-            EmitCheckIfLoopsAreDone(index, countX, countY, il, afterLoop);
+            using (il.LocalsScope())
+            {
+                EmitCheckIfLoopsAreDone(index, countX, countY, il, afterLoop);
+            }
 
-            var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
+            using (il.LocalsScope())
+            {
+                var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
-            return _converter.CreateComparison(itemVariable)
-                             .Accept(_compareVisitor, il, continueLoop)
-                             .EmitReturnNotZero(continueLoop)
-                             .MarkLabel(continueLoop)
-                             .LoadLocal(index)
-                             .LoadConstant(1)
-                             .Emit(OpCodes.Add)
-                             .Store(index)
-                             .Branch(OpCodes.Br, loopStart);
+                return _converter.CreateComparison(itemVariable)
+                                 .Accept(_compareVisitor, il, continueLoop)
+                                 .EmitReturnNotZero(continueLoop)
+                                 .MarkLabel(continueLoop)
+                                 .LoadLocal(index)
+                                 .LoadConstant(1)
+                                 .Emit(OpCodes.Add)
+                                 .Store(index)
+                                 .Branch(OpCodes.Br, loopStart);
+            }
         }
 
-        public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(Type arrayType, LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)
+        public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(
+            Type arrayType,
+            LocalBuilder arrayX,
+            LocalBuilder arrayY,
+            ILEmitter il)
         {
             il.LoadLocal(arrayX)
               .Emit(OpCodes.Call, arrayType.GetPropertyGetter(MethodName.Length))

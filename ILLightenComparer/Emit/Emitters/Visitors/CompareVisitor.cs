@@ -140,18 +140,18 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
                 throw new InvalidOperationException($"{variableType.DisplayName()} is not expected.");
             }
 
-            var members = _membersProvider
-                          .GetMembers(variableType)
-                          .Select(x => _converter.CreateComparison(x));
+            var comparisons = _membersProvider
+                              .GetMembers(variableType)
+                              .Select(x => _converter.CreateComparison(x));
 
-            foreach (var member in members)
+            foreach (var item in comparisons)
             {
                 using (il.LocalsScope())
                 {
                     il.DefineLabel(out var gotoNext);
-                    member.Accept(this, il, gotoNext)
-                          .EmitReturnNotZero(gotoNext)
-                          .MarkLabel(gotoNext);
+                    item.Accept(this, il, gotoNext)
+                        .EmitReturnNotZero(gotoNext)
+                        .MarkLabel(gotoNext);
                 }
             }
 
