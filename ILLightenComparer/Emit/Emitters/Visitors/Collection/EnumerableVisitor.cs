@@ -89,18 +89,24 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
         {
             il.DefineLabel(out var continueLoop).MarkLabel(continueLoop);
 
-            var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
-
-            EmitCheckIfLoopsAreDone(xDone, yDone, il, gotoNext);
-
-            var itemVariable = new EnumerableItemVariable(comparison.Variable.OwnerType, xEnumerator, yEnumerator);
-
-            var itemComparison = _converter.CreateComparison(itemVariable);
-            itemComparison.Accept(_compareVisitor, il, continueLoop);
-            
-            if (itemComparison.ResultInStack)
+            using (il.LocalsScope())
             {
-                il.EmitReturnNotZero(continueLoop);
+                var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
+
+                EmitCheckIfLoopsAreDone(xDone, yDone, il, gotoNext);
+            }
+
+            using (il.LocalsScope())
+            {
+                var itemVariable = new EnumerableItemVariable(comparison.Variable.OwnerType, xEnumerator, yEnumerator);
+
+                var itemComparison = _converter.CreateComparison(itemVariable);
+                itemComparison.Accept(_compareVisitor, il, continueLoop);
+            
+                if (itemComparison.ResultInStack)
+                {
+                    il.EmitReturnNotZero(continueLoop);
+                }
             }
         }
 
