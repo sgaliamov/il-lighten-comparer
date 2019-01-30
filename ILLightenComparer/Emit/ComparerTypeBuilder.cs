@@ -137,7 +137,6 @@ namespace ILLightenComparer.Emit
         {
             return _context.GetConfiguration(objectType).DetectCycles
                    && !objectType.GetUnderlyingType().IsPrimitive()
-                   && !objectType.IsCollectionOfSealed()
                    && !objectType.IsSealedComparable();
         }
 
