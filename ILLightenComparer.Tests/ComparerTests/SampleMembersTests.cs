@@ -23,11 +23,11 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type objectGenericType, Type comparerGenericType)
         {
-            foreach (var item in SampleTypes.Types)
+            foreach (var (type, referenceComparer) in SampleTypes.Types)
             {
-                var objectType = objectGenericType.MakeGenericType(item.Key);
-                var comparerType = comparerGenericType.MakeGenericType(item.Key);
-                var comparer = (IComparer)Activator.CreateInstance(comparerType, item.Value);
+                var objectType = objectGenericType.MakeGenericType(type);
+                var comparerType = comparerGenericType.MakeGenericType(type);
+                var comparer = (IComparer)Activator.CreateInstance(comparerType, referenceComparer);
 
                 new GenericTests().GenericTest(objectType, comparer, false, Constants.SmallCount);
             }
