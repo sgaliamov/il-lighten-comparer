@@ -17,13 +17,17 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
 
-            GetEnumeratorMethod = variable.VariableType.GetMethod(MethodName.GetEnumerator, Type.EmptyTypes)
-                                  ?? throw new ArgumentException(nameof(variable));
-
-            ElementType = variable.VariableType.GetGenericArguments().FirstOrDefault()
+            ElementType = variable
+                          .VariableType
+                          .GetGenericArguments()
+                          .FirstOrDefault()
                           ?? throw new ArgumentException(nameof(variable));
 
             EnumeratorType = typeof(IEnumerator<>).MakeGenericType(ElementType);
+
+            GetEnumeratorMethod = typeof(IEnumerable<>)
+                                  .MakeGenericType(ElementType)
+                                  .GetMethod(MethodName.GetEnumerator, Type.EmptyTypes);
         }
 
         public Type ElementType { get; }

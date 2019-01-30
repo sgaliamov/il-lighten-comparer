@@ -142,7 +142,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
                 var collectionType = useArrays
                                          ? objectType.MakeArrayType()
-                                         : typeof(IEnumerable<>).MakeGenericType(objectType);
+                                         : typeof(List<>).MakeGenericType(objectType);
 
                 var sampleType = genericSampleType.MakeGenericType(collectionType);
 
