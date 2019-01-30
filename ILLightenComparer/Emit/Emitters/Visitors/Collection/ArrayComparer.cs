@@ -43,15 +43,20 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             {
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
-                return _converter.CreateComparison(itemVariable)
-                                 .Accept(_compareVisitor, il, continueLoop)
-                                 .EmitReturnNotZero(continueLoop)
-                                 .MarkLabel(continueLoop)
-                                 .LoadLocal(index)
-                                 .LoadConstant(1)
-                                 .Emit(OpCodes.Add)
-                                 .Store(index)
-                                 .Branch(OpCodes.Br, loopStart);
+                var itemComparison = _converter.CreateComparison(itemVariable);
+                itemComparison.Accept(_compareVisitor, il, continueLoop);
+
+                if (itemComparison.ResultInStack)
+                {
+                    il.EmitReturnNotZero(continueLoop);
+                }
+
+                return il.MarkLabel(continueLoop)
+                         .LoadLocal(index)
+                         .LoadConstant(1)
+                         .Emit(OpCodes.Add)
+                         .Store(index)
+                         .Branch(OpCodes.Br, loopStart);
             }
         }
 

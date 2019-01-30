@@ -87,8 +87,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
             ILEmitter il,
             Label gotoNext)
         {
-            il.DefineLabel(out var continueLoop)
-              .MarkLabel(continueLoop);
+            il.DefineLabel(out var continueLoop).MarkLabel(continueLoop);
 
             var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
 
@@ -96,9 +95,13 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
 
             var itemVariable = new EnumerableItemVariable(comparison.Variable.OwnerType, xEnumerator, yEnumerator);
 
-            _converter.CreateComparison(itemVariable)
-                      .Accept(_compareVisitor, il, continueLoop)
-                      .EmitReturnNotZero(continueLoop);
+            var itemComparison = _converter.CreateComparison(itemVariable);
+            itemComparison.Accept(_compareVisitor, il, continueLoop);
+            
+            if (itemComparison.ResultInStack)
+            {
+                il.EmitReturnNotZero(continueLoop);
+            }
         }
 
         private static void EmitCheckIfLoopsAreDone(
@@ -152,7 +155,7 @@ namespace ILLightenComparer.Emit.Emitters.Visitors.Collection
               .Call(Method.Dispose)
               .MarkLabel(check)
               .LoadLocal(yEnumerator)
-              .Branch(OpCodes.Brfalse_S, gotoNext)
+              .Branch(OpCodes.Brfalse, gotoNext)
               .LoadLocal(yEnumerator)
               .Call(Method.Dispose);
         }
