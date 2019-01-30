@@ -146,10 +146,13 @@ namespace ILLightenComparer.Emit.Emitters.Visitors
 
             foreach (var member in members)
             {
-                il.DefineLabel(out var gotoNext);
-                member.Accept(this, il, gotoNext)
-                      .EmitReturnNotZero(gotoNext)
-                      .MarkLabel(gotoNext);
+                using (il.LocalsScope())
+                {
+                    il.DefineLabel(out var gotoNext);
+                    member.Accept(this, il, gotoNext)
+                          .EmitReturnNotZero(gotoNext)
+                          .MarkLabel(gotoNext);
+                }
             }
 
             return il.LoadConstant(0);
