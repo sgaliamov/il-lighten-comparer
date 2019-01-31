@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -85,26 +85,31 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type comparableGenericType, string comparerName, bool makeNullable)
         {
-            foreach (var (key, value) in SampleTypes.Types.Where(x => makeNullable && x.Key.IsValueType || !makeNullable))
-            {
-                var objectType = key;
-                var itemComparer = value;
-                if (makeNullable)
+            var types = makeNullable ? SampleTypes.NullableTypes : SampleTypes.Types;
+            Parallel.ForEach(
+                types,
+                item =>
                 {
-                    itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
-                    objectType = objectType.MakeNullable();
-                }
+                    var (type, referenceComparer) = item;
+                    var objectType = type;
+                    var itemComparer = referenceComparer;
 
-                var comparableType = comparableGenericType.MakeGenericType(objectType);
-                if (itemComparer != null)
-                {
-                    comparableType
-                        .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
-                        .SetValue(null, itemComparer);
-                }
+                    if (makeNullable)
+                    {
+                        itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
+                        objectType = objectType.MakeNullable();
+                    }
 
-                new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
-            }
+                    var comparableType = comparableGenericType.MakeGenericType(objectType);
+                    if (itemComparer != null)
+                    {
+                        comparableType
+                            .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
+                            .SetValue(null, itemComparer);
+                    }
+
+                    new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
+                });
         }
     }
 }

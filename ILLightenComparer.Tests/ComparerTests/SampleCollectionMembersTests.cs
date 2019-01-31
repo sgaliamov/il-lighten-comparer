@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -92,30 +93,34 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
         {
-            foreach (var (key, value) in SampleTypes.Types)
-            {
-                var itemComparer = value;
-                var objectType = key;
-                if (makeNullable && key.IsValueType)
+            Parallel.ForEach(
+                SampleTypes.Types,
+                item =>
                 {
-                    itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
-                    objectType = objectType.MakeNullable();
-                }
+                    var (type, referenceComparer) = item;
+                    var itemComparer = referenceComparer;
+                    var objectType = type;
 
-                var collectionType = useArrays
-                                         ? objectType.MakeArrayType()
-                                         : typeof(List<>).MakeGenericType(objectType);
+                    if (makeNullable && type.IsValueType)
+                    {
+                        itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
+                        objectType = objectType.MakeNullable();
+                    }
 
-                var sampleType = genericSampleType.MakeGenericType(collectionType);
+                    var collectionType = useArrays
+                                             ? objectType.MakeArrayType()
+                                             : typeof(List<>).MakeGenericType(objectType);
 
-                var collectionComparerType = typeof(CollectionComparer<>).MakeGenericType(objectType);
-                var collectionComparer = Activator.CreateInstance(collectionComparerType, itemComparer, sort);
+                    var sampleType = genericSampleType.MakeGenericType(collectionType);
 
-                var sampleComparerType = genericSampleComparer.MakeGenericType(collectionType);
-                var sampleComparer = (IComparer)Activator.CreateInstance(sampleComparerType, collectionComparer);
+                    var collectionComparerType = typeof(CollectionComparer<>).MakeGenericType(objectType);
+                    var collectionComparer = Activator.CreateInstance(collectionComparerType, itemComparer, sort);
 
-                new GenericTests().GenericTest(sampleType, sampleComparer, sort, Constants.SmallCount);
-            }
+                    var sampleComparerType = genericSampleComparer.MakeGenericType(collectionType);
+                    var sampleComparer = (IComparer)Activator.CreateInstance(sampleComparerType, collectionComparer);
+
+                    new GenericTests().GenericTest(sampleType, sampleComparer, sort, Constants.SmallCount);
+                });
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -46,19 +47,23 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Compare_Types_Directly()
         {
-            foreach (var (type, referenceComparer) in SampleTypes.Types)
-            {
-                new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
-            }
+            Parallel.ForEach(SampleTypes.Types,
+                item =>
+                {
+                    var (type, referenceComparer) = item;
+                    new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
+                });
         }
 
         private static void TestCollection(Type genericCollectionType = null)
         {
-            foreach (var (type, comparer) in SampleTypes.Types)
-            {
-                TestCollection(type, comparer, genericCollectionType, false);
-                TestCollection(type, comparer, genericCollectionType, true);
-            }
+            Parallel.ForEach(SampleTypes.Types,
+                item =>
+                {
+                    var (type, referenceComparer) = item;
+                    TestCollection(type, referenceComparer, genericCollectionType, false);
+                    TestCollection(type, referenceComparer, genericCollectionType, true);
+                });
         }
 
         private static void TestNullableCollection(Type genericCollectionType = null)

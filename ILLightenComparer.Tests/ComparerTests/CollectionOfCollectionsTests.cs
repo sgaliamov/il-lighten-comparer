@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
@@ -118,38 +119,23 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes, bool sort, bool nullable)
         {
             var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
-            //Parallel.ForEach(
-            //    types,
-            //    item =>
-            //    {
-            //        var (type, referenceComparer) = item;
-            //        var collections = getCollectionTypes(type);
-            //        var comparerTypes = collections
-            //                            .Prepend(type)
-            //                            .Take(collections.Length)
-            //                            .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
-            //                            .ToArray();
-            //        var comparer = comparerTypes.Aggregate(
-            //            referenceComparer,
-            //            (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
+            Parallel.ForEach(
+                types,
+                item =>
+                {
+                    var (type, referenceComparer) = item;
+                    var collections = getCollectionTypes(type);
+                    var comparerTypes = collections
+                                        .Prepend(type)
+                                        .Take(collections.Length)
+                                        .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
+                                        .ToArray();
+                    var comparer = comparerTypes.Aggregate(
+                        referenceComparer,
+                        (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
 
-            //        new GenericTests().GenericTest(collections.Last(), comparer, sort, Constants.SmallCount);
-            //    });
-
-            foreach (var (type, referenceComparer) in types)
-            {
-                var collections = getCollectionTypes(type);
-                var comparerTypes = collections
-                                    .Prepend(type)
-                                    .Take(collections.Length)
-                                    .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
-                                    .ToArray();
-                var comparer = comparerTypes.Aggregate(
-                    referenceComparer,
-                    (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
-
-                new GenericTests().GenericTest(collections.Last(), comparer, sort, Constants.SmallCount);
-            }
+                    new GenericTests().GenericTest(collections.Last(), comparer, sort, Constants.SmallCount);
+                });
         }
     }
 }
