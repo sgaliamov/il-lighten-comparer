@@ -24,7 +24,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true);
         }
 
-        private static void Test(Type objectGenericType, Type comparerGenericType, bool nullable)
+        private static void Test(Type genericSampleType, Type genericSampleComparer, bool nullable)
         {
             var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
 
@@ -33,8 +33,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 item =>
                 {
                     var (type, referenceComparer) = item;
-                    var objectType = objectGenericType.MakeGenericType(type);
-                    var comparerType = comparerGenericType.MakeGenericType(type);
+                    var objectType = genericSampleType.MakeGenericType(type);
+                    var comparerType = genericSampleComparer.MakeGenericType(type);
                     var comparer = (IComparer)Activator.CreateInstance(comparerType, referenceComparer);
 
                     new GenericTests().GenericTest(objectType, comparer, false, Constants.SmallCount);

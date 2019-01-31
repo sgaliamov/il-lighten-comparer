@@ -42,11 +42,11 @@ namespace ILLightenComparer.Tests.Samples.Comparers
             {
                 var ax = x.ToArray();
                 Array.Sort(ax, _itemComparer);
-                x = ax.AsEnumerable();
+                x = ax;
 
                 var ay = y.ToArray();
                 Array.Sort(ay, _itemComparer);
-                y = ay.AsEnumerable();
+                y = ay;
             }
 
             using (var enumeratorX = x.GetEnumerator())
