@@ -1,70 +1,87 @@
-﻿using System.Reflection.Emit;
+﻿using System;
 using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Extensions;
+using ILLightenComparer.Emit.Reflection;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Emitters
 {
     internal sealed class CompareEmitter
     {
-        private readonly ArrayVisitor _arrayVisitor;
         private readonly CompareVisitor _compareVisitor;
-        private readonly EnumerableVisitor _enumerableVisitor;
+        private readonly Converter _converter = new Converter();
         private readonly VariableLoader _loader = new VariableLoader();
-        private readonly NullableVisitor _nullableVisitor;
-        private readonly StackVisitor _stackVisitor;
 
-        public CompareEmitter(ComparerContext context, Converter converter)
+        public CompareEmitter(ComparerContext context)
         {
-            _compareVisitor = new CompareVisitor(context);
-            _stackVisitor = new StackVisitor(_loader);
-            _arrayVisitor = new ArrayVisitor(context, _stackVisitor, _compareVisitor, _loader, converter);
-            _enumerableVisitor = new EnumerableVisitor(context, _stackVisitor, _compareVisitor, _loader, converter);
-            _nullableVisitor = new NullableVisitor(_stackVisitor, _compareVisitor, _loader, converter);
+            _compareVisitor = new CompareVisitor(context, new MembersProvider(context), _loader, _converter);
         }
 
-        public ILEmitter Visit(IComparison comparison, ILEmitter il)
+        public void Emit(Type objectType, ILEmitter il)
         {
-            il.DefineLabel(out var gotoNext);
-            comparison.LoadVariables(_stackVisitor, il, gotoNext);
+            var comparison = _converter.CreateComparison(new ArgumentVariable(objectType));
 
-            return comparison.Accept(_compareVisitor, il)
-                             .EmitReturnNotZero(gotoNext)
-                             .MarkLabel(gotoNext);
+            comparison.Accept(this, il);
         }
 
-        public ILEmitter Visit(ArrayComparison comparison, ILEmitter il)
+        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il)
         {
-            return _arrayVisitor.Visit(comparison, il);
+            il.DefineLabel(out var exit);
+
+            return _compareVisitor.Visit(comparison, il, exit)
+                                  .MarkLabel(exit)
+                                  .Return(0);
         }
 
-        public ILEmitter Visit(EnumerableComparison comparison, ILEmitter il)
+        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il)
         {
-            return _enumerableVisitor.Visit(comparison, il);
+            il.DefineLabel(out var exit);
+
+            return _compareVisitor.Visit(comparison, il, exit)
+                                  .MarkLabel(exit)
+                                  .Return(0);
+        }
+
+        public ILEmitter Visit(MembersComparison comparison, ILEmitter il)
+        {
+            return _compareVisitor.Visit(comparison, il).Return();
+        }
+
+        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
+        {
+            return _compareVisitor.Visit(comparison, il).Return();
+        }
+
+        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il)
+        {
+            return _compareVisitor.Visit(comparison, il).Return();
+        }
+
+        public ILEmitter Visit(StringsComparison comparison, ILEmitter il)
+        {
+            return _compareVisitor.Visit(comparison, il).Return();
+        }
+
+        public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il)
+        {
+            il.DefineLabel(out var exit);
+
+            return _compareVisitor.Visit(comparison, il, exit)
+                                  .EmitReturnNotZero(exit)
+                                  .MarkLabel(exit)
+                                  .Return(0);
         }
 
         public ILEmitter Visit(NullableComparison comparison, ILEmitter il)
         {
-            return _nullableVisitor.Visit(comparison, il);
-        }
+            il.DefineLabel(out var exit);
 
-        public void EmitArgumentsReferenceComparison(ILEmitter il)
-        {
-            il.LoadArgument(Arg.X) // x == y
-              .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Bne_Un_S, out var checkY)
-              .Return(0)
-              .MarkLabel(checkY)
-              // y != null
-              .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Brtrue_S, out var checkX)
-              .Return(1)
-              .MarkLabel(checkX)
-              // x != null
-              .LoadArgument(Arg.X)
-              .Branch(OpCodes.Brtrue_S, out var next)
-              .Return(-1)
-              .MarkLabel(next);
+            return _compareVisitor.Visit(comparison, il, exit)
+                                  .EmitReturnNotZero(exit)
+                                  .MarkLabel(exit)
+                                  .Return(0);
         }
     }
 }

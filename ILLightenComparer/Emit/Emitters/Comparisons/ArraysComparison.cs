@@ -2,20 +2,19 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
-using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class NullableComparison : IComparison
+    internal sealed class ArraysComparison : IComparison
     {
-        private NullableComparison(IVariable variable)
+        private ArraysComparison(IVariable variable)
         {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
         }
 
         public IVariable Variable { get; }
-        public bool ResultInStack => true;
+        public bool ResultInStack => false;
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {
@@ -27,11 +26,12 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             return visitor.Visit(this, il);
         }
 
-        public static NullableComparison Create(IVariable variable)
+        public static ArraysComparison Create(IVariable variable)
         {
-            if (variable.VariableType.IsNullable())
+            var variableType = variable.VariableType;
+            if (variableType.IsArray && variableType.GetArrayRank() == 1)
             {
-                return new NullableComparison(variable);
+                return new ArraysComparison(variable);
             }
 
             return null;

@@ -62,7 +62,9 @@
 - [x] generate comparers for simple members
 - [x] `IgnoreCollectionOrder` setting
 - [x] use `DetectCycles` setting
-- [ ] refactor tests - ensure all branch execution
+- [x] refactor tests - ensure all branch execution
+- [x] refactor visitors
+- [x] introduce variables scope to not have to track variable buckets
 - [ ] customization setting to override comparer with specific implementation
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting
@@ -81,14 +83,13 @@
 - [x] caching for assembly
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
-- [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need have deal with addresses?
+- [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need to have deal with addresses?
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
 - [ ] cache instances by type and **configuration** in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
 - [ ] same for simple types, when arguments are compared directly
 - [ ] change behavior then types are not matched but castable
-- [ ] do reference comparison only once
-- [ ] introduce variables scope to not have to track variable buckets, try `BeginScope` method
+- [ ] do reference comparison only once? done?
 - [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?
 - [ ] support internal classes to compare?
@@ -110,7 +111,7 @@
 
 ## Phase 9
 
-- [ ] compare `IntPtr`
+- [ ] compare `IntPtr` and `UIntPtr`
 - [ ] compare dictionary
 - [ ] compare complex collection
 - [ ] compared dynamic?

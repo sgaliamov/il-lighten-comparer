@@ -16,7 +16,6 @@ namespace ILLightenComparer.Tests.Utilities
                 var f = new Fixture { RepeatCount = Constants.SmallCount };
 
                 f.Customize(new DomainCustomization());
-                f.Behaviors.Add(new OmitOnRecursionBehavior());
 
                 return f;
             },
@@ -25,6 +24,23 @@ namespace ILLightenComparer.Tests.Utilities
         public static Fixture GetInstance()
         {
             return Fixture.Value;
+        }
+
+        private static readonly Lazy<Fixture> SimpleFixture = new Lazy<Fixture>(
+            () =>
+            {
+                var f = new Fixture { RepeatCount = Constants.SmallCount };
+
+                f.Customize(new SupportMutableValueTypesCustomization());
+                f.Behaviors.Add(new OmitOnRecursionBehavior());
+
+                return f;
+            },
+            LazyThreadSafetyMode.ExecutionAndPublication);
+
+        public static Fixture GetSimpleInstance()
+        {
+            return SimpleFixture.Value;
         }
 
         public static IEnumerable<T> CreateMutants<T>(this Fixture fixture, T prototype)

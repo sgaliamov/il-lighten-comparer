@@ -6,17 +6,16 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Reflection;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Emitters.Variables
 {
     internal sealed class EnumerableItemVariable : IVariable
     {
-        public EnumerableItemVariable(
-            Type ownerType,
-            LocalBuilder xEnumerator,
-            LocalBuilder yEnumerator)
+        public EnumerableItemVariable(Type ownerType, LocalBuilder xEnumerator, LocalBuilder yEnumerator)
         {
             OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
+
             Enumerators = new Dictionary<ushort, LocalBuilder>(2)
             {
                 { Arg.X, xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)) },
@@ -29,8 +28,12 @@ namespace ILLightenComparer.Emit.Emitters.Variables
             }
 
             var enumeratorType = xEnumerator.LocalType;
+            if (!enumeratorType.ImplementsGeneric(typeof(IEnumerator<>)))
+            {
+                throw new ArgumentException($"Unexpected type {enumeratorType}.", nameof(enumeratorType));
+            }
 
-            VariableType = enumeratorType?.GetGenericArguments().FirstOrDefault()
+            VariableType = enumeratorType?.GetGenericArguments().SingleOrDefault()
                            ?? throw new ArgumentException(nameof(enumeratorType));
 
             GetCurrentMethod = enumeratorType.GetPropertyGetter(MethodName.Current);
@@ -38,8 +41,8 @@ namespace ILLightenComparer.Emit.Emitters.Variables
 
         public Dictionary<ushort, LocalBuilder> Enumerators { get; }
         public MethodInfo GetCurrentMethod { get; }
-        public Type OwnerType { get; }
         public Type VariableType { get; }
+        public Type OwnerType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {

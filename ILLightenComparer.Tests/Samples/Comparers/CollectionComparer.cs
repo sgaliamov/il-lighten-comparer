@@ -5,8 +5,7 @@ using System.Linq;
 
 namespace ILLightenComparer.Tests.Samples.Comparers
 {
-    internal sealed class CollectionComparer<TCollection, TItem> : IComparer<TCollection>, IComparer
-        where TCollection : IEnumerable<TItem>
+    internal sealed class CollectionComparer<TItem> : IComparer<IEnumerable<TItem>>, IComparer
     {
         private readonly IComparer<TItem> _itemComparer;
         private readonly bool _sort;
@@ -19,10 +18,10 @@ namespace ILLightenComparer.Tests.Samples.Comparers
 
         public int Compare(object x, object y)
         {
-            return Compare((TCollection)x, (TCollection)y);
+            return Compare((IEnumerable<TItem>)x, (IEnumerable<TItem>)y);
         }
 
-        public int Compare(TCollection x, TCollection y)
+        public int Compare(IEnumerable<TItem> x, IEnumerable<TItem> y)
         {
             if (x == null)
             {
@@ -43,11 +42,11 @@ namespace ILLightenComparer.Tests.Samples.Comparers
             {
                 var ax = x.ToArray();
                 Array.Sort(ax, _itemComparer);
-                x = (TCollection)ax.AsEnumerable();
+                x = ax;
 
                 var ay = y.ToArray();
                 Array.Sort(ay, _itemComparer);
-                y = (TCollection)ay.AsEnumerable();
+                y = ay;
             }
 
             using (var enumeratorX = x.GetEnumerator())

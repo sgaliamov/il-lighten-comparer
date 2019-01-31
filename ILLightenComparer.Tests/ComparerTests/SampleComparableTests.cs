@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -62,16 +62,16 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var one = new SampleObject<SampleComparableBaseObject<EnumSmall>>
             {
-                Property = fixture.Create<SampleComparableBaseObject<EnumSmall>>()
+                Property = fixture.Create<SampleComparableChildObject<EnumSmall>>()
             };
             comparer.Compare(one, one.DeepClone()).Should().Be(0);
 
             for (var i = 0; i < Constants.SmallCount; i++)
             {
-                one.Property = fixture.Create<SampleComparableBaseObject<EnumSmall>>();
+                one.Property = fixture.Create<SampleComparableChildObject<EnumSmall>>();
                 var other = new SampleObject<SampleComparableBaseObject<EnumSmall>>
                 {
-                    Property = fixture.Create<SampleComparableBaseObject<EnumSmall>>()
+                    Property = fixture.Create<SampleComparableChildObject<EnumSmall>>()
                 };
 
                 var expected = one.Property.CompareTo(other.Property).Normalize();
@@ -85,26 +85,25 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type comparableGenericType, string comparerName, bool makeNullable)
         {
-            foreach (var (key, value) in SampleTypes.Types.Where(x => makeNullable && x.Key.IsValueType || !makeNullable))
-            {
-                var objectType = key;
-                var itemComparer = value;
-                if (makeNullable)
+            var types = makeNullable ? SampleTypes.NullableTypes : SampleTypes.Types;
+            Parallel.ForEach(
+                types,
+                item =>
                 {
-                    itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
-                    objectType = objectType.MakeNullable();
-                }
+                    var (type, referenceComparer) = item;
+                    var objectType = type;
+                    var itemComparer = referenceComparer;
 
-                var comparableType = comparableGenericType.MakeGenericType(objectType);
-                if (itemComparer != null)
-                {
-                    comparableType
-                        .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
-                        .SetValue(null, itemComparer);
-                }
+                    var comparableType = comparableGenericType.MakeGenericType(objectType);
+                    if (itemComparer != null)
+                    {
+                        comparableType
+                            .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
+                            .SetValue(null, itemComparer);
+                    }
 
-                new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
-            }
+                    new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
+                });
         }
     }
 }

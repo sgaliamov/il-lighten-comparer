@@ -207,18 +207,20 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var result = Fixture.Create<T>();
 
-            if (!type.IsValueType || type.IsNullable())
+            if (type.IsValueType)
             {
-                if (result is IList list)
-                {
-                    return (T)AppendNulls(list);
-                }
+                return result;
+            }
 
-                var genericInterface = type.GetGenericInterface(typeof(IEnumerable<>));
-                if (genericInterface != null)
-                {
-                    return AppendNulls(result, genericInterface);
-                }
+            if (type.IsArray && result is IList list)
+            {
+                return (T)AppendNulls(list); // todo: test
+            }
+
+            var genericInterface = type.GetGenericInterface(typeof(IEnumerable<>));
+            if (genericInterface != null)
+            {
+                return AppendNulls(result, genericInterface);
             }
 
             return result;
@@ -230,7 +232,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             {
                 if (Random.NextDouble() < Constants.NullProbability)
                 {
-                    list[i] = default;
+                    list[i] = null;
                 }
             }
 
@@ -254,14 +256,11 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             foreach (var item in (IEnumerable)result)
             {
-                if (!(Random.NextDouble() < Constants.NullProbability))
-                {
-                    addMethod.Invoke(list, new[] { item });
-                }
-                else
-                {
-                    addMethod.Invoke(list, new[] { (object)null });
-                }
+                var parameters = Random.NextDouble() < Constants.NullProbability
+                                     ? new[] { (object)null }
+                                     : new[] { item };
+
+                addMethod.Invoke(list, parameters);
             }
 
             return (T)asEnumerableMethod.Invoke(null, new[] { list });

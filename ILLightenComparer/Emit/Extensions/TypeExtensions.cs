@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -74,7 +75,7 @@ namespace ILLightenComparer.Emit.Extensions
                    && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
         }
 
-        public static bool IsSmallIntegral(this Type type)
+        public static bool IsIntegral(this Type type)
         {
             return SmallIntegralTypes.Contains(type);
         }
@@ -85,14 +86,39 @@ namespace ILLightenComparer.Emit.Extensions
                    && (type.IsValueType || type.IsSealed);
         }
 
+        public static bool IsCollectionOfSealed(this Type objectType)
+        {
+            var generic = objectType.GetGenericInterface(typeof(IEnumerable<>));
+            if (generic == null)
+            {
+                return false;
+            }
+
+            var itemType = generic.GetGenericArguments()[0];
+
+            return itemType.IsPrimitive() || itemType.IsSealedComparable() || itemType.IsValueType;
+        }
+
+        /// <summary>
+        ///     Not objects and structs.
+        ///     Extended version of IsPrimitive property.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <returns>true if the <paramref name="type">type</paramref> is one of the primitive types; otherwise, false.</returns>
         public static bool IsPrimitive(this Type type)
         {
             return type.IsPrimitive
                    || type.IsEnum
-                   //|| ReferenceEquals(type, typeof(IntPtr)) // todo: implement comparison for native ints
-                   //|| ReferenceEquals(type, typeof(UIntPtr))
                    || ReferenceEquals(type, typeof(string))
                    || ReferenceEquals(type, typeof(decimal));
+        }
+
+        public static bool IsHierarchical(this Type type)
+        {
+            return !type.IsPrimitive()
+                   && !type.IsSealedComparable()
+                   && !type.IsNullable()
+                   && !typeof(IEnumerable).IsAssignableFrom(type);
         }
 
         public static bool ImplementsGeneric(this Type type, Type generic)

@@ -1,17 +1,15 @@
-﻿using System;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Variables;
 using ILLightenComparer.Emit.Emitters.Visitors;
-using ILLightenComparer.Emit.Extensions;
 using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Emitters.Comparisons
 {
-    internal sealed class NullableComparison : IComparison
+    internal sealed class StringsComparison : IComparison
     {
-        private NullableComparison(IVariable variable)
+        private StringsComparison(IVariable variable)
         {
-            Variable = variable ?? throw new ArgumentNullException(nameof(variable));
+            Variable = variable;
         }
 
         public IVariable Variable { get; }
@@ -19,7 +17,7 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {
-            return visitor.Visit(this, il, gotoNext);
+            return visitor.Visit(this, il);
         }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
@@ -27,11 +25,11 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             return visitor.Visit(this, il);
         }
 
-        public static NullableComparison Create(IVariable variable)
+        public static StringsComparison Create(IVariable variable)
         {
-            if (variable.VariableType.IsNullable())
+            if (variable.VariableType == typeof(string))
             {
-                return new NullableComparison(variable);
+                return new StringsComparison(variable);
             }
 
             return null;

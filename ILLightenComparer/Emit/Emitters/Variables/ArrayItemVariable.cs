@@ -4,28 +4,29 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Emitters.Visitors;
 using ILLightenComparer.Emit.Reflection;
+using ILLightenComparer.Emit.Shared;
 
 namespace ILLightenComparer.Emit.Emitters.Variables
 {
     internal sealed class ArrayItemVariable : IVariable
     {
         public ArrayItemVariable(
-            Type arrayMemberType,
+            Type arrayType,
             Type ownerType,
             LocalBuilder xArray,
             LocalBuilder yArray,
             LocalBuilder indexVariable)
         {
-            if (arrayMemberType == null) { throw new ArgumentNullException(nameof(arrayMemberType)); }
-
-            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
-
-            VariableType = arrayMemberType.GetElementType();
+            if (arrayType == null) { throw new ArgumentNullException(nameof(arrayType)); }
 
             IndexVariable = indexVariable ?? throw new ArgumentNullException(nameof(indexVariable));
 
-            GetItemMethod = arrayMemberType.GetMethod(MethodName.Get, new[] { typeof(int) })
-                            ?? throw new ArgumentException(nameof(arrayMemberType));
+            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
+
+            GetItemMethod = arrayType.GetMethod(MethodName.Get, new[] { typeof(int) })
+                            ?? throw new ArgumentException(nameof(arrayType));
+
+            VariableType = arrayType.GetElementType();
 
             Arrays = new Dictionary<ushort, LocalBuilder>(2)
             {
@@ -37,8 +38,8 @@ namespace ILLightenComparer.Emit.Emitters.Variables
         public Dictionary<ushort, LocalBuilder> Arrays { get; }
         public MethodInfo GetItemMethod { get; }
         public LocalBuilder IndexVariable { get; }
-        public Type OwnerType { get; }
         public Type VariableType { get; }
+        public Type OwnerType { get; }
 
         public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
         {

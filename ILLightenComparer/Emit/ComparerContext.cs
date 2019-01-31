@@ -29,10 +29,16 @@ namespace ILLightenComparer.Emit
         private readonly ConfigurationBuilder _configurationBuilder;
         private readonly ModuleBuilder _moduleBuilder;
 
-        public ComparerContext(ModuleBuilder moduleBuilder, ConfigurationBuilder configurationBuilder)
+        public ComparerContext(ConfigurationBuilder configurationBuilder)
         {
-            _moduleBuilder = moduleBuilder;
+            var assembly = AssemblyBuilder.DefineDynamicAssembly(
+                new AssemblyName("ILLightenComparer"),
+                AssemblyBuilderAccess.RunAndCollect);
+
+            _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
+
             _configurationBuilder = configurationBuilder;
+
             _comparerTypeBuilder = new ComparerTypeBuilder(this);
         }
 

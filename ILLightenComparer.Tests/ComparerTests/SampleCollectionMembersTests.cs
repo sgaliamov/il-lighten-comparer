@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -14,44 +16,6 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class SampleCollectionMembersTests
     {
-        [Fact]
-        public void Compare_Array_Of_Arrays()
-        {
-            var builder = new ComparersBuilder();
-
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][,]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[,]>>().GetComparer());
-
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][,]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
-        }
-
-        [Fact]
-        public void Compare_Enumerable_Of_Enumerables()
-        {
-            var builder = new ComparersBuilder();
-
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleObject<IEnumerable<IEnumerable<int>>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleObject<IEnumerable<int[,]>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleObject<IEnumerable<int[]>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleObject<IEnumerable<int>[]>>().GetComparer());
-
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleStruct<IEnumerable<IEnumerable<int>>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleStruct<IEnumerable<int[,]>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleStruct<IEnumerable<int[]>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleStruct<IEnumerable<int>[]>>().GetComparer());
-        }
-
         [Fact]
         public void Compare_Sample_Objects()
         {
@@ -123,37 +87,44 @@ namespace ILLightenComparer.Tests.ComparerTests
             var sample = fixture.Create<TElement[]>();
             var clone = sample.DeepClone();
 
-            comparer.Compare(sample, fixture.Create<TElement[]>()).Should().NotBe(0);
+            var elements = FixtureBuilder.GetSimpleInstance().CreateMany<TElement>().ToArray();
+            comparer.Compare(sample, elements)
+                    .Should()
+                    .NotBe(0);
 
             sample.ShouldBeSameOrder(clone);
         }
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
         {
-            foreach (var (key, value) in SampleTypes.Types)
-            {
-                var itemComparer = value;
-                var objectType = key;
-                if (makeNullable && key.IsValueType)
+            Parallel.ForEach(
+                SampleTypes.Types,
+                item =>
                 {
-                    itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
-                    objectType = objectType.MakeNullable();
-                }
+                    var (type, referenceComparer) = item;
+                    var itemComparer = referenceComparer;
+                    var objectType = type;
 
-                var collectionType = useArrays
-                                         ? objectType.MakeArrayType()
-                                         : typeof(IEnumerable<>).MakeGenericType(objectType);
+                    if (makeNullable && type.IsValueType)
+                    {
+                        itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
+                        objectType = objectType.MakeNullable();
+                    }
 
-                var sampleType = genericSampleType.MakeGenericType(collectionType);
+                    var collectionType = useArrays
+                                             ? objectType.MakeArrayType()
+                                             : typeof(List<>).MakeGenericType(objectType);
 
-                var collectionComparerType = typeof(CollectionComparer<,>).MakeGenericType(collectionType, objectType);
-                var collectionComparer = Activator.CreateInstance(collectionComparerType, itemComparer, sort);
+                    var sampleType = genericSampleType.MakeGenericType(collectionType);
 
-                var sampleComparerType = genericSampleComparer.MakeGenericType(collectionType);
-                var sampleComparer = (IComparer)Activator.CreateInstance(sampleComparerType, collectionComparer);
+                    var collectionComparerType = typeof(CollectionComparer<>).MakeGenericType(objectType);
+                    var collectionComparer = Activator.CreateInstance(collectionComparerType, itemComparer, sort);
 
-                new GenericTests().GenericTest(sampleType, sampleComparer, sort, Constants.SmallCount);
-            }
+                    var sampleComparerType = genericSampleComparer.MakeGenericType(collectionType);
+                    var sampleComparer = (IComparer)Activator.CreateInstance(sampleComparerType, collectionComparer);
+
+                    new GenericTests().GenericTest(sampleType, sampleComparer, sort, Constants.SmallCount);
+                });
         }
     }
 }

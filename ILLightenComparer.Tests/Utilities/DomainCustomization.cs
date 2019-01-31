@@ -10,6 +10,7 @@ namespace ILLightenComparer.Tests.Utilities
             AddGenerators(fixture);
 
             fixture.Customize(new SupportMutableValueTypesCustomization());
+            fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
         private static void AddGenerators(IFixture fixture)

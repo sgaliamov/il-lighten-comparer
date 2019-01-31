@@ -1,36 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emit.Extensions;
 
-namespace ILLightenComparer.Emit.Emitters
+namespace ILLightenComparer.Emit.Shared
 {
-    using Locals = Dictionary<byte, Dictionary<Type, LocalBuilder>>;
-
-    // ReSharper disable once PartialTypeWithSinglePart
     internal sealed partial class ILEmitter : IDisposable
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
 
-        private ILGenerator _il;
-
-        private Locals _localBuckets = new Locals
-        {
-            { 0, new Dictionary<Type, LocalBuilder>() }
-        };
+        private readonly Dictionary<Type, int> _counter = new Dictionary<Type, int>();
+        private readonly ILGenerator _il;
+        private readonly Dictionary<Type, List<LocalBuilder>> _locals = new Dictionary<Type, List<LocalBuilder>>();
+        private readonly Stack<Scope> _scopes = new Stack<Scope>();
 
         public ILEmitter(ILGenerator il)
         {
             _il = il;
+            LocalsScope();
         }
 
         public void Dispose()
         {
+            _scopes.Pop();
             DebugOutput();
-            _il = null;
-            _localBuckets = null;
         }
 
         public ILEmitter Emit(OpCode opCode)
@@ -97,29 +93,29 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter BeginFinallyBlock()
-        {
-            DebugLine("\t.finally");
-            _il.BeginFinallyBlock();
+        //public ILEmitter BeginFinallyBlock()
+        //{
+        //    DebugLine("\t.finally");
+        //    _il.BeginFinallyBlock();
 
-            return this;
-        }
+        //    return this;
+        //}
 
-        public ILEmitter BeginExceptionBlock()
-        {
-            DebugLine("\t.try {");
-            _il.BeginExceptionBlock();
+        //public ILEmitter BeginExceptionBlock()
+        //{
+        //    DebugLine("\t.try {");
+        //    _il.BeginExceptionBlock();
 
-            return this;
-        }
+        //    return this;
+        //}
 
-        public ILEmitter EndExceptionBlock()
-        {
-            DebugLine("\t} // .try");
-            _il.EndExceptionBlock();
+        //public ILEmitter EndExceptionBlock()
+        //{
+        //    DebugLine("\t} // .try");
+        //    _il.EndExceptionBlock();
 
-            return this;
-        }
+        //    return this;
+        //}
 
         public ILEmitter Call(MethodInfo methodInfo)
         {
@@ -261,18 +257,6 @@ namespace ILLightenComparer.Emit.Emitters
             return this;
         }
 
-        public ILEmitter Store(Type localType, out LocalBuilder local)
-        {
-            return Store(localType, 0, out local);
-        }
-
-        public ILEmitter Store(Type localType, byte bucket, out LocalBuilder local)
-        {
-            DeclareLocal(localType, bucket, out local);
-
-            return Store(local);
-        }
-
         public ILEmitter Store(LocalBuilder local)
         {
             switch (local.LocalIndex)
@@ -290,16 +274,66 @@ namespace ILLightenComparer.Emit.Emitters
             }
         }
 
-        public void DeclareLocal(Type localType, byte bucket, out LocalBuilder local)
+        public ILEmitter Store(Type localType, out LocalBuilder local)
         {
-            if (!_localBuckets.TryGetValue(bucket, out var locals))
+            var scope = _scopes.Peek();
+            local = scope.ResolveLocal(localType);
+
+            return Store(local);
+        }
+
+        public IDisposable LocalsScope()
+        {
+            var scope = new Scope(this);
+            _scopes.Push(scope);
+
+            return scope;
+        }
+
+        private class Scope : IDisposable
+        {
+            private readonly ILEmitter _owner;
+            private readonly Dictionary<Type, int> _state;
+
+            public Scope(ILEmitter owner)
             {
-                locals = _localBuckets[bucket] = new Dictionary<Type, LocalBuilder>();
+                _owner = owner;
+                _state = _owner._counter.ToDictionary(x => x.Key, x => x.Value);
             }
 
-            if (!locals.TryGetValue(localType, out local))
+            public void Dispose()
             {
-                local = locals[localType] = _il.DeclareLocal(localType);
+                foreach (var type in new List<Type>(_owner._counter.Keys))
+                {
+                    _owner._counter[type] = _state.TryGetValue(type, out var count) ? count : 0;
+                }
+
+                _owner._scopes.Pop();
+            }
+
+            public LocalBuilder ResolveLocal(Type type)
+            {
+                if (!_owner._locals.TryGetValue(type, out var list))
+                {
+                    _owner._locals[type] = list = new List<LocalBuilder>();
+                }
+
+                if (!_owner._counter.TryGetValue(type, out var count))
+                {
+                    count = 0;
+                }
+
+                _owner._counter[type] = count + 1;
+
+                if (list.Count != count)
+                {
+                    return list[count];
+                }
+
+                var local = _owner._il.DeclareLocal(type);
+                list.Add(local);
+
+                return local;
             }
         }
 

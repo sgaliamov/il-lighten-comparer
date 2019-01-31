@@ -5,10 +5,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)' != 'DEBUG'">
-    <Compile Remove="Emit\Emitters\ILEmitter.debug.cs" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>

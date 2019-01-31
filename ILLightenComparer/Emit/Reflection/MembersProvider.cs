@@ -2,33 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ILLightenComparer.Emit.Emitters;
-using ILLightenComparer.Emit.Emitters.Comparisons;
+using ILLightenComparer.Emit.Emitters.Variables;
+using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Reflection
 {
     internal sealed class MembersProvider
     {
         private readonly ComparerContext _context;
-        private readonly Converter _converter;
 
-        public MembersProvider(ComparerContext context, Converter converter)
+        public MembersProvider(ComparerContext context)
         {
             _context = context;
-            _converter = converter;
         }
 
-        public ICompareEmitterAcceptor[] GetMembers(Type type)
+        public IVariable[] GetMembers(Type type)
         {
             var filtered = Filter(type);
             var sorted = Sort(type, filtered);
 
             return Convert(sorted);
-        }
-
-        private ICompareEmitterAcceptor[] Convert(IEnumerable<MemberInfo> members)
-        {
-            return members.Select(_converter.CreateMemberComparison).ToArray();
         }
 
         private IEnumerable<MemberInfo> Filter(IReflect type)
@@ -75,14 +68,6 @@ namespace ILLightenComparer.Emit.Reflection
             }
         }
 
-        private static IEnumerable<MemberInfo> DefaultOrder(IEnumerable<MemberInfo> members)
-        {
-            return members
-                   .OrderBy(x => x.DeclaringType?.FullName ?? string.Empty)
-                   .ThenBy(x => x.MemberType)
-                   .ThenBy(x => x.Name);
-        }
-
         private bool IncludeFields(MemberInfo memberInfo)
         {
             if (memberInfo.MemberType == MemberTypes.Property)
@@ -100,6 +85,28 @@ namespace ILLightenComparer.Emit.Reflection
             var ignoredMembers = _context.GetConfiguration(memberInfo.DeclaringType).IgnoredMembers;
 
             return !ignoredMembers.Contains(memberInfo.Name);
+        }
+
+        private static IVariable Create(MemberInfo memberInfo)
+        {
+            return PropertyMemberVariable.Create(memberInfo)
+                   ?? FieldMemberVariable.Create(memberInfo)
+                   ?? throw new ArgumentException(
+                       $"Can't create member variable from {memberInfo.DisplayName()}",
+                       nameof(memberInfo));
+        }
+
+        private static IVariable[] Convert(IEnumerable<MemberInfo> members)
+        {
+            return members.Select(Create).ToArray();
+        }
+
+        private static IEnumerable<MemberInfo> DefaultOrder(IEnumerable<MemberInfo> members)
+        {
+            return members
+                   .OrderBy(x => x.DeclaringType?.FullName ?? string.Empty)
+                   .ThenBy(x => x.MemberType)
+                   .ThenBy(x => x.Name);
         }
     }
 }
