@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -86,7 +87,10 @@ namespace ILLightenComparer.Tests.ComparerTests
             var sample = fixture.Create<TElement[]>();
             var clone = sample.DeepClone();
 
-            comparer.Compare(sample, fixture.Create<TElement[]>()).Should().NotBe(0);
+            var elements = FixtureBuilder.GetSimpleInstance().CreateMany<TElement>().ToArray();
+            comparer.Compare(sample, elements)
+                    .Should()
+                    .NotBe(0);
 
             sample.ShouldBeSameOrder(clone);
         }

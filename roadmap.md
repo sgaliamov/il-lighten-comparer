@@ -64,7 +64,7 @@
 - [x] use `DetectCycles` setting
 - [x] refactor tests - ensure all branch execution
 - [x] refactor visitors
-- [ ] introduce variables scope to not have to track variable buckets
+- [x] introduce variables scope to not have to track variable buckets
 - [ ] customization setting to override comparer with specific implementation
 - [ ] smart configuration builder
 - [ ] define order for members using expressions, order of generated code affects sorting

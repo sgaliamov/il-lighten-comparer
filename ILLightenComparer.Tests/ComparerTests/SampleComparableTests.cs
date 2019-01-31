@@ -62,16 +62,16 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var one = new SampleObject<SampleComparableBaseObject<EnumSmall>>
             {
-                Property = fixture.Create<SampleComparableBaseObject<EnumSmall>>()
+                Property = fixture.Create<SampleComparableChildObject<EnumSmall>>()
             };
             comparer.Compare(one, one.DeepClone()).Should().Be(0);
 
             for (var i = 0; i < Constants.SmallCount; i++)
             {
-                one.Property = fixture.Create<SampleComparableBaseObject<EnumSmall>>();
+                one.Property = fixture.Create<SampleComparableChildObject<EnumSmall>>();
                 var other = new SampleObject<SampleComparableBaseObject<EnumSmall>>
                 {
-                    Property = fixture.Create<SampleComparableBaseObject<EnumSmall>>()
+                    Property = fixture.Create<SampleComparableChildObject<EnumSmall>>()
                 };
 
                 var expected = one.Property.CompareTo(other.Property).Normalize();

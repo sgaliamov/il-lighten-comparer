@@ -27,15 +27,14 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Arrays_Of_Arrays_Of_Arrays()
+        public void Compare_Array_Of_Array()
         {
             Type[] GetCollectionTypes(Type type)
             {
                 var array1Type = type.MakeArrayType();
                 var array2Type = array1Type.MakeArrayType();
-                var array3Type = array2Type.MakeArrayType();
 
-                return new[] { array1Type, array2Type, array3Type };
+                return new[] { array1Type, array2Type };
             }
 
             CompareCollectionOfCollections(GetCollectionTypes);
@@ -56,15 +55,14 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_List_Of_List_Of_List()
+        public void Compare_List_Of_List()
         {
             Type[] GetCollectionTypes(Type type)
             {
                 var list1Type = typeof(List<>).MakeGenericType(type);
                 var list2Type = typeof(List<>).MakeGenericType(list1Type);
-                var list3Type = typeof(List<>).MakeGenericType(list2Type);
 
-                return new[] { list1Type, list2Type, list3Type };
+                return new[] { list1Type, list2Type };
             }
 
             CompareCollectionOfCollections(GetCollectionTypes);
@@ -88,8 +86,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes)
         {
             Parallel.Invoke(
-                //() => CompareCollectionOfCollections(getCollectionTypes, null, null),
-                //() => CompareCollectionOfCollections(getCollectionTypes, typeof(SampleObject<>), typeof(SampleObjectComparer<>)),
+                () => CompareCollectionOfCollections(getCollectionTypes, null, null),
+                () => CompareCollectionOfCollections(getCollectionTypes, typeof(SampleObject<>), typeof(SampleObjectComparer<>)),
                 () => CompareCollectionOfCollections(getCollectionTypes, typeof(SampleStruct<>), typeof(SampleStructComparer<>))
             );
         }
