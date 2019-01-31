@@ -15,44 +15,6 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleCollectionMembersTests
     {
         [Fact]
-        public void Compare_Array_Of_Arrays()
-        {
-            var builder = new ComparersBuilder();
-
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][,]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[,]>>().GetComparer());
-
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][,]>>().GetComparer());
-            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
-        }
-
-        [Fact]
-        public void Compare_Enumerable_Of_Enumerables()
-        {
-            var builder = new ComparersBuilder();
-
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleObject<IEnumerable<IEnumerable<int>>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleObject<IEnumerable<int[,]>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleObject<IEnumerable<int[]>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleObject<IEnumerable<int>[]>>().GetComparer());
-
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleStruct<IEnumerable<IEnumerable<int>>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleStruct<IEnumerable<int[,]>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleStruct<IEnumerable<int[]>>>().GetComparer());
-            Assert.Throws<NotSupportedException>(
-                () => builder.For<SampleStruct<IEnumerable<int>[]>>().GetComparer());
-        }
-
-        [Fact]
         public void Compare_Sample_Objects()
         {
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, false, false);

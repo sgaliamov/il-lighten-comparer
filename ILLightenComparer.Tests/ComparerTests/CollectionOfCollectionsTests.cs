@@ -1,0 +1,155 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using ILLightenComparer.Tests.Samples;
+using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.Utilities;
+using Xunit;
+
+namespace ILLightenComparer.Tests.ComparerTests
+{
+    public sealed class CollectionOfCollectionsTests
+    {
+        [Fact]
+        public void Compare_Array_Of_List()
+        {
+            Type[] GetCollectionTypes(Type type)
+            {
+                var arrayType = type.MakeArrayType();
+                var listType = typeof(List<>).MakeGenericType(arrayType);
+
+                return new[] { arrayType, listType };
+            }
+
+            CompareCollectionOfCollections(GetCollectionTypes);
+        }
+
+        [Fact]
+        public void Compare_Arrays_Of_Arrays_Of_Arrays()
+        {
+            Type[] GetCollectionTypes(Type type)
+            {
+                var array1Type = type.MakeArrayType();
+                var array2Type = array1Type.MakeArrayType();
+                var array3Type = array2Type.MakeArrayType();
+
+                return new[] { array1Type, array2Type, array3Type };
+            }
+
+            CompareCollectionOfCollections(GetCollectionTypes);
+        }
+
+        [Fact]
+        public void Compare_Enumerable_Of_Enumerables()
+        {
+            var builder = new ComparersBuilder();
+
+            Assert.Throws<NotSupportedException>(
+                () => builder.For<SampleObject<IEnumerable<IEnumerable<int>>>>().GetComparer());
+            Assert.Throws<NotSupportedException>(
+                () => builder.For<SampleObject<IEnumerable<int[,]>>>().GetComparer());
+            Assert.Throws<NotSupportedException>(
+                () => builder.For<SampleObject<IEnumerable<int[]>>>().GetComparer());
+            Assert.Throws<NotSupportedException>(
+                () => builder.For<SampleObject<IEnumerable<int>[]>>().GetComparer());
+
+            Assert.Throws<NotSupportedException>(
+                () => builder.For<SampleStruct<IEnumerable<IEnumerable<int>>>>().GetComparer());
+            Assert.Throws<NotSupportedException>(
+                () => builder.For<SampleStruct<IEnumerable<int[,]>>>().GetComparer());
+            Assert.Throws<NotSupportedException>(
+                () => builder.For<SampleStruct<IEnumerable<int[]>>>().GetComparer());
+            Assert.Throws<NotSupportedException>(
+                () => builder.For<SampleStruct<IEnumerable<int>[]>>().GetComparer());
+        }
+
+        [Fact]
+        public void Compare_List_of_Array()
+        {
+            Type[] GetCollectionTypes(Type type)
+            {
+                var listType = typeof(List<>).MakeGenericType(type);
+                var arrayType = listType.MakeArrayType();
+
+                return new[] { listType, arrayType };
+            }
+
+            CompareCollectionOfCollections(GetCollectionTypes);
+        }
+
+        [Fact]
+        public void Compare_List_Of_List_Of_List()
+        {
+            Type[] GetCollectionTypes(Type type)
+            {
+                var list1Type = typeof(List<>).MakeGenericType(type);
+                var list2Type = typeof(List<>).MakeGenericType(list1Type);
+                var list3Type = typeof(List<>).MakeGenericType(list2Type);
+
+                return new[] { list1Type, list2Type, list3Type };
+            }
+
+            CompareCollectionOfCollections(GetCollectionTypes);
+        }
+
+        [Fact]
+        public void Compare_Multi_Arrays()
+        {
+            var builder = new ComparersBuilder();
+
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<int[,]>>().GetComparer());
+
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[][,]>>().GetComparer());
+            Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
+        }
+
+        private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes)
+        {
+            CompareCollectionOfCollections(getCollectionTypes, false, false);
+            CompareCollectionOfCollections(getCollectionTypes, true, false);
+            CompareCollectionOfCollections(getCollectionTypes, false, true);
+            CompareCollectionOfCollections(getCollectionTypes, true, true);
+        }
+
+        private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes, bool sort, bool nullable)
+        {
+            var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
+            //Parallel.ForEach(
+            //    types,
+            //    item =>
+            //    {
+            //        var (type, referenceComparer) = item;
+            //        var collections = getCollectionTypes(type);
+            //        var comparerTypes = collections
+            //                            .Prepend(type)
+            //                            .Take(collections.Length)
+            //                            .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
+            //                            .ToArray();
+            //        var comparer = comparerTypes.Aggregate(
+            //            referenceComparer,
+            //            (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
+
+            //        new GenericTests().GenericTest(collections.Last(), comparer, sort, Constants.SmallCount);
+            //    });
+
+            foreach (var (type, referenceComparer) in types)
+            {
+                var collections = getCollectionTypes(type);
+                var comparerTypes = collections
+                                    .Prepend(type)
+                                    .Take(collections.Length)
+                                    .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
+                                    .ToArray();
+                var comparer = comparerTypes.Aggregate(
+                    referenceComparer,
+                    (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
+
+                new GenericTests().GenericTest(collections.Last(), comparer, sort, Constants.SmallCount);
+            }
+        }
+    }
+}
