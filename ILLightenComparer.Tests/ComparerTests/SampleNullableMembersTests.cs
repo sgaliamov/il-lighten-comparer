@@ -24,12 +24,9 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type objectGenericType, Type comparerGenericType)
         {
-            foreach (var (type, typeComparer) in SampleTypes.Types.Where(x => x.Key.IsValueType))
+            foreach (var (nullableType, nullableComparer) in SampleTypes.NullableTypes)
             {
-                var nullableComparer = Helper.CreateNullableComparer(type, typeComparer);
-                var nullableType = type.MakeNullable();
                 var objectType = objectGenericType.MakeGenericType(nullableType);
-
                 var comparerType = comparerGenericType.MakeGenericType(nullableType);
                 var comparer = (IComparer)Activator.CreateInstance(comparerType, nullableComparer);
 

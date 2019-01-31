@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Samples
 {
@@ -37,7 +39,14 @@ namespace ILLightenComparer.Tests.Samples
                     new SampleStructComparer<EnumSmall?>()
                 }
             };
+
+            NullableTypes = Types.Where(x => x.Key.IsValueType)
+                                 .ToDictionary(
+                                     x => x.Key.MakeNullable(),
+                                     x => Helper.CreateNullableComparer(x.Key, x.Value));
         }
+
+        public static IDictionary<Type, IComparer> NullableTypes { get; }
 
         public static IDictionary<Type, IComparer> Types { get; }
     }

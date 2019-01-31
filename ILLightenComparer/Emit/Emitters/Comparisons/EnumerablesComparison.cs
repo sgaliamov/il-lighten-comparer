@@ -20,9 +20,10 @@ namespace ILLightenComparer.Emit.Emitters.Comparisons
             ElementType = variable
                           .VariableType
                           .GetGenericArguments()
-                          .FirstOrDefault()
+                          .SingleOrDefault()
                           ?? throw new ArgumentException(nameof(variable));
 
+            // todo: use read enumerator, not virtual
             EnumeratorType = typeof(IEnumerator<>).MakeGenericType(ElementType);
 
             GetEnumeratorMethod = typeof(IEnumerable<>)
