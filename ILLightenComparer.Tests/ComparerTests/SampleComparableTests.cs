@@ -94,12 +94,6 @@ namespace ILLightenComparer.Tests.ComparerTests
                     var objectType = type;
                     var itemComparer = referenceComparer;
 
-                    if (makeNullable)
-                    {
-                        itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
-                        objectType = objectType.MakeNullable();
-                    }
-
                     var comparableType = comparableGenericType.MakeGenericType(objectType);
                     if (itemComparer != null)
                     {
