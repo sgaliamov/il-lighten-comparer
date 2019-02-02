@@ -8,6 +8,7 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer.Emit.Shared
 {
+    // ReSharper disable once PartialTypeWithSinglePart
     internal sealed partial class ILEmitter : IDisposable
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
@@ -337,7 +338,7 @@ namespace ILLightenComparer.Emit.Shared
             }
         }
 
-        #region debug
+        #region DEBUG
 
         // ReSharper disable PartialMethodWithSinglePart
 
@@ -350,6 +351,7 @@ namespace ILLightenComparer.Emit.Shared
         // ReSharper restore PartialMethodWithSinglePart
 
 #if DEBUG
+
         public ILEmitter DebugWriteLine(LocalBuilder local)
         {
             DebugLine($"\t\tWrite local: {local.LocalIndex}");
@@ -372,6 +374,7 @@ namespace ILLightenComparer.Emit.Shared
 
             return this;
         }
+
 #endif
 
         #endregion
