@@ -79,7 +79,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Ignoring_Order_Do_Not_Add_Side_Effect_For<TElement>()
         {
-            var comparer = new ComparersBuilder()
+            var comparer = new ComparerBuilder()
                            .DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = true })
                            .GetComparer<TElement[]>();
 

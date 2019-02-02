@@ -48,7 +48,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         private static IComparer<AbstractMembers> CreateComparer()
         {
-            return new ComparersBuilder()
+            return new ComparerBuilder()
                    .For<AnotherNestedObject>()
                    .DefineConfiguration(new ComparerSettings
                    {

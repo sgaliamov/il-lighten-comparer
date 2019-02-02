@@ -8,13 +8,13 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer
 {
-    public sealed class ComparersBuilder : IComparersBuilder
+    public sealed class ComparerBuilder : IComparerBuilder
     {
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ConfigurationBuilder _configurations = new ConfigurationBuilder();
         private readonly ComparerContext _context;
 
-        public ComparersBuilder()
+        public ComparerBuilder()
         {
             _context = new ComparerContext(_configurations);
         }
@@ -60,11 +60,11 @@ namespace ILLightenComparer
 
         private sealed class GenericProxy<T> : IContextBuilder<T>, IComparerProviderOrBuilderContext<T>
         {
-            private readonly ComparersBuilder _owner;
+            private readonly ComparerBuilder _owner;
 
-            public GenericProxy(ComparersBuilder comparersBuilder)
+            public GenericProxy(ComparerBuilder comparerBuilder)
             {
-                _owner = comparersBuilder;
+                _owner = comparerBuilder;
             }
 
             public IContextBuilder<TOther> For<TOther>()

@@ -9,7 +9,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
     {
         public CycledStructTests()
         {
-            _builder = new ComparersBuilder()
+            _builder = new ComparerBuilder()
                        .DefineConfiguration(typeof(CycledStruct),
                            new ComparerSettings
                            {

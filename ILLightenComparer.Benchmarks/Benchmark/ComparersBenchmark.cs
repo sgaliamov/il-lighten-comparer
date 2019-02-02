@@ -14,7 +14,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         private static readonly IComparer<SampleObject> Native = SampleObject.Comparer;
 
         private static readonly IComparer<SampleObject> ILLightenComparer =
-            new ComparersBuilder().GetComparer<SampleObject>();
+            new ComparerBuilder().GetComparer<SampleObject>();
 
         //private static readonly IComparer<TestObject> NitoComparer = ComparerBuilder
         //                                                             .For<TestObject>()

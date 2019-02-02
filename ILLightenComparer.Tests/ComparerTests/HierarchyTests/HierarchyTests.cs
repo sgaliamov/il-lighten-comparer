@@ -12,7 +12,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     {
         public HierarchyTests()
         {
-            _nestedStructComparer = new ComparersBuilder()
+            _nestedStructComparer = new ComparerBuilder()
                                     .For<NestedStruct>()
                                     .DefineConfiguration(new ComparerSettings
                                     {
@@ -80,7 +80,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Run_Generic_Tests()
         {
-            var builder = new ComparersBuilder();
+            var builder = new ComparerBuilder();
             builder.DefineConfiguration(typeof(SealedNestedObject),
                        new ComparerSettings
                        {

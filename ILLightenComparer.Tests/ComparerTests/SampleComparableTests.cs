@@ -49,7 +49,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var other = one.DeepClone();
             one.Property = null;
 
-            var comparer = new ComparersBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
+            var comparer = new ComparerBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
 
             comparer.Compare(one, other).Should().BeNegative();
         }
@@ -57,7 +57,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
         {
-            var comparer = new ComparersBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
+            var comparer = new ComparerBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
             var fixture = FixtureBuilder.GetInstance();
 
             var one = new SampleObject<SampleComparableBaseObject<EnumSmall>>

@@ -14,5 +14,5 @@ namespace ILLightenComparer
         IContextBuilder<T> For<T>();
     }
 
-    public interface IContextBuilder<in T> : IConfigurationBuilder<T>, IComparerProvider<T> { }
+    public interface IContextBuilder<T> : IConfigurationBuilder<T>, IComparerProvider<T> { }
 }

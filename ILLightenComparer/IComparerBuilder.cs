@@ -1,6 +1,6 @@
 ﻿namespace ILLightenComparer
 {
-    public interface IComparersBuilder : IContextBuilder
+    public interface IComparerBuilder : IContextBuilder
     {
         IContextBuilder DefineDefaultConfiguration(ComparerSettings settings);
     }

@@ -72,7 +72,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             Helper.Parallel(
                 () =>
                 {
-                    var comparer = new ComparersBuilder().GetComparer<OneSealed>();
+                    var comparer = new ComparerBuilder().GetComparer<OneSealed>();
 
                     var one = _fixture.Create<OneSealed>();
                     var other = _fixture.Create<OneSealed>();
@@ -205,6 +205,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         private readonly Fixture _fixture;
         private IComparer<SelfOpened> ComparerSelfOpened => _builder.For<SelfOpened>().GetComparer();
         private IComparer<OneSealed> ComparerForOneSealed => _builder.For<OneSealed>().GetComparer();
-        private readonly IContextBuilder _builder = new ComparersBuilder();
+        private readonly IContextBuilder _builder = new ComparerBuilder();
     }
 }

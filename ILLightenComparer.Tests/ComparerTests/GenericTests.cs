@@ -14,11 +14,11 @@ namespace ILLightenComparer.Tests.ComparerTests
     internal sealed class GenericTests
     {
         private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
-        private readonly ComparersBuilder _comparersBuilder;
+        private readonly ComparerBuilder _comparerBuilder;
 
-        public GenericTests(ComparersBuilder comparersBuilder = null)
+        public GenericTests(ComparerBuilder comparerBuilder = null)
         {
-            _comparersBuilder = comparersBuilder;
+            _comparerBuilder = comparerBuilder;
         }
 
         public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times)
@@ -32,7 +32,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                     return (Action<IComparerProvider, IComparer, int>)methodInfo.CreateDelegate(typeof(Action<IComparerProvider, IComparer, int>));
                 });
 
-            var builder = _comparersBuilder ?? new ComparersBuilder();
+            var builder = _comparerBuilder ?? new ComparerBuilder();
             builder.DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = sort });
 
             method(builder, referenceComparer, times);

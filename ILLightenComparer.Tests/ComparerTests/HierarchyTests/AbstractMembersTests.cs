@@ -161,7 +161,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 
         private readonly IComparer<AbstractMembers> _comparer =
-            new ComparersBuilder()
+            new ComparerBuilder()
                 .For<SealedNestedObject>()
                 .DefineConfiguration(new ComparerSettings
                 {
