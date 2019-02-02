@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -53,15 +54,23 @@ namespace ILLightenComparer.Tests.ComparerTests
             var typedComparer = comparersBuilder.GetComparer<T>();
             var basicComparer = comparersBuilder.GetComparer(type);
 
-            Comparison_Of_Null_With_Object_Produces_Negative_Value(referenceComparer, typedComparer, basicComparer);
-            Comparison_Of_Object_With_Null_Produces_Positive_Value(referenceComparer, typedComparer, basicComparer);
-            Comparison_When_Both_Null_Produces_0(referenceComparer, typedComparer, basicComparer);
-            Comparison_With_Itself_Produces_0(referenceComparer, typedComparer, basicComparer);
-            Comparison_With_Same_Produces_0(referenceComparer, typedComparer, basicComparer);
-
-            Comparisons_Work_Identical(referenceComparer, typedComparer, basicComparer, times);
-            Sorting_Must_Work_The_Same_As_For_Reference_Comparer(referenceComparer, typedComparer, basicComparer, Constants.BigCount);
-            Mutate_Class_Members_And_Test_Comparison(referenceComparer, typedComparer, basicComparer);
+            Parallel.Invoke(
+                () =>
+                {
+                    Comparison_Of_Null_With_Object_Produces_Negative_Value(referenceComparer, typedComparer, basicComparer);
+                    Comparison_Of_Object_With_Null_Produces_Positive_Value(referenceComparer, typedComparer, basicComparer);
+                    Comparison_When_Both_Null_Produces_0(referenceComparer, typedComparer, basicComparer);
+                    Comparison_With_Itself_Produces_0(referenceComparer, typedComparer, basicComparer);
+                    Comparison_With_Same_Produces_0(referenceComparer, typedComparer, basicComparer);
+                },
+                () => Comparisons_Work_Identical(referenceComparer, typedComparer, basicComparer, times),
+                () => Sorting_Must_Work_The_Same_As_For_Reference_Comparer(
+                    referenceComparer,
+                    typedComparer,
+                    basicComparer,
+                    Constants.BigCount),
+                () => Mutate_Class_Members_And_Test_Comparison(referenceComparer, typedComparer, basicComparer)
+            );
         }
 
         private static void Comparison_Of_Null_With_Object_Produces_Negative_Value<T>(
@@ -143,12 +152,15 @@ namespace ILLightenComparer.Tests.ComparerTests
             if (typeof(T).GetGenericInterface(typeof(IEnumerable<>)) != null) { return; }
 
             var original = Fixture.Create<T>();
-            foreach (var mutant in Fixture.CreateMutants(original))
-            {
-                referenceComparer.Compare(mutant, original).Should().NotBe(0);
-                basicComparer.Compare(mutant, original).Should().NotBe(0);
-                typedComparer.Compare(mutant, original).Should().NotBe(0);
-            }
+            Parallel.ForEach(
+                Fixture.CreateMutants(original),
+                mutant =>
+                {
+                    referenceComparer.Compare(mutant, original).Should().NotBe(0);
+                    basicComparer.Compare(mutant, original).Should().NotBe(0);
+                    typedComparer.Compare(mutant, original).Should().NotBe(0);
+                }
+            );
         }
 
         private static void Sorting_Must_Work_The_Same_As_For_Reference_Comparer<T>(

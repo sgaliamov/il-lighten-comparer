@@ -94,10 +94,16 @@ namespace ILLightenComparer.Tests.Utilities
 
         private static object GetNewValue(Fixture fixture, Type type, object oldValue)
         {
+            var times = 5;
             while (true)
             {
                 var newValue = fixture.Create(type);
                 if (!newValue.Equals(oldValue))
+                {
+                    return newValue;
+                }
+
+                if (times-- != 0)
                 {
                     return newValue;
                 }
