@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !DEBUG // to run long test on release mode only
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,20 +15,6 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class CollectionOfCollectionsTests
     {
         [Fact]
-        public void Compare_Array_Of_List()
-        {
-            Type[] GetCollectionTypes(Type type)
-            {
-                var arrayType = type.MakeArrayType();
-                var listType = typeof(List<>).MakeGenericType(arrayType);
-
-                return new[] { arrayType, listType };
-            }
-
-            CompareCollectionOfCollections(GetCollectionTypes);
-        }
-
-        [Fact]
         public void Compare_Array_Of_Array()
         {
             Type[] GetCollectionTypes(Type type)
@@ -35,6 +23,20 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var array2Type = array1Type.MakeArrayType();
 
                 return new[] { array1Type, array2Type };
+            }
+
+            CompareCollectionOfCollections(GetCollectionTypes);
+        }
+
+        [Fact]
+        public void Compare_Array_Of_List()
+        {
+            Type[] GetCollectionTypes(Type type)
+            {
+                var arrayType = type.MakeArrayType();
+                var listType = typeof(List<>).MakeGenericType(arrayType);
+
+                return new[] { arrayType, listType };
             }
 
             CompareCollectionOfCollections(GetCollectionTypes);
@@ -140,3 +142,5 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
     }
 }
+
+#endif
