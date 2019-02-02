@@ -9,7 +9,6 @@ namespace ILLightenComparer.Emit.Extensions
 {
     internal static class TypeExtensions
     {
-        // todo: if https://stackoverflow.com/questions/23833999/why-int-maxvalue-int-minvalue-1 then include int
         private static readonly HashSet<Type> SmallIntegralTypes = new HashSet<Type>(new[]
         {
             typeof(sbyte),
@@ -84,19 +83,6 @@ namespace ILLightenComparer.Emit.Extensions
         {
             return type.ImplementsGeneric(typeof(IComparable<>))
                    && (type.IsValueType || type.IsSealed);
-        }
-
-        public static bool IsCollectionOfSealed(this Type objectType)
-        {
-            var generic = objectType.GetGenericInterface(typeof(IEnumerable<>));
-            if (generic == null)
-            {
-                return false;
-            }
-
-            var itemType = generic.GetGenericArguments()[0];
-
-            return itemType.IsPrimitive() || itemType.IsSealedComparable() || itemType.IsValueType;
         }
 
         /// <summary>

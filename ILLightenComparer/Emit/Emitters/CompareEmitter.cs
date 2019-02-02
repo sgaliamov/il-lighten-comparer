@@ -28,20 +28,12 @@ namespace ILLightenComparer.Emit.Emitters
 
         public ILEmitter Visit(ArraysComparison comparison, ILEmitter il)
         {
-            il.DefineLabel(out var exit);
-
-            return _compareVisitor.Visit(comparison, il, exit)
-                                  .MarkLabel(exit)
-                                  .Return(0);
+            return CompareAsCollection(comparison, il);
         }
 
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il)
         {
-            il.DefineLabel(out var exit);
-
-            return _compareVisitor.Visit(comparison, il, exit)
-                                  .MarkLabel(exit)
-                                  .Return(0);
+            return CompareAsCollection(comparison, il);
         }
 
         public ILEmitter Visit(MembersComparison comparison, ILEmitter il)
@@ -82,6 +74,15 @@ namespace ILLightenComparer.Emit.Emitters
                                   .EmitReturnNotZero(exit)
                                   .MarkLabel(exit)
                                   .Return(0);
+        }
+
+        private ILEmitter CompareAsCollection(IComparison comparison, ILEmitter il)
+        {
+            il.DefineLabel(out var exit);
+
+            return comparison.Accept(_compareVisitor, il, exit)
+                             .MarkLabel(exit)
+                             .Return(0);
         }
     }
 }
