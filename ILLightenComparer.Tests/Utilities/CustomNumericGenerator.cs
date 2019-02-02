@@ -8,7 +8,6 @@ namespace ILLightenComparer.Tests.Utilities
     {
         private readonly int _lower;
         private readonly double _minMaxProbability;
-        private readonly Random _random;
         private readonly int _upper;
 
         public CustomNumericGenerator(int lower, int upper, double minMaxProbability)
@@ -16,7 +15,6 @@ namespace ILLightenComparer.Tests.Utilities
             _lower = lower;
             _upper = upper;
             _minMaxProbability = minMaxProbability;
-            _random = new Random();
         }
 
         public object Create(object request, ISpecimenContext context)
@@ -69,7 +67,7 @@ namespace ILLightenComparer.Tests.Utilities
 
         private T? MinMax<T>(IReflect request) where T : struct
         {
-            if (_random.NextDouble() >= _minMaxProbability)
+            if (ThreadSafeRandom.NextDouble() >= _minMaxProbability)
             {
                 return null;
             }
@@ -79,14 +77,14 @@ namespace ILLightenComparer.Tests.Utilities
                 return t.GetField(name, BindingFlags.Static | BindingFlags.Public).GetValue(null);
             }
 
-            return _random.NextDouble() < 0.5
+            return ThreadSafeRandom.NextDouble() < 0.5
                        ? (T)Get(request, "MinValue")
                        : (T)Get(request, "MaxValue");
         }
 
         private long GetNextRandom()
         {
-            return _random.Next(_lower, _upper);
+            return ThreadSafeRandom.Next(_lower, _upper);
         }
     }
 }

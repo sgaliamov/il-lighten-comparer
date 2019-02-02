@@ -12,7 +12,6 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     internal sealed class GenericTests
     {
-        private static readonly Random Random = new Random();
         private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
         private readonly ComparersBuilder _comparersBuilder;
 
@@ -200,7 +199,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             var type = typeof(T);
 
-            if ((!type.IsValueType || type.IsNullable()) && Random.NextDouble() < Constants.NullProbability)
+            if ((!type.IsValueType || type.IsNullable()) && ThreadSafeRandom.NextDouble() < Constants.NullProbability)
             {
                 return default;
             }
@@ -230,7 +229,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             for (var i = 0; i < list.Count; i++)
             {
-                if (Random.NextDouble() < Constants.NullProbability)
+                if (ThreadSafeRandom.NextDouble() < Constants.NullProbability)
                 {
                     list[i] = null;
                 }
@@ -256,7 +255,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             foreach (var item in (IEnumerable)result)
             {
-                var parameters = Random.NextDouble() < Constants.NullProbability
+                var parameters = ThreadSafeRandom.NextDouble() < Constants.NullProbability
                                      ? new[] { (object)null }
                                      : new[] { item };
 
