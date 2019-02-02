@@ -5,6 +5,7 @@ using System.Threading;
 using AutoFixture;
 using AutoFixture.Kernel;
 using Force.DeepCloner;
+using Xunit;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -67,7 +68,7 @@ namespace ILLightenComparer.Tests.Utilities
 
                 setValue(
                     member.Parent,
-                    GetNewValue(fixture, member.ValueType, member.Value));
+                    GetNewValue(member.ValueType, member.Value));
 
                 yield return clone.DeepClone();
 
@@ -92,21 +93,18 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        private static object GetNewValue(Fixture fixture, Type type, object oldValue)
+        private static object GetNewValue(Type type, object oldValue)
         {
             var times = 5;
             while (true)
             {
-                var newValue = fixture.Create(type);
+                var newValue = SimpleFixture.Value.Create(type);
                 if (!newValue.Equals(oldValue))
                 {
                     return newValue;
                 }
 
-                if (times-- != 0)
-                {
-                    return newValue;
-                }
+                Assert.NotEqual(0, --times);
             }
         }
     }

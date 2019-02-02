@@ -152,15 +152,12 @@ namespace ILLightenComparer.Tests.ComparerTests
             if (typeof(T).GetGenericInterface(typeof(IEnumerable<>)) != null) { return; }
 
             var original = Fixture.Create<T>();
-            Parallel.ForEach(
-                Fixture.CreateMutants(original),
-                mutant =>
-                {
-                    referenceComparer.Compare(mutant, original).Should().NotBe(0);
-                    basicComparer.Compare(mutant, original).Should().NotBe(0);
-                    typedComparer.Compare(mutant, original).Should().NotBe(0);
-                }
-            );
+            foreach (var mutant in Fixture.CreateMutants(original))
+            {
+                referenceComparer.Compare(mutant, original).Should().NotBe(0);
+                basicComparer.Compare(mutant, original).Should().NotBe(0);
+                typedComparer.Compare(mutant, original).Should().NotBe(0);
+            }
         }
 
         private static void Sorting_Must_Work_The_Same_As_For_Reference_Comparer<T>(
