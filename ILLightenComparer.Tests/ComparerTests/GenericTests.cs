@@ -29,7 +29,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 {
                     var methodInfo = GetTestMethod(type);
 
-                    return (Action<IComparerProvider, IComparer, int>)methodInfo.CreateDelegate(typeof(Action<IComparerProvider, IComparer, int>));
+                    return (Action<IComparerBuilder, IComparer, int>)methodInfo.CreateDelegate(typeof(Action<IComparerBuilder, IComparer, int>));
                 });
 
             var builder = _comparerBuilder ?? new ComparerBuilder();
@@ -45,7 +45,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                    .MakeGenericMethod(objType);
         }
 
-        private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times)
+        private static void Test<T>(IComparerBuilder comparersBuilder, IComparer referenceComparer, int times)
         {
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 

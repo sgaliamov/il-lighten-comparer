@@ -205,6 +205,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         private readonly Fixture _fixture;
         private IComparer<SelfOpened> ComparerSelfOpened => _builder.For<SelfOpened>().GetComparer();
         private IComparer<OneSealed> ComparerForOneSealed => _builder.For<OneSealed>().GetComparer();
-        private readonly IContextBuilder _builder = new ComparerBuilder();
+        private readonly IComparerBuilder _builder = new ComparerBuilder();
     }
 }

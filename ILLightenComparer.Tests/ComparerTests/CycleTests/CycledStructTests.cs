@@ -141,6 +141,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 
         public IComparer<CycledStruct> ComparerStruct => _builder.GetComparer<CycledStruct>();
         public IComparer<CycledStructObject> ComparerObject => _builder.GetComparer<CycledStructObject>();
-        private readonly IContextBuilder _builder;
+        private readonly IComparerBuilder _builder;
     }
 }

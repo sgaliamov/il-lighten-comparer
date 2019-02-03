@@ -44,7 +44,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             Test(builder);
         }
 
-        private void Test<T>(IComparerProvider<T> builder)
+        private void Test<T>(IComparerBuilder<T> builder)
         {
             var comparer = (IComparer)builder.GetComparer();
 

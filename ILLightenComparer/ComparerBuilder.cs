@@ -19,16 +19,21 @@ namespace ILLightenComparer
             _context = new ComparerContext(_configurations);
         }
 
-        public IContextBuilder DefineDefaultConfiguration(ComparerSettings settings)
+        public IComparerBuilder DefineDefaultConfiguration(ComparerSettings settings)
         {
             _configurations.DefineDefaultConfiguration(settings);
             return this;
         }
 
-        public IContextBuilder DefineConfiguration(Type type, ComparerSettings settings)
+        public IComparerBuilder DefineConfiguration(Type type, ComparerSettings settings)
         {
             _configurations.DefineConfiguration(type, settings);
             return this;
+        }
+
+        public IComparerBuilder SetComparer(Type type, IComparer comparer)
+        {
+            throw new NotImplementedException();
         }
 
         public IComparer<T> GetComparer<T>()
@@ -53,12 +58,12 @@ namespace ILLightenComparer
             throw new NotImplementedException();
         }
 
-        public IContextBuilder<T> For<T>()
+        public IComparerBuilder<T> For<T>()
         {
             return new GenericProxy<T>(this);
         }
 
-        private sealed class GenericProxy<T> : IContextBuilder<T>, IComparerProviderOrBuilderContext<T>
+        private sealed class GenericProxy<T> : IComparerBuilder<T>
         {
             private readonly ComparerBuilder _owner;
 
@@ -67,12 +72,17 @@ namespace ILLightenComparer
                 _owner = comparerBuilder;
             }
 
-            public IContextBuilder<TOther> For<TOther>()
+            public IComparerBuilder<T> SetComparer(IComparer<T> comparer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IComparerBuilder<TOther> For<TOther>()
             {
                 return _owner.For<TOther>();
             }
 
-            public IComparerProviderOrBuilderContext<T> DefineConfiguration(ComparerSettings settings)
+            public IComparerBuilder<T> DefineConfiguration(ComparerSettings settings)
             {
                 _owner.DefineConfiguration(typeof(T), settings);
                 return this;

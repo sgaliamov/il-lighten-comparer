@@ -66,7 +66,7 @@
 - [x] refactor visitors
 - [x] introduce variables scope to not have to track variable buckets
 - [ ] customization setting to override comparer with specific implementation
-- [ ] smart configuration builder
+- [ ] smart `IComparerBuilder`
 - [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
 - [ ] tests for different cultures
