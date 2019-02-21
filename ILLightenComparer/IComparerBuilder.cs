@@ -7,7 +7,7 @@ namespace ILLightenComparer
     /// <summary>
     ///     Builds an instance of a comparer based on provided type in a method first argument.
     /// </summary>
-    public interface IComparerBuilder
+    public interface IComparerBuilder : IComparerProvider
     {
         IComparerBuilder DefineDefaultConfiguration(ComparerSettings settings);
 
@@ -27,21 +27,13 @@ namespace ILLightenComparer
         ///     Defines context for the following methods.
         /// </typeparam>
         IComparerBuilder<T> For<T>();
-
-        IComparer GetComparer(Type objectType);
-
-        IComparer<T> GetComparer<T>();
-
-        IEqualityComparer GetEqualityComparer(Type objectType);
-
-        IEqualityComparer<T> GetEqualityComparer<T>();
     }
 
     /// <summary>
     ///     Builds an instance of a comparer based on provided type <typeparamref name="T" />.
     /// </summary>
     /// <typeparam name="T">The type whose instances need to compare.</typeparam>
-    public interface IComparerBuilder<T>
+    public interface IComparerBuilder<T> : IComparerProvider<T>
     {
         /// <summary>
         ///     Defines the configuration for the type specified in the generic parameter of the interface.
@@ -60,7 +52,21 @@ namespace ILLightenComparer
         ///     Defines context for the following methods.
         /// </typeparam>
         IComparerBuilder<TOther> For<TOther>();
+    }
 
+    public interface IComparerProvider
+    {
+        IComparer GetComparer(Type objectType);
+
+        IComparer<T> GetComparer<T>();
+
+        IEqualityComparer GetEqualityComparer(Type objectType);
+
+        IEqualityComparer<T> GetEqualityComparer<T>();
+    }
+
+    public interface IComparerProvider<in T>
+    {
         IComparer<T> GetComparer();
 
         IEqualityComparer<T> GetEqualityComparer();
