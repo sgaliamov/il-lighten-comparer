@@ -7,18 +7,8 @@ namespace ILLightenComparer
     /// <summary>
     ///     Builds an instance of a comparer based on provided type in a method first argument.
     /// </summary>
-    public interface IComparerBuilder : IComparerProvider
+    public interface IComparerBuilder : IComparerProvider, IConfigurationBuilder
     {
-        IComparerBuilder DefineDefaultConfiguration(ComparerSettings settings);
-
-        /// <summary>
-        ///     Defines the configuration for the type specified in the argument of the method.
-        ///     Builder can define multiple configurations for different types.
-        /// </summary>
-        IComparerBuilder DefineConfiguration(Type type, ComparerSettings settings);
-
-        IComparerBuilder SetComparer(Type type, IComparer comparer);
-
         /// <summary>
         ///     Sugar to convert the builder to generic version.
         /// </summary>
@@ -33,16 +23,8 @@ namespace ILLightenComparer
     ///     Builds an instance of a comparer based on provided type <typeparamref name="T" />.
     /// </summary>
     /// <typeparam name="T">The type whose instances need to compare.</typeparam>
-    public interface IComparerBuilder<T> : IComparerProvider<T>
+    public interface IComparerBuilder<T> : IComparerProvider<T>, IConfigurationBuilder<T>
     {
-        /// <summary>
-        ///     Defines the configuration for the type specified in the generic parameter of the interface.
-        ///     Generic version can define a configuration only for the specified type.
-        /// </summary>
-        IComparerBuilder<T> DefineConfiguration(ComparerSettings settings);
-
-        IComparerBuilder<T> SetComparer(IComparer<T> comparer);
-
         /// <summary>
         ///     Sugar to convert the builder to generic version.
         ///     Starts another builder context.
@@ -52,6 +34,52 @@ namespace ILLightenComparer
         ///     Defines context for the following methods.
         /// </typeparam>
         IComparerBuilder<TOther> For<TOther>();
+    }
+
+    public interface IConfigurationBuilder
+    {
+        IComparerBuilder SetDefaultDetectCycles(bool? value);
+
+        IComparerBuilder SetDefaultIgnoreCollectionOrder(bool? value);
+
+        IComparerBuilder SetDefaultIgnoredMembers(string[] value);
+
+        IComparerBuilder SetDefaultIncludeFields(bool? value);
+
+        IComparerBuilder SetDefaultMembersOrder(string[] value);
+
+        IComparerBuilder SetDefaultStringComparisonType(StringComparison? value);
+
+        IComparerBuilder SetDetectCycles(Type type, bool? value);
+
+        IComparerBuilder SetIgnoreCollectionOrder(Type type, bool? value);
+
+        IComparerBuilder SetIgnoredMembers(Type type, string[] value);
+
+        IComparerBuilder SetIncludeFields(Type type, bool? value);
+
+        IComparerBuilder SetMembersOrder(Type type, string[] value);
+
+        IComparerBuilder SetStringComparisonType(Type type, StringComparison? value);
+
+        IComparerBuilder SetComparer(Type type, IComparer comparer);
+    }
+
+    public interface IConfigurationBuilder<T>
+    {
+        IComparerBuilder<T> SetDetectCycles(bool? value);
+
+        IComparerBuilder<T> SetIgnoreCollectionOrder(bool? value);
+
+        IComparerBuilder<T> SetIgnoredMembers(string[] value);
+
+        IComparerBuilder<T> SetIncludeFields(bool? value);
+
+        IComparerBuilder<T> SetMembersOrder(string[] value);
+
+        IComparerBuilder<T> SetStringComparisonType(StringComparison? value);
+
+        IComparerBuilder<T> SetComparer(IComparer<T> comparer);
     }
 
     public interface IComparerProvider
