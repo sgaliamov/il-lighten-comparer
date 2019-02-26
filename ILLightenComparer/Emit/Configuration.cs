@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ILLightenComparer.Config
+namespace ILLightenComparer.Emit
 {
     internal sealed class Configuration
     {
-        private readonly Dictionary<Type, IComparer> _comparers;
+        private readonly IDictionary<Type, IComparer> _comparers;
 
         public Configuration(Configuration configuration) : this(
             configuration.IgnoredMembers,
@@ -25,9 +25,14 @@ namespace ILLightenComparer.Config
             StringComparison stringComparisonType,
             bool detectCycles,
             bool ignoreCollectionOrder,
-            Dictionary<Type, IComparer> comparers)
+            IDictionary<Type, IComparer> comparers)
         {
-            _comparers = comparers ?? throw new ArgumentNullException(nameof(comparers));
+            if (comparers == null)
+            {
+                throw new ArgumentNullException(nameof(comparers));
+            }
+
+            _comparers = comparers.ToDictionary(x => x.Key, x => x.Value);
             SetIgnoredMembers(ignoredMembers);
             IncludeFields = includeFields;
             SetMembersOrder(membersOrder);
@@ -45,6 +50,11 @@ namespace ILLightenComparer.Config
 
         public void SetComparer(Type type, IComparer comparer)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             _comparers[type] = comparer;
         }
 

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using ILLightenComparer.Config;
 using ILLightenComparer.Emit;
 using ILLightenComparer.Emit.Extensions;
 
