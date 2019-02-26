@@ -62,7 +62,7 @@ namespace ILLightenComparer
 
         IComparerBuilder SetStringComparisonType(Type type, StringComparison? value);
 
-        IComparerBuilder SetComparer(Type type, IComparer comparer);
+        IComparerBuilder SetComparer(Type type, Type comparable, IComparer comparer);
     }
 
     public interface IConfigurationBuilder<T>
@@ -79,7 +79,7 @@ namespace ILLightenComparer
 
         IComparerBuilder<T> SetStringComparisonType(StringComparison? value);
 
-        IComparerBuilder<T> SetComparer(IComparer<T> comparer);
+        IComparerBuilder<T> SetComparer<TComparable>(IComparer<TComparable> comparer);
     }
 
     public interface IComparerProvider
