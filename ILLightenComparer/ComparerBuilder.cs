@@ -7,32 +7,130 @@ using ILLightenComparer.Emit.Extensions;
 
 namespace ILLightenComparer
 {
-    public sealed class ComparerBuilder : IComparerBuilder
+    public sealed class ComparerBuilder : IComparerBuilder, IConfigurationProvider
     {
-        private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
-        private readonly ConfigurationBuilder _configurations = new ConfigurationBuilder();
+        private const bool DefaultIncludeFields = true;
+        private const StringComparison DefaultStringComparisonType = StringComparison.Ordinal;
+        private const bool DefaultDetectCycles = true;
+        private const bool DefaultIgnoreCollectionOrder = false;
+        private static readonly string[] DefaultIgnoredMembers = new string[0];
+        private static readonly string[] DefaultMembersOrder = new string[0];
+
+        private readonly ConcurrentDictionary<Type, Configuration> _configurations =
+            new ConcurrentDictionary<Type, Configuration>();
+
         private readonly ComparerContext _context;
+
+        private readonly Configuration _default = new Configuration(
+            DefaultIgnoredMembers,
+            DefaultIncludeFields,
+            DefaultMembersOrder,
+            DefaultStringComparisonType,
+            DefaultDetectCycles,
+            DefaultIgnoreCollectionOrder,
+            new Dictionary<Type, IComparer>(0));
 
         public ComparerBuilder()
         {
-            _context = new ComparerContext(_configurations);
+            _context = new ComparerContext(this);
         }
 
-        public IComparerBuilder DefineDefaultConfiguration(ComparerSettings settings)
+        public IComparerBuilder SetDefaultDetectCycles(bool? value)
         {
-            _configurations.DefineDefaultConfiguration(settings);
+            _default.DetectCycles = value ?? DefaultDetectCycles;
+
             return this;
         }
 
-        public IComparerBuilder DefineConfiguration(Type type, ComparerSettings settings)
+        public IComparerBuilder SetDefaultIgnoreCollectionOrder(bool? value)
         {
-            _configurations.DefineConfiguration(type, settings);
+            _default.IgnoreCollectionOrder = value ?? DefaultIgnoreCollectionOrder;
+
             return this;
         }
 
-        public IComparerBuilder SetComparer(Type type, IComparer comparer)
+        public IComparerBuilder SetDefaultIgnoredMembers(string[] value)
         {
-            throw new NotImplementedException();
+            _default.SetIgnoredMembers(value ?? DefaultIgnoredMembers);
+
+            return this;
+        }
+
+        public IComparerBuilder SetDefaultIncludeFields(bool? value)
+        {
+            _default.IncludeFields = value ?? DefaultIncludeFields;
+
+            return this;
+        }
+
+        public IComparerBuilder SetDefaultMembersOrder(string[] value)
+        {
+            _default.SetMembersOrder(value ?? DefaultMembersOrder);
+
+            return this;
+        }
+
+        public IComparerBuilder SetDefaultStringComparisonType(StringComparison? value)
+        {
+            _default.StringComparisonType = value ?? DefaultStringComparisonType;
+
+            return this;
+        }
+
+        public IComparerBuilder SetDetectCycles(Type type, bool? value)
+        {
+            var configuration = _configurations.GetOrAdd(type, _ => new Configuration(_default));
+            configuration.DetectCycles = value ?? DefaultDetectCycles;
+
+            return this;
+        }
+
+        public IComparerBuilder SetIgnoreCollectionOrder(Type type, bool? value)
+        {
+            var configuration = _configurations.GetOrAdd(type, _ => new Configuration(_default));
+            configuration.IgnoreCollectionOrder = value ?? DefaultIgnoreCollectionOrder;
+
+            return this;
+        }
+
+        public IComparerBuilder SetIgnoredMembers(Type type, string[] value)
+        {
+            var configuration = _configurations.GetOrAdd(type, _ => new Configuration(_default));
+            configuration.SetIgnoredMembers(value ?? DefaultIgnoredMembers);
+
+            return this;
+        }
+
+        public IComparerBuilder SetIncludeFields(Type type, bool? value)
+        {
+            var configuration = _configurations.GetOrAdd(type, _ => new Configuration(_default));
+            configuration.IncludeFields = value ?? DefaultIncludeFields;
+
+            return this;
+        }
+
+        public IComparerBuilder SetMembersOrder(Type type, string[] value)
+        {
+            var configuration = _configurations.GetOrAdd(type, _ => new Configuration(_default));
+            configuration.SetMembersOrder(value ?? DefaultMembersOrder);
+
+            return this;
+        }
+
+        public IComparerBuilder SetStringComparisonType(Type type, StringComparison? value)
+        {
+            var configuration = _configurations.GetOrAdd(type, _ => new Configuration(_default));
+            configuration.StringComparisonType = value ?? DefaultStringComparisonType;
+
+            return this;
+        }
+
+        public IComparerBuilder SetComparer(Type type, Type comparable, IComparer comparer)
+        {
+            var configuration = _configurations.GetOrAdd(type, _ => new Configuration(_default));
+            configuration.SetComparer(comparable, comparer);
+
+            return this;
         }
 
         public IComparer<T> GetComparer<T>()
@@ -42,8 +140,10 @@ namespace ILLightenComparer
 
         public IComparer GetComparer(Type objectType)
         {
-            return _comparers.GetOrAdd(
-                objectType,
+            var configuration = GetConfiguration(objectType);
+
+            return _context.GetOrAdd(
+                configuration,
                 key => _context.GetOrBuildComparerType(key).CreateInstance<IComparerContext, IComparer>(_context));
         }
 
@@ -59,42 +159,85 @@ namespace ILLightenComparer
 
         public IComparerBuilder<T> For<T>()
         {
-            return new GenericProxy<T>(this);
+            return new Proxy<T>(this);
         }
 
-        private sealed class GenericProxy<T> : IComparerBuilder<T>
+        Configuration IConfigurationProvider.GetConfiguration(Type type)
         {
-            private readonly ComparerBuilder _owner;
+            return GetConfiguration(type);
+        }
 
-            public GenericProxy(ComparerBuilder comparerBuilder)
+        private Configuration GetConfiguration(Type type)
+        {
+            return _configurations.TryGetValue(type, out var configuration)
+                       ? configuration
+                       : _default;
+        }
+
+        private sealed class Proxy<T> : IComparerBuilder<T>
+        {
+            private readonly ComparerBuilder _subject;
+
+            public Proxy(ComparerBuilder subject)
             {
-                _owner = comparerBuilder;
+                _subject = subject;
             }
 
-            public IComparerBuilder<T> SetComparer(IComparer<T> comparer)
+            public IComparerBuilder<T> SetDetectCycles(bool? value)
             {
-                throw new NotImplementedException();
+                _subject.SetDetectCycles(typeof(T), value);
+                return this;
+            }
+
+            public IComparerBuilder<T> SetIgnoreCollectionOrder(bool? value)
+            {
+                _subject.SetIgnoreCollectionOrder(typeof(T), value);
+                return this;
+            }
+
+            public IComparerBuilder<T> SetIgnoredMembers(string[] value)
+            {
+                _subject.SetIgnoredMembers(typeof(T), value);
+                return this;
+            }
+
+            public IComparerBuilder<T> SetIncludeFields(bool? value)
+            {
+                _subject.SetDefaultDetectCycles(value);
+                return this;
+            }
+
+            public IComparerBuilder<T> SetMembersOrder(string[] value)
+            {
+                _subject.SetMembersOrder(typeof(T), value);
+                return this;
+            }
+
+            public IComparerBuilder<T> SetStringComparisonType(StringComparison? value)
+            {
+                _subject.SetStringComparisonType(typeof(T), value);
+                return this;
+            }
+
+            public IComparerBuilder<T> SetComparer<TComparable>(IComparer<TComparable> comparer)
+            {
+                _subject.SetComparer(typeof(T), typeof(TComparable), (IComparer)comparer);
+                return this;
             }
 
             public IComparerBuilder<TOther> For<TOther>()
             {
-                return _owner.For<TOther>();
-            }
-
-            public IComparerBuilder<T> DefineConfiguration(ComparerSettings settings)
-            {
-                _owner.DefineConfiguration(typeof(T), settings);
-                return this;
+                return _subject.For<TOther>();
             }
 
             public IComparer<T> GetComparer()
             {
-                return _owner.GetComparer<T>();
+                return _subject.GetComparer<T>();
             }
 
             public IEqualityComparer<T> GetEqualityComparer()
             {
-                return _owner.GetEqualityComparer<T>();
+                return _subject.GetEqualityComparer<T>();
             }
         }
     }

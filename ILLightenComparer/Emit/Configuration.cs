@@ -75,4 +75,9 @@ namespace ILLightenComparer.Emit
             MembersOrder = value?.Distinct().ToArray() ?? throw new ArgumentNullException(nameof(value));
         }
     }
+
+    internal interface IConfigurationProvider
+    {
+        Configuration GetConfiguration(Type type);
+    }
 }

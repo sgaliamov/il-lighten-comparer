@@ -20,15 +20,16 @@ namespace ILLightenComparer.Emit
         IComparer<T> GetComparer<T>();
     }
 
-    internal sealed class ComparerContext : IComparerContext
+    internal sealed class ComparerContext : IComparerContext, IComparerProvider
     {
         private readonly Builds _builds = new Builds();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ComparerTypes _comparerTypes = new ComparerTypes();
-        private readonly ConfigurationBuilder _configurationBuilder;
+        private readonly IConfigurationProvider _configurations;
         private readonly ModuleBuilder _moduleBuilder;
+        private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
 
-        public ComparerContext(ConfigurationBuilder configurationBuilder)
+        public ComparerContext(IConfigurationProvider configurations)
         {
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("ILLightenComparer"),
@@ -36,7 +37,7 @@ namespace ILLightenComparer.Emit
 
             _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
 
-            _configurationBuilder = configurationBuilder;
+            _configurations = configurations;
 
             _comparerTypeBuilder = new ComparerTypeBuilder(this);
         }
@@ -77,11 +78,26 @@ namespace ILLightenComparer.Emit
         }
 
         // todo: move comparer instances comparison to context
+        public IComparer GetComparer(Type objectType)
+        {
+            throw new NotImplementedException();
+        }
+
         public IComparer<T> GetComparer<T>()
         {
             var comparerType = GetOrBuildComparerType(typeof(T));
 
             return comparerType.CreateInstance<IComparerContext, IComparer<T>>(this);
+        }
+
+        public IEqualityComparer GetEqualityComparer(Type objectType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEqualityComparer<T> GetEqualityComparer<T>()
+        {
+            throw new NotImplementedException();
         }
 
         public Type GetOrBuildComparerType(Type objectType)
@@ -113,7 +129,7 @@ namespace ILLightenComparer.Emit
 
         public Configuration GetConfiguration(Type type)
         {
-            return _configurationBuilder.GetConfiguration(type);
+            return _configurations.GetConfiguration(type);
         }
 
         internal MethodInfo GetStaticCompareMethod(Type type)
