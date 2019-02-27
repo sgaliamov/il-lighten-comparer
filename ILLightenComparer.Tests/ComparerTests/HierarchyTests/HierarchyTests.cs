@@ -12,29 +12,22 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     {
         public HierarchyTests()
         {
-            _nestedStructComparer = new ComparerBuilder()
-                                    .For<NestedStruct>()
-                                    .DefineConfiguration(new ComparerSettings
-                                    {
-                                        MembersOrder = new[]
-                                        {
-                                            nameof(NestedStruct.Property),
-                                            nameof(NestedStruct.NullableProperty)
-                                        }
-                                    })
-                                    .For<HierarchicalObject>()
-                                    .DefineConfiguration(new ComparerSettings
-                                    {
-                                        IgnoredMembers = new[]
-                                        {
-                                            nameof(HierarchicalObject.ComparableField),
-                                            nameof(HierarchicalObject.Value),
-                                            nameof(HierarchicalObject.FirstProperty),
-                                            nameof(HierarchicalObject.SecondProperty),
-                                            nameof(HierarchicalObject.NestedField)
-                                        }
-                                    })
-                                    .GetComparer();
+            _comparer = new ComparerBuilder()
+                        .Configure(builder => builder.Configure<NestedStruct>(config => config.SetMembersOrder(new[]
+                        {
+                            nameof(NestedStruct.Property),
+                            nameof(NestedStruct.NullableProperty)
+                        })))
+                        .For<HierarchicalObject>()
+                        .Configure(config => config.SetIgnoredMembers(new[]
+                        {
+                            nameof(HierarchicalObject.ComparableField),
+                            nameof(HierarchicalObject.Value),
+                            nameof(HierarchicalObject.FirstProperty),
+                            nameof(HierarchicalObject.SecondProperty),
+                            nameof(HierarchicalObject.NestedField)
+                        }))
+                        .GetComparer();
         }
 
         [Fact]
@@ -48,7 +41,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
             var expected = HierarchicalObject.Comparer.Compare(one, other);
             expected.Should().Be(-1);
-            var actual = _nestedStructComparer.Compare(one, other);
+            var actual = _comparer.Compare(one, other);
 
             actual.Should().Be(expected);
         }
@@ -71,7 +64,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 };
 
                 var expected = HierarchicalObject.Comparer.Compare(one, other);
-                var actual = _nestedStructComparer.Compare(one, other);
+                var actual = _comparer.Compare(one, other);
 
                 actual.Should().Be(expected);
             }
@@ -80,48 +73,37 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Run_Generic_Tests()
         {
-            var builder = new ComparerBuilder();
-            builder.DefineConfiguration(typeof(SealedNestedObject),
-                       new ComparerSettings
-                       {
-                           MembersOrder = new[]
-                           {
-                               nameof(SealedNestedObject.DeepNestedField),
-                               nameof(SealedNestedObject.DeepNestedProperty),
-                               nameof(SealedNestedObject.Key),
-                               nameof(SealedNestedObject.Text)
-                           }
-                       })
-                   .For<NestedStruct>()
-                   .DefineConfiguration(new ComparerSettings
-                   {
-                       MembersOrder = new[]
-                       {
-                           nameof(NestedStruct.Property),
-                           nameof(NestedStruct.NullableProperty)
-                       }
-                   })
-                   .For<HierarchicalObject>()
-                   .DefineConfiguration(new ComparerSettings
-                   {
-                       MembersOrder = new[]
-                       {
-                           nameof(HierarchicalObject.ComparableField),
-                           nameof(HierarchicalObject.Value),
-                           nameof(HierarchicalObject.FirstProperty),
-                           nameof(HierarchicalObject.SecondProperty),
-                           nameof(HierarchicalObject.NestedField),
-                           nameof(HierarchicalObject.NestedStructField),
-                           nameof(HierarchicalObject.NestedNullableStructField),
-                           nameof(HierarchicalObject.NestedStructProperty),
-                           nameof(HierarchicalObject.NestedNullableStructProperty)
-                       }
-                   });
+            var builder = new ComparerBuilder()
+                          .For<SealedNestedObject>(config => config.SetMembersOrder(new[]
+                          {
+                              nameof(SealedNestedObject.DeepNestedField),
+                              nameof(SealedNestedObject.DeepNestedProperty),
+                              nameof(SealedNestedObject.Key),
+                              nameof(SealedNestedObject.Text)
+                          }))
+                          .For<NestedStruct>(config => config.SetMembersOrder(new[]
+                          {
+                              nameof(NestedStruct.Property),
+                              nameof(NestedStruct.NullableProperty)
+                          }))
+                          .For<HierarchicalObject>(config => config.SetMembersOrder(new[]
+                          {
+                              nameof(HierarchicalObject.ComparableField),
+                              nameof(HierarchicalObject.Value),
+                              nameof(HierarchicalObject.FirstProperty),
+                              nameof(HierarchicalObject.SecondProperty),
+                              nameof(HierarchicalObject.NestedField),
+                              nameof(HierarchicalObject.NestedStructField),
+                              nameof(HierarchicalObject.NestedNullableStructField),
+                              nameof(HierarchicalObject.NestedStructProperty),
+                              nameof(HierarchicalObject.NestedNullableStructProperty)
+                          }))
+                          .Builder;
 
             new GenericTests(builder).GenericTest(typeof(HierarchicalObject), HierarchicalObject.Comparer, false, Constants.BigCount);
         }
 
-        private readonly IComparer<HierarchicalObject> _nestedStructComparer;
+        private readonly IComparer<HierarchicalObject> _comparer;
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
     }
 }

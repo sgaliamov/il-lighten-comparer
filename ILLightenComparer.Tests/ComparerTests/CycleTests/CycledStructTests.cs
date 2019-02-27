@@ -9,28 +9,24 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
     {
         public CycledStructTests()
         {
-            _builder = new ComparerBuilder()
-                       .DefineConfiguration(typeof(CycledStruct),
-                           new ComparerSettings
-                           {
-                               MembersOrder = new[]
+            _builder = new ComparerBuilder(config =>
+                           config.SetMembersOrder(
+                               typeof(CycledStruct),
+                               new[]
                                {
                                    nameof(CycledStruct.Property),
                                    nameof(CycledStruct.FirstObject),
                                    nameof(CycledStruct.SecondObject)
-                               }
-                           })
-                       .DefineConfiguration(typeof(CycledStructObject),
-                           new ComparerSettings
-                           {
-                               MembersOrder = new[]
-                               {
-                                   nameof(CycledStructObject.TextField),
-                                   nameof(CycledStructObject.FirstStruct),
-                                   nameof(CycledStructObject.SecondStruct)
-                               },
-                               IgnoredMembers = new[] { nameof(CycledStructObject.Id) }
-                           });
+                               }))
+                       .For<CycledStructObject>(config =>
+                           config.SetMembersOrder(new[]
+                                 {
+                                     nameof(CycledStructObject.TextField),
+                                     nameof(CycledStructObject.FirstStruct),
+                                     nameof(CycledStructObject.SecondStruct)
+                                 })
+                                 .SetIgnoredMembers(new[] { nameof(CycledStructObject.Id) }))
+                       .Builder;
         }
 
         [Fact]
