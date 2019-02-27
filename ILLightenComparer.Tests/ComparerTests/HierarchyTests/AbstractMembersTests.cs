@@ -162,30 +162,23 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         private readonly IComparer<AbstractMembers> _comparer =
             new ComparerBuilder()
-                .For<SealedNestedObject>()
-                .DefineConfiguration(new ComparerSettings
+                .For<SealedNestedObject>(c =>
+                    c.SetIgnoredMembers(new[]
+                     {
+                         nameof(SealedNestedObject.DeepNestedField),
+                         nameof(SealedNestedObject.DeepNestedProperty)
+                     })
+                     .SetMembersOrder(new[]
+                     {
+                         nameof(SealedNestedObject.Key),
+                         nameof(SealedNestedObject.Text)
+                     }))
+                .For<AnotherNestedObject>(c => c.SetMembersOrder(new[]
                 {
-                    IgnoredMembers = new[]
-                    {
-                        nameof(SealedNestedObject.DeepNestedField),
-                        nameof(SealedNestedObject.DeepNestedProperty)
-                    },
-                    MembersOrder = new[]
-                    {
-                        nameof(SealedNestedObject.Key),
-                        nameof(SealedNestedObject.Text)
-                    }
-                })
-                .For<AnotherNestedObject>()
-                .DefineConfiguration(new ComparerSettings
-                {
-                    MembersOrder = new[]
-                    {
-                        nameof(AnotherNestedObject.Value),
-                        nameof(AnotherNestedObject.Key),
-                        nameof(AnotherNestedObject.Text)
-                    }
-                })
+                    nameof(AnotherNestedObject.Value),
+                    nameof(AnotherNestedObject.Key),
+                    nameof(AnotherNestedObject.Text)
+                }))
                 .For<AbstractMembers>()
                 .GetComparer();
     }

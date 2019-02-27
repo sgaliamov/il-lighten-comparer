@@ -14,8 +14,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public void Comparison_Uses_Only_Members_Of_Abstract_Class()
         {
             var builder = new ComparerBuilder()
-                          .For<AbstractNestedObject>()
-                          .DefineConfiguration(new ComparerSettings { DetectCycles = false });
+                .For<AbstractNestedObject>(c => c.SetDetectCycles(false));
 
             Test(builder);
         }
@@ -23,13 +22,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Comparison_Uses_Only_Members_Of_Base_Class()
         {
-            var builder = new ComparerBuilder()
-                          .For<BaseNestedObject>()
-                          .DefineConfiguration(new ComparerSettings
-                          {
-                              DetectCycles = false,
-                              IgnoredMembers = new[] { nameof(BaseNestedObject.Key) }
-                          });
+            var builder = new ComparerBuilder().For<BaseNestedObject>(
+                c => c.SetDetectCycles(false)
+                      .SetIgnoredMembers(new[] { nameof(BaseNestedObject.Key) }));
 
             Test(builder);
         }
@@ -37,9 +32,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Comparison_Uses_Only_Members_Of_Base_Interface()
         {
-            var builder = new ComparerBuilder()
-                          .For<INestedObject>()
-                          .DefineConfiguration(new ComparerSettings { DetectCycles = false });
+            var builder = new ComparerBuilder().For<INestedObject>(c => c.SetDetectCycles(false));
 
             Test(builder);
         }

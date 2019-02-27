@@ -194,13 +194,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         private IComparer<SelfSealed> ComparerSelfSealed =>
-            _builder
-                .For<SelfSealed>()
-                .DefineConfiguration(new ComparerSettings
-                {
-                    IgnoredMembers = new[] { nameof(SelfSealed.Id) }
-                })
-                .GetComparer();
+            _builder.For<SelfSealed>(c => c.SetIgnoredMembers(new[] { nameof(SelfSealed.Id) }))
+                    .GetComparer();
 
         private readonly Fixture _fixture;
         private IComparer<SelfOpened> ComparerSelfOpened => _builder.For<SelfOpened>().GetComparer();
