@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ILLightenComparer
+namespace ILLightenComparer.Config
 {
     internal sealed class Configuration
     {
@@ -55,6 +55,11 @@ namespace ILLightenComparer
                 throw new ArgumentNullException(nameof(type));
             }
 
+            if (comparer == null && _comparers.ContainsKey(type))
+            {
+                _comparers.Remove(type);
+            }
+
             _comparers[type] = comparer;
         }
 
@@ -74,10 +79,5 @@ namespace ILLightenComparer
         {
             MembersOrder = value?.Distinct().ToArray() ?? throw new ArgumentNullException(nameof(value));
         }
-    }
-
-    internal interface IConfigurationProvider
-    {
-        Configuration GetConfiguration(Type type);
     }
 }
