@@ -15,6 +15,11 @@ namespace ILLightenComparer
             _context = new ComparerContext(_configurationBuilder);
         }
 
+        public ComparerBuilder(Action<IConfigurationBuilder> config) : this()
+        {
+            Configure(config);
+        }
+
         public IComparer<T> GetComparer<T>()
         {
             return _context.GetComparer<T>();
@@ -41,6 +46,11 @@ namespace ILLightenComparer
             return new Proxy<T>(this);
         }
 
+        public IComparerBuilder<T> For<T>(Action<IConfigurationBuilder<T>> config)
+        {
+            return new Proxy<T>(this).Configure(config);
+        }
+
         public IComparerBuilder Configure(Action<IConfigurationBuilder> config)
         {
             config(_configurationBuilder);
@@ -62,12 +72,19 @@ namespace ILLightenComparer
                 return _subject.For<TOther>();
             }
 
+            public IComparerBuilder<TOther> For<TOther>(Action<IConfigurationBuilder<TOther>> config)
+            {
+                return _subject.For(config);
+            }
+
             public IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config)
             {
                 _subject._configurationBuilder.Configure(config);
 
                 return this;
             }
+
+            public IComparerBuilder Builder => _subject;
 
             public IComparer<T> GetComparer()
             {

@@ -18,6 +18,8 @@ namespace ILLightenComparer
         /// </typeparam>
         IComparerBuilder<T> For<T>();
 
+        IComparerBuilder<T> For<T>(Action<IConfigurationBuilder<T>> config);
+
         IComparerBuilder Configure(Action<IConfigurationBuilder> config);
     }
 
@@ -37,7 +39,11 @@ namespace ILLightenComparer
         /// </typeparam>
         IComparerBuilder<TOther> For<TOther>();
 
+        IComparerBuilder<TOther> For<TOther>(Action<IConfigurationBuilder<TOther>> config);
+
         IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config);
+
+        IComparerBuilder Builder { get; }
     }
 
     public interface IConfigurationBuilder
