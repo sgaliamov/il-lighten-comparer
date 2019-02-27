@@ -33,7 +33,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 });
 
             var builder = _comparerBuilder ?? new ComparerBuilder();
-            builder.Configure(c => c.SetDefaultIgnoreCollectionOrder(sort));
+            builder.Configure(c => c.DefaultIgnoreCollectionOrder(sort));
 
             method(builder, referenceComparer, times);
         }

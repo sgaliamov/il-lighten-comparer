@@ -13,108 +13,108 @@ namespace ILLightenComparer.Config
 
     internal sealed class ConfigurationBuilder : IConfigurationBuilder, IConfigurationProvider
     {
-        private const bool DefaultIncludeFields = true;
-        private const StringComparison DefaultStringComparisonType = StringComparison.Ordinal;
-        private const bool DefaultDetectCycles = true;
-        private const bool DefaultIgnoreCollectionOrder = false;
-        private static readonly string[] DefaultIgnoredMembers = new string[0];
-        private static readonly string[] DefaultMembersOrder = new string[0];
+        private const bool IncludeFieldsDefault = true;
+        private const StringComparison StringComparisonTypeDefault = StringComparison.Ordinal;
+        private const bool DetectCyclesDefault = true;
+        private const bool IgnoreCollectionOrderDefault = false;
+        private static readonly string[] IgnoredMembersDefault = new string[0];
+        private static readonly string[] MembersOrderDefault = new string[0];
         private readonly Configurations _configurations = new Configurations();
 
         private readonly Configuration _default = new Configuration(
-            DefaultIgnoredMembers,
-            DefaultIncludeFields,
-            DefaultMembersOrder,
-            DefaultStringComparisonType,
-            DefaultDetectCycles,
-            DefaultIgnoreCollectionOrder,
+            IgnoredMembersDefault,
+            IncludeFieldsDefault,
+            MembersOrderDefault,
+            StringComparisonTypeDefault,
+            DetectCyclesDefault,
+            IgnoreCollectionOrderDefault,
             new Dictionary<Type, object>(0));
 
-        public IConfigurationBuilder SetDefaultDetectCycles(bool? value)
+        public IConfigurationBuilder DefaultDetectCycles(bool? value)
         {
-            _default.DetectCycles = value ?? DefaultDetectCycles;
+            _default.DetectCycles = value ?? DetectCyclesDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultIgnoreCollectionOrder(bool? value)
+        public IConfigurationBuilder DefaultIgnoreCollectionOrder(bool? value)
         {
-            _default.IgnoreCollectionOrder = value ?? DefaultIgnoreCollectionOrder;
+            _default.IgnoreCollectionOrder = value ?? IgnoreCollectionOrderDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultIgnoredMembers(string[] value)
+        public IConfigurationBuilder DefaultIgnoredMembers(string[] value)
         {
-            _default.SetIgnoredMembers(value ?? DefaultIgnoredMembers);
+            _default.SetIgnoredMembers(value ?? IgnoredMembersDefault);
 
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultIncludeFields(bool? value)
+        public IConfigurationBuilder DefaultIncludeFields(bool? value)
         {
-            _default.IncludeFields = value ?? DefaultIncludeFields;
+            _default.IncludeFields = value ?? IncludeFieldsDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultMembersOrder(string[] value)
+        public IConfigurationBuilder DefaultMembersOrder(string[] value)
         {
-            _default.SetMembersOrder(value ?? DefaultMembersOrder);
+            _default.SetMembersOrder(value ?? MembersOrderDefault);
 
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value)
+        public IConfigurationBuilder DefaultStringComparisonType(StringComparison? value)
         {
-            _default.StringComparisonType = value ?? DefaultStringComparisonType;
+            _default.StringComparisonType = value ?? StringComparisonTypeDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetDetectCycles(Type type, bool? value)
+        public IConfigurationBuilder DetectCycles(Type type, bool? value)
         {
-            GetOrCreate(type).DetectCycles = value ?? DefaultDetectCycles;
+            GetOrCreate(type).DetectCycles = value ?? DetectCyclesDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetIgnoreCollectionOrder(Type type, bool? value)
+        public IConfigurationBuilder IgnoreCollectionOrder(Type type, bool? value)
         {
-            GetOrCreate(type).IgnoreCollectionOrder = value ?? DefaultIgnoreCollectionOrder;
+            GetOrCreate(type).IgnoreCollectionOrder = value ?? IgnoreCollectionOrderDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetIgnoredMembers(Type type, string[] value)
+        public IConfigurationBuilder IgnoredMembers(Type type, string[] value)
         {
-            GetOrCreate(type).SetIgnoredMembers(value ?? DefaultIgnoredMembers);
+            GetOrCreate(type).SetIgnoredMembers(value ?? IgnoredMembersDefault);
 
             return this;
         }
 
-        public IConfigurationBuilder SetIncludeFields(Type type, bool? value)
+        public IConfigurationBuilder IncludeFields(Type type, bool? value)
         {
-            GetOrCreate(type).IncludeFields = value ?? DefaultIncludeFields;
+            GetOrCreate(type).IncludeFields = value ?? IncludeFieldsDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetMembersOrder(Type type, string[] value)
+        public IConfigurationBuilder MembersOrder(Type type, string[] value)
         {
-            GetOrCreate(type).SetMembersOrder(value ?? DefaultMembersOrder);
+            GetOrCreate(type).SetMembersOrder(value ?? MembersOrderDefault);
 
             return this;
         }
 
-        public IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value)
+        public IConfigurationBuilder StringComparisonType(Type type, StringComparison? value)
         {
-            GetOrCreate(type).StringComparisonType = value ?? DefaultStringComparisonType;
+            GetOrCreate(type).StringComparisonType = value ?? StringComparisonTypeDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetComparer<TComparable>(Type type, IComparer<TComparable> comparer)
+        public IConfigurationBuilder Comparer<TComparable>(Type type, IComparer<TComparable> comparer)
         {
             GetOrCreate(type).SetComparer(comparer);
 
@@ -147,51 +147,51 @@ namespace ILLightenComparer.Config
                 _subject = subject;
             }
 
-            public IConfigurationBuilder<T> SetDetectCycles(bool? value)
+            public IConfigurationBuilder<T> DetectCycles(bool? value)
             {
-                _subject.SetDetectCycles(typeof(T), value);
+                _subject.DetectCycles(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> SetIgnoreCollectionOrder(bool? value)
+            public IConfigurationBuilder<T> IgnoreCollectionOrder(bool? value)
             {
-                _subject.SetIgnoreCollectionOrder(typeof(T), value);
+                _subject.IgnoreCollectionOrder(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> SetIgnoredMembers(string[] value)
+            public IConfigurationBuilder<T> IgnoredMembers(string[] value)
             {
-                _subject.SetIgnoredMembers(typeof(T), value);
+                _subject.IgnoredMembers(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> SetIncludeFields(bool? value)
+            public IConfigurationBuilder<T> IncludeFields(bool? value)
             {
-                _subject.SetIncludeFields(typeof(T), value);
+                _subject.IncludeFields(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> SetMembersOrder(string[] value)
+            public IConfigurationBuilder<T> MembersOrder(string[] value)
             {
-                _subject.SetMembersOrder(typeof(T), value);
+                _subject.MembersOrder(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> SetStringComparisonType(StringComparison? value)
+            public IConfigurationBuilder<T> StringComparisonType(StringComparison? value)
             {
-                _subject.SetStringComparisonType(typeof(T), value);
+                _subject.StringComparisonType(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> SetComparer<TComparable>(IComparer<TComparable> comparer)
+            public IConfigurationBuilder<T> Comparer<TComparable>(IComparer<TComparable> comparer)
             {
-                _subject.SetComparer(typeof(T), comparer);
+                _subject.Comparer(typeof(T), comparer);
 
                 return this;
             }

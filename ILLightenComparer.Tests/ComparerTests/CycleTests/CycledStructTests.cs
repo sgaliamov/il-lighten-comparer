@@ -10,7 +10,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         public CycledStructTests()
         {
             _builder = new ComparerBuilder(config =>
-                           config.SetMembersOrder(
+                           config.MembersOrder(
                                typeof(CycledStruct),
                                new[]
                                {
@@ -19,13 +19,13 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
                                    nameof(CycledStruct.SecondObject)
                                }))
                        .For<CycledStructObject>(config =>
-                           config.SetMembersOrder(new[]
+                           config.MembersOrder(new[]
                                  {
                                      nameof(CycledStructObject.TextField),
                                      nameof(CycledStructObject.FirstStruct),
                                      nameof(CycledStructObject.SecondStruct)
                                  })
-                                 .SetIgnoredMembers(new[] { nameof(CycledStructObject.Id) }))
+                                 .IgnoredMembers(new[] { nameof(CycledStructObject.Id) }))
                        .Builder;
         }
 

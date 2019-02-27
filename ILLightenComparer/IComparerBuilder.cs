@@ -48,50 +48,50 @@ namespace ILLightenComparer
 
     public interface IConfigurationBuilder
     {
-        IConfigurationBuilder SetDefaultDetectCycles(bool? value);
+        IConfigurationBuilder DefaultDetectCycles(bool? value);
 
-        IConfigurationBuilder SetDefaultIgnoreCollectionOrder(bool? value);
+        IConfigurationBuilder DefaultIgnoreCollectionOrder(bool? value);
 
-        IConfigurationBuilder SetDefaultIgnoredMembers(string[] value);
+        IConfigurationBuilder DefaultIgnoredMembers(string[] value);
 
-        IConfigurationBuilder SetDefaultIncludeFields(bool? value);
+        IConfigurationBuilder DefaultIncludeFields(bool? value);
 
-        IConfigurationBuilder SetDefaultMembersOrder(string[] value);
+        IConfigurationBuilder DefaultMembersOrder(string[] value);
 
-        IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value);
+        IConfigurationBuilder DefaultStringComparisonType(StringComparison? value);
 
-        IConfigurationBuilder SetDetectCycles(Type type, bool? value);
+        IConfigurationBuilder DetectCycles(Type type, bool? value);
 
-        IConfigurationBuilder SetIgnoreCollectionOrder(Type type, bool? value);
+        IConfigurationBuilder IgnoreCollectionOrder(Type type, bool? value);
 
-        IConfigurationBuilder SetIgnoredMembers(Type type, string[] value);
+        IConfigurationBuilder IgnoredMembers(Type type, string[] value);
 
-        IConfigurationBuilder SetIncludeFields(Type type, bool? value);
+        IConfigurationBuilder IncludeFields(Type type, bool? value);
 
-        IConfigurationBuilder SetMembersOrder(Type type, string[] value);
+        IConfigurationBuilder MembersOrder(Type type, string[] value);
 
-        IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value);
+        IConfigurationBuilder StringComparisonType(Type type, StringComparison? value);
 
-        IConfigurationBuilder SetComparer<TComparable>(Type type, IComparer<TComparable> comparer);
+        IConfigurationBuilder Comparer<TComparable>(Type type, IComparer<TComparable> comparer);
 
         IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config);
     }
 
     public interface IConfigurationBuilder<T>
     {
-        IConfigurationBuilder<T> SetDetectCycles(bool? value);
+        IConfigurationBuilder<T> DetectCycles(bool? value);
 
-        IConfigurationBuilder<T> SetIgnoreCollectionOrder(bool? value);
+        IConfigurationBuilder<T> IgnoreCollectionOrder(bool? value);
 
-        IConfigurationBuilder<T> SetIgnoredMembers(string[] value);
+        IConfigurationBuilder<T> IgnoredMembers(string[] value);
 
-        IConfigurationBuilder<T> SetIncludeFields(bool? value);
+        IConfigurationBuilder<T> IncludeFields(bool? value);
 
-        IConfigurationBuilder<T> SetMembersOrder(string[] value);
+        IConfigurationBuilder<T> MembersOrder(string[] value);
 
-        IConfigurationBuilder<T> SetStringComparisonType(StringComparison? value);
+        IConfigurationBuilder<T> StringComparisonType(StringComparison? value);
 
-        IConfigurationBuilder<T> SetComparer<TComparable>(IComparer<TComparable> comparer);
+        IConfigurationBuilder<T> Comparer<TComparable>(IComparer<TComparable> comparer);
     }
 
     public interface IComparerProvider

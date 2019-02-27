@@ -13,13 +13,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public HierarchyTests()
         {
             _comparer = new ComparerBuilder()
-                        .Configure(builder => builder.Configure<NestedStruct>(config => config.SetMembersOrder(new[]
+                        .Configure(builder => builder.Configure<NestedStruct>(config => config.MembersOrder(new[]
                         {
                             nameof(NestedStruct.Property),
                             nameof(NestedStruct.NullableProperty)
                         })))
                         .For<HierarchicalObject>()
-                        .Configure(config => config.SetIgnoredMembers(new[]
+                        .Configure(config => config.IgnoredMembers(new[]
                         {
                             nameof(HierarchicalObject.ComparableField),
                             nameof(HierarchicalObject.Value),
@@ -74,19 +74,19 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public void Run_Generic_Tests()
         {
             var builder = new ComparerBuilder()
-                          .For<SealedNestedObject>(config => config.SetMembersOrder(new[]
+                          .For<SealedNestedObject>(config => config.MembersOrder(new[]
                           {
                               nameof(SealedNestedObject.DeepNestedField),
                               nameof(SealedNestedObject.DeepNestedProperty),
                               nameof(SealedNestedObject.Key),
                               nameof(SealedNestedObject.Text)
                           }))
-                          .For<NestedStruct>(config => config.SetMembersOrder(new[]
+                          .For<NestedStruct>(config => config.MembersOrder(new[]
                           {
                               nameof(NestedStruct.Property),
                               nameof(NestedStruct.NullableProperty)
                           }))
-                          .For<HierarchicalObject>(config => config.SetMembersOrder(new[]
+                          .For<HierarchicalObject>(config => config.MembersOrder(new[]
                           {
                               nameof(HierarchicalObject.ComparableField),
                               nameof(HierarchicalObject.Value),

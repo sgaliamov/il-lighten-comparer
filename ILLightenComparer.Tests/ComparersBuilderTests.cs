@@ -51,6 +51,6 @@ namespace ILLightenComparer.Tests
             Test(_builder.GetComparer<DummyObject>(), _builder.GetComparer(typeof(DummyObject)));
         }
 
-        private readonly IComparerBuilder _builder = new ComparerBuilder(config => config.SetDefaultIncludeFields(false));
+        private readonly IComparerBuilder _builder = new ComparerBuilder(config => config.DefaultIncludeFields(false));
     }
 }
