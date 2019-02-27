@@ -17,12 +17,13 @@ namespace ILLightenComparer
 
         public IComparer<T> GetComparer<T>()
         {
-            return (IComparer<T>)_context.GetComparer(typeof(T));
+            return _context.GetComparer<T>();
         }
 
         public IComparer GetComparer(Type objectType)
         {
-            return _context.GetComparer(objectType);
+            return null;
+            //return _context.GetComparer(objectType);
         }
 
         public IEqualityComparer<T> GetEqualityComparer<T>()

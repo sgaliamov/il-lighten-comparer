@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
@@ -20,7 +21,7 @@ namespace ILLightenComparer
         IComparer<T> GetComparer<T>();
     }
 
-    internal sealed class ComparerContext : IComparerContext, IComparerProvider
+    internal sealed class ComparerContext : IComparerContext
     {
         private readonly Builds _builds = new Builds();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
@@ -77,27 +78,17 @@ namespace ILLightenComparer
             return Compare(xType, x, y, xSet, ySet);
         }
 
-        // todo: move comparer instances comparison to context
-        public IComparer GetComparer(Type objectType)
-        {
-            throw new NotImplementedException();
-        }
-
         public IComparer<T> GetComparer<T>()
         {
+            //var configuration = GetConfiguration(typeof(T));
+
+            // _comparers.GetOrAdd(
+            //    configuration,
+            //    key => GetOrBuildComparerType(key).CreateInstance<IComparerContext, IComparer>(this));
+
             var comparerType = GetOrBuildComparerType(typeof(T));
 
             return comparerType.CreateInstance<IComparerContext, IComparer<T>>(this);
-        }
-
-        public IEqualityComparer GetEqualityComparer(Type objectType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEqualityComparer<T> GetEqualityComparer<T>()
-        {
-            throw new NotImplementedException();
         }
 
         public Type GetOrBuildComparerType(Type objectType)
@@ -129,7 +120,7 @@ namespace ILLightenComparer
 
         public Configuration GetConfiguration(Type type)
         {
-            return _configurations.GetConfiguration(type);
+            return _configurations.Get(type);
         }
 
         internal MethodInfo GetStaticCompareMethod(Type type)

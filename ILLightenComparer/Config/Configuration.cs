@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +6,10 @@ namespace ILLightenComparer.Config
 {
     internal sealed class Configuration
     {
-        private readonly IDictionary<Type, IComparer> _comparers;
+        /// <summary>
+        ///     <see cref="object" /> is IComparer&lt;<see cref="Type" />&gt;
+        /// </summary>
+        private readonly IDictionary<Type, object> _comparers;
 
         public Configuration(Configuration configuration) : this(
             configuration.IgnoredMembers,
@@ -25,7 +27,7 @@ namespace ILLightenComparer.Config
             StringComparison stringComparisonType,
             bool detectCycles,
             bool ignoreCollectionOrder,
-            IDictionary<Type, IComparer> comparers)
+            IDictionary<Type, object> comparers)
         {
             if (comparers == null)
             {
@@ -48,12 +50,9 @@ namespace ILLightenComparer.Config
         public string[] MembersOrder { get; private set; }
         public StringComparison StringComparisonType { get; set; }
 
-        public void SetComparer(Type type, IComparer comparer)
+        public void SetComparer<T>(IComparer<T> comparer)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
+            var type = typeof(T);
 
             if (comparer == null && _comparers.ContainsKey(type))
             {
@@ -63,10 +62,10 @@ namespace ILLightenComparer.Config
             _comparers[type] = comparer;
         }
 
-        public IComparer GetComparer(Type type)
+        public IComparer<T> GetComparer<T>()
         {
-            return _comparers.TryGetValue(type, out var comparer)
-                       ? comparer
+            return _comparers.TryGetValue(typeof(T), out var comparer)
+                       ? (IComparer<T>)comparer
                        : null;
         }
 

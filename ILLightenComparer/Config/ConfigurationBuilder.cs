@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -29,7 +28,7 @@ namespace ILLightenComparer.Config
             DefaultStringComparisonType,
             DefaultDetectCycles,
             DefaultIgnoreCollectionOrder,
-            new Dictionary<Type, IComparer>(0));
+            new Dictionary<Type, object>(0));
 
         public IConfigurationBuilder SetDefaultDetectCycles(bool? value)
         {
@@ -115,9 +114,9 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder SetComparer(Type type, Type comparable, IComparer comparer)
+        public IConfigurationBuilder SetComparer<TComparable>(Type type, IComparer<TComparable> comparer)
         {
-            GetOrCreate(type).SetComparer(comparable, comparer);
+            GetOrCreate(type).SetComparer(comparer);
 
             return this;
         }
@@ -192,7 +191,7 @@ namespace ILLightenComparer.Config
 
             public IConfigurationBuilder<T> SetComparer<TComparable>(IComparer<TComparable> comparer)
             {
-                _subject.SetComparer(typeof(T), typeof(TComparable), (IComparer)comparer);
+                _subject.SetComparer(typeof(T), comparer);
 
                 return this;
             }

@@ -66,7 +66,7 @@ namespace ILLightenComparer
 
         IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value);
 
-        IConfigurationBuilder SetComparer(Type type, Type comparable, IComparer comparer);
+        IConfigurationBuilder SetComparer<TComparable>(Type type, IComparer<TComparable> comparer);
 
         IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config);
     }
