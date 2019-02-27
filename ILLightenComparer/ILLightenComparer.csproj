@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'!='Debug'">
-    <Compile Remove="Emit\Shared\ILEmitter.debug.cs" />
+    <Compile Remove="Shared\ILEmitter.debug.cs" />
   </ItemGroup>
 
   <ItemGroup>
