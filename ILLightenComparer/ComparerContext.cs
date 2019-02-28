@@ -15,20 +15,19 @@ namespace ILLightenComparer
     using Builds = ConcurrentDictionary<Type, Lazy<BuildInfo>>;
     using ComparerTypes = ConcurrentDictionary<Type, Lazy<Type>>;
 
-    public interface IComparerContext
+    public interface IComparerContext : IComparerProvider
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
-        IComparer<T> GetComparer<T>();
     }
 
     internal sealed class ComparerContext : IComparerContext
     {
         private readonly Builds _builds = new Builds();
+        private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ComparerTypes _comparerTypes = new ComparerTypes();
         private readonly IConfigurationProvider _configurations;
         private readonly ModuleBuilder _moduleBuilder;
-        private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
 
         public ComparerContext(IConfigurationProvider configurations)
         {
@@ -78,6 +77,11 @@ namespace ILLightenComparer
             return Compare(xType, x, y, xSet, ySet);
         }
 
+        public IComparer GetComparer(Type objectType)
+        {
+            throw new NotImplementedException();
+        }
+
         public IComparer<T> GetComparer<T>()
         {
             //var configuration = GetConfiguration(typeof(T));
@@ -89,6 +93,16 @@ namespace ILLightenComparer
             var comparerType = GetOrBuildComparerType(typeof(T));
 
             return comparerType.CreateInstance<IComparerContext, IComparer<T>>(this);
+        }
+
+        public IEqualityComparer GetEqualityComparer(Type objectType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEqualityComparer<T> GetEqualityComparer<T>()
+        {
+            throw new NotImplementedException();
         }
 
         public Type GetOrBuildComparerType(Type objectType)

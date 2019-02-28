@@ -27,18 +27,17 @@ namespace ILLightenComparer
 
         public IComparer GetComparer(Type objectType)
         {
-            return null;
-            //return _context.GetComparer(objectType);
+            return _context.GetComparer(objectType);
         }
 
         public IEqualityComparer<T> GetEqualityComparer<T>()
         {
-            throw new NotImplementedException();
+            return _context.GetEqualityComparer<T>();
         }
 
         public IEqualityComparer GetEqualityComparer(Type objectType)
         {
-            throw new NotImplementedException();
+            return _context.GetEqualityComparer(objectType);
         }
 
         public IComparerBuilder<T> For<T>()
