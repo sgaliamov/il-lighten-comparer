@@ -12,7 +12,7 @@ using ILLightenComparer.Shared;
 
 namespace ILLightenComparer
 {
-    using Builds = ConcurrentDictionary<Type, Lazy<BuildInfo>>;
+    using BuildsCollection = ConcurrentDictionary<Type, Lazy<BuildInfo>>;
     using ComparerTypes = ConcurrentDictionary<Type, Lazy<Type>>;
 
     public interface IComparerContext : IComparerProvider
@@ -22,7 +22,7 @@ namespace ILLightenComparer
 
     internal sealed class ComparerContext : IComparerContext
     {
-        private readonly Builds _builds = new Builds();
+        private readonly BuildsCollection _builds = new BuildsCollection();
         private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ComparerTypes _comparerTypes = new ComparerTypes();
@@ -137,7 +137,7 @@ namespace ILLightenComparer
             return _configurations.Get(type);
         }
 
-        internal MethodInfo GetStaticCompareMethod(Type type)
+        public MethodInfo GetStaticCompareMethod(Type type)
         {
             return GetOrStartBuild(type).Method;
         }
