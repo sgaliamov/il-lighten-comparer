@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
@@ -10,16 +11,16 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
     internal sealed class ArrayVisitor : CollectionVisitor
     {
         private readonly ArrayComparer _arrayComparer;
-        private readonly ComparerContext _context;
+        private readonly IConfigurationProvider _configuration;
 
         public ArrayVisitor(
-            ComparerContext context,
+            IConfigurationProvider configuration,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
             : base(loader)
         {
-            _context = context;
+            _configuration = configuration;
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
@@ -33,7 +34,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
 
             EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
 
-            if (_context.GetConfiguration(variable.OwnerType).IgnoreCollectionOrder)
+            if (_configuration.Get(variable.OwnerType).IgnoreCollectionOrder)
             {
                 EmitArraySorting(il, variableType.GetElementType(), x, y);
             }

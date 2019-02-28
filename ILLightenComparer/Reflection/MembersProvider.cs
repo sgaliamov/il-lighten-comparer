@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 
@@ -9,11 +10,11 @@ namespace ILLightenComparer.Reflection
 {
     internal sealed class MembersProvider
     {
-        private readonly ComparerContext _context;
+        private readonly IConfigurationProvider _configuration;
 
-        public MembersProvider(ComparerContext context)
+        public MembersProvider(IConfigurationProvider configuration)
         {
-            _context = context;
+            _configuration = configuration;
         }
 
         public IVariable[] GetMembers(Type type)
@@ -35,7 +36,7 @@ namespace ILLightenComparer.Reflection
 
         private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members)
         {
-            var order = _context.GetConfiguration(ownerType).MembersOrder;
+            var order = _configuration.Get(ownerType).MembersOrder;
 
             if (order == null || order.Length == 0)
             {
@@ -47,7 +48,7 @@ namespace ILLightenComparer.Reflection
 
         private IEnumerable<MemberInfo> PredefinedOrder(Type ownerType, IEnumerable<MemberInfo> members)
         {
-            var order = _context.GetConfiguration(ownerType).MembersOrder;
+            var order = _configuration.Get(ownerType).MembersOrder;
             var dictionary = members.ToDictionary(x => x.Name);
 
             foreach (var item in order)
@@ -75,14 +76,14 @@ namespace ILLightenComparer.Reflection
                 return true;
             }
 
-            var includeFields = _context.GetConfiguration(memberInfo.DeclaringType).IncludeFields;
+            var includeFields = _configuration.Get(memberInfo.DeclaringType).IncludeFields;
 
             return includeFields && memberInfo.MemberType == MemberTypes.Field;
         }
 
         private bool IgnoredMembers(MemberInfo memberInfo)
         {
-            var ignoredMembers = _context.GetConfiguration(memberInfo.DeclaringType).IgnoredMembers;
+            var ignoredMembers = _configuration.Get(memberInfo.DeclaringType).IgnoredMembers;
 
             return !ignoredMembers.Contains(memberInfo.Name);
         }

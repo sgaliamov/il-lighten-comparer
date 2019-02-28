@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Emit;
+using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
@@ -12,17 +13,17 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         private readonly ArrayComparer _arrayComparer;
 
         private readonly CompareVisitor _compareVisitor;
-        private readonly ComparerContext _context;
+        private readonly IConfigurationProvider _configuration;
         private readonly Converter _converter;
 
         public EnumerableVisitor(
-            ComparerContext context,
+            IConfigurationProvider configuration,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
             : base(loader)
         {
-            _context = context;
+            _configuration = configuration;
             _compareVisitor = compareVisitor;
             _converter = converter;
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
@@ -32,7 +33,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         {
             var (x, y) = EmitLoad(comparison, il, afterLoop);
 
-            if (_context.GetConfiguration(comparison.Variable.OwnerType).IgnoreCollectionOrder)
+            if (_configuration.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder)
             {
                 return EmitCompareAsSortedArrays(comparison, il, afterLoop, x, y);
             }

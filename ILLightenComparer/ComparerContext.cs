@@ -23,23 +23,22 @@ namespace ILLightenComparer
     internal sealed class ComparerContext : IComparerContext
     {
         private readonly BuildsCollection _builds = new BuildsCollection();
-        private readonly ConcurrentDictionary<Type, IComparer> _comparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ComparerTypes _comparerTypes = new ComparerTypes();
         private readonly IConfigurationProvider _configurations;
+        private readonly ConcurrentDictionary<Type, IComparer> _dynamicComparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ModuleBuilder _moduleBuilder;
 
         public ComparerContext(IConfigurationProvider configurations)
         {
+            _configurations = configurations;
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("ILLightenComparer"),
                 AssemblyBuilderAccess.RunAndCollect);
 
             _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
 
-            _configurations = configurations;
-
-            _comparerTypeBuilder = new ComparerTypeBuilder(this);
+            _comparerTypeBuilder = new ComparerTypeBuilder(configurations);
         }
 
         // todo: cache delegates and benchmark ways
@@ -84,15 +83,18 @@ namespace ILLightenComparer
 
         public IComparer<T> GetComparer<T>()
         {
-            //var configuration = GetConfiguration(typeof(T));
+            var objectType = typeof(T);
 
-            // _comparers.GetOrAdd(
-            //    configuration,
-            //    key => GetOrBuildComparerType(key).CreateInstance<IComparerContext, IComparer>(this));
+            var configuration = _configurations.Get(objectType);
+            var customComparer = configuration.GetComparer<T>();
+            if (customComparer != null)
+            {
+                return customComparer;
+            }
 
-            var comparerType = GetOrBuildComparerType(typeof(T));
-
-            return comparerType.CreateInstance<IComparerContext, IComparer<T>>(this);
+            return (IComparer<T>)_dynamicComparers.GetOrAdd(
+                objectType,
+                key => GetOrBuildComparerType(key).CreateInstance<IComparerContext, IComparer>(this));
         }
 
         public IEqualityComparer GetEqualityComparer(Type objectType)
@@ -105,7 +107,12 @@ namespace ILLightenComparer
             throw new NotImplementedException();
         }
 
-        public Type GetOrBuildComparerType(Type objectType)
+        public MethodInfo GetStaticCompareMethod(Type type)
+        {
+            return GetOrStartBuild(type).CompareMethod;
+        }
+
+        private Type GetOrBuildComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
@@ -114,11 +121,11 @@ namespace ILLightenComparer
                     var buildInfo = GetOrStartBuild(key);
 
                     var result = _comparerTypeBuilder.Build(
-                        (TypeBuilder)buildInfo.Method.DeclaringType,
-                        (MethodBuilder)buildInfo.Method,
+                        (TypeBuilder)buildInfo.CompareMethod.DeclaringType,
+                        (MethodBuilder)buildInfo.CompareMethod,
                         buildInfo.ObjectType);
 
-                    var method = result.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(key));
+                    var method = result.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(buildInfo.ObjectType));
 
                     buildInfo.FinalizeBuild(method);
 
@@ -130,16 +137,6 @@ namespace ILLightenComparer
             FinalizeStartedBuilds();
 
             return comparerType;
-        }
-
-        public Configuration GetConfiguration(Type type)
-        {
-            return _configurations.Get(type);
-        }
-
-        public MethodInfo GetStaticCompareMethod(Type type)
-        {
-            return GetOrStartBuild(type).Method;
         }
 
         private void FinalizeStartedBuilds()

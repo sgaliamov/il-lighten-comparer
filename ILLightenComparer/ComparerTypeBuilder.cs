@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Config;
 using ILLightenComparer.Emitters;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
@@ -13,12 +14,12 @@ namespace ILLightenComparer
     internal sealed class ComparerTypeBuilder
     {
         private readonly CompareEmitter _compareEmitter;
-        private readonly ComparerContext _context;
+        private readonly IConfigurationProvider _configuration;
 
-        public ComparerTypeBuilder(ComparerContext context)
+        public ComparerTypeBuilder(IConfigurationProvider configuration)
         {
-            _context = context;
-            _compareEmitter = new CompareEmitter(context);
+            _configuration = configuration;
+            _compareEmitter = new CompareEmitter(configuration);
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -135,7 +136,7 @@ namespace ILLightenComparer
 
         private bool IsCreateCycleDetectionSets(Type objectType)
         {
-            return _context.GetConfiguration(objectType).DetectCycles
+            return _configuration.Get(objectType).DetectCycles
                    && !objectType.GetUnderlyingType().IsPrimitive()
                    && !objectType.IsSealedComparable();
         }

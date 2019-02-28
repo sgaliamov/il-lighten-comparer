@@ -5,19 +5,19 @@ namespace ILLightenComparer
 {
     internal sealed class BuildInfo
     {
-        public BuildInfo(Type objectType, MethodInfo method)
+        public BuildInfo(Type objectType, MethodInfo compareMethod)
         {
             ObjectType = objectType;
-            Method = method;
+            CompareMethod = compareMethod;
         }
 
         public bool Compiled { get; private set; }
-        public MethodInfo Method { get; private set; }
+        public MethodInfo CompareMethod { get; private set; }
         public Type ObjectType { get; }
 
         public void FinalizeBuild(MethodInfo method)
         {
-            Method = method;
+            CompareMethod = method;
             Compiled = true;
         }
     }
