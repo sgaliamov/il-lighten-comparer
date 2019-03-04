@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace ILLightenComparer
+namespace ILLightenComparer.Emitters.Builders
 {
     internal sealed class BuildInfo
     {

@@ -2,9 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Config;
+using ILLightenComparer.Emitters;
 
 namespace ILLightenComparer
 {
+    /// <summary>
+    ///     Implements api to configure and get comparers.
+    /// </summary>
     public sealed class ComparerBuilder : IComparerBuilder
     {
         private readonly ConfigurationBuilder _configurationBuilder = new ConfigurationBuilder();

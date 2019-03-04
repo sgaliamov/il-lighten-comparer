@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 
-namespace ILLightenComparer
+namespace ILLightenComparer.Emitters.Builders
 {
     internal sealed class ComparerTypeBuilder
     {

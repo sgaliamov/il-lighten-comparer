@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace ILLightenComparer
 {
     /// <summary>
-    ///     Builds an instance of a comparer based on provided type in a method first argument.
+    ///     Interface to build an instance of a comparer based on provided type and configuration.
     /// </summary>
     public interface IComparerBuilder : IComparerProvider
     {
@@ -24,11 +24,13 @@ namespace ILLightenComparer
     }
 
     /// <summary>
-    ///     Builds an instance of a comparer based on provided type <typeparamref name="T" />.
+    ///     Interface to build an instance of a comparer based on provided type <typeparamref name="T" />.
     /// </summary>
     /// <typeparam name="T">The type whose instances need to compare.</typeparam>
     public interface IComparerBuilder<T> : IComparerProvider<T>
     {
+        IComparerBuilder Builder { get; }
+
         /// <summary>
         ///     Sugar to convert the builder to generic version.
         ///     Starts another builder context.
@@ -42,8 +44,6 @@ namespace ILLightenComparer
         IComparerBuilder<TOther> For<TOther>(Action<IConfigurationBuilder<TOther>> config);
 
         IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config);
-
-        IComparerBuilder Builder { get; }
     }
 
     public interface IConfigurationBuilder

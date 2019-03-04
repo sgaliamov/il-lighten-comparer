@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Reflection;
 
-namespace ILLightenComparer
+namespace ILLightenComparer.Emitters.Builders
 {
     internal sealed class EqualityComparerTypeBuilder
     {
