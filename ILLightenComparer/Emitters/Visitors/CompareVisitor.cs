@@ -15,17 +15,20 @@ namespace ILLightenComparer.Emitters.Visitors
     {
         private readonly ArrayVisitor _arrayVisitor;
         private readonly IConfigurationProvider _configuration;
+        private readonly IContext _context;
         private readonly Converter _converter;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader;
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(
+            IContext context,
             IConfigurationProvider configuration,
             MembersProvider membersProvider,
             VariableLoader loader,
             Converter converter)
         {
+            _context = context;
             _configuration = configuration;
             _membersProvider = membersProvider;
             _loader = loader;
@@ -50,7 +53,7 @@ namespace ILLightenComparer.Emitters.Visitors
                 return EmitCallForDelayedCompareMethod(il, variableType);
             }
 
-            var compareMethod = _configuration.GetStaticCompareMethod(variableType);
+            var compareMethod = _context.GetStaticCompareMethod(variableType);
 
             return il.Emit(OpCodes.Call, compareMethod);
         }

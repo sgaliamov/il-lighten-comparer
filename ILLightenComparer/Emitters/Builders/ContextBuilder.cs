@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Config;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer.Emitters.Builders
@@ -16,18 +17,17 @@ namespace ILLightenComparer.Emitters.Builders
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ModuleBuilder _moduleBuilder;
 
-        public ContextBuilder(IConfigurationProvider configurations)
+        public ContextBuilder(ComparerTypeBuilder comparerTypeBuilder)
         {
+            _comparerTypeBuilder = comparerTypeBuilder;
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("ILLightenComparer"),
                 AssemblyBuilderAccess.RunAndCollect);
 
             _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
-
-            _comparerTypeBuilder = new ComparerTypeBuilder(configurations);
         }
 
-        private Type GetOrBuildComparerType(Type objectType)
+        public Type GetOrBuildComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
@@ -54,22 +54,7 @@ namespace ILLightenComparer.Emitters.Builders
             return comparerType;
         }
 
-        private void FinalizeStartedBuilds()
-        {
-            var builds = _builds.ToArray().Select(x => x.Value).ToArray();
-
-            foreach (var item in builds)
-            {
-                if (item.Value.Compiled)
-                {
-                    continue;
-                }
-
-                GetOrBuildComparerType(item.Value.ObjectType);
-            }
-        }
-
-        private MethodInfo GetCompiledCompareMethod(Type memberType)
+        public MethodInfo GetCompiledCompareMethod(Type memberType)
         {
             var comparerType = GetOrBuildComparerType(memberType);
 
@@ -78,7 +63,7 @@ namespace ILLightenComparer.Emitters.Builders
                 Method.StaticCompareMethodParameters(memberType));
         }
 
-        private BuildInfo GetOrStartBuild(Type objectType)
+        public BuildInfo GetOrStartBuild(Type objectType)
         {
             var lazy = _builds.GetOrAdd(objectType,
                 key => new Lazy<BuildInfo>(() =>
@@ -100,6 +85,21 @@ namespace ILLightenComparer.Emitters.Builders
                 }));
 
             return lazy.Value;
+        }
+
+        private void FinalizeStartedBuilds()
+        {
+            var builds = _builds.ToArray().Select(x => x.Value).ToArray();
+
+            foreach (var item in builds)
+            {
+                if (item.Value.Compiled)
+                {
+                    continue;
+                }
+
+                GetOrBuildComparerType(item.Value.ObjectType);
+            }
         }
     }
 }

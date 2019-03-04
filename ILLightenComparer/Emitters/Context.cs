@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Builders;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 
@@ -22,10 +23,12 @@ namespace ILLightenComparer.Emitters
         public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _contextBuilder = new ContextBuilder(configurations);
+            var typeBuilder = new ComparerTypeBuilder(this, configurations);
+            _contextBuilder = new ContextBuilder(typeBuilder);
         }
 
         // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
+
         public IComparer GetComparer(Type objectType)
         {
             var configuration = _configurations.Get(objectType);
@@ -40,6 +43,12 @@ namespace ILLightenComparer.Emitters
                 key => GetOrBuildComparerType(key).CreateInstance<IContext, IComparer>(this));
         }
 
+        // todo: cache delegates and benchmark ways
+        public IComparer<T> GetComparer<T>()
+        {
+            var objectType = typeof(T);
+        }
+
         public IEqualityComparer GetEqualityComparer(Type objectType)
         {
             throw new NotImplementedException();
@@ -48,12 +57,6 @@ namespace ILLightenComparer.Emitters
         public IEqualityComparer<T> GetEqualityComparer<T>()
         {
             throw new NotImplementedException();
-        }
-
-        // todo: cache delegates and benchmark ways
-        public IComparer<T> GetComparer<T>()
-        {
-            var objectType = typeof(T);
         }
 
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
@@ -92,12 +95,12 @@ namespace ILLightenComparer.Emitters
 
         public MethodInfo GetStaticCompareMethod(Type type)
         {
-            return GetOrStartBuild(type).CompareMethod;
+            return _contextBuilder.GetOrStartBuild(type).CompareMethod;
         }
 
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            var compareMethod = GetCompiledCompareMethod(type);
+            var compareMethod = _contextBuilder.GetCompiledCompareMethod(type);
 
             var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
             if (!isDeclaringTypeMatchedActualMemberType)
