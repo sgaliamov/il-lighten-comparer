@@ -8,11 +8,11 @@ namespace ILLightenComparer
     public sealed class ComparerBuilder : IComparerBuilder
     {
         private readonly ConfigurationBuilder _configurationBuilder = new ConfigurationBuilder();
-        private readonly ComparerContext _context;
+        private readonly Context _context;
 
         public ComparerBuilder()
         {
-            _context = new ComparerContext(_configurationBuilder);
+            _context = new Context(_configurationBuilder);
         }
 
         public ComparerBuilder(Action<IConfigurationBuilder> config) : this()

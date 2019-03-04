@@ -26,7 +26,7 @@ namespace ILLightenComparer
         {
             var contextField = comparerTypeBuilder.DefineField(
                 "_context",
-                typeof(IComparerContext),
+                typeof(IContext),
                 FieldAttributes.InitOnly | FieldAttributes.Private);
 
             BuildConstructorAndFactoryMethod(comparerTypeBuilder, contextField);
@@ -162,7 +162,6 @@ namespace ILLightenComparer
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
               .Branch(OpCodes.Brfalse_S, out var next)
-              // else: return setX.Count - setY.Count;
               .LoadArgument(Arg.SetX)
               .Emit(OpCodes.Call, Method.SetGetCount)
               .LoadArgument(Arg.SetY)
@@ -174,7 +173,7 @@ namespace ILLightenComparer
 
         private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)
         {
-            var parameters = new[] { typeof(IComparerContext) };
+            var parameters = new[] { typeof(IContext) };
 
             var constructorInfo = typeBuilder.DefineConstructor(
                 MethodAttributes.Public,

@@ -15,12 +15,13 @@ namespace ILLightenComparer
     using BuildsCollection = ConcurrentDictionary<Type, Lazy<BuildInfo>>;
     using ComparerTypes = ConcurrentDictionary<Type, Lazy<Type>>;
 
-    public interface IComparerContext : IComparerProvider
+    public interface IContext
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
+        IComparer<T> GetComparer<T>();
     }
 
-    internal sealed class ComparerContext : IComparerContext
+    internal sealed class Context : IContext, IComparerProvider
     {
         private readonly BuildsCollection _builds = new BuildsCollection();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
@@ -29,7 +30,7 @@ namespace ILLightenComparer
         private readonly ConcurrentDictionary<Type, IComparer> _dynamicComparers = new ConcurrentDictionary<Type, IComparer>();
         private readonly ModuleBuilder _moduleBuilder;
 
-        public ComparerContext(IConfigurationProvider configurations)
+        public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
@@ -78,23 +79,23 @@ namespace ILLightenComparer
 
         public IComparer GetComparer(Type objectType)
         {
-            throw new NotImplementedException();
+            var configuration = _configurations.Get(objectType);
+            var customComparer = configuration.GetComparer(objectType);
+            if (customComparer != null)
+            {
+                return customComparer;
+            }
+
+            return (IComparer)_dynamicComparers.GetOrAdd(
+                objectType,
+                key => GetOrBuildComparerType(key).CreateInstance<IContext, IComparer>(this));
         }
 
         public IComparer<T> GetComparer<T>()
         {
             var objectType = typeof(T);
 
-            var configuration = _configurations.Get(objectType);
-            var customComparer = configuration.GetComparer<T>();
-            if (customComparer != null)
-            {
-                return customComparer;
-            }
-
-            return (IComparer<T>)_dynamicComparers.GetOrAdd(
-                objectType,
-                key => GetOrBuildComparerType(key).CreateInstance<IComparerContext, IComparer>(this));
+           
         }
 
         public IEqualityComparer GetEqualityComparer(Type objectType)
@@ -120,16 +121,16 @@ namespace ILLightenComparer
                 {
                     var buildInfo = GetOrStartBuild(key);
 
-                    var result = _comparerTypeBuilder.Build(
+                    var compiledComparerType = _comparerTypeBuilder.Build(
                         (TypeBuilder)buildInfo.CompareMethod.DeclaringType,
                         (MethodBuilder)buildInfo.CompareMethod,
                         buildInfo.ObjectType);
 
-                    var method = result.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(buildInfo.ObjectType));
+                    var method = compiledComparerType.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(buildInfo.ObjectType));
 
                     buildInfo.FinalizeBuild(method);
 
-                    return result;
+                    return compiledComparerType;
                 }));
 
             var comparerType = lazy.Value;

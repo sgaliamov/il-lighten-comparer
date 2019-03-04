@@ -10,7 +10,7 @@ namespace ILLightenComparer.Reflection
     internal static class Method
     {
         public delegate int StaticMethodDelegate<in T>(
-            IComparerContext context,
+            IContext context,
             T x,
             T y,
             ConcurrentSet<object> xSet,
@@ -30,10 +30,10 @@ namespace ILLightenComparer.Reflection
             typeof(ConcurrentSet<object>).GetProperty(nameof(ConcurrentSet<object>.Count))?.GetGetMethod();
 
         public static MethodInfo DelayedCompare =
-            typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
+            typeof(IContext).GetMethod(nameof(IContext.DelayedCompare));
 
         public static MethodInfo GetComparer =
-            typeof(IComparerContext).GetMethod(nameof(IComparerContext.GetComparer));
+            typeof(IContext).GetMethod(nameof(IContext.GetComparer));
 
         public static MethodInfo MoveNext = typeof(IEnumerator)
             .GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
@@ -79,7 +79,7 @@ namespace ILLightenComparer.Reflection
         {
             return new[]
             {
-                typeof(IComparerContext),
+                typeof(IContext),
                 objectType,
                 objectType,
                 typeof(ConcurrentSet<object>),
