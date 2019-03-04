@@ -10,6 +10,7 @@ using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer.Emitters.Builders
 {
+    // todo: once cache for types and clean on configuration change
     internal sealed class ContextBuilder
     {
         private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _builds = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();
@@ -20,38 +21,12 @@ namespace ILLightenComparer.Emitters.Builders
         public ContextBuilder(ComparerTypeBuilder comparerTypeBuilder)
         {
             _comparerTypeBuilder = comparerTypeBuilder;
+
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("ILLightenComparer"),
                 AssemblyBuilderAccess.RunAndCollect);
 
             _moduleBuilder = assembly.DefineDynamicModule("ILLightenComparer.dll");
-        }
-
-        public Type GetOrBuildComparerType(Type objectType)
-        {
-            var lazy = _comparerTypes.GetOrAdd(
-                objectType,
-                key => new Lazy<Type>(() =>
-                {
-                    var buildInfo = GetOrStartBuild(key);
-
-                    var compiledComparerType = _comparerTypeBuilder.Build(
-                        (TypeBuilder)buildInfo.CompareMethod.DeclaringType,
-                        (MethodBuilder)buildInfo.CompareMethod,
-                        buildInfo.ObjectType);
-
-                    var method = compiledComparerType.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(buildInfo.ObjectType));
-
-                    buildInfo.FinalizeBuild(method);
-
-                    return compiledComparerType;
-                }));
-
-            var comparerType = lazy.Value;
-
-            FinalizeStartedBuilds();
-
-            return comparerType;
         }
 
         public MethodInfo GetCompiledCompareMethod(Type memberType)
@@ -85,6 +60,33 @@ namespace ILLightenComparer.Emitters.Builders
                 }));
 
             return lazy.Value;
+        }
+
+        private Type GetOrBuildComparerType(Type objectType)
+        {
+            var lazy = _comparerTypes.GetOrAdd(
+                objectType,
+                key => new Lazy<Type>(() =>
+                {
+                    var buildInfo = GetOrStartBuild(key);
+
+                    var compiledComparerType = _comparerTypeBuilder.Build(
+                        (TypeBuilder)buildInfo.CompareMethod.DeclaringType,
+                        (MethodBuilder)buildInfo.CompareMethod,
+                        buildInfo.ObjectType);
+
+                    var method = compiledComparerType.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(buildInfo.ObjectType));
+
+                    buildInfo.FinalizeBuild(method);
+
+                    return compiledComparerType;
+                }));
+
+            var comparerType = lazy.Value;
+
+            FinalizeStartedBuilds();
+
+            return comparerType;
         }
 
         private void FinalizeStartedBuilds()

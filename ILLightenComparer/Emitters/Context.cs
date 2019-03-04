@@ -43,10 +43,11 @@ namespace ILLightenComparer.Emitters
                 key => GetOrBuildComparerType(key).CreateInstance<IContext, IComparer>(this));
         }
 
-        // todo: cache delegates and benchmark ways
         public IComparer<T> GetComparer<T>()
         {
             var objectType = typeof(T);
+
+            return (IComparer<T>)GetComparer(objectType);
         }
 
         public IEqualityComparer GetEqualityComparer(Type objectType)
@@ -98,6 +99,7 @@ namespace ILLightenComparer.Emitters
             return _contextBuilder.GetOrStartBuild(type).CompareMethod;
         }
 
+        // todo: cache delegates and benchmark ways
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
             var compareMethod = _contextBuilder.GetCompiledCompareMethod(type);
