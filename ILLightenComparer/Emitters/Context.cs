@@ -31,16 +31,16 @@ namespace ILLightenComparer.Emitters
 
         public IComparer GetComparer(Type objectType)
         {
-            var configuration = _configurations.Get(objectType);
-            var customComparer = configuration.GetComparer(objectType);
-            if (customComparer != null)
-            {
-                return customComparer;
-            }
+            //var configuration = _configurations.Get(objectType);
+            //var customComparer = configuration.GetComparer(objectType);
+            //if (customComparer != null)
+            //{
+            //    return customComparer;
+            //}
 
             return _dynamicComparers.GetOrAdd(
                 objectType,
-                key => GetOrBuildComparerType(key).CreateInstance<IContext, IComparer>(this));
+                key => _contextBuilder.GetOrBuildComparerType(key).CreateInstance<IContext, IComparer>(this));
         }
 
         public IComparer<T> GetComparer<T>()

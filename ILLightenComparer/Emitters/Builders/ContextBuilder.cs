@@ -62,7 +62,7 @@ namespace ILLightenComparer.Emitters.Builders
             return lazy.Value;
         }
 
-        private Type GetOrBuildComparerType(Type objectType)
+        public Type GetOrBuildComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
