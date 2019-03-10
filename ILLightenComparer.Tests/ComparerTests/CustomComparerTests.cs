@@ -1,6 +1,4 @@
-﻿using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.Comparers;
-using Xunit;
+﻿using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
