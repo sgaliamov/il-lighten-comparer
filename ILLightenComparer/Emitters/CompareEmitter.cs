@@ -13,12 +13,11 @@ namespace ILLightenComparer.Emitters
     {
         private readonly CompareVisitor _compareVisitor;
         private readonly Converter _converter = new Converter();
-        private readonly VariableLoader _loader = new VariableLoader();
 
         public CompareEmitter(IContext context, IConfigurationProvider configurationProvider)
         {
             var membersProvider = new MembersProvider(configurationProvider);
-            _compareVisitor = new CompareVisitor(context, configurationProvider, membersProvider, _loader, _converter);
+            _compareVisitor = new CompareVisitor(context, configurationProvider, membersProvider, _converter);
         }
 
         public void Emit(Type objectType, ILEmitter il)

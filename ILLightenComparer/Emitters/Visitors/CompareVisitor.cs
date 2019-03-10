@@ -18,23 +18,21 @@ namespace ILLightenComparer.Emitters.Visitors
         private readonly IContext _context;
         private readonly Converter _converter;
         private readonly EnumerableVisitor _enumerableVisitor;
-        private readonly VariableLoader _loader;
+        private readonly VariableLoader _loader = new VariableLoader();
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(
             IContext context,
             IConfigurationProvider configuration,
             MembersProvider membersProvider,
-            VariableLoader loader,
             Converter converter)
         {
             _context = context;
             _configuration = configuration;
             _membersProvider = membersProvider;
-            _loader = loader;
             _converter = converter;
-            _arrayVisitor = new ArrayVisitor(configuration, this, loader, converter);
-            _enumerableVisitor = new EnumerableVisitor(configuration, this, loader, converter);
+            _arrayVisitor = new ArrayVisitor(configuration, this, _loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(configuration, this, _loader, converter);
         }
 
         public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
