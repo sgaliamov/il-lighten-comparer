@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -32,12 +31,6 @@ namespace ILLightenComparer.Emitters.Builders
 
             BuildStaticCompareMethod(objectType, staticCompareBuilder);
 
-            BuildBasicCompareMethod(
-                comparerTypeBuilder,
-                staticCompareBuilder,
-                contextField,
-                objectType);
-
             BuildTypedCompareMethod(
                 comparerTypeBuilder,
                 staticCompareBuilder,
@@ -64,33 +57,6 @@ namespace ILLightenComparer.Emitters.Builders
                 }
 
                 _compareEmitter.Emit(objectType, il);
-            }
-        }
-
-        private void BuildBasicCompareMethod(
-            TypeBuilder typeBuilder,
-            MethodInfo staticCompareMethod,
-            FieldInfo contextField,
-            Type objectType)
-        {
-            var interfaceMethod = typeof(IComparer).GetMethod(MethodName.Compare);
-            var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
-
-            using (var il = methodBuilder.CreateILEmitter())
-            {
-                if (objectType.IsValueType)
-                {
-                    il.EmitArgumentsReferenceComparison();
-                }
-
-                il.LoadArgument(Arg.This)
-                  .Emit(OpCodes.Ldfld, contextField)
-                  .LoadArgument(Arg.X)
-                  .EmitCast(objectType)
-                  .LoadArgument(Arg.Y)
-                  .EmitCast(objectType);
-
-                EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
             }
         }
 

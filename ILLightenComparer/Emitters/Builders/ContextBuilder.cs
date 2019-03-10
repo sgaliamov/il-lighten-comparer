@@ -43,12 +43,10 @@ namespace ILLightenComparer.Emitters.Builders
             var lazy = _builds.GetOrAdd(objectType,
                 key => new Lazy<BuildInfo>(() =>
                 {
-                    var basicInterface = typeof(IComparer);
                     var genericInterface = typeof(IComparer<>).MakeGenericType(key);
 
                     var typeBuilder = _moduleBuilder.DefineType(
                         $"{key.FullName}.DynamicComparer",
-                        basicInterface,
                         genericInterface);
 
                     var staticCompareMethodBuilder = typeBuilder.DefineStaticMethod(
