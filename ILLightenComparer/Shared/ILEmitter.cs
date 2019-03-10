@@ -350,7 +350,7 @@ namespace ILLightenComparer.Shared
 
         // ReSharper restore PartialMethodWithSinglePart
 
-#if DEBUG
+        #if DEBUG
 
         public ILEmitter DebugWriteLine(LocalBuilder local)
         {
@@ -375,7 +375,7 @@ namespace ILLightenComparer.Shared
             return this;
         }
 
-#endif
+        #endif
 
         #endregion
     }

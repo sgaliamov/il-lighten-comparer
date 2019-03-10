@@ -35,7 +35,6 @@ namespace ILLightenComparer.Emitters.Builders
             return DefineStaticMethod(type).CompareMethod;
         }
 
-        // todo: try replace with GetStaticCompareMethod
         public MethodInfo GetCompiledCompareMethod(Type memberType)
         {
             var comparerType = GetComparerType(memberType);
@@ -52,10 +51,12 @@ namespace ILLightenComparer.Emitters.Builders
                 key => new Lazy<Type>(() =>
                 {
                     var info = DefineStaticMethod(key);
+                    #if DEBUG
                     if (info.Compiled)
                     {
                         throw new InvalidOperationException("Unexpected context state.");
                     }
+                    #endif
 
                     var compiledComparerType = _comparerTypeBuilder.Build(
                         (TypeBuilder)info.CompareMethod.DeclaringType,

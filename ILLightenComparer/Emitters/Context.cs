@@ -50,12 +50,12 @@ namespace ILLightenComparer.Emitters
         // as we could access static method via instance object
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-#if DEBUG
+            #if DEBUG
             if (typeof(T).IsValueType)
             {
                 throw new InvalidOperationException($"Unexpected value type {typeof(T)}.");
             }
-#endif
+            #endif
 
             if (x == null)
             {
