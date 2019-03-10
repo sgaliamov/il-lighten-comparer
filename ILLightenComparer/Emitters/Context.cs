@@ -25,7 +25,6 @@ namespace ILLightenComparer.Emitters
         }
 
         // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
-
         public IComparer<T> GetComparer<T>()
         {
             var objectType = typeof(T);
@@ -47,6 +46,8 @@ namespace ILLightenComparer.Emitters
             throw new NotImplementedException();
         }
 
+        // todo: maybe possible use only GetComparer<T> method for delayed comparison,
+        // as we could access static method via instance object
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
 #if DEBUG

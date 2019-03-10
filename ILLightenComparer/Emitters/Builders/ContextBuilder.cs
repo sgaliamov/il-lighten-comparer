@@ -13,7 +13,7 @@ namespace ILLightenComparer.Emitters.Builders
     // todo: one cache for types and clean on configuration change
     internal sealed class ContextBuilder : IContextBuilder
     {
-        private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _builds = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();
+        private readonly ConcurrentDictionary<Type, Lazy<ComparerInfo>> _infos = new ConcurrentDictionary<Type, Lazy<ComparerInfo>>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ModuleBuilder _moduleBuilder;
@@ -32,7 +32,7 @@ namespace ILLightenComparer.Emitters.Builders
         public MethodInfo GetStaticCompareMethod(Type type)
         {
             // todo: test when a custom comparer is defined for nested type
-            return GetOrStartBuild(type).CompareMethod;
+            return DefineComparerInfo(type).CompareMethod;
         }
 
         public MethodInfo GetCompiledCompareMethod(Type memberType)
@@ -50,16 +50,16 @@ namespace ILLightenComparer.Emitters.Builders
                 objectType,
                 key => new Lazy<Type>(() =>
                 {
-                    var buildInfo = GetOrStartBuild(key);
+                    var info = DefineComparerInfo(key);
 
                     var compiledComparerType = _comparerTypeBuilder.Build(
-                        (TypeBuilder)buildInfo.CompareMethod.DeclaringType,
-                        (MethodBuilder)buildInfo.CompareMethod,
-                        buildInfo.ObjectType);
+                        (TypeBuilder)info.CompareMethod.DeclaringType,
+                        (MethodBuilder)info.CompareMethod,
+                        key);
 
-                    var method = compiledComparerType.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(buildInfo.ObjectType));
+                    var method = compiledComparerType.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(key));
 
-                    buildInfo.FinalizeBuild(method);
+                    info.FinalizeBuild(method);
 
                     return compiledComparerType;
                 }));
@@ -71,10 +71,10 @@ namespace ILLightenComparer.Emitters.Builders
             return comparerType;
         }
 
-        private BuildInfo GetOrStartBuild(Type objectType)
+        private ComparerInfo DefineComparerInfo(Type objectType)
         {
-            var lazy = _builds.GetOrAdd(objectType,
-                key => new Lazy<BuildInfo>(() =>
+            var lazy = _infos.GetOrAdd(objectType,
+                key => new Lazy<ComparerInfo>(() =>
                 {
                     var genericInterface = typeof(IComparer<>).MakeGenericType(key);
 
@@ -87,7 +87,7 @@ namespace ILLightenComparer.Emitters.Builders
                         typeof(int),
                         Method.StaticCompareMethodParameters(key));
 
-                    return new BuildInfo(key, staticCompareMethodBuilder);
+                    return new ComparerInfo(staticCompareMethodBuilder);
                 }));
 
             return lazy.Value;
@@ -95,16 +95,16 @@ namespace ILLightenComparer.Emitters.Builders
 
         private void FinalizeStartedBuilds()
         {
-            var builds = _builds.ToArray().Select(x => x.Value).ToArray();
+            var items = _infos.ToDictionary(x => x.Key, x => x.Value.Value);
 
-            foreach (var item in builds)
+            foreach (var item in items)
             {
                 if (item.Value.Compiled)
                 {
                     continue;
                 }
 
-                GetComparerType(item.Value.ObjectType);
+                GetComparerType(item.Key);
             }
         }
     }

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace ILLightenComparer.Emitters.Builders
 {
-    internal sealed class BuildInfo
+    internal sealed class ComparerInfo
     {
-        public BuildInfo(Type objectType, MethodInfo compareMethod)
+        public ComparerInfo(MethodInfo compareMethod)
         {
-            ObjectType = objectType;
             CompareMethod = compareMethod;
         }
 
         public bool Compiled { get; private set; }
         public MethodInfo CompareMethod { get; private set; }
-        public Type ObjectType { get; }
 
         public void FinalizeBuild(MethodInfo method)
         {
