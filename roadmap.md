@@ -65,8 +65,9 @@
 - [x] refactor tests - ensure all branch execution
 - [x] refactor visitors
 - [x] introduce variables scope to not have to track variable buckets
+- [x] smart `IComparerBuilder`
 - [ ] customization setting to override comparer with specific implementation
-- [ ] smart `IComparerBuilder`
+- [ ] how to rebuild after set new configuration?
 - [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
 - [ ] tests for different cultures
@@ -74,7 +75,6 @@
 - [ ] ignore existing `IComparable` implementation
 - [ ] `checked` subs
 - [ ] compare references and the end?
-- [ ] how to rebuild after set new configuration?
 - [ ] include protected (BindingFlags.NonPublic)?
 
 ## Phase 5 Optimizations

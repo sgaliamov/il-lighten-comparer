@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Config
 {
@@ -114,11 +116,31 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder Comparer<TComparable>(Type type, IComparer<TComparable> comparer)
+        public IConfigurationBuilder SetComparer<TComparer>(Type type, TComparer instance)
         {
-            GetOrCreate(type).SetComparer(comparer);
+            var configuration = GetOrCreate(type);
+
+            // todo: optimize
+            typeof(Configuration)
+                .GetMethod(nameof(Configuration.SetComparer))
+                ?.MakeGenericMethod(type)
+                .Invoke(configuration, new object[] { instance });
 
             return this;
+        }
+
+        public IConfigurationBuilder SetComparer<TComparer>(Type type)
+        {
+            // todo: cache
+            var comparerType = typeof(TComparer);
+            var ctor = comparerType.GetConstructor(Type.EmptyTypes)
+                       ?? throw new ArgumentException(
+                           $"Comparer {comparerType.DisplayName()} should have default constructor.",
+                           nameof(type));
+            var lambda = Expression.Lambda(typeof(Func<TComparer>), Expression.New(ctor));
+            var compiled = (Func<TComparer>)lambda.Compile();
+
+            return SetComparer(type, compiled());
         }
 
         public IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config)
@@ -192,9 +214,16 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> Comparer<TComparable>(IComparer<TComparable> comparer)
+            public IConfigurationBuilder<T> SetComparer(IComparer<T> instance)
             {
-                _subject.Comparer(typeof(T), comparer);
+                _subject.SetComparer(typeof(T), instance);
+
+                return this;
+            }
+
+            public IConfigurationBuilder<T> SetComparer<TComparer>() where TComparer : IComparer<T>
+            {
+                _subject.SetComparer<TComparer>(typeof(T));
 
                 return this;
             }

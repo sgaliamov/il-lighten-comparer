@@ -71,12 +71,14 @@ namespace ILLightenComparer
 
         IConfigurationBuilder StringComparisonType(Type type, StringComparison? value);
 
-        IConfigurationBuilder Comparer<TComparable>(Type type, IComparer<TComparable> comparer);
+        IConfigurationBuilder SetComparer<TComparer>(Type type, TComparer instance);
+
+        IConfigurationBuilder SetComparer<TComparer>(Type type);
 
         IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config);
     }
 
-    public interface IConfigurationBuilder<T>
+    public interface IConfigurationBuilder<out T>
     {
         IConfigurationBuilder<T> DetectCycles(bool? value);
 
@@ -90,7 +92,9 @@ namespace ILLightenComparer
 
         IConfigurationBuilder<T> StringComparisonType(StringComparison? value);
 
-        IConfigurationBuilder<T> Comparer<TComparable>(IComparer<TComparable> comparer);
+        IConfigurationBuilder<T> SetComparer(IComparer<T> instance);
+
+        IConfigurationBuilder<T> SetComparer<TComparer>() where TComparer : IComparer<T>;
     }
 
     public interface IComparerProvider
