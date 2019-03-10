@@ -125,6 +125,36 @@ namespace ILLightenComparer.Emitters
 
             return compare(this, x, y, xSet, ySet);
         }
+
+        private class Comparer<T> : IComparer
+        {
+            private readonly IComparer<T> _comparer;
+
+            public Comparer(IComparer<T> comparer)
+            {
+                _comparer = comparer;
+            }
+
+            public int Compare(object x, object y)
+            {
+                if (ReferenceEquals(x, y))
+                {
+                    return 0;
+                }
+
+                if (ReferenceEquals(null, y))
+                {
+                    return 1;
+                }
+
+                if (ReferenceEquals(null, x))
+                {
+                    return -1;
+                }
+
+                return _comparer.Compare((T)x, (T)y);
+            }
+        }
     }
 
     public interface IContext
