@@ -1,5 +1,6 @@
 ﻿using System;
 using ILLightenComparer.Config;
+using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors;
@@ -14,7 +15,7 @@ namespace ILLightenComparer.Emitters
         private readonly CompareVisitor _compareVisitor;
         private readonly Converter _converter = new Converter();
 
-        public CompareEmitter(IContext context, IConfigurationProvider configurationProvider)
+        public CompareEmitter(IContextBuilder context, IConfigurationProvider configurationProvider)
         {
             var membersProvider = new MembersProvider(configurationProvider);
             _compareVisitor = new CompareVisitor(context, configurationProvider, membersProvider, _converter);

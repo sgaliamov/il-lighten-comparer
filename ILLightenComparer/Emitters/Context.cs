@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Extensions;
@@ -18,13 +16,12 @@ namespace ILLightenComparer.Emitters
     {
         private readonly IConfigurationProvider _configurations;
         private readonly ContextBuilder _contextBuilder;
-        private readonly ConcurrentDictionary<Type, IComparer> _dynamicComparers = new ConcurrentDictionary<Type, IComparer>();
+        private readonly ConcurrentDictionary<Type, object> _dynamicComparers = new ConcurrentDictionary<Type, object>();
 
         public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            var typeBuilder = new ComparerTypeBuilder(this, configurations);
-            _contextBuilder = new ContextBuilder(typeBuilder);
+            _contextBuilder = new ContextBuilder(configurations);
         }
 
         // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
@@ -42,7 +39,7 @@ namespace ILLightenComparer.Emitters
 
             return (IComparer<T>)_dynamicComparers.GetOrAdd(
                 objectType,
-                key => _contextBuilder.GetOrBuildComparerType(key).CreateInstance<IContext, IComparer>(this));
+                key => _contextBuilder.GetComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
         }
 
         public IEqualityComparer<T> GetEqualityComparer<T>()
@@ -84,11 +81,6 @@ namespace ILLightenComparer.Emitters
             return Compare(xType, x, y, xSet, ySet);
         }
 
-        public MethodInfo GetStaticCompareMethod(Type type)
-        {
-            return _contextBuilder.GetOrStartBuild(type).CompareMethod;
-        }
-
         // todo: cache delegates and benchmark ways
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
@@ -119,8 +111,6 @@ namespace ILLightenComparer.Emitters
 
     public interface IContext
     {
-        IComparer<T> GetComparer<T>();
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
-        MethodInfo GetStaticCompareMethod(Type type);
     }
 }

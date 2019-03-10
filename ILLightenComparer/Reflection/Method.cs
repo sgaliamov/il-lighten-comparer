@@ -34,7 +34,7 @@ namespace ILLightenComparer.Reflection
             typeof(IContext).GetMethod(nameof(IContext.DelayedCompare));
 
         public static MethodInfo GetComparer =
-            typeof(IContext).GetMethod(nameof(IContext.GetComparer));
+            typeof(IContext).GetMethod(nameof(IComparerProvider.GetComparer));
 
         public static MethodInfo MoveNext = typeof(IEnumerator)
             .GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
