@@ -22,11 +22,6 @@ namespace ILLightenComparer.Tests.Utilities
             },
             LazyThreadSafetyMode.ExecutionAndPublication);
 
-        public static Fixture GetInstance()
-        {
-            return Fixture.Value;
-        }
-
         private static readonly Lazy<Fixture> SimpleFixture = new Lazy<Fixture>(
             () =>
             {
@@ -38,6 +33,11 @@ namespace ILLightenComparer.Tests.Utilities
                 return f;
             },
             LazyThreadSafetyMode.ExecutionAndPublication);
+
+        public static Fixture GetInstance()
+        {
+            return Fixture.Value;
+        }
 
         public static Fixture GetSimpleInstance()
         {

@@ -103,7 +103,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
 
                 var itemComparison = _converter.CreateComparison(itemVariable);
                 itemComparison.Accept(_compareVisitor, il, continueLoop);
-            
+
                 if (itemComparison.ResultInStack)
                 {
                     il.EmitReturnNotZero(continueLoop);

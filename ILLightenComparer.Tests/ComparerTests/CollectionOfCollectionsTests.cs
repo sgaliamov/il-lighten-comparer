@@ -1,5 +1,4 @@
 ﻿#if !DEBUG // to run long test on release mode only
-
 using System;
 using System.Collections;
 using System.Collections.Generic;

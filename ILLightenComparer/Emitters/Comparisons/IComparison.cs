@@ -7,9 +7,9 @@ namespace ILLightenComparer.Emitters.Comparisons
 {
     internal interface IComparison
     {
+        bool ResultInStack { get; }
         IVariable Variable { get; }
         ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext);
         ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
-        bool ResultInStack { get; }
     }
 }

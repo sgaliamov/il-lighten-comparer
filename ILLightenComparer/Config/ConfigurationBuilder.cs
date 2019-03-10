@@ -123,7 +123,10 @@ namespace ILLightenComparer.Config
 
         public IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config)
         {
-            return new Proxy<T>(this);
+            var proxy = new Proxy<T>(this);
+            config(proxy);
+
+            return proxy;
         }
 
         public Configuration Get(Type type)

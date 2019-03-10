@@ -95,11 +95,7 @@ namespace ILLightenComparer
 
     public interface IComparerProvider
     {
-        //IComparer GetComparer(Type objectType);
-
         IComparer<T> GetComparer<T>();
-
-        //IEqualityComparer GetEqualityComparer(Type objectType);
 
         IEqualityComparer<T> GetEqualityComparer<T>();
     }

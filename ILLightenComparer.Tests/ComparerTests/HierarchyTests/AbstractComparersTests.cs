@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
@@ -13,8 +12,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Comparison_Uses_Only_Members_Of_Abstract_Class()
         {
-            var builder = new ComparerBuilder()
-                .For<AbstractNestedObject>(c => c.DetectCycles(false));
+            var builder = new ComparerBuilder().For<AbstractNestedObject>(c => c.DetectCycles(false));
 
             Test(builder);
         }
@@ -23,8 +21,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public void Comparison_Uses_Only_Members_Of_Base_Class()
         {
             var builder = new ComparerBuilder().For<BaseNestedObject>(
-                c => c.DetectCycles(false)
-                      .IgnoredMembers(new[] { nameof(BaseNestedObject.Key) }));
+                c => c.DetectCycles(false).IgnoredMembers(new[] { nameof(BaseNestedObject.Key) }));
 
             Test(builder);
         }
@@ -37,14 +34,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             Test(builder);
         }
 
-        private void Test<T>(IComparerBuilder<T> builder)
+        private void Test<T>(IComparerProvider<T> builder)
+            where T : INestedObject
         {
-            var comparer = (IComparer)builder.GetComparer();
+            var comparer = builder.GetComparer();
 
             for (var i = 0; i < 10; i++)
             {
-                var x = _fixture.Create<SealedNestedObject>();
-                var y = _fixture.Create<SealedNestedObject>();
+                var x = (T)(object)_fixture.Create<SealedNestedObject>();
+                var y = (T)(object)_fixture.Create<SealedNestedObject>();
 
                 var expected = string.Compare(x.Text, y.Text, StringComparison.Ordinal).Normalize();
                 var actual = comparer.Compare(x, y).Normalize();
