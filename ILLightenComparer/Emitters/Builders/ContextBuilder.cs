@@ -10,13 +10,13 @@ using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer.Emitters.Builders
 {
-    // todo: one cache for types and clean on configuration change
+    // todo: clean on configuration change
     internal sealed class ContextBuilder : IContextBuilder
     {
-        private readonly ConcurrentDictionary<Type, Lazy<ComparerInfo>> _infos = new ConcurrentDictionary<Type, Lazy<ComparerInfo>>();
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ModuleBuilder _moduleBuilder;
+        private readonly ConcurrentDictionary<Type, Lazy<StaticMethodInfo>> _staticMethods = new ConcurrentDictionary<Type, Lazy<StaticMethodInfo>>();
 
         public ContextBuilder(IConfigurationProvider configurations)
         {
@@ -32,9 +32,10 @@ namespace ILLightenComparer.Emitters.Builders
         public MethodInfo GetStaticCompareMethod(Type type)
         {
             // todo: test when a custom comparer is defined for nested type
-            return DefineComparerInfo(type).CompareMethod;
+            return DefineStaticMethod(type).CompareMethod;
         }
 
+        // todo: try replace with GetStaticCompareMethod
         public MethodInfo GetCompiledCompareMethod(Type memberType)
         {
             var comparerType = GetComparerType(memberType);
@@ -50,7 +51,11 @@ namespace ILLightenComparer.Emitters.Builders
                 objectType,
                 key => new Lazy<Type>(() =>
                 {
-                    var info = DefineComparerInfo(key);
+                    var info = DefineStaticMethod(key);
+                    if (info.Compiled)
+                    {
+                        throw new InvalidOperationException("Unexpected context state.");
+                    }
 
                     var compiledComparerType = _comparerTypeBuilder.Build(
                         (TypeBuilder)info.CompareMethod.DeclaringType,
@@ -59,7 +64,7 @@ namespace ILLightenComparer.Emitters.Builders
 
                     var method = compiledComparerType.GetMethod(MethodName.Compare, Method.StaticCompareMethodParameters(key));
 
-                    info.FinalizeBuild(method);
+                    info.SetCompiledMethod(method);
 
                     return compiledComparerType;
                 }));
@@ -71,10 +76,10 @@ namespace ILLightenComparer.Emitters.Builders
             return comparerType;
         }
 
-        private ComparerInfo DefineComparerInfo(Type objectType)
+        private StaticMethodInfo DefineStaticMethod(Type objectType)
         {
-            var lazy = _infos.GetOrAdd(objectType,
-                key => new Lazy<ComparerInfo>(() =>
+            var lazy = _staticMethods.GetOrAdd(objectType,
+                key => new Lazy<StaticMethodInfo>(() =>
                 {
                     var genericInterface = typeof(IComparer<>).MakeGenericType(key);
 
@@ -87,7 +92,7 @@ namespace ILLightenComparer.Emitters.Builders
                         typeof(int),
                         Method.StaticCompareMethodParameters(key));
 
-                    return new ComparerInfo(staticCompareMethodBuilder);
+                    return new StaticMethodInfo(staticCompareMethodBuilder);
                 }));
 
             return lazy.Value;
@@ -95,7 +100,7 @@ namespace ILLightenComparer.Emitters.Builders
 
         private void FinalizeStartedBuilds()
         {
-            var items = _infos.ToDictionary(x => x.Key, x => x.Value.Value);
+            var items = _staticMethods.ToDictionary(x => x.Key, x => x.Value.Value);
 
             foreach (var item in items)
             {
@@ -105,6 +110,24 @@ namespace ILLightenComparer.Emitters.Builders
                 }
 
                 GetComparerType(item.Key);
+            }
+        }
+
+        private sealed class StaticMethodInfo
+        {
+            public StaticMethodInfo(MethodInfo compareMethod)
+            {
+                CompareMethod = compareMethod;
+            }
+
+            public MethodInfo CompareMethod { get; private set; }
+
+            public bool Compiled { get; private set; }
+
+            public void SetCompiledMethod(MethodInfo method)
+            {
+                CompareMethod = method;
+                Compiled = true;
             }
         }
     }
