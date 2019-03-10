@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters;
@@ -29,19 +28,9 @@ namespace ILLightenComparer
             return _context.GetComparer<T>();
         }
 
-        public IComparer GetComparer(Type objectType)
-        {
-            return _context.GetComparer(objectType);
-        }
-
         public IEqualityComparer<T> GetEqualityComparer<T>()
         {
             return _context.GetEqualityComparer<T>();
-        }
-
-        public IEqualityComparer GetEqualityComparer(Type objectType)
-        {
-            return _context.GetEqualityComparer(objectType);
         }
 
         public IComparerBuilder<T> For<T>()

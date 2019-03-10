@@ -29,30 +29,20 @@ namespace ILLightenComparer.Emitters
 
         // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
 
-        public IComparer GetComparer(Type objectType)
-        {
-            //var configuration = _configurations.Get(objectType);
-            //var customComparer = configuration.GetComparer(objectType);
-            //if (customComparer != null)
-            //{
-            //    return customComparer;
-            //}
-
-            return _dynamicComparers.GetOrAdd(
-                objectType,
-                key => _contextBuilder.GetOrBuildComparerType(key).CreateInstance<IContext, IComparer>(this));
-        }
-
         public IComparer<T> GetComparer<T>()
         {
             var objectType = typeof(T);
+            var configuration = _configurations.Get(objectType);
 
-            return (IComparer<T>)GetComparer(objectType);
-        }
+            var customComparer = configuration.GetComparer<T>();
+            if (customComparer != null)
+            {
+                return customComparer;
+            }
 
-        public IEqualityComparer GetEqualityComparer(Type objectType)
-        {
-            throw new NotImplementedException();
+            return (IComparer<T>)_dynamicComparers.GetOrAdd(
+                objectType,
+                key => _contextBuilder.GetOrBuildComparerType(key).CreateInstance<IContext, IComparer>(this));
         }
 
         public IEqualityComparer<T> GetEqualityComparer<T>()
@@ -124,36 +114,6 @@ namespace ILLightenComparer.Emitters
             var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
 
             return compare(this, x, y, xSet, ySet);
-        }
-
-        private class Comparer<T> : IComparer
-        {
-            private readonly IComparer<T> _comparer;
-
-            public Comparer(IComparer<T> comparer)
-            {
-                _comparer = comparer;
-            }
-
-            public int Compare(object x, object y)
-            {
-                if (ReferenceEquals(x, y))
-                {
-                    return 0;
-                }
-
-                if (ReferenceEquals(null, y))
-                {
-                    return 1;
-                }
-
-                if (ReferenceEquals(null, x))
-                {
-                    return -1;
-                }
-
-                return _comparer.Compare((T)x, (T)y);
-            }
         }
     }
 

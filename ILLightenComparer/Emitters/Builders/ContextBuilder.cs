@@ -10,7 +10,7 @@ using ILLightenComparer.Reflection;
 
 namespace ILLightenComparer.Emitters.Builders
 {
-    // todo: once cache for types and clean on configuration change
+    // todo: one cache for types and clean on configuration change
     internal sealed class ContextBuilder
     {
         private readonly ConcurrentDictionary<Type, Lazy<BuildInfo>> _builds = new ConcurrentDictionary<Type, Lazy<BuildInfo>>();
