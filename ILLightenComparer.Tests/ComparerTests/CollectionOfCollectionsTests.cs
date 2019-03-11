@@ -72,7 +72,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Compare_Multi_Arrays()
         {
-            var builder = new ComparersBuilder();
+            var builder = new ComparerBuilder();
 
             Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<IEnumerable<int[,]>>>().GetComparer());
             Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<IEnumerable<int[,]>>>().GetComparer());

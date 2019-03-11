@@ -83,6 +83,11 @@ namespace ILLightenComparer
                 return _subject.GetComparer<T>();
             }
 
+            public IComparer<TOther> GetComparer<TOther>()
+            {
+                return _subject.GetComparer<TOther>();
+            }
+
             public IEqualityComparer<T> GetEqualityComparer()
             {
                 return _subject.GetEqualityComparer<T>();

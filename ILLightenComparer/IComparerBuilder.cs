@@ -108,6 +108,8 @@ namespace ILLightenComparer
     {
         IComparer<T> GetComparer();
 
+        IComparer<TOther> GetComparer<TOther>();
+
         IEqualityComparer<T> GetEqualityComparer();
     }
 }
