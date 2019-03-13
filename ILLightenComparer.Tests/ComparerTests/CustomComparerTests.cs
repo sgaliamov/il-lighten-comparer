@@ -23,6 +23,19 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
+        public void Custom_comparer_should_be_used_for_itself()
+        {
+            var comparer = new ComparerBuilder()
+                           .For<SampleStruct<string>>(c => c.SetComparer<SampleStructCustomComparer>())
+                           .GetComparer<SampleStruct<string>>();
+
+            var x = _fixture.Create<SampleStruct<string>>();
+            var y = _fixture.Create<SampleStruct<string>>();
+
+            comparer.Compare(x, y).Should().Be(0);
+        }
+
+        [Fact]
         public void Custom_instance_comparer_for_primitive_member_should_be_used()
         {
             var comparer = new ComparerBuilder()
