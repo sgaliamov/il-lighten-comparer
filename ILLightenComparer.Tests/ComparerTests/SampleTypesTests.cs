@@ -12,31 +12,31 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleTypesTests
     {
         [Fact]
-        public void Compare_Arrays_Directly()
+        public void Compare_arrays_directly()
         {
             TestCollection();
         }
 
         [Fact]
-        public void Compare_Arrays_Of_Nullables_Directly()
+        public void Compare_arrays_of_nullables_directly()
         {
             TestNullableCollection();
         }
 
         [Fact]
-        public void Compare_Enumerables_Directly()
+        public void Compare_enumerables_directly()
         {
             TestCollection(typeof(IEnumerable<>));
         }
 
         [Fact]
-        public void Compare_Enumerables_Of_Nullables_Directly()
+        public void Compare_enumerables_of_nullables_directly()
         {
             TestNullableCollection(typeof(IEnumerable<>));
         }
 
         [Fact]
-        public void Compare_Nullable_Types_Directly()
+        public void Compare_nullable_types_directly()
         {
             foreach (var (nullableType, nullableComparer) in SampleTypes.NullableTypes)
             {
@@ -45,7 +45,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Types_Directly()
+        public void Compare_types_directly()
         {
             Parallel.ForEach(SampleTypes.Types,
                 item =>

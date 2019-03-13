@@ -31,7 +31,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Compare_Nested_Null_Structs()
+        public void Compare_nested_null_structs()
         {
             var one = new HierarchicalObject();
             var other = new HierarchicalObject
@@ -47,7 +47,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Compare_Nested_Structs()
+        public void Compare_nested_structs()
         {
             for (var i = 0; i < 10; i++)
             {
@@ -71,7 +71,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Run_Generic_Tests()
+        public void Run_generic_tests()
         {
             var builder = new ComparerBuilder()
                           .For<SealedNestedObject>(config => config.MembersOrder(new[]

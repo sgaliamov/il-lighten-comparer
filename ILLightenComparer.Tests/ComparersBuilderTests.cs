@@ -7,7 +7,7 @@ namespace ILLightenComparer.Tests
     public sealed class ComparersBuilderTests
     {
         [Fact]
-        public void Create_Generic_Comparer()
+        public void Create_generic_comparer()
         {
             var comparer = _builder.For<DummyObject>().GetComparer();
 
@@ -15,7 +15,7 @@ namespace ILLightenComparer.Tests
         }
 
         [Fact(Skip = "Not implemented yet")]
-        public void Create_Generic_EqualityComparer()
+        public void Create_generic_equality_comparer()
         {
             var comparer = _builder.For<DummyObject>().GetEqualityComparer();
 

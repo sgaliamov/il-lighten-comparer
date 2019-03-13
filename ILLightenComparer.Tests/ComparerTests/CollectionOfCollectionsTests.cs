@@ -14,7 +14,7 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class CollectionOfCollectionsTests
     {
         [Fact]
-        public void Compare_Array_Of_Array()
+        public void Compare_array_of_array()
         {
             Type[] GetCollectionTypes(Type type)
             {
@@ -28,7 +28,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Array_Of_List()
+        public void Compare_array_of_list()
         {
             Type[] GetCollectionTypes(Type type)
             {
@@ -42,7 +42,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_List_of_Array()
+        public void Compare_list_of_array()
         {
             Type[] GetCollectionTypes(Type type)
             {
@@ -56,7 +56,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_List_Of_List()
+        public void Compare_list_of_list()
         {
             Type[] GetCollectionTypes(Type type)
             {
@@ -70,7 +70,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Multi_Arrays()
+        public void Compare_multi_arrays()
         {
             var builder = new ComparerBuilder();
 

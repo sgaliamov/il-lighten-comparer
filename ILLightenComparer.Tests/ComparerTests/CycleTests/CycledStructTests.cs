@@ -30,7 +30,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_Cycle_In_Object()
+        public void Detects_cycle_in_object()
         {
             var one = new CycledStructObject();
             one.FirstStruct = new CycledStruct { SecondObject = one };
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_Cycle_In_Struct()
+        public void Detects_cycle_in_struct()
         {
             var one = new CycledStruct
             {
@@ -68,7 +68,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_Cycle_On_First_Member()
+        public void Detects_cycle_on_first_member()
         {
             var one = new CycledStructObject();
             /*
@@ -100,7 +100,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_Cycle_On_Second_Member()
+        public void Detects_cycle_on_second_member()
         {
             var one = new CycledStruct { SecondObject = new CycledStructObject() };
             one.SecondObject.FirstStruct = one;

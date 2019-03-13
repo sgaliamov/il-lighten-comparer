@@ -18,7 +18,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Generate_Comparer_For_Not_Sealed_Member_In_Parallel_Still_Works()
+        public void Generate_comparer_for_not_sealed_member_in_parallel_still_works()
         {
             var one = new AbstractMembers
             {
