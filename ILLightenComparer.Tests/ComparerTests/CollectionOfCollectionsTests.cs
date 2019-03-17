@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !DEBUG // to run long test on release mode only
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,21 +14,7 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class CollectionOfCollectionsTests
     {
         [Fact]
-        public void Compare_Array_Of_List()
-        {
-            Type[] GetCollectionTypes(Type type)
-            {
-                var arrayType = type.MakeArrayType();
-                var listType = typeof(List<>).MakeGenericType(arrayType);
-
-                return new[] { arrayType, listType };
-            }
-
-            CompareCollectionOfCollections(GetCollectionTypes);
-        }
-
-        [Fact]
-        public void Compare_Array_Of_Array()
+        public void Compare_array_of_array()
         {
             Type[] GetCollectionTypes(Type type)
             {
@@ -41,7 +28,21 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_List_of_Array()
+        public void Compare_array_of_list()
+        {
+            Type[] GetCollectionTypes(Type type)
+            {
+                var arrayType = type.MakeArrayType();
+                var listType = typeof(List<>).MakeGenericType(arrayType);
+
+                return new[] { arrayType, listType };
+            }
+
+            CompareCollectionOfCollections(GetCollectionTypes);
+        }
+
+        [Fact]
+        public void Compare_list_of_array()
         {
             Type[] GetCollectionTypes(Type type)
             {
@@ -55,7 +56,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_List_Of_List()
+        public void Compare_list_of_list()
         {
             Type[] GetCollectionTypes(Type type)
             {
@@ -69,9 +70,9 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Multi_Arrays()
+        public void Compare_multi_arrays()
         {
-            var builder = new ComparersBuilder();
+            var builder = new ComparerBuilder();
 
             Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<IEnumerable<int[,]>>>().GetComparer());
             Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<IEnumerable<int[,]>>>().GetComparer());
@@ -140,3 +141,5 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
     }
 }
+
+#endif

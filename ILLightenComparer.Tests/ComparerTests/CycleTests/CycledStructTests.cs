@@ -9,32 +9,28 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
     {
         public CycledStructTests()
         {
-            _builder = new ComparersBuilder()
-                       .DefineConfiguration(typeof(CycledStruct),
-                           new ComparerSettings
-                           {
-                               MembersOrder = new[]
+            _builder = new ComparerBuilder(config =>
+                           config.MembersOrder(
+                               typeof(CycledStruct),
+                               new[]
                                {
                                    nameof(CycledStruct.Property),
                                    nameof(CycledStruct.FirstObject),
                                    nameof(CycledStruct.SecondObject)
-                               }
-                           })
-                       .DefineConfiguration(typeof(CycledStructObject),
-                           new ComparerSettings
-                           {
-                               MembersOrder = new[]
-                               {
-                                   nameof(CycledStructObject.TextField),
-                                   nameof(CycledStructObject.FirstStruct),
-                                   nameof(CycledStructObject.SecondStruct)
-                               },
-                               IgnoredMembers = new[] { nameof(CycledStructObject.Id) }
-                           });
+                               }))
+                       .For<CycledStructObject>(config =>
+                           config.MembersOrder(new[]
+                                 {
+                                     nameof(CycledStructObject.TextField),
+                                     nameof(CycledStructObject.FirstStruct),
+                                     nameof(CycledStructObject.SecondStruct)
+                                 })
+                                 .IgnoredMembers(new[] { nameof(CycledStructObject.Id) }))
+                       .Builder;
         }
 
         [Fact]
-        public void Detects_Cycle_In_Object()
+        public void Detects_cycle_in_object()
         {
             var one = new CycledStructObject();
             one.FirstStruct = new CycledStruct { SecondObject = one };
@@ -50,7 +46,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_Cycle_In_Struct()
+        public void Detects_cycle_in_struct()
         {
             var one = new CycledStruct
             {
@@ -72,7 +68,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_Cycle_On_First_Member()
+        public void Detects_cycle_on_first_member()
         {
             var one = new CycledStructObject();
             /*
@@ -104,7 +100,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_Cycle_On_Second_Member()
+        public void Detects_cycle_on_second_member()
         {
             var one = new CycledStruct { SecondObject = new CycledStructObject() };
             one.SecondObject.FirstStruct = one;
@@ -141,6 +137,6 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 
         public IComparer<CycledStruct> ComparerStruct => _builder.GetComparer<CycledStruct>();
         public IComparer<CycledStructObject> ComparerObject => _builder.GetComparer<CycledStructObject>();
-        private readonly IContextBuilder _builder;
+        private readonly IComparerBuilder _builder;
     }
 }

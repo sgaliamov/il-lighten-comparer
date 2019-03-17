@@ -9,13 +9,11 @@ namespace ILLightenComparer.Tests.Utilities
     {
         private readonly HashSet<Type> _exclude;
         private readonly double _probability;
-        private readonly Random _random;
 
         public CasualNullGenerator(double probability, params Type[] exclude)
         {
             _exclude = new HashSet<Type>(exclude);
             _probability = probability;
-            _random = new Random();
         }
 
         public object Create(object request, ISpecimenContext context)
@@ -32,7 +30,7 @@ namespace ILLightenComparer.Tests.Utilities
 
             if ((type.IsNullable() || type.IsClass)
                 && !_exclude.Contains(owner)
-                && _random.NextDouble() < _probability)
+                && ThreadSafeRandom.NextDouble() < _probability)
             {
                 return new OmitSpecimen();
             }

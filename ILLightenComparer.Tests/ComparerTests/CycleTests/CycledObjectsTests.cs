@@ -19,7 +19,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Comparison_Should_Not_Fail_Because_Of_Generating_Comparers_For_Two_Dependent_Classes()
+        public void Comparison_should_not_fail_because_of_generating_comparers_for_two_dependent_classes()
         {
             var one = _fixture.Create<OneSealed>();
             var other = _fixture.Create<OneSealed>();
@@ -33,7 +33,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Comparison_With_Cycle_On_Types_Level_Only()
+        public void Comparison_with_cycle_on_types_level_only()
         {
             var one = _fixture.Create<OneSealed>();
             var other = one.DeepClone();
@@ -48,7 +48,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Cross_Reference_Should_Not_Fail()
+        public void Cross_reference_should_not_fail()
         {
             var other = new SelfSealed();
             var one = new SelfSealed
@@ -67,12 +67,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Cycle_Detection_In_Multiple_Threads_Works()
+        public void Cycle_detection_in_multiple_threads_works()
         {
             Helper.Parallel(
                 () =>
                 {
-                    var comparer = new ComparersBuilder().GetComparer<OneSealed>();
+                    var comparer = new ComparerBuilder().GetComparer<OneSealed>();
 
                     var one = _fixture.Create<OneSealed>();
                     var other = _fixture.Create<OneSealed>();
@@ -88,7 +88,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_Cycle_On_Second_Member()
+        public void Detects_cycle_on_second_member()
         {
             var one = new SelfSealed();
             one.Second = new SelfSealed
@@ -130,7 +130,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Object_With_Bigger_Cycle_Is_Bigger()
+        public void Object_with_bigger_cycle_is_bigger()
         {
             var one = new SelfSealed();
             one.First = new SelfSealed
@@ -149,7 +149,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Opened_Class_Comparer_Uses_Context_Compare_Method()
+        public void Opened_class_comparer_uses_context_compare_method()
         {
             var one = _fixture.Create<SelfOpened>();
             one.Self = one;
@@ -163,7 +163,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void When_Sealed_Comparable_Has_Member_With_Cycle()
+        public void When_sealed_comparable_has_member_with_cycle()
         {
             var comparer = _builder.For<SampleComparableChildObject<OneSealed>>().GetComparer();
             SampleComparableChildObject<OneSealed>.ChildComparer = ComparerForOneSealed;
@@ -194,17 +194,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         private IComparer<SelfSealed> ComparerSelfSealed =>
-            _builder
-                .For<SelfSealed>()
-                .DefineConfiguration(new ComparerSettings
-                {
-                    IgnoredMembers = new[] { nameof(SelfSealed.Id) }
-                })
-                .GetComparer();
+            _builder.For<SelfSealed>(c => c.IgnoredMembers(new[] { nameof(SelfSealed.Id) }))
+                    .GetComparer();
 
         private readonly Fixture _fixture;
         private IComparer<SelfOpened> ComparerSelfOpened => _builder.For<SelfOpened>().GetComparer();
         private IComparer<OneSealed> ComparerForOneSealed => _builder.For<OneSealed>().GetComparer();
-        private readonly IContextBuilder _builder = new ComparersBuilder();
+        private readonly IComparerBuilder _builder = new ComparerBuilder();
     }
 }

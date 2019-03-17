@@ -5,6 +5,7 @@ using System.Threading;
 using AutoFixture;
 using AutoFixture.Kernel;
 using Force.DeepCloner;
+using Xunit;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -21,11 +22,6 @@ namespace ILLightenComparer.Tests.Utilities
             },
             LazyThreadSafetyMode.ExecutionAndPublication);
 
-        public static Fixture GetInstance()
-        {
-            return Fixture.Value;
-        }
-
         private static readonly Lazy<Fixture> SimpleFixture = new Lazy<Fixture>(
             () =>
             {
@@ -37,6 +33,11 @@ namespace ILLightenComparer.Tests.Utilities
                 return f;
             },
             LazyThreadSafetyMode.ExecutionAndPublication);
+
+        public static Fixture GetInstance()
+        {
+            return Fixture.Value;
+        }
 
         public static Fixture GetSimpleInstance()
         {
@@ -67,7 +68,7 @@ namespace ILLightenComparer.Tests.Utilities
 
                 setValue(
                     member.Parent,
-                    GetNewValue(fixture, member.ValueType, member.Value));
+                    GetNewValue(member.ValueType, member.Value));
 
                 yield return clone.DeepClone();
 
@@ -92,15 +93,18 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        private static object GetNewValue(Fixture fixture, Type type, object oldValue)
+        private static object GetNewValue(Type type, object oldValue)
         {
+            var times = 5;
             while (true)
             {
-                var newValue = fixture.Create(type);
+                var newValue = SimpleFixture.Value.Create(type);
                 if (!newValue.Equals(oldValue))
                 {
                     return newValue;
                 }
+
+                Assert.NotEqual(0, --times);
             }
         }
     }

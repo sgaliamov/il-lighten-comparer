@@ -13,7 +13,7 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleComparableTests
     {
         [Fact]
-        public void Compare_Comparable_Objects()
+        public void Compare_comparable_objects()
         {
             Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer), false);
             Test(typeof(SampleComparableChildObject<>), nameof(SampleComparableChildObject<object>.ChildComparer), false);
@@ -32,14 +32,14 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Comparable_Structs()
+        public void Compare_comparable_structs()
         {
             Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer), false);
             Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer), true);
         }
 
         [Fact]
-        public void Custom_Comparable_Implementation_Should_Return_Negative_When_First_Argument_IsNull()
+        public void Custom_comparable_implementation_should_return_negative_when_first_argument_isnull()
         {
             var one = new SampleObject<SampleComparableBaseObject<EnumSmall>>
             {
@@ -49,15 +49,15 @@ namespace ILLightenComparer.Tests.ComparerTests
             var other = one.DeepClone();
             one.Property = null;
 
-            var comparer = new ComparersBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
+            var comparer = new ComparerBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
 
             comparer.Compare(one, other).Should().BeNegative();
         }
 
         [Fact]
-        public void Replaced_Comparable_Object_Is_Compared_With_Custom_Implementation()
+        public void Replaced_comparable_object_is_compared_with_custom_implementation()
         {
-            var comparer = new ComparersBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
+            var comparer = new ComparerBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
             var fixture = FixtureBuilder.GetInstance();
 
             var one = new SampleObject<SampleComparableBaseObject<EnumSmall>>

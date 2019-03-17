@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
@@ -11,47 +10,39 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     public sealed class AbstractComparersTests
     {
         [Fact]
-        public void Comparison_Uses_Only_Members_Of_Abstract_Class()
+        public void Comparison_uses_only_members_of_abstract_class()
         {
-            var builder = new ComparersBuilder()
-                          .For<AbstractNestedObject>()
-                          .DefineConfiguration(new ComparerSettings { DetectCycles = false });
+            var builder = new ComparerBuilder().For<AbstractNestedObject>(c => c.DetectCycles(false));
 
             Test(builder);
         }
 
         [Fact]
-        public void Comparison_Uses_Only_Members_Of_Base_Class()
+        public void Comparison_uses_only_members_of_base_class()
         {
-            var builder = new ComparersBuilder()
-                          .For<BaseNestedObject>()
-                          .DefineConfiguration(new ComparerSettings
-                          {
-                              DetectCycles = false,
-                              IgnoredMembers = new[] { nameof(BaseNestedObject.Key) }
-                          });
+            var builder = new ComparerBuilder().For<BaseNestedObject>(
+                c => c.DetectCycles(false).IgnoredMembers(new[] { nameof(BaseNestedObject.Key) }));
 
             Test(builder);
         }
 
         [Fact]
-        public void Comparison_Uses_Only_Members_Of_Base_Interface()
+        public void Comparison_uses_only_members_of_base_interface()
         {
-            var builder = new ComparersBuilder()
-                          .For<INestedObject>()
-                          .DefineConfiguration(new ComparerSettings { DetectCycles = false });
+            var builder = new ComparerBuilder().For<INestedObject>(c => c.DetectCycles(false));
 
             Test(builder);
         }
 
         private void Test<T>(IComparerProvider<T> builder)
+            where T : INestedObject
         {
-            var comparer = (IComparer)builder.GetComparer();
+            var comparer = builder.GetComparer();
 
             for (var i = 0; i < 10; i++)
             {
-                var x = _fixture.Create<SealedNestedObject>();
-                var y = _fixture.Create<SealedNestedObject>();
+                var x = (T)(object)_fixture.Create<SealedNestedObject>();
+                var y = (T)(object)_fixture.Create<SealedNestedObject>();
 
                 var expected = string.Compare(x.Text, y.Text, StringComparison.Ordinal).Normalize();
                 var actual = comparer.Compare(x, y).Normalize();

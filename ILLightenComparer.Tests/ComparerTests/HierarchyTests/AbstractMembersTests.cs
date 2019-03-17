@@ -14,7 +14,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     public sealed class AbstractMembersTests
     {
         [Fact]
-        public void AbstractProperty_Comparison()
+        public void Abstract_property_comparison()
         {
             Test(x => new AbstractMembers
             {
@@ -23,7 +23,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Attempt_To_Compare_Different_Sibling_Types_Throws_ArgumentException()
+        public void Attempt_to_compare_different_sibling_types_throws_argument_exception()
         {
             var sealedNestedObject = _fixture
                                      .Build<SealedNestedObject>()
@@ -47,7 +47,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Attempt_To_Compare_Inherited_Types_Throws_ArgumentException()
+        public void Attempt_to_compare_inherited_types_throws_argument_exception()
         {
             var sealedNestedObject = _fixture.Create<BaseNestedObject>();
             var anotherNestedObject = _fixture.Create<AnotherNestedObject>();
@@ -66,7 +66,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void InterfaceField_Comparison()
+        public void Interface_field_comparison()
         {
             Test(x => new AbstractMembers
             {
@@ -75,7 +75,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void NotSealedProperty_Comparison()
+        public void Not_sealed_property_comparison()
         {
             Test(x => new AbstractMembers
             {
@@ -84,7 +84,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void ObjectField_Comparison()
+        public void Object_field_comparison()
         {
             Test(x => new AbstractMembers
             {
@@ -93,7 +93,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Replaced_Member_Does_Not_Break_Comparison()
+        public void Replaced_member_does_not_break_comparison()
         {
             var one = new AbstractMembers
             {
@@ -117,7 +117,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void When_Left_Member_Is_Null_Comparison_Produces_Negative_Value()
+        public void When_left_member_is_null_comparison_produces_negative_value()
         {
             var one = new AbstractMembers();
             var other = new AbstractMembers
@@ -129,7 +129,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void When_Right_Member_Is_Null_Comparison_Produces_Positive_Value()
+        public void When_right_member_is_null_comparison_produces_positive_value()
         {
             var one = new AbstractMembers
             {
@@ -161,31 +161,24 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 
         private readonly IComparer<AbstractMembers> _comparer =
-            new ComparersBuilder()
-                .For<SealedNestedObject>()
-                .DefineConfiguration(new ComparerSettings
+            new ComparerBuilder()
+                .For<SealedNestedObject>(c =>
+                    c.IgnoredMembers(new[]
+                     {
+                         nameof(SealedNestedObject.DeepNestedField),
+                         nameof(SealedNestedObject.DeepNestedProperty)
+                     })
+                     .MembersOrder(new[]
+                     {
+                         nameof(SealedNestedObject.Key),
+                         nameof(SealedNestedObject.Text)
+                     }))
+                .For<AnotherNestedObject>(c => c.MembersOrder(new[]
                 {
-                    IgnoredMembers = new[]
-                    {
-                        nameof(SealedNestedObject.DeepNestedField),
-                        nameof(SealedNestedObject.DeepNestedProperty)
-                    },
-                    MembersOrder = new[]
-                    {
-                        nameof(SealedNestedObject.Key),
-                        nameof(SealedNestedObject.Text)
-                    }
-                })
-                .For<AnotherNestedObject>()
-                .DefineConfiguration(new ComparerSettings
-                {
-                    MembersOrder = new[]
-                    {
-                        nameof(AnotherNestedObject.Value),
-                        nameof(AnotherNestedObject.Key),
-                        nameof(AnotherNestedObject.Text)
-                    }
-                })
+                    nameof(AnotherNestedObject.Value),
+                    nameof(AnotherNestedObject.Key),
+                    nameof(AnotherNestedObject.Text)
+                }))
                 .For<AbstractMembers>()
                 .GetComparer();
     }

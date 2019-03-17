@@ -18,7 +18,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Generate_Comparer_For_Not_Sealed_Member_In_Parallel_Still_Works()
+        public void Generate_comparer_for_not_sealed_member_in_parallel_still_works()
         {
             var one = new AbstractMembers
             {
@@ -48,17 +48,13 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
         private static IComparer<AbstractMembers> CreateComparer()
         {
-            return new ComparersBuilder()
-                   .For<AnotherNestedObject>()
-                   .DefineConfiguration(new ComparerSettings
+            return new ComparerBuilder()
+                   .For<AnotherNestedObject>(c => c.MembersOrder(new[]
                    {
-                       MembersOrder = new[]
-                       {
-                           nameof(AnotherNestedObject.Value),
-                           nameof(AnotherNestedObject.Key),
-                           nameof(AnotherNestedObject.Text)
-                       }
-                   })
+                       nameof(AnotherNestedObject.Value),
+                       nameof(AnotherNestedObject.Key),
+                       nameof(AnotherNestedObject.Text)
+                   }))
                    .For<AbstractMembers>()
                    .GetComparer();
         }

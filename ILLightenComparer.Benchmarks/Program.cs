@@ -10,7 +10,7 @@ namespace ILLightenComparer.Benchmarks
             //BenchmarkRunner.Run<CompareIntegral>();
             //BenchmarkRunner.Run<ComparersBenchmark>();
 
-            var comparer = new ComparersBuilder().GetComparer<SampleObject>();
+            var comparer = new ComparerBuilder().GetComparer<SampleObject>();
 
             var a = new SampleObject
             {

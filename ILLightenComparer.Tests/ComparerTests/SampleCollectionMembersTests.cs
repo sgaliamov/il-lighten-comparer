@@ -17,7 +17,7 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleCollectionMembersTests
     {
         [Fact]
-        public void Compare_Sample_Objects()
+        public void Compare_sample_objects()
         {
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, false, false);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, false, true);
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Sample_Objects_Ignore_Order()
+        public void Compare_sample_objects_ignore_order()
         {
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, true, false);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false, true, true);
@@ -35,7 +35,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Sample_Structs()
+        public void Compare_sample_structs()
         {
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, false, false);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, false, true);
@@ -44,7 +44,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_Sample_Structs_Ignore_Order()
+        public void Compare_sample_structs_ignore_order()
         {
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, true, false);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false, true, true);
@@ -53,16 +53,16 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Ignoring_Order_Do_Not_Add_Side_Effect()
+        public void Ignoring_order_do_not_add_side_effect()
         {
-            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(SampleObject<>), typeof(int));
-            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(SampleStruct<>), typeof(int));
-            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(int), null);
-            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(SampleObject<>), typeof(SampleObject<int>));
-            Ignoring_Order_Do_Not_Add_Side_Effect_For(typeof(SampleStruct<>), typeof(SampleObject<int>));
+            Ignoring_order_does_not_add_side_effect_for(typeof(SampleObject<>), typeof(int));
+            Ignoring_order_does_not_add_side_effect_for(typeof(SampleStruct<>), typeof(int));
+            Ignoring_order_does_not_add_side_effect_for(typeof(int), null);
+            Ignoring_order_does_not_add_side_effect_for(typeof(SampleObject<>), typeof(SampleObject<int>));
+            Ignoring_order_does_not_add_side_effect_for(typeof(SampleStruct<>), typeof(SampleObject<int>));
         }
 
-        private static void Ignoring_Order_Do_Not_Add_Side_Effect_For(Type sampleType, Type memberType)
+        private static void Ignoring_order_does_not_add_side_effect_for(Type sampleType, Type memberType)
         {
             var type = memberType == null
                            ? sampleType
@@ -70,18 +70,16 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var method = typeof(SampleCollectionMembersTests)
                          .GetGenericMethod(
-                             nameof(Ignoring_Order_Do_Not_Add_Side_Effect_For),
+                             nameof(Ignoring_order_does_not_add_side_effect_for),
                              BindingFlags.NonPublic | BindingFlags.Static)
                          .MakeGenericMethod(type);
 
             method.Invoke(null, null);
         }
 
-        private static void Ignoring_Order_Do_Not_Add_Side_Effect_For<TElement>()
+        private static void Ignoring_order_does_not_add_side_effect_for<TElement>()
         {
-            var comparer = new ComparersBuilder()
-                           .DefineDefaultConfiguration(new ComparerSettings { IgnoreCollectionOrder = true })
-                           .GetComparer<TElement[]>();
+            var comparer = new ComparerBuilder(c => c.DefaultIgnoreCollectionOrder(true)).GetComparer<TElement[]>();
 
             var fixture = FixtureBuilder.GetInstance();
             var sample = fixture.Create<TElement[]>();
