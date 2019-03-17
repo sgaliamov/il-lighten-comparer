@@ -35,16 +35,16 @@ namespace ILLightenComparer.Emitters.Builders
             return DefineStaticMethod(type).CompareMethod;
         }
 
-        public MethodInfo GetCompiledCompareMethod(Type memberType)
+        public MethodInfo GetCompiledCompareMethod(Type type)
         {
-            var comparerType = GetComparerType(memberType);
+            EnsureComparerType(type);
 
-            return comparerType.GetMethod(
-                MethodName.Compare,
-                Method.StaticCompareMethodParameters(memberType));
+            return _staticMethods.TryGetValue(type, out var value) && value.Value.Compiled
+                       ? value.Value.CompareMethod
+                       : throw new InvalidOperationException("Compiled method is expected.");
         }
 
-        public Type GetComparerType(Type objectType)
+        public Type EnsureComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
@@ -110,7 +110,7 @@ namespace ILLightenComparer.Emitters.Builders
                     continue;
                 }
 
-                GetComparerType(item.Key);
+                EnsureComparerType(item.Key);
             }
         }
 

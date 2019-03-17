@@ -38,7 +38,7 @@ namespace ILLightenComparer.Emitters
 
             return (IComparer<T>)_dynamicComparers.GetOrAdd(
                 objectType,
-                key => _contextBuilder.GetComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
+                key => _contextBuilder.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
         }
 
         public IEqualityComparer<T> GetEqualityComparer<T>()
