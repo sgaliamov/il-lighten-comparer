@@ -78,6 +78,11 @@ namespace ILLightenComparer.Emitters
                                   .Return(0);
         }
 
+        public ILEmitter Visit(CustomComparison comparison, ILEmitter il)
+        {
+            return _compareVisitor.Visit(comparison, il).Return();
+        }
+
         private ILEmitter CompareAsCollection(IComparison comparison, ILEmitter il)
         {
             il.DefineLabel(out var exit);

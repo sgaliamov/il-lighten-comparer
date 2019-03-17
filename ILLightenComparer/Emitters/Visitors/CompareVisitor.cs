@@ -171,6 +171,11 @@ namespace ILLightenComparer.Emitters.Visitors
             return il.LoadConstant(0);
         }
 
+        public ILEmitter Visit(CustomComparison comparison, ILEmitter il)
+        {
+            throw new NotImplementedException();
+        }
+
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)
         {
             var delayedCompare = Method.DelayedCompare.MakeGenericMethod(type);
