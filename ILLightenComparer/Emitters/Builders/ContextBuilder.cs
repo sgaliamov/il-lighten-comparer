@@ -31,7 +31,6 @@ namespace ILLightenComparer.Emitters.Builders
 
         public MethodInfo GetStaticCompareMethod(Type type)
         {
-            // todo: test when a custom comparer is defined for nested type
             return DefineStaticMethod(type).CompareMethod;
         }
 
