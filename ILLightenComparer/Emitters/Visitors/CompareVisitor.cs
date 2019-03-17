@@ -159,7 +159,7 @@ namespace ILLightenComparer.Emitters.Visitors
 
                     item.Accept(this, il, gotoNext);
 
-                    if (item.ResultInStack)
+                    if (item.PutsResultInStack)
                     {
                         il.EmitReturnNotZero(gotoNext);
                     }
