@@ -173,7 +173,16 @@ namespace ILLightenComparer.Emitters.Visitors
 
         public ILEmitter Visit(CustomComparison comparison, ILEmitter il)
         {
-            throw new NotImplementedException();
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
+            il.LoadArgument(Arg.Context);
+            variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y);
+            il.LoadArgument(Arg.SetX)
+              .LoadArgument(Arg.SetY);
+
+            return il.Emit(OpCodes.Call, Method.CustomCompare.MakeGenericMethod(variableType));
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)

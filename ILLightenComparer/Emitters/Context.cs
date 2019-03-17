@@ -14,22 +14,23 @@ namespace ILLightenComparer.Emitters
     /// </summary>
     internal sealed class Context : IComparerProvider, IContext
     {
+        private readonly ContextBuilder _contextBuilder;
+
+        private readonly ConcurrentDictionary<Type, object> _customComparers = new ConcurrentDictionary<Type, object>();
+
         /// <summary>
         ///     <see cref="object" /> is IComparer&lt;<see cref="Type" />&gt;
         /// </summary>
-        private readonly ConcurrentDictionary<Type, object> _comparers = new ConcurrentDictionary<Type, object>();
-
-        private readonly ContextBuilder _contextBuilder;
+        private readonly ConcurrentDictionary<Type, object> _dynamicComparers = new ConcurrentDictionary<Type, object>();
 
         public Context(IConfigurationProvider configurations)
         {
             _contextBuilder = new ContextBuilder(configurations);
         }
 
-        // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
         public IComparer<T> GetComparer<T>()
         {
-            return (IComparer<T>)_comparers.GetOrAdd(
+            return (IComparer<T>)_dynamicComparers.GetOrAdd(
                 typeof(T),
                 key => _contextBuilder.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
         }
@@ -43,27 +44,29 @@ namespace ILLightenComparer.Emitters
         // as we could access static method via instance object
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
+            var type = typeof(T);
+
             #if DEBUG
-            if (typeof(T).IsValueType)
+            if (type.IsValueType)
             {
-                throw new InvalidOperationException($"Unexpected value type {typeof(T)}.");
-            }
-            #endif
-
-            if (x == null)
-            {
-                if (y == null)
-                {
-                    return 0;
-                }
-
-                return -1;
+                throw new InvalidOperationException($"Unexpected value type {type}.");
             }
 
-            if (y == null)
-            {
-                return 1;
-            }
+            // todo: test if I need this check
+            //if (x == null)
+            //{
+            //    if (y == null)
+            //    {
+            //        return 0;
+            //    }
+
+            //    return -1;
+            //}
+
+            //if (y == null)
+            //{
+            //    return 1;
+            //}
 
             var xType = x.GetType();
             var yType = y.GetType();
@@ -71,18 +74,31 @@ namespace ILLightenComparer.Emitters
             {
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
+            #endif
 
-            return Compare(xType, x, y, xSet, ySet);
+            return Compare(type, x, y, xSet, ySet);
+        }
+
+        public int CustomCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
+        {
+            if (_customComparers.TryGetValue(typeof(T), out var comparer))
+            {
+                return ((IComparer<T>)comparer).Compare(x, y);
+            }
+
+            // todo: test
+            return DelayedCompare(x, y, xSet, ySet);
         }
 
         public void SetComparer(Type type, object instance)
         {
+            // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
             if (instance == null)
             {
-                _comparers.TryRemove(type, out _);
+                _customComparers.TryRemove(type, out _);
             }
 
-            _comparers.AddOrUpdate(type, key => instance, (key, _) => instance);
+            _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
         }
 
         // todo: cache delegates and benchmark ways
@@ -116,5 +132,6 @@ namespace ILLightenComparer.Emitters
     public interface IContext
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
+        int CustomCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
     }
 }

@@ -33,6 +33,9 @@ namespace ILLightenComparer.Reflection
         public static MethodInfo DelayedCompare =
             typeof(IContext).GetMethod(nameof(IContext.DelayedCompare));
 
+        public static MethodInfo CustomCompare =
+            typeof(IContext).GetMethod(nameof(IContext.CustomCompare));
+
         public static MethodInfo GetComparer =
             typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
 
