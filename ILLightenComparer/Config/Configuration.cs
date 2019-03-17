@@ -62,11 +62,9 @@ namespace ILLightenComparer.Config
             _comparers[type] = comparer;
         }
 
-        public IComparer<T> GetComparer<T>()
+        public object GetComparer(Type type)
         {
-            return _comparers.TryGetValue(typeof(T), out var comparer)
-                       ? (IComparer<T>)comparer
-                       : null;
+            return _comparers.TryGetValue(type, out var comparer) ? comparer : null;
         }
 
         public void SetIgnoredMembers(IEnumerable<string> ignoredMembers)

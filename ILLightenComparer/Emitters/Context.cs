@@ -30,7 +30,7 @@ namespace ILLightenComparer.Emitters
             var objectType = typeof(T);
             var configuration = _configurations.Get(objectType);
 
-            var customComparer = configuration.GetComparer<T>();
+            var customComparer = (IComparer<T>)configuration.GetComparer(objectType);
             if (customComparer != null)
             {
                 return customComparer;

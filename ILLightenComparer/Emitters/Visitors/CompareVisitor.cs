@@ -149,7 +149,7 @@ namespace ILLightenComparer.Emitters.Visitors
 
             var comparisons = _membersProvider
                               .GetMembers(variableType)
-                              .Select(x => _converter.CreateComparison(x));
+                              .Select(_converter.CreateComparison);
 
             foreach (var item in comparisons)
             {
