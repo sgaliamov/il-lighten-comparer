@@ -31,7 +31,7 @@ namespace ILLightenComparer.Emitters.Builders
 
             BuildStaticCompareMethod(objectType, staticCompareBuilder);
 
-            BuildTypedCompareMethod(
+            BuildInstanceCompareMethod(
                 comparerTypeBuilder,
                 staticCompareBuilder,
                 contextField,
@@ -60,7 +60,7 @@ namespace ILLightenComparer.Emitters.Builders
             }
         }
 
-        private void BuildTypedCompareMethod(
+        private void BuildInstanceCompareMethod(
             TypeBuilder typeBuilder,
             MethodInfo staticCompareMethod,
             FieldInfo contextField,
