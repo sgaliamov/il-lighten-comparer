@@ -6,19 +6,13 @@ namespace ILLightenComparer.Config
 {
     internal sealed class Configuration
     {
-        /// <summary>
-        ///     <see cref="object" /> is IComparer&lt;<see cref="Type" />&gt;
-        /// </summary>
-        private readonly IDictionary<Type, object> _comparers;
-
         public Configuration(Configuration configuration) : this(
             configuration.IgnoredMembers,
             configuration.IncludeFields,
             configuration.MembersOrder,
             configuration.StringComparisonType,
             configuration.DetectCycles,
-            configuration.IgnoreCollectionOrder,
-            configuration._comparers) { }
+            configuration.IgnoreCollectionOrder) { }
 
         public Configuration(
             IEnumerable<string> ignoredMembers,
@@ -26,15 +20,9 @@ namespace ILLightenComparer.Config
             IEnumerable<string> membersOrder,
             StringComparison stringComparisonType,
             bool detectCycles,
-            bool ignoreCollectionOrder,
-            IDictionary<Type, object> comparers)
+            bool ignoreCollectionOrder
+        )
         {
-            if (comparers == null)
-            {
-                throw new ArgumentNullException(nameof(comparers));
-            }
-
-            _comparers = comparers.ToDictionary(x => x.Key, x => x.Value);
             SetIgnoredMembers(ignoredMembers);
             IncludeFields = includeFields;
             SetMembersOrder(membersOrder);
@@ -49,23 +37,6 @@ namespace ILLightenComparer.Config
         public bool IncludeFields { get; set; }
         public string[] MembersOrder { get; private set; }
         public StringComparison StringComparisonType { get; set; }
-
-        public void SetComparer<T>(IComparer<T> comparer)
-        {
-            var type = typeof(T);
-
-            if (comparer == null && _comparers.ContainsKey(type))
-            {
-                _comparers.Remove(type);
-            }
-
-            _comparers[type] = comparer;
-        }
-
-        public object GetComparer(Type type)
-        {
-            return _comparers.TryGetValue(type, out var comparer) ? comparer : null;
-        }
 
         public void SetIgnoredMembers(IEnumerable<string> ignoredMembers)
         {
