@@ -14,30 +14,23 @@ namespace ILLightenComparer.Emitters
     /// </summary>
     internal sealed class Context : IComparerProvider, IContext
     {
-        private readonly IConfigurationProvider _configurations;
+        /// <summary>
+        ///     <see cref="object" /> is IComparer&lt;<see cref="Type" />&gt;
+        /// </summary>
+        private readonly ConcurrentDictionary<Type, object> _comparers = new ConcurrentDictionary<Type, object>();
+
         private readonly ContextBuilder _contextBuilder;
-        private readonly ConcurrentDictionary<Type, object> _dynamicComparers = new ConcurrentDictionary<Type, object>();
 
         public Context(IConfigurationProvider configurations)
         {
-            _configurations = configurations;
             _contextBuilder = new ContextBuilder(configurations);
         }
 
         // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
         public IComparer<T> GetComparer<T>()
         {
-            var objectType = typeof(T);
-            var configuration = _configurations.Get(objectType);
-
-            var customComparer = (IComparer<T>)configuration.GetComparer(objectType);
-            if (customComparer != null)
-            {
-                return customComparer;
-            }
-
-            return (IComparer<T>)_dynamicComparers.GetOrAdd(
-                objectType,
+            return (IComparer<T>)_comparers.GetOrAdd(
+                typeof(T),
                 key => _contextBuilder.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
         }
 
@@ -80,6 +73,16 @@ namespace ILLightenComparer.Emitters
             }
 
             return Compare(xType, x, y, xSet, ySet);
+        }
+
+        public void SetComparer(Type type, object instance)
+        {
+            if (instance == null)
+            {
+                _comparers.TryRemove(type, out _);
+            }
+
+            _comparers.AddOrUpdate(type, key => instance, (key, _) => instance);
         }
 
         // todo: cache delegates and benchmark ways

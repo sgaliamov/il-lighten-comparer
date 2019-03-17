@@ -116,3 +116,4 @@
 - [ ] compare complex collection
 - [ ] compared dynamic?
 - [ ] compare private and protected members?
+- [ ] helper wrappers for not typed compares

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters;
+using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer
 {
@@ -46,6 +47,30 @@ namespace ILLightenComparer
         public IComparerBuilder Configure(Action<IConfigurationBuilder> config)
         {
             config(_configurationBuilder);
+
+            return this;
+        }
+
+        public IComparerBuilder SetComparer<T>(IComparer<T> instance)
+        {
+            _context.SetComparer(typeof(T), instance);
+
+            return this;
+        }
+
+        public IComparerBuilder SetComparer<TComparer>()
+        {
+            var genericType = typeof(TComparer);
+            var genericInterface = genericType.GetGenericInterface(typeof(IComparer<>));
+            if (genericInterface == null)
+            {
+                throw new ArgumentException($"{nameof(TComparer)} is not generic {typeof(IComparer<>)}");
+            }
+
+            var type = genericInterface.GenericTypeArguments[0];
+            var comparer = genericType.Create<TComparer>();
+
+            _context.SetComparer(type, comparer);
 
             return this;
         }
