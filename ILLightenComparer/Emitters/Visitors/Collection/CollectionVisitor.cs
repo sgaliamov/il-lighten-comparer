@@ -30,6 +30,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         protected static void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
         {
             // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
+            // todo: custom comparer could be defined, use it
             if (elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
             {
                 EmitSortArray(il, elementType, xArray);
