@@ -51,14 +51,14 @@ namespace ILLightenComparer
             return this;
         }
 
-        public IComparerBuilder SetComparer<T>(IComparer<T> instance)
+        public IComparerBuilder SetCustomComparer<T>(IComparer<T> instance)
         {
             _context.SetCustomComparer(typeof(T), instance);
 
             return this;
         }
 
-        public IComparerBuilder SetComparer<TComparer>()
+        public IComparerBuilder SetCustomComparer<TComparer>()
         {
             var genericType = typeof(TComparer);
             var genericInterface = genericType.GetGenericInterface(typeof(IComparer<>));

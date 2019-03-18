@@ -21,9 +21,9 @@ namespace ILLightenComparer
 
         IComparerBuilder Configure(Action<IConfigurationBuilder> config);
 
-        IComparerBuilder SetComparer<T>(IComparer<T> instance);
+        IComparerBuilder SetCustomComparer<T>(IComparer<T> instance);
 
-        IComparerBuilder SetComparer<TComparer>();
+        IComparerBuilder SetCustomComparer<TComparer>();
     }
 
     /// <summary>
