@@ -44,24 +44,21 @@ namespace ILLightenComparer.Emitters
         // as we could access static method via instance object
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            var type = typeof(T);
+            if (_customComparers.TryGetValue(typeof(T), out var comparer))
+            {
+                return ((IComparer<T>)comparer).Compare(x, y);
+            }
 
             #if DEBUG
-            if (type.IsValueType)
+            if (typeof(T).IsValueType)
             {
-                throw new InvalidOperationException($"Unexpected value type {type}.");
+                throw new InvalidOperationException($"Unexpected value type {typeof(T)}.");
             }
             #endif
 
-            if (x == null)
-            {
-                return y == null ? 0 : -1;
-            }
+            if (x == null) { return y == null ? 0 : -1; }
 
-            if (y == null)
-            {
-                return 1;
-            }
+            if (y == null) { return 1; }
 
             var xType = x.GetType();
             var yType = y.GetType();
@@ -71,17 +68,6 @@ namespace ILLightenComparer.Emitters
             }
 
             return Compare(xType, x, y, xSet, ySet);
-        }
-
-        public int CustomCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
-        {
-            if (_customComparers.TryGetValue(typeof(T), out var comparer))
-            {
-                return ((IComparer<T>)comparer).Compare(x, y);
-            }
-
-            // todo: test
-            return DelayedCompare(x, y, xSet, ySet);
         }
 
         public void SetComparer(Type type, object instance)
@@ -126,6 +112,5 @@ namespace ILLightenComparer.Emitters
     public interface IContext
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
-        int CustomCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
     }
 }

@@ -182,7 +182,7 @@ namespace ILLightenComparer.Emitters.Visitors
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 
-            return il.Emit(OpCodes.Call, Method.CustomCompare.MakeGenericMethod(variableType));
+            return EmitCallForDelayedCompareMethod(il, variableType);
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)
