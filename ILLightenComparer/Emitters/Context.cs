@@ -41,8 +41,6 @@ namespace ILLightenComparer.Emitters
             throw new NotImplementedException();
         }
 
-        // todo: maybe possible use only GetComparer<T> method for delayed comparison,
-        // as we could access static method via instance object
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
             if (_customComparers.TryGetValue(typeof(T), out var comparer))
@@ -89,7 +87,6 @@ namespace ILLightenComparer.Emitters
             return _contextBuilder.GetStaticCompareMethod(type);
         }
 
-        // todo: cache delegates and benchmark ways
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
             var compareMethod = _contextBuilder.GetCompiledCompareMethod(type);
@@ -97,7 +94,7 @@ namespace ILLightenComparer.Emitters
             var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
             if (!isDeclaringTypeMatchedActualMemberType)
             {
-                // todo: benchmarks:
+                // todo: cache delegates and benchmark ways:
                 // - direct Invoke;
                 // - DynamicInvoke;
                 // var genericType = typeof(Method.StaticMethodDelegate<>).MakeGenericType(type);
