@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Extensions;
@@ -49,16 +50,12 @@ namespace ILLightenComparer.Emitters
                 return ((IComparer<T>)comparer).Compare(x, y);
             }
 
-            #if DEBUG
-            if (typeof(T).IsValueType)
+            if (!typeof(T).IsValueType)
             {
-                throw new InvalidOperationException($"Unexpected value type {typeof(T)}.");
+                if (x == null) { return y == null ? 0 : -1; }
+
+                if (y == null) { return 1; }
             }
-            #endif
-
-            if (x == null) { return y == null ? 0 : -1; }
-
-            if (y == null) { return 1; }
 
             var xType = x.GetType();
             var yType = y.GetType();
@@ -80,6 +77,11 @@ namespace ILLightenComparer.Emitters
             }
 
             _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
+        }
+
+        public bool HasCustomComparer(Type type)
+        {
+            return _customComparers.ContainsKey(type);
         }
 
         public MethodInfo GetStaticCompareMethod(Type type)
