@@ -51,16 +51,11 @@ namespace ILLightenComparer.Emitters
             {
                 throw new InvalidOperationException($"Unexpected value type {type}.");
             }
+            #endif
 
-            // todo: test if I need this check
             if (x == null)
             {
-                if (y == null)
-                {
-                    return 0;
-                }
-
-                return -1;
+                return y == null ? 0 : -1;
             }
 
             if (y == null)
@@ -68,15 +63,14 @@ namespace ILLightenComparer.Emitters
                 return 1;
             }
 
-            //var xType = x.GetType();
-            //var yType = y.GetType();
-            //if (xType != yType)
-            //{
-            //    throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
-            //}
-            #endif
+            var xType = x.GetType();
+            var yType = y.GetType();
+            if (xType != yType)
+            {
+                throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
+            }
 
-            return Compare(type, x, y, xSet, ySet);
+            return Compare(xType, x, y, xSet, ySet);
         }
 
         public int CustomCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
