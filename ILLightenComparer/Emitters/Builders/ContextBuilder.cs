@@ -11,16 +11,16 @@ using ILLightenComparer.Reflection;
 namespace ILLightenComparer.Emitters.Builders
 {
     // todo: clean on configuration change
-    internal sealed class ContextBuilder : IContextBuilder
+    internal sealed class ContextBuilder
     {
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<StaticMethodInfo>> _staticMethods = new ConcurrentDictionary<Type, Lazy<StaticMethodInfo>>();
 
-        public ContextBuilder(IConfigurationProvider configurations)
+        public ContextBuilder(Context context, IConfigurationProvider configurations)
         {
-            _comparerTypeBuilder = new ComparerTypeBuilder(this, configurations);
+            _comparerTypeBuilder = new ComparerTypeBuilder(context, configurations);
 
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("ILLightenComparer"),
@@ -130,10 +130,5 @@ namespace ILLightenComparer.Emitters.Builders
                 Compiled = true;
             }
         }
-    }
-
-    internal interface IContextBuilder
-    {
-        MethodInfo GetStaticCompareMethod(Type type);
     }
 }

@@ -25,7 +25,7 @@ namespace ILLightenComparer.Emitters
 
         public Context(IConfigurationProvider configurations)
         {
-            _contextBuilder = new ContextBuilder(configurations);
+            _contextBuilder = new ContextBuilder(this, configurations);
         }
 
         public IComparer<T> GetComparer<T>()
@@ -70,15 +70,21 @@ namespace ILLightenComparer.Emitters
             return Compare(xType, x, y, xSet, ySet);
         }
 
-        public void SetComparer(Type type, object instance)
+        public void SetCustomComparer(Type type, object instance)
         {
             // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
             if (instance == null)
             {
                 _customComparers.TryRemove(type, out _);
+                return;
             }
 
             _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
+        }
+
+        public MethodInfo GetStaticCompareMethod(Type type)
+        {
+            return _contextBuilder.GetStaticCompareMethod(type);
         }
 
         // todo: cache delegates and benchmark ways

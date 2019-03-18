@@ -16,14 +16,14 @@ namespace ILLightenComparer.Emitters.Visitors
     {
         private readonly ArrayVisitor _arrayVisitor;
         private readonly IConfigurationProvider _configuration;
-        private readonly IContextBuilder _context;
+        private readonly Context _context;
         private readonly Converter _converter;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(
-            IContextBuilder context,
+            Context context,
             IConfigurationProvider configuration,
             MembersProvider membersProvider,
             Converter converter)

@@ -42,6 +42,19 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
+        public void Custom_comparer_should_be_used_for_collection_when_defined()
+        {
+            var x = _fixture.Create<SampleObject<int[]>>();
+            var y = _fixture.Create<SampleObject<int[]>>();
+
+            var comparer = new ComparerBuilder()
+                           .SetComparer(new CustomisableComparer<int>((a, b) => 0))
+                           .GetComparer<SampleObject<int[]>>();
+
+            comparer.Compare(x, y).Should().Be(0);
+        }
+
+        [Fact]
         public void Custom_comparer_should_be_used_for_itself()
         {
             var x = _fixture.Create<SampleStruct<string>>();
