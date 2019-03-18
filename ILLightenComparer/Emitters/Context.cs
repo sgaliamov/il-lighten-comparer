@@ -53,27 +53,27 @@ namespace ILLightenComparer.Emitters
             }
 
             // todo: test if I need this check
-            //if (x == null)
-            //{
-            //    if (y == null)
-            //    {
-            //        return 0;
-            //    }
-
-            //    return -1;
-            //}
-
-            //if (y == null)
-            //{
-            //    return 1;
-            //}
-
-            var xType = x.GetType();
-            var yType = y.GetType();
-            if (xType != yType)
+            if (x == null)
             {
-                throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
+                if (y == null)
+                {
+                    return 0;
+                }
+
+                return -1;
             }
+
+            if (y == null)
+            {
+                return 1;
+            }
+
+            //var xType = x.GetType();
+            //var yType = y.GetType();
+            //if (xType != yType)
+            //{
+            //    throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
+            //}
             #endif
 
             return Compare(type, x, y, xSet, ySet);
