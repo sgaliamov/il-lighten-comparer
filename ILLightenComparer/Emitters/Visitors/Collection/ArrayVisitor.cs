@@ -12,17 +12,16 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
     {
         private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
-        private readonly IConfigurationProvider _configuration;
+        private readonly IConfigurationProvider _configurations;
 
         public ArrayVisitor(
-            Context context,
-            IConfigurationProvider configuration,
+            IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
         {
-            _configuration = configuration;
-            _collectionComparer = new CollectionComparer(context, loader);
+            _configurations = configurations;
+            _collectionComparer = new CollectionComparer(configurations, loader);
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
@@ -36,7 +35,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
 
             EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
 
-            if (_configuration.Get(variable.OwnerType).IgnoreCollectionOrder)
+            if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder)
             {
                 _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
@@ -9,12 +10,12 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
 {
     internal sealed class CollectionComparer
     {
-        private readonly Context _context;
+        private readonly IConfigurationProvider _configurations;
         private readonly VariableLoader _loader;
 
-        public CollectionComparer(Context context, VariableLoader loader)
+        public CollectionComparer(IConfigurationProvider configurations, VariableLoader loader)
         {
-            _context = context;
+            _configurations = configurations;
             _loader = loader;
         }
 
@@ -32,7 +33,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         public void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
         {
             // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
-            var useSimpleSorting = !_context.HasCustomComparer(elementType)
+            var useSimpleSorting = !_configurations.HasCustomComparer(elementType)
                                    && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
             if (useSimpleSorting)
             {

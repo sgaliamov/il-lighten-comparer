@@ -13,20 +13,19 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
         private readonly CompareVisitor _compareVisitor;
-        private readonly IConfigurationProvider _configuration;
+        private readonly IConfigurationProvider _configurations;
         private readonly Converter _converter;
 
         public EnumerableVisitor(
-            Context context,
-            IConfigurationProvider configuration,
+            IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
         {
-            _configuration = configuration;
+            _configurations = configurations;
             _compareVisitor = compareVisitor;
             _converter = converter;
-            _collectionComparer = new CollectionComparer(context, loader);
+            _collectionComparer = new CollectionComparer(configurations, loader);
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
@@ -34,7 +33,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         {
             var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
 
-            if (_configuration.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder)
+            if (_configurations.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder)
             {
                 return EmitCompareAsSortedArrays(comparison, il, afterLoop, x, y);
             }

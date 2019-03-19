@@ -14,16 +14,14 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void After_change_custom_comparer_new_dynamic_comparer_should_be_created()
         {
-            var builder = new ComparerBuilder();
+            var builder = new ComparerBuilder().SetCustomComparer(new CustomisableComparer<string>((a, b) => 0));
 
             var x = _fixture.Create<Tuple<int, string>>();
             var y = _fixture.Create<Tuple<int, string>>();
             var expected1 = x.Item1.CompareTo(y.Item1);
             var expected2 = x.Item2?.CompareTo(y.Item2);
 
-            var comparer1 = builder
-                            .SetCustomComparer(new CustomisableComparer<string>((a, b) => 0))
-                            .GetComparer<Tuple<int, string>>();
+            var comparer1 = builder.GetComparer<Tuple<int, string>>();
 
             var comparer2 = builder
                             .SetCustomComparer<string>(null)

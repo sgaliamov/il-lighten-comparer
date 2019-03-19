@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emitters
         public CompareEmitter(Context context, IConfigurationProvider configurationProvider)
         {
             var membersProvider = new MembersProvider(configurationProvider);
-            _converter = new Converter(context);
+            _converter = new Converter(configurationProvider);
             _compareVisitor = new CompareVisitor(context, configurationProvider, membersProvider, _converter);
         }
 

@@ -14,7 +14,7 @@ namespace ILLightenComparer.Emitters.Visitors
     internal sealed class CompareVisitor
     {
         private readonly ArrayVisitor _arrayVisitor;
-        private readonly IConfigurationProvider _configuration;
+        private readonly IConfigurationProvider _configurations;
         private readonly Context _context;
         private readonly Converter _converter;
         private readonly EnumerableVisitor _enumerableVisitor;
@@ -23,16 +23,16 @@ namespace ILLightenComparer.Emitters.Visitors
 
         public CompareVisitor(
             Context context,
-            IConfigurationProvider configuration,
+            IConfigurationProvider configurations,
             MembersProvider membersProvider,
             Converter converter)
         {
             _context = context;
-            _configuration = configuration;
+            _configurations = configurations;
             _membersProvider = membersProvider;
             _converter = converter;
-            _arrayVisitor = new ArrayVisitor(context, configuration, this, _loader, converter);
-            _enumerableVisitor = new EnumerableVisitor(context, configuration, this, _loader, converter);
+            _arrayVisitor = new ArrayVisitor(configurations, this, _loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(configurations, this, _loader, converter);
         }
 
         public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
@@ -107,7 +107,7 @@ namespace ILLightenComparer.Emitters.Visitors
             variable.Load(_loader, il, Arg.X);
             variable.Load(_loader, il, Arg.Y);
 
-            var stringComparisonType = _configuration.Get(variable.OwnerType).StringComparisonType;
+            var stringComparisonType = _configurations.Get(variable.OwnerType).StringComparisonType;
 
             return il.LoadConstant((int)stringComparisonType).Call(Method.StringCompare);
         }

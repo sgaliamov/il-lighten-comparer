@@ -15,26 +15,24 @@ namespace ILLightenComparer.Emitters
     /// </summary>
     internal sealed class Context : IComparerProvider, IContext
     {
+        private readonly IConfigurationProvider _configurations;
         private readonly ContextBuilder _contextBuilder;
-
-        private readonly ConcurrentDictionary<Type, object> _customComparers = new ConcurrentDictionary<Type, object>();
-
-        /// <summary>
-        ///     <see cref="object" /> is IComparer&lt;<see cref="Type" />&gt;
-        /// </summary>
         private readonly ConcurrentDictionary<Type, object> _dynamicComparers = new ConcurrentDictionary<Type, object>();
 
         public Context(IConfigurationProvider configurations)
         {
+            _configurations = configurations;
             // todo: think about relations and shared responsibilities with `ContextBuilder`
             _contextBuilder = new ContextBuilder(this, configurations);
         }
 
         public IComparer<T> GetComparer<T>()
         {
-            if (_customComparers.TryGetValue(typeof(T), out var comparer) && comparer != null)
+            // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
+            var comparer = _configurations.GetCustomComparer<T>();
+            if (comparer != null)
             {
-                return (IComparer<T>)comparer;
+                return comparer;
             }
 
             return (IComparer<T>)_dynamicComparers.GetOrAdd(
@@ -49,9 +47,10 @@ namespace ILLightenComparer.Emitters
 
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            if (_customComparers.TryGetValue(typeof(T), out var comparer))
+            var comparer = _configurations.GetCustomComparer<T>();
+            if (comparer != null)
             {
-                return ((IComparer<T>)comparer).Compare(x, y);
+                return comparer.Compare(x, y);
             }
 
             if (!typeof(T).IsValueType)
@@ -69,23 +68,6 @@ namespace ILLightenComparer.Emitters
             }
 
             return Compare(xType, x, y, xSet, ySet);
-        }
-
-        public void SetCustomComparer(Type type, object instance)
-        {
-            // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
-            if (instance == null)
-            {
-                _customComparers.TryRemove(type, out _);
-                return;
-            }
-
-            _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
-        }
-
-        public bool HasCustomComparer(Type type)
-        {
-            return _customComparers.ContainsKey(type);
         }
 
         public MethodInfo GetStaticCompareMethod(Type type)

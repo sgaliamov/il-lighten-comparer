@@ -53,7 +53,7 @@ namespace ILLightenComparer
 
         public IComparerBuilder SetCustomComparer<T>(IComparer<T> instance)
         {
-            _context.SetCustomComparer(typeof(T), instance);
+            _configurationBuilder.SetCustomComparer(typeof(T), instance);
 
             return this;
         }
@@ -70,7 +70,7 @@ namespace ILLightenComparer
             var type = genericInterface.GenericTypeArguments[0];
             var comparer = genericType.Create<TComparer>();
 
-            _context.SetCustomComparer(type, comparer);
+            _configurationBuilder.SetCustomComparer(type, comparer);
 
             return this;
         }

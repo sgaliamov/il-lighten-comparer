@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace ILLightenComparer.Config
 {
@@ -8,6 +9,8 @@ namespace ILLightenComparer.Config
     internal interface IConfigurationProvider
     {
         Configuration Get(Type type);
+        IComparer<T> GetCustomComparer<T>();
+        bool HasCustomComparer(Type type);
     }
 
     internal sealed class ConfigurationBuilder : IConfigurationBuilder, IConfigurationProvider
@@ -19,6 +22,7 @@ namespace ILLightenComparer.Config
         private static readonly string[] IgnoredMembersDefault = new string[0];
         private static readonly string[] MembersOrderDefault = new string[0];
         private readonly Configurations _configurations = new Configurations();
+        private readonly ConcurrentDictionary<Type, object> _customComparers = new ConcurrentDictionary<Type, object>();
 
         private readonly Configuration _default = new Configuration(
             IgnoredMembersDefault,
@@ -125,6 +129,27 @@ namespace ILLightenComparer.Config
             return _configurations.TryGetValue(type, out var configuration)
                        ? configuration
                        : _default;
+        }
+
+        public IComparer<T> GetCustomComparer<T>()
+        {
+            return _customComparers.TryGetValue(typeof(T), out var comparer) ? (IComparer<T>)comparer : null;
+        }
+
+        public bool HasCustomComparer(Type type)
+        {
+            return _customComparers.ContainsKey(type);
+        }
+
+        public void SetCustomComparer(Type type, object instance)
+        {
+            if (instance == null)
+            {
+                _customComparers.TryRemove(type, out _);
+                return;
+            }
+
+            _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
         }
 
         private Configuration GetOrCreate(Type type)
