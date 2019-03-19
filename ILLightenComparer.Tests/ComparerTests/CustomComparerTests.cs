@@ -12,24 +12,44 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class CustomComparerTests
     {
         [Fact]
+        public void After_change_custom_comparer_new_dynamic_comparer_should_be_created()
+        {
+            var builder = new ComparerBuilder();
+
+            var x = _fixture.Create<Tuple<int, string>>();
+            var y = _fixture.Create<Tuple<int, string>>();
+            var expected1 = x.Item1.CompareTo(y.Item1);
+            var expected2 = x.Item2?.CompareTo(y.Item2);
+
+            var comparer1 = builder
+                            .SetCustomComparer(new CustomisableComparer<string>((a, b) => 0))
+                            .GetComparer<Tuple<int, string>>();
+
+            var comparer2 = builder
+                            .SetCustomComparer<string>(null)
+                            .SetCustomComparer(new CustomisableComparer<int>((a, b) => 0))
+                            .GetComparer<Tuple<int, string>>();
+
+            comparer1.Compare(x, y).Should().Be(expected1);
+            comparer2.Compare(x, y).Should().Be(expected2);
+        }
+
+        [Fact]
         public void After_clean_custom_comparer_for_value_type_dynamic_comparer_should_be_created()
         {
-            Test(() =>
-            {
-                var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
-                var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
+            var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
+            var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
 
-                var referenceComparer = new SampleObjectComparer<SampleStruct<string>>(new SampleStructComparer<string>());
-                var expected = referenceComparer.Compare(x, y);
+            var referenceComparer = new SampleObjectComparer<SampleStruct<string>>(new SampleStructComparer<string>());
+            var expected = referenceComparer.Compare(x, y);
 
-                var builder = new ComparerBuilder();
-                var comparer = builder
-                               .SetCustomComparer<SampleStructCustomComparer>()
-                               .GetComparer<SampleObject<SampleStruct<string>>>();
-                builder.SetCustomComparer<SampleStruct<string>>(null);
+            var builder = new ComparerBuilder();
+            var comparer = builder
+                           .SetCustomComparer<SampleStructCustomComparer>()
+                           .GetComparer<SampleObject<SampleStruct<string>>>();
+            builder.SetCustomComparer<SampleStruct<string>>(null);
 
-                comparer.Compare(x, y).Should().Be(expected);
-            });
+            comparer.Compare(x, y).Should().Be(expected);
         }
 
         [Fact]
@@ -106,25 +126,20 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Custom_instance_comparer_for_primitive_member_should_be_used()
         {
-            Test(() =>
-            {
-                var x = _fixture.Create<Tuple<int, string>>();
-                var y = _fixture.Create<Tuple<int, string>>();
-                var expected = x.Item1.CompareTo(y.Item1);
+            var x = _fixture.Create<Tuple<int, string>>();
+            var y = _fixture.Create<Tuple<int, string>>();
+            var expected = x.Item1.CompareTo(y.Item1);
 
-                var comparer = new ComparerBuilder()
-                               .SetCustomComparer(new CustomisableComparer<string>((a, b) => 0))
-                               .GetComparer<Tuple<int, string>>();
+            var comparer = new ComparerBuilder()
+                           .SetCustomComparer(new CustomisableComparer<string>((a, b) => 0))
+                           .GetComparer<Tuple<int, string>>();
 
-                comparer.Compare(x, y).Should().Be(expected);
-            });
+            comparer.Compare(x, y).Should().Be(expected);
         }
 
         private static void Test(Action action)
         {
-            Enumerable.Range(0, Constants.SmallCount)
-                      .AsParallel()
-                      .ForAll(_ => action());
+            Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
