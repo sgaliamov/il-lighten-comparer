@@ -106,6 +106,8 @@ namespace ILLightenComparer
             {
                 _subject._configurationBuilder.Configure(config);
 
+                _subject.InitContext(); // todo: test
+
                 return this;
             }
 
