@@ -55,7 +55,12 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             return il;
         }
 
-        private ILEmitter EmitCompareAsSortedArrays(EnumerablesComparison comparison, ILEmitter il, Label gotoNext, LocalBuilder x, LocalBuilder y)
+        private ILEmitter EmitCompareAsSortedArrays(
+            EnumerablesComparison comparison,
+            ILEmitter il,
+            Label gotoNext,
+            LocalBuilder x,
+            LocalBuilder y)
         {
             _collectionComparer.EmitArraySorting(il, comparison.ElementType, x, y);
 

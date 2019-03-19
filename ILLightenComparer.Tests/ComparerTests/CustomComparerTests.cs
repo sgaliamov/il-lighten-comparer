@@ -83,7 +83,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
                 var actual = comparer.Compare(x, y);
 
-                actual.Should().Be(expected, $"\nx: {x.ToJson()}\ny: {y.ToJson()}");
+                actual.Should().Be(expected);
             });
         }
 
