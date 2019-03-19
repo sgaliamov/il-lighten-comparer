@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
@@ -52,11 +53,16 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             Test(() =>
             {
-                var x = _fixture.Create<SampleObject<SampleObject<int[]>>>();
-                var y = _fixture.Create<SampleObject<SampleObject<int[]>>>();
+                var x = _fixture.Create<SampleObject<int[]>>();
+                var y = _fixture.Create<SampleObject<int[]>>();
 
-                var referenceComparer = new SampleObjectComparer<SampleObject<int[]>>(new CustomisableComparer<SampleObject<int[]>>((a, b) =>
+                var referenceComparer = new SampleObjectComparer<int[]>(new CustomisableComparer<int[]>((a, b) =>
                 {
+                    if (a == b)
+                    {
+                        return 0;
+                    }
+
                     if (ReferenceEquals(null, b))
                     {
                         return 1;
@@ -73,9 +79,11 @@ namespace ILLightenComparer.Tests.ComparerTests
 
                 var comparer = new ComparerBuilder(c => c.DefaultIgnoreCollectionOrder(true))
                                .SetCustomComparer(new CustomisableComparer<int>((a, b) => 0))
-                               .GetComparer<SampleObject<SampleObject<int[]>>>();
+                               .GetComparer<SampleObject<int[]>>();
 
-                comparer.Compare(x, y).Should().Be(expected);
+                var actual = comparer.Compare(x, y);
+
+                actual.Should().Be(expected, $"\nx: {x.ToJson()}\ny: {y.ToJson()}");
             });
         }
 
@@ -114,10 +122,9 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Action action)
         {
-            for (var i = 0; i < Constants.SmallCount; i++)
-            {
-                action();
-            }
+            Enumerable.Range(0, Constants.SmallCount)
+                      .AsParallel()
+                      .ForAll(_ => action());
         }
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
