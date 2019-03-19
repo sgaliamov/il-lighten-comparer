@@ -7,16 +7,18 @@ using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
-    internal abstract class CollectionVisitor
+    internal sealed class CollectionComparer
     {
+        private readonly Context _context;
         private readonly VariableLoader _loader;
 
-        protected CollectionVisitor(VariableLoader loader)
+        public CollectionComparer(Context context, VariableLoader loader)
         {
+            _context = context;
             _loader = loader;
         }
 
-        protected (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IComparison comparison, ILEmitter il, Label gotoNext)
+        public (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, out var collectionX);
@@ -27,11 +29,12 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             return (collectionX, collectionY);
         }
 
-        protected static void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
+        public void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
         {
             // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
-            // todo: custom comparer could be defined, use it
-            if (elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>)))
+            var useSimpleSorting = !_context.HasCustomComparer(elementType)
+                                   && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
+            if (useSimpleSorting)
             {
                 EmitSortArray(il, elementType, xArray);
                 EmitSortArray(il, elementType, yArray);

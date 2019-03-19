@@ -8,19 +8,21 @@ using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
-    internal sealed class ArrayVisitor : CollectionVisitor
+    internal sealed class ArrayVisitor
     {
         private readonly ArrayComparer _arrayComparer;
+        private readonly CollectionComparer _collectionComparer;
         private readonly IConfigurationProvider _configuration;
 
         public ArrayVisitor(
+            Context context,
             IConfigurationProvider configuration,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
-            : base(loader)
         {
             _configuration = configuration;
+            _collectionComparer = new CollectionComparer(context, loader);
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
@@ -29,14 +31,14 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
-            var (x, y) = EmitLoad(comparison, il, afterLoop);
+            var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
             var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
 
             EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
 
             if (_configuration.Get(variable.OwnerType).IgnoreCollectionOrder)
             {
-                EmitArraySorting(il, variableType.GetElementType(), x, y);
+                _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 
             return _arrayComparer.Compare(variableType, variable.OwnerType, x, y, countX, countY, il, afterLoop);

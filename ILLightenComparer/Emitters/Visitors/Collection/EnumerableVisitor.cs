@@ -8,30 +8,31 @@ using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
-    internal sealed class EnumerableVisitor : CollectionVisitor
+    internal sealed class EnumerableVisitor
     {
         private readonly ArrayComparer _arrayComparer;
-
+        private readonly CollectionComparer _collectionComparer;
         private readonly CompareVisitor _compareVisitor;
         private readonly IConfigurationProvider _configuration;
         private readonly Converter _converter;
 
         public EnumerableVisitor(
+            Context context,
             IConfigurationProvider configuration,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
-            : base(loader)
         {
             _configuration = configuration;
             _compareVisitor = compareVisitor;
             _converter = converter;
+            _collectionComparer = new CollectionComparer(context, loader);
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label afterLoop)
         {
-            var (x, y) = EmitLoad(comparison, il, afterLoop);
+            var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
 
             if (_configuration.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder)
             {
@@ -56,7 +57,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
 
         private ILEmitter EmitCompareAsSortedArrays(EnumerablesComparison comparison, ILEmitter il, Label gotoNext, LocalBuilder x, LocalBuilder y)
         {
-            EmitArraySorting(il, comparison.ElementType, x, y);
+            _collectionComparer.EmitArraySorting(il, comparison.ElementType, x, y);
 
             var arrayType = comparison.ElementType.MakeArrayType();
 

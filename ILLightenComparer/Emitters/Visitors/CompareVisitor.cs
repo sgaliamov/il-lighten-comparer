@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors.Collection;
@@ -32,8 +31,8 @@ namespace ILLightenComparer.Emitters.Visitors
             _configuration = configuration;
             _membersProvider = membersProvider;
             _converter = converter;
-            _arrayVisitor = new ArrayVisitor(configuration, this, _loader, converter);
-            _enumerableVisitor = new EnumerableVisitor(configuration, this, _loader, converter);
+            _arrayVisitor = new ArrayVisitor(context, configuration, this, _loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(context, configuration, this, _loader, converter);
         }
 
         public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
