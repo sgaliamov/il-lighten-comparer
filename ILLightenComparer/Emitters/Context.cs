@@ -40,11 +40,6 @@ namespace ILLightenComparer.Emitters
                 key => _contextBuilder.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
         }
 
-        public IEqualityComparer<T> GetEqualityComparer<T>()
-        {
-            throw new NotImplementedException();
-        }
-
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
             var comparer = _configurations.GetCustomComparer<T>();

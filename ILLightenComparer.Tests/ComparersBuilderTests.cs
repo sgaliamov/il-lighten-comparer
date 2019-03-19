@@ -14,13 +14,13 @@ namespace ILLightenComparer.Tests
             comparer.Should().NotBeNull();
         }
 
-        [Fact(Skip = "Not implemented yet")]
-        public void Create_generic_equality_comparer()
-        {
-            var comparer = _builder.For<DummyObject>().GetEqualityComparer();
+        //[Fact]
+        //public void Create_generic_equality_comparer()
+        //{
+        //    var comparer = _builder.For<DummyObject>().GetEqualityComparer();
 
-            comparer.Should().NotBeNull();
-        }
+        //    comparer.Should().NotBeNull();
+        //}
 
         private readonly IComparerBuilder _builder = new ComparerBuilder(config => config.DefaultIncludeFields(false));
     }

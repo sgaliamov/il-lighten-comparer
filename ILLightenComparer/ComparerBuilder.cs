@@ -29,10 +29,10 @@ namespace ILLightenComparer
             return _context.GetComparer<T>();
         }
 
-        public IEqualityComparer<T> GetEqualityComparer<T>()
-        {
-            return _context.GetEqualityComparer<T>();
-        }
+        //public IEqualityComparer<T> GetEqualityComparer<T>()
+        //{
+        //    return _context.GetEqualityComparer<T>();
+        //}
 
         public IComparerBuilder<T> For<T>()
         {
@@ -113,10 +113,10 @@ namespace ILLightenComparer
                 return _subject.GetComparer<TOther>();
             }
 
-            public IEqualityComparer<T> GetEqualityComparer()
-            {
-                return _subject.GetEqualityComparer<T>();
-            }
+            //public IEqualityComparer<T> GetEqualityComparer()
+            //{
+            //    return _subject.GetEqualityComparer<T>();
+            //}
         }
     }
 }
