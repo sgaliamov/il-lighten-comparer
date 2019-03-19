@@ -31,6 +31,11 @@ namespace ILLightenComparer.Emitters
 
         public IComparer<T> GetComparer<T>()
         {
+            if (_customComparers.TryGetValue(typeof(T), out var comparer) && comparer != null)
+            {
+                return (IComparer<T>)comparer;
+            }
+
             return (IComparer<T>)_dynamicComparers.GetOrAdd(
                 typeof(T),
                 key => _contextBuilder.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
