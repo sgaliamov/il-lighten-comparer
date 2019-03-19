@@ -28,7 +28,6 @@ namespace ILLightenComparer.Emitters
 
         public IComparer<T> GetComparer<T>()
         {
-            // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
             var comparer = _configurations.GetCustomComparer<T>();
             if (comparer != null)
             {

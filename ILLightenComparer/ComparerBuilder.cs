@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters;
 using ILLightenComparer.Extensions;
@@ -12,11 +13,11 @@ namespace ILLightenComparer
     public sealed class ComparerBuilder : IComparerBuilder
     {
         private readonly ConfigurationBuilder _configurationBuilder = new ConfigurationBuilder();
-        private readonly Context _context;
+        private Lazy<Context> _context;
 
         public ComparerBuilder()
         {
-            _context = new Context(_configurationBuilder);
+            InitContext();
         }
 
         public ComparerBuilder(Action<IConfigurationBuilder> config) : this()
@@ -26,13 +27,8 @@ namespace ILLightenComparer
 
         public IComparer<T> GetComparer<T>()
         {
-            return _context.GetComparer<T>();
+            return _context.Value.GetComparer<T>();
         }
-
-        //public IEqualityComparer<T> GetEqualityComparer<T>()
-        //{
-        //    return _context.GetEqualityComparer<T>();
-        //}
 
         public IComparerBuilder<T> For<T>()
         {
@@ -48,12 +44,17 @@ namespace ILLightenComparer
         {
             config(_configurationBuilder);
 
+            // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
+            InitContext(); 
+
             return this;
         }
 
         public IComparerBuilder SetCustomComparer<T>(IComparer<T> instance)
         {
             _configurationBuilder.SetCustomComparer(typeof(T), instance);
+
+            InitContext();
 
             return this;
         }
@@ -72,7 +73,14 @@ namespace ILLightenComparer
 
             _configurationBuilder.SetCustomComparer(type, comparer);
 
+            InitContext();
+
             return this;
+        }
+
+        private void InitContext()
+        {
+            _context = new Lazy<Context>(() => new Context(_configurationBuilder), LazyThreadSafetyMode.PublicationOnly);
         }
 
         private sealed class Proxy<T> : IComparerBuilder<T>
