@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emitters
     {
         private readonly IConfigurationProvider _configurations;
         private readonly ContextBuilder _contextBuilder;
-        private readonly ConcurrentDictionary<Type, object> _dynamicComparers = new ConcurrentDictionary<Type, object>();
+        private readonly ComparersCollection _dynamicComparers = new ComparersCollection();
 
         public Context(IConfigurationProvider configurations)
         {

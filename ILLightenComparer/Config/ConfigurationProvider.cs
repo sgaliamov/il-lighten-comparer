@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Config
 {
@@ -13,7 +15,7 @@ namespace ILLightenComparer.Config
         bool HasCustomComparer(Type type);
     }
 
-    internal sealed class ConfigurationBuilder : IConfigurationBuilder, IConfigurationProvider
+    internal sealed class ConfigurationProvider : IConfigurationBuilder, IConfigurationProvider
     {
         private const bool IncludeFieldsDefault = true;
         private const StringComparison StringComparisonTypeDefault = StringComparison.Ordinal;
@@ -21,8 +23,8 @@ namespace ILLightenComparer.Config
         private const bool IgnoreCollectionOrderDefault = false;
         private static readonly string[] IgnoredMembersDefault = new string[0];
         private static readonly string[] MembersOrderDefault = new string[0];
-        private readonly Configurations _configurations = new Configurations();
-        private readonly ConcurrentDictionary<Type, object> _customComparers = new ConcurrentDictionary<Type, object>();
+        private readonly Configurations _configurations;
+        private readonly ComparersCollection _customComparers;
 
         private readonly Configuration _default = new Configuration(
             IgnoredMembersDefault,
@@ -31,6 +33,18 @@ namespace ILLightenComparer.Config
             StringComparisonTypeDefault,
             DetectCyclesDefault,
             IgnoreCollectionOrderDefault);
+
+        public ConfigurationProvider()
+        {
+            _configurations = new Configurations();
+            _customComparers = new ComparersCollection();
+        }
+
+        public ConfigurationProvider(ConfigurationProvider provider)
+        {
+            _configurations = new Configurations(provider._configurations.ToDictionary(x => x.Key, x => new Configuration(x.Value)));
+            _customComparers = new ComparersCollection(provider._customComparers);
+        }
 
         public IConfigurationBuilder DefaultDetectCycles(bool? value)
         {
@@ -159,9 +173,9 @@ namespace ILLightenComparer.Config
 
         private class Proxy<T> : IConfigurationBuilder<T>
         {
-            private readonly ConfigurationBuilder _subject;
+            private readonly ConfigurationProvider _subject;
 
-            public Proxy(ConfigurationBuilder subject)
+            public Proxy(ConfigurationProvider subject)
             {
                 _subject = subject;
             }
