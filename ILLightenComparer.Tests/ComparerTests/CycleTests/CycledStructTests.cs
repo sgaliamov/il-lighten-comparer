@@ -25,7 +25,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
                                      nameof(CycledStructObject.FirstStruct),
                                      nameof(CycledStructObject.SecondStruct)
                                  })
-                                 .IgnoredMembers(new[] { nameof(CycledStructObject.Id) }))
+                                 .IgnoreMembers(new[] { nameof(CycledStructObject.Id) }))
                        .Builder;
         }
 

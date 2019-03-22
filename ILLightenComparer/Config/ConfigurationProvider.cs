@@ -105,9 +105,9 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder IgnoredMembers(Type type, params string[] value)
+        public IConfigurationBuilder IgnoreMembers(Type type, params string[] value)
         {
-            GetOrCreate(type).SetIgnoredMembers(value ?? IgnoredMembersDefault);
+            GetOrCreate(type).SetIgnoredMembers(value);
 
             return this;
         }
@@ -220,14 +220,14 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoredMembers(string[] value)
+            public IConfigurationBuilder<T> IgnoreMembers(string[] value)
             {
-                _subject.IgnoredMembers(typeof(T), value);
+                _subject.IgnoreMembers(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoredMember<TMember>(Expression<Func<T, TMember>> memberSelector)
+            public IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>> memberSelector)
             {
                 if (memberSelector.Body.NodeType != ExpressionType.MemberAccess)
                 {
@@ -236,7 +236,7 @@ namespace ILLightenComparer.Config
 
                 var body = (MemberExpression)memberSelector.Body;
 
-                _subject.IgnoredMembers(typeof(T), body.Member.Name);
+                _subject.IgnoreMembers(typeof(T), body.Member.Name);
 
                 return this;
             }

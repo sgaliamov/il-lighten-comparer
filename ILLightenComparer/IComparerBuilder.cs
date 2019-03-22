@@ -64,7 +64,7 @@ namespace ILLightenComparer
 
         IConfigurationBuilder IgnoreCollectionOrder(Type type, bool? value);
 
-        IConfigurationBuilder IgnoredMembers(Type type, params string[] value);
+        IConfigurationBuilder IgnoreMembers(Type type, params string[] value);
 
         IConfigurationBuilder IncludeFields(Type type, bool? value);
 
@@ -85,9 +85,9 @@ namespace ILLightenComparer
 
         IConfigurationBuilder<T> IgnoreCollectionOrder(bool? value);
 
-        IConfigurationBuilder<T> IgnoredMembers(params string[] value);
+        IConfigurationBuilder<T> IgnoreMembers(params string[] value);
 
-        IConfigurationBuilder<T> IgnoredMember<TMember>(Expression<Func<T, TMember>> memberSelector);
+        IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>> memberSelector);
 
         IConfigurationBuilder<T> IncludeFields(bool? value);
 

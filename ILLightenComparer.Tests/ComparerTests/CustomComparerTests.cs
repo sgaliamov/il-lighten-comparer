@@ -39,17 +39,16 @@ namespace ILLightenComparer.Tests.ComparerTests
             var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
             var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
 
-            var referenceComparer = new SampleObjectComparer<SampleStruct<string>>(new SampleStructComparer<string>());
-            var expected = referenceComparer.Compare(x, y);
+            var reference = new SampleObjectComparer<SampleStruct<string>>(new SampleStructComparer<string>());
+            var expected = reference.Compare(x, y);
 
             var builder = new ComparerBuilder(c => c.SetCustomComparer<SampleStructCustomComparer>());
-            var comparer = builder.GetComparer<SampleObject<SampleStruct<string>>>();
-            comparer.Compare(x, y).Should().Be(0);
+            var comparer1 = builder.GetComparer<SampleObject<SampleStruct<string>>>();
+            var comparer2 = builder.Configure(c => c.SetCustomComparer<SampleStruct<string>>(null))
+                                   .GetComparer<SampleObject<SampleStruct<string>>>();
 
-            comparer = builder.Configure(c => c.SetCustomComparer<SampleStruct<string>>(null))
-                              .GetComparer<SampleObject<SampleStruct<string>>>();
-
-            comparer.Compare(x, y).Should().Be(expected);
+            comparer1.Compare(x, y).Should().Be(0);
+            comparer2.Compare(x, y).Should().Be(expected);
         }
 
         [Fact]

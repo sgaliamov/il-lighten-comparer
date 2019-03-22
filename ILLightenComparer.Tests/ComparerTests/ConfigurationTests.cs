@@ -14,8 +14,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             var y = _fixture.Create<SampleObject<int>>();
 
             var comparer = new ComparerBuilder()
-                           .For<SampleObject<int>>(c => c.IgnoredMember(o => o.Field)
-                                                         .IgnoredMember(o => o.Property))
+                           .For<SampleObject<int>>(c => c.IgnoreMember(o => o.Field)
+                                                         .IgnoreMember(o => o.Property))
                            .GetComparer();
 
             comparer.Compare(x, y).Should().Be(0);
