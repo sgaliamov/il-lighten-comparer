@@ -75,7 +75,7 @@ namespace ILLightenComparer
 
         IConfigurationBuilder SetCustomComparer<TComparer>();
 
-        IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config);
+        IConfigurationBuilder<T> ConfigureFor<T>(Action<IConfigurationBuilder<T>> config);
     }
 
     public interface IConfigurationBuilder<out T>

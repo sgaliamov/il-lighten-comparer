@@ -131,7 +131,7 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config)
+        public IConfigurationBuilder<T> ConfigureFor<T>(Action<IConfigurationBuilder<T>> config)
         {
             var proxy = new Proxy<T>(this);
             config(proxy);

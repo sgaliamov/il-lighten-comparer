@@ -82,7 +82,7 @@ namespace ILLightenComparer
 
             public IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config)
             {
-                _subject._configurationProvider.Configure(config);
+                _subject._configurationProvider.ConfigureFor(config);
 
                 _subject.InitContext(); // todo: test init order
 
