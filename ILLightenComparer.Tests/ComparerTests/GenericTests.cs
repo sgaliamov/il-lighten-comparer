@@ -29,7 +29,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 {
                     var methodInfo = GetTestMethod(type);
 
-                    return (Action<IComparerBuilder, IComparer, int>)methodInfo.CreateDelegate(typeof(Action<IComparerBuilder, IComparer, int>));
+                    return (Action<IComparerBuilder, IComparer, int>)methodInfo.CreateDelegate(
+                        typeof(Action<IComparerBuilder, IComparer, int>));
                 });
 
             var builder = _comparerBuilder ?? new ComparerBuilder();

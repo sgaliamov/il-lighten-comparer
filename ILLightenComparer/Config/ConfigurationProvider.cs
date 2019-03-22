@@ -45,6 +45,7 @@ namespace ILLightenComparer.Config
         {
             _configurations = new Configurations(provider._configurations.ToDictionary(x => x.Key, x => new Configuration(x.Value)));
             _customComparers = new ComparersCollection(provider._customComparers);
+            _default = new Configuration(provider._default);
         }
 
         public IConfigurationBuilder DefaultDetectCycles(bool? value)
