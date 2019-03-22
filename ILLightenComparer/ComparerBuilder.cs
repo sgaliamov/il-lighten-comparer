@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters;
 
@@ -10,12 +11,12 @@ namespace ILLightenComparer
     /// </summary>
     public sealed class ComparerBuilder : IComparerBuilder
     {
-        private readonly ConfigurationBuilder _configurationBuilder = new ConfigurationBuilder();
-        private readonly Context _context;
+        private readonly ConfigurationProvider _configurationProvider = new ConfigurationProvider();
+        private Lazy<Context> _context;
 
         public ComparerBuilder()
         {
-            _context = new Context(_configurationBuilder);
+            InitContext();
         }
 
         public ComparerBuilder(Action<IConfigurationBuilder> config) : this()
@@ -25,12 +26,7 @@ namespace ILLightenComparer
 
         public IComparer<T> GetComparer<T>()
         {
-            return _context.GetComparer<T>();
-        }
-
-        public IEqualityComparer<T> GetEqualityComparer<T>()
-        {
-            return _context.GetEqualityComparer<T>();
+            return _context.Value.GetComparer<T>();
         }
 
         public IComparerBuilder<T> For<T>()
@@ -45,9 +41,24 @@ namespace ILLightenComparer
 
         public IComparerBuilder Configure(Action<IConfigurationBuilder> config)
         {
-            config(_configurationBuilder);
+            config(_configurationProvider);
+
+            // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
+            InitContext();
 
             return this;
+        }
+
+        private void InitContext()
+        {
+            _context = new Lazy<Context>(
+                () =>
+                {
+                    var contextConfiguration = new ConfigurationProvider(_configurationProvider);
+
+                    return new Context(contextConfiguration);
+                },
+                LazyThreadSafetyMode.PublicationOnly);
         }
 
         private sealed class Proxy<T> : IComparerBuilder<T>
@@ -71,7 +82,9 @@ namespace ILLightenComparer
 
             public IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config)
             {
-                _subject._configurationBuilder.Configure(config);
+                _subject._configurationProvider.ConfigureFor(config);
+
+                _subject.InitContext(); // todo: test init order
 
                 return this;
             }
@@ -86,11 +99,6 @@ namespace ILLightenComparer
             public IComparer<TOther> GetComparer<TOther>()
             {
                 return _subject.GetComparer<TOther>();
-            }
-
-            public IEqualityComparer<T> GetEqualityComparer()
-            {
-                return _subject.GetEqualityComparer<T>();
             }
         }
     }

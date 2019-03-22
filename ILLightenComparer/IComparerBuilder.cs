@@ -71,11 +71,11 @@ namespace ILLightenComparer
 
         IConfigurationBuilder StringComparisonType(Type type, StringComparison? value);
 
-        IConfigurationBuilder SetComparer<TComparer>(Type type, TComparer instance);
+        IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance);
 
-        IConfigurationBuilder SetComparer<TComparer>(Type type);
+        IConfigurationBuilder SetCustomComparer<TComparer>();
 
-        IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config);
+        IConfigurationBuilder<T> ConfigureFor<T>(Action<IConfigurationBuilder<T>> config);
     }
 
     public interface IConfigurationBuilder<out T>
@@ -91,17 +91,11 @@ namespace ILLightenComparer
         IConfigurationBuilder<T> MembersOrder(string[] value);
 
         IConfigurationBuilder<T> StringComparisonType(StringComparison? value);
-
-        IConfigurationBuilder<T> SetComparer(IComparer<T> instance);
-
-        IConfigurationBuilder<T> SetComparer<TComparer>() where TComparer : IComparer<T>;
     }
 
     public interface IComparerProvider
     {
         IComparer<T> GetComparer<T>();
-
-        IEqualityComparer<T> GetEqualityComparer<T>();
     }
 
     public interface IComparerProvider<in T>
@@ -109,7 +103,5 @@ namespace ILLightenComparer
         IComparer<T> GetComparer();
 
         IComparer<TOther> GetComparer<TOther>();
-
-        IEqualityComparer<T> GetEqualityComparer();
     }
 }

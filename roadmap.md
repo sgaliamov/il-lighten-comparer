@@ -22,8 +22,8 @@
 - [x] fixture generates Max and Min values
 - [X] fixture generates nulls
 - [x] compare nullable
-- [x] ~~normalize result to -1, 0, 1~~ - no need to do it
-- [x] ~~try to implement auto visitor~~ - moved to a separate project, to mush extra complexity
+- [x] ~~normalize result to -1, 0, 1~~ -> no need to do it
+- [x] ~~try to implement auto visitor~~ -> moved to a separate project, to mush extra complexity
 
 ## Phase 2 Hierarchical objects
 
@@ -66,26 +66,39 @@
 - [x] refactor visitors
 - [x] introduce variables scope to not have to track variable buckets
 - [x] smart `IComparerBuilder`
-- [ ] customization setting to override comparer with specific implementation
-- [ ] how to rebuild after set new configuration?
+- [x] customization setting to override comparer with specific implementation
+- [x] create separate context after set new configuration?
+- [ ] ignore existing `IComparable` implementation
 - [ ] define order for members using expressions, order of generated code affects sorting
 - [ ] use expressions to define ignored properties
-- [ ] tests for different cultures
-- [ ] float, double, date time precision
-- [ ] ignore existing `IComparable` implementation
-- [ ] `checked` subs
-- [ ] compare references and the end?
-- [ ] include protected (BindingFlags.NonPublic)?
 
-## Phase 5 Optimizations
+## Phase 5 Release One
 
+- [ ] setup CI/CD
+- [ ] add documentation comments
+- [ ] code coverage
+- [ ] documentation and examples
+- [ ] review *todo*
+- [ ] publish
+
+## Phase 6 GetHashCode
+
+- [ ] implement `GetHashCode`
+
+## Phase 7 Equals
+
+- [ ] implement `Equals`
+
+## Phase 8 Optimizations
+
+- [x] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
 - [x] reuse local variables for same types
 - [x] caching for assembly
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
+- [x] cache instances by type and **configuration** in `Context.GetComparerType`
 - [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need to have deal with addresses?
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
-- [ ] cache instances by type and **configuration** in `Context.GetComparerType`
 - [ ] optimization for a last member - just return its result
 - [ ] same for simple types, when arguments are compared directly
 - [ ] change behavior then types are not matched but castable
@@ -93,26 +106,14 @@
 - [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?
 - [ ] support internal classes to compare?
-
-## Phase 6
-
-- [ ] implement `GetHashCode`
-
-## Phase 7
-
-- [ ] implement `Equals`
-
-## Phase 8
-
-- [x] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
-- [ ] setup CI/CD
-- [ ] add documentation comments
-- [ ] prepare presentation
-
-## Phase 9
-
 - [ ] compare `IntPtr` and `UIntPtr`
 - [ ] compare dictionary
 - [ ] compare complex collection
 - [ ] compared dynamic?
 - [ ] compare private and protected members?
+- [ ] helper wrappers for not typed compares
+- [ ] include protected (BindingFlags.NonPublic)?
+- [ ] tests for different cultures
+- [ ] float, double, date time precision
+- [ ] `checked` subs
+- [ ] compare references and the end?

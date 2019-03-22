@@ -1,6 +1,5 @@
 ﻿using System;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors;
@@ -13,11 +12,12 @@ namespace ILLightenComparer.Emitters
     internal sealed class CompareEmitter
     {
         private readonly CompareVisitor _compareVisitor;
-        private readonly Converter _converter = new Converter();
+        private readonly Converter _converter;
 
-        public CompareEmitter(IContextBuilder context, IConfigurationProvider configurationProvider)
+        public CompareEmitter(Context context, IConfigurationProvider configurationProvider)
         {
             var membersProvider = new MembersProvider(configurationProvider);
+            _converter = new Converter(configurationProvider);
             _compareVisitor = new CompareVisitor(context, configurationProvider, membersProvider, _converter);
         }
 
@@ -76,6 +76,11 @@ namespace ILLightenComparer.Emitters
                                   .EmitReturnNotZero(exit)
                                   .MarkLabel(exit)
                                   .Return(0);
+        }
+
+        public ILEmitter Visit(CustomComparison comparison, ILEmitter il)
+        {
+            return _compareVisitor.Visit(comparison, il).Return();
         }
 
         private ILEmitter CompareAsCollection(IComparison comparison, ILEmitter il)

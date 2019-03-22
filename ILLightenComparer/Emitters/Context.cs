@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Extensions;
@@ -16,60 +16,41 @@ namespace ILLightenComparer.Emitters
     {
         private readonly IConfigurationProvider _configurations;
         private readonly ContextBuilder _contextBuilder;
-        private readonly ConcurrentDictionary<Type, object> _dynamicComparers = new ConcurrentDictionary<Type, object>();
+        private readonly ComparersCollection _dynamicComparers = new ComparersCollection();
 
         public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _contextBuilder = new ContextBuilder(configurations);
+            // todo: think about relations and shared responsibilities with `ContextBuilder`
+            _contextBuilder = new ContextBuilder(this, configurations);
         }
 
-        // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
         public IComparer<T> GetComparer<T>()
         {
-            var objectType = typeof(T);
-            var configuration = _configurations.Get(objectType);
-
-            var customComparer = configuration.GetComparer<T>();
-            if (customComparer != null)
+            var comparer = _configurations.GetCustomComparer<T>();
+            if (comparer != null)
             {
-                return customComparer;
+                return comparer;
             }
 
             return (IComparer<T>)_dynamicComparers.GetOrAdd(
-                objectType,
+                typeof(T),
                 key => _contextBuilder.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
         }
 
-        public IEqualityComparer<T> GetEqualityComparer<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        // todo: maybe possible use only GetComparer<T> method for delayed comparison,
-        // as we could access static method via instance object
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            #if DEBUG
-            if (typeof(T).IsValueType)
+            var comparer = _configurations.GetCustomComparer<T>();
+            if (comparer != null)
             {
-                throw new InvalidOperationException($"Unexpected value type {typeof(T)}.");
-            }
-            #endif
-
-            if (x == null)
-            {
-                if (y == null)
-                {
-                    return 0;
-                }
-
-                return -1;
+                return comparer.Compare(x, y);
             }
 
-            if (y == null)
+            if (!typeof(T).IsValueType)
             {
-                return 1;
+                if (x == null) { return y == null ? 0 : -1; }
+
+                if (y == null) { return 1; }
             }
 
             var xType = x.GetType();
@@ -82,7 +63,11 @@ namespace ILLightenComparer.Emitters
             return Compare(xType, x, y, xSet, ySet);
         }
 
-        // todo: cache delegates and benchmark ways
+        public MethodInfo GetStaticCompareMethod(Type type)
+        {
+            return _contextBuilder.GetStaticCompareMethod(type);
+        }
+
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
             var compareMethod = _contextBuilder.GetCompiledCompareMethod(type);
@@ -90,7 +75,7 @@ namespace ILLightenComparer.Emitters
             var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
             if (!isDeclaringTypeMatchedActualMemberType)
             {
-                // todo: benchmarks:
+                // todo: cache delegates and benchmark ways:
                 // - direct Invoke;
                 // - DynamicInvoke;
                 // var genericType = typeof(Method.StaticMethodDelegate<>).MakeGenericType(type);

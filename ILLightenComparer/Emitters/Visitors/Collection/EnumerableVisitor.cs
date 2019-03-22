@@ -8,32 +8,32 @@ using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
-    internal sealed class EnumerableVisitor : CollectionVisitor
+    internal sealed class EnumerableVisitor
     {
         private readonly ArrayComparer _arrayComparer;
-
+        private readonly CollectionComparer _collectionComparer;
         private readonly CompareVisitor _compareVisitor;
-        private readonly IConfigurationProvider _configuration;
+        private readonly IConfigurationProvider _configurations;
         private readonly Converter _converter;
 
         public EnumerableVisitor(
-            IConfigurationProvider configuration,
+            IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
             VariableLoader loader,
             Converter converter)
-            : base(loader)
         {
-            _configuration = configuration;
+            _configurations = configurations;
             _compareVisitor = compareVisitor;
             _converter = converter;
+            _collectionComparer = new CollectionComparer(configurations, loader);
             _arrayComparer = new ArrayComparer(compareVisitor, converter);
         }
 
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label afterLoop)
         {
-            var (x, y) = EmitLoad(comparison, il, afterLoop);
+            var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
 
-            if (_configuration.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder)
+            if (_configurations.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder)
             {
                 return EmitCompareAsSortedArrays(comparison, il, afterLoop, x, y);
             }
@@ -54,9 +54,14 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             return il;
         }
 
-        private ILEmitter EmitCompareAsSortedArrays(EnumerablesComparison comparison, ILEmitter il, Label gotoNext, LocalBuilder x, LocalBuilder y)
+        private ILEmitter EmitCompareAsSortedArrays(
+            EnumerablesComparison comparison,
+            ILEmitter il,
+            Label gotoNext,
+            LocalBuilder x,
+            LocalBuilder y)
         {
-            EmitArraySorting(il, comparison.ElementType, x, y);
+            _collectionComparer.EmitArraySorting(il, comparison.ElementType, x, y);
 
             var arrayType = comparison.ElementType.MakeArrayType();
 
@@ -104,7 +109,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
                 var itemComparison = _converter.CreateComparison(itemVariable);
                 itemComparison.Accept(_compareVisitor, il, continueLoop);
 
-                if (itemComparison.ResultInStack)
+                if (itemComparison.PutsResultInStack)
                 {
                     il.EmitReturnNotZero(continueLoop);
                 }

@@ -5,15 +5,15 @@ using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Emitters.Comparisons
 {
-    internal sealed class StringsComparison : IComparison
+    internal sealed class CustomComparison : IComparison
     {
-        private StringsComparison(IVariable variable)
+        public CustomComparison(IVariable variable)
         {
             Variable = variable;
         }
 
-        public IVariable Variable { get; }
         public bool PutsResultInStack => true;
+        public IVariable Variable { get; }
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {
@@ -23,16 +23,6 @@ namespace ILLightenComparer.Emitters.Comparisons
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
         {
             return visitor.Visit(this, il);
-        }
-
-        public static StringsComparison Create(IVariable variable)
-        {
-            if (variable.VariableType == typeof(string))
-            {
-                return new StringsComparison(variable);
-            }
-
-            return null;
         }
     }
 }

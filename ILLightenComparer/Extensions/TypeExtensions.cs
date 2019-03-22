@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using ILLightenComparer.Reflection;
 
@@ -18,11 +19,25 @@ namespace ILLightenComparer.Extensions
             typeof(ushort)
         });
 
-        // todo: cache delegates
         public static TReturnType CreateInstance<T, TReturnType>(this Type type, T arg)
         {
+            // todo: cache delegates?
             return type.GetMethod(MethodName.CreateInstance)
                        .CreateDelegate<Func<T, TReturnType>>()(arg);
+        }
+
+        public static TResult Create<TResult>(this Type type)
+        {
+            // todo: benchmark creation
+            var ctor = type.GetConstructor(Type.EmptyTypes)
+                       ?? throw new ArgumentException(
+                           $"Type {type.DisplayName()} should has default constructor.",
+                           nameof(type));
+
+            var lambda = Expression.Lambda(typeof(Func<TResult>), Expression.New(ctor));
+            var compiled = (Func<TResult>)lambda.Compile();
+
+            return compiled();
         }
 
         public static MethodInfo GetUnderlyingCompareToMethod(this Type type)

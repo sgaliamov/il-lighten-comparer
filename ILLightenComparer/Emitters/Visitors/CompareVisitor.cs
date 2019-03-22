@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors.Collection;
@@ -15,25 +14,25 @@ namespace ILLightenComparer.Emitters.Visitors
     internal sealed class CompareVisitor
     {
         private readonly ArrayVisitor _arrayVisitor;
-        private readonly IConfigurationProvider _configuration;
-        private readonly IContextBuilder _context;
+        private readonly IConfigurationProvider _configurations;
+        private readonly Context _context;
         private readonly Converter _converter;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(
-            IContextBuilder context,
-            IConfigurationProvider configuration,
+            Context context,
+            IConfigurationProvider configurations,
             MembersProvider membersProvider,
             Converter converter)
         {
             _context = context;
-            _configuration = configuration;
+            _configurations = configurations;
             _membersProvider = membersProvider;
             _converter = converter;
-            _arrayVisitor = new ArrayVisitor(configuration, this, _loader, converter);
-            _enumerableVisitor = new EnumerableVisitor(configuration, this, _loader, converter);
+            _arrayVisitor = new ArrayVisitor(configurations, this, _loader, converter);
+            _enumerableVisitor = new EnumerableVisitor(configurations, this, _loader, converter);
         }
 
         public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
@@ -108,7 +107,7 @@ namespace ILLightenComparer.Emitters.Visitors
             variable.Load(_loader, il, Arg.X);
             variable.Load(_loader, il, Arg.Y);
 
-            var stringComparisonType = _configuration.Get(variable.OwnerType).StringComparisonType;
+            var stringComparisonType = _configurations.Get(variable.OwnerType).StringComparisonType;
 
             return il.LoadConstant((int)stringComparisonType).Call(Method.StringCompare);
         }
@@ -149,7 +148,7 @@ namespace ILLightenComparer.Emitters.Visitors
 
             var comparisons = _membersProvider
                               .GetMembers(variableType)
-                              .Select(x => _converter.CreateComparison(x));
+                              .Select(_converter.CreateComparison);
 
             foreach (var item in comparisons)
             {
@@ -159,7 +158,7 @@ namespace ILLightenComparer.Emitters.Visitors
 
                     item.Accept(this, il, gotoNext);
 
-                    if (item.ResultInStack)
+                    if (item.PutsResultInStack)
                     {
                         il.EmitReturnNotZero(gotoNext);
                     }
@@ -169,6 +168,20 @@ namespace ILLightenComparer.Emitters.Visitors
             }
 
             return il.LoadConstant(0);
+        }
+
+        public ILEmitter Visit(CustomComparison comparison, ILEmitter il)
+        {
+            var variable = comparison.Variable;
+            var variableType = variable.VariableType;
+
+            il.LoadArgument(Arg.Context);
+            variable.Load(_loader, il, Arg.X);
+            variable.Load(_loader, il, Arg.Y);
+            il.LoadArgument(Arg.SetX)
+              .LoadArgument(Arg.SetY);
+
+            return EmitCallForDelayedCompareMethod(il, variableType);
         }
 
         private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)

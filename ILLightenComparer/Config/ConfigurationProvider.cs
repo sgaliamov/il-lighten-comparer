@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.Linq;
 using ILLightenComparer.Extensions;
+using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Config
 {
@@ -11,9 +12,11 @@ namespace ILLightenComparer.Config
     internal interface IConfigurationProvider
     {
         Configuration Get(Type type);
+        IComparer<T> GetCustomComparer<T>();
+        bool HasCustomComparer(Type type);
     }
 
-    internal sealed class ConfigurationBuilder : IConfigurationBuilder, IConfigurationProvider
+    internal sealed class ConfigurationProvider : IConfigurationBuilder, IConfigurationProvider
     {
         private const bool IncludeFieldsDefault = true;
         private const StringComparison StringComparisonTypeDefault = StringComparison.Ordinal;
@@ -21,7 +24,8 @@ namespace ILLightenComparer.Config
         private const bool IgnoreCollectionOrderDefault = false;
         private static readonly string[] IgnoredMembersDefault = new string[0];
         private static readonly string[] MembersOrderDefault = new string[0];
-        private readonly Configurations _configurations = new Configurations();
+        private readonly Configurations _configurations;
+        private readonly ComparersCollection _customComparers;
 
         private readonly Configuration _default = new Configuration(
             IgnoredMembersDefault,
@@ -29,8 +33,20 @@ namespace ILLightenComparer.Config
             MembersOrderDefault,
             StringComparisonTypeDefault,
             DetectCyclesDefault,
-            IgnoreCollectionOrderDefault,
-            new Dictionary<Type, object>(0));
+            IgnoreCollectionOrderDefault);
+
+        public ConfigurationProvider()
+        {
+            _configurations = new Configurations();
+            _customComparers = new ComparersCollection();
+        }
+
+        public ConfigurationProvider(ConfigurationProvider provider)
+        {
+            _configurations = new Configurations(provider._configurations.ToDictionary(x => x.Key, x => new Configuration(x.Value)));
+            _customComparers = new ComparersCollection(provider._customComparers);
+            _default = new Configuration(provider._default);
+        }
 
         public IConfigurationBuilder DefaultDetectCycles(bool? value)
         {
@@ -116,39 +132,32 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder SetComparer<TComparer>(Type type, TComparer instance)
-        {
-            var configuration = GetOrCreate(type);
-
-            // todo: optimize
-            typeof(Configuration)
-                .GetMethod(nameof(Configuration.SetComparer))
-                ?.MakeGenericMethod(type)
-                .Invoke(configuration, new object[] { instance });
-
-            return this;
-        }
-
-        public IConfigurationBuilder SetComparer<TComparer>(Type type)
-        {
-            // todo: cache
-            var comparerType = typeof(TComparer);
-            var ctor = comparerType.GetConstructor(Type.EmptyTypes)
-                       ?? throw new ArgumentException(
-                           $"Comparer {comparerType.DisplayName()} should have default constructor.",
-                           nameof(type));
-            var lambda = Expression.Lambda(typeof(Func<TComparer>), Expression.New(ctor));
-            var compiled = (Func<TComparer>)lambda.Compile();
-
-            return SetComparer(type, compiled());
-        }
-
-        public IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config)
+        public IConfigurationBuilder<T> ConfigureFor<T>(Action<IConfigurationBuilder<T>> config)
         {
             var proxy = new Proxy<T>(this);
             config(proxy);
 
             return proxy;
+        }
+
+        public IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance)
+        {
+            return SetCustomComparer(typeof(T), instance);
+        }
+
+        public IConfigurationBuilder SetCustomComparer<TComparer>()
+        {
+            var genericType = typeof(TComparer);
+            var genericInterface = genericType.GetGenericInterface(typeof(IComparer<>));
+            if (genericInterface == null)
+            {
+                throw new ArgumentException($"{nameof(TComparer)} is not generic {typeof(IComparer<>)}");
+            }
+
+            var type = genericInterface.GenericTypeArguments[0];
+            var comparer = genericType.Create<TComparer>();
+
+            return SetCustomComparer(type, comparer);
         }
 
         public Configuration Get(Type type)
@@ -158,6 +167,30 @@ namespace ILLightenComparer.Config
                        : _default;
         }
 
+        public IComparer<T> GetCustomComparer<T>()
+        {
+            return _customComparers.TryGetValue(typeof(T), out var comparer) ? (IComparer<T>)comparer : null;
+        }
+
+        public bool HasCustomComparer(Type type)
+        {
+            return _customComparers.ContainsKey(type);
+        }
+
+        private ConfigurationProvider SetCustomComparer(Type type, object instance)
+        {
+            if (instance == null)
+            {
+                _customComparers.TryRemove(type, out _);
+            }
+            else
+            {
+                _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
+            }
+
+            return this;
+        }
+
         private Configuration GetOrCreate(Type type)
         {
             return _configurations.GetOrAdd(type, _ => new Configuration(_default));
@@ -165,9 +198,9 @@ namespace ILLightenComparer.Config
 
         private class Proxy<T> : IConfigurationBuilder<T>
         {
-            private readonly ConfigurationBuilder _subject;
+            private readonly ConfigurationProvider _subject;
 
-            public Proxy(ConfigurationBuilder subject)
+            public Proxy(ConfigurationProvider subject)
             {
                 _subject = subject;
             }
@@ -210,20 +243,6 @@ namespace ILLightenComparer.Config
             public IConfigurationBuilder<T> StringComparisonType(StringComparison? value)
             {
                 _subject.StringComparisonType(typeof(T), value);
-
-                return this;
-            }
-
-            public IConfigurationBuilder<T> SetComparer(IComparer<T> instance)
-            {
-                _subject.SetComparer(typeof(T), instance);
-
-                return this;
-            }
-
-            public IConfigurationBuilder<T> SetComparer<TComparer>() where TComparer : IComparer<T>
-            {
-                _subject.SetComparer<TComparer>(typeof(T));
 
                 return this;
             }

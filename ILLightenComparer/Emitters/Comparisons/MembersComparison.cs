@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
@@ -14,7 +15,7 @@ namespace ILLightenComparer.Emitters.Comparisons
         }
 
         public IVariable Variable { get; }
-        public bool ResultInStack => false;
+        public bool PutsResultInStack => throw new NotSupportedException();
 
         public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
         {

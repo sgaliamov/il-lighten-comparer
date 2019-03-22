@@ -13,7 +13,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public HierarchyTests()
         {
             _comparer = new ComparerBuilder()
-                        .Configure(builder => builder.Configure<NestedStruct>(config => config.MembersOrder(new[]
+                        .Configure(builder => builder.ConfigureFor<NestedStruct>(config => config.MembersOrder(new[]
                         {
                             nameof(NestedStruct.Property),
                             nameof(NestedStruct.NullableProperty)

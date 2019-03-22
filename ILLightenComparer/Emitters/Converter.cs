@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
@@ -20,8 +21,21 @@ namespace ILLightenComparer.Emitters
             EnumerablesComparison.Create
         };
 
+        private readonly IConfigurationProvider _configurations;
+
+        public Converter(IConfigurationProvider configurations)
+        {
+            _configurations = configurations;
+        }
+
         public IComparison CreateComparison(IVariable variable)
         {
+            var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
+            if (hasCustomComparer)
+            {
+                return new CustomComparison(variable);
+            }
+
             var comparison = ComparisonConverters
                              .Select(factory => factory(variable))
                              .FirstOrDefault(x => x != null);
