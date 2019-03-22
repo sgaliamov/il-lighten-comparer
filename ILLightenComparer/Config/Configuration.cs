@@ -40,7 +40,14 @@ namespace ILLightenComparer.Config
 
         public void SetIgnoredMembers(IEnumerable<string> ignoredMembers)
         {
-            IgnoredMembers.UnionWith(ignoredMembers ?? throw new ArgumentNullException(nameof(ignoredMembers)));
+            if (ignoredMembers == null)
+            {
+                IgnoredMembers.Clear();
+            }
+            else
+            {
+                IgnoredMembers.UnionWith(ignoredMembers);
+            }
         }
 
         public void SetMembersOrder(IEnumerable<string> value)
