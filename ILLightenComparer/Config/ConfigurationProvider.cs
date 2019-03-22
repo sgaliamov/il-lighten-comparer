@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 
@@ -104,7 +105,7 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder IgnoredMembers(Type type, string[] value)
+        public IConfigurationBuilder IgnoredMembers(Type type, params string[] value)
         {
             GetOrCreate(type).SetIgnoredMembers(value ?? IgnoredMembersDefault);
 
@@ -196,7 +197,7 @@ namespace ILLightenComparer.Config
             return _configurations.GetOrAdd(type, _ => new Configuration(_default));
         }
 
-        private class Proxy<T> : IConfigurationBuilder<T>
+        private sealed class Proxy<T> : IConfigurationBuilder<T>
         {
             private readonly ConfigurationProvider _subject;
 
@@ -222,6 +223,20 @@ namespace ILLightenComparer.Config
             public IConfigurationBuilder<T> IgnoredMembers(string[] value)
             {
                 _subject.IgnoredMembers(typeof(T), value);
+
+                return this;
+            }
+
+            public IConfigurationBuilder<T> IgnoredMember<TMember>(Expression<Func<T, TMember>> memberSelector)
+            {
+                if (memberSelector.Body.NodeType != ExpressionType.MemberAccess)
+                {
+                    throw new ArgumentException("Member selector is expected.", nameof(memberSelector));
+                }
+
+                var body = (MemberExpression)memberSelector.Body;
+
+                _subject.IgnoredMembers(typeof(T), body.Member.Name);
 
                 return this;
             }

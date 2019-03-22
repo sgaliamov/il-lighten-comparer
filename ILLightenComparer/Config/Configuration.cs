@@ -23,7 +23,7 @@ namespace ILLightenComparer.Config
             bool ignoreCollectionOrder
         )
         {
-            SetIgnoredMembers(ignoredMembers);
+            IgnoredMembers = new HashSet<string>(ignoredMembers ?? throw new ArgumentNullException(nameof(ignoredMembers)));
             IncludeFields = includeFields;
             SetMembersOrder(membersOrder);
             StringComparisonType = stringComparisonType;
@@ -33,14 +33,14 @@ namespace ILLightenComparer.Config
 
         public bool DetectCycles { get; set; }
         public bool IgnoreCollectionOrder { get; set; }
-        public HashSet<string> IgnoredMembers { get; private set; }
+        public HashSet<string> IgnoredMembers { get; }
         public bool IncludeFields { get; set; }
         public string[] MembersOrder { get; private set; }
         public StringComparison StringComparisonType { get; set; }
 
         public void SetIgnoredMembers(IEnumerable<string> ignoredMembers)
         {
-            IgnoredMembers = new HashSet<string>(ignoredMembers ?? throw new ArgumentNullException(nameof(ignoredMembers)));
+            IgnoredMembers.UnionWith(ignoredMembers ?? throw new ArgumentNullException(nameof(ignoredMembers)));
         }
 
         public void SetMembersOrder(IEnumerable<string> value)

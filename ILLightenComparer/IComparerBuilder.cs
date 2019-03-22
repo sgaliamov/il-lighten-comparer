@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace ILLightenComparer
 {
@@ -51,11 +52,11 @@ namespace ILLightenComparer
 
         IConfigurationBuilder DefaultIgnoreCollectionOrder(bool? value);
 
-        IConfigurationBuilder DefaultIgnoredMembers(string[] value);
+        IConfigurationBuilder DefaultIgnoredMembers(params string[] value);
 
         IConfigurationBuilder DefaultIncludeFields(bool? value);
 
-        IConfigurationBuilder DefaultMembersOrder(string[] value);
+        IConfigurationBuilder DefaultMembersOrder(params string[] value);
 
         IConfigurationBuilder DefaultStringComparisonType(StringComparison? value);
 
@@ -63,11 +64,11 @@ namespace ILLightenComparer
 
         IConfigurationBuilder IgnoreCollectionOrder(Type type, bool? value);
 
-        IConfigurationBuilder IgnoredMembers(Type type, string[] value);
+        IConfigurationBuilder IgnoredMembers(Type type, params string[] value);
 
         IConfigurationBuilder IncludeFields(Type type, bool? value);
 
-        IConfigurationBuilder MembersOrder(Type type, string[] value);
+        IConfigurationBuilder MembersOrder(Type type, params string[] value);
 
         IConfigurationBuilder StringComparisonType(Type type, StringComparison? value);
 
@@ -78,17 +79,19 @@ namespace ILLightenComparer
         IConfigurationBuilder<T> ConfigureFor<T>(Action<IConfigurationBuilder<T>> config);
     }
 
-    public interface IConfigurationBuilder<out T>
+    public interface IConfigurationBuilder<T>
     {
         IConfigurationBuilder<T> DetectCycles(bool? value);
 
         IConfigurationBuilder<T> IgnoreCollectionOrder(bool? value);
 
-        IConfigurationBuilder<T> IgnoredMembers(string[] value);
+        IConfigurationBuilder<T> IgnoredMembers(params string[] value);
+
+        IConfigurationBuilder<T> IgnoredMember<TMember>(Expression<Func<T, TMember>> memberSelector);
 
         IConfigurationBuilder<T> IncludeFields(bool? value);
 
-        IConfigurationBuilder<T> MembersOrder(string[] value);
+        IConfigurationBuilder<T> MembersOrder(params string[] value);
 
         IConfigurationBuilder<T> StringComparisonType(StringComparison? value);
     }
