@@ -139,23 +139,6 @@ namespace ILLightenComparer.Config
             return proxy;
         }
 
-        public Configuration Get(Type type)
-        {
-            return _configurations.TryGetValue(type, out var configuration)
-                       ? configuration
-                       : _default;
-        }
-
-        public IComparer<T> GetCustomComparer<T>()
-        {
-            return _customComparers.TryGetValue(typeof(T), out var comparer) ? (IComparer<T>)comparer : null;
-        }
-
-        public bool HasCustomComparer(Type type)
-        {
-            return _customComparers.ContainsKey(type);
-        }
-
         public IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance)
         {
             return SetCustomComparer(typeof(T), instance);
@@ -174,6 +157,23 @@ namespace ILLightenComparer.Config
             var comparer = genericType.Create<TComparer>();
 
             return SetCustomComparer(type, comparer);
+        }
+
+        public Configuration Get(Type type)
+        {
+            return _configurations.TryGetValue(type, out var configuration)
+                       ? configuration
+                       : _default;
+        }
+
+        public IComparer<T> GetCustomComparer<T>()
+        {
+            return _customComparers.TryGetValue(typeof(T), out var comparer) ? (IComparer<T>)comparer : null;
+        }
+
+        public bool HasCustomComparer(Type type)
+        {
+            return _customComparers.ContainsKey(type);
         }
 
         private ConfigurationProvider SetCustomComparer(Type type, object instance)

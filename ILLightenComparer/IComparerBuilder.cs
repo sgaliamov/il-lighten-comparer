@@ -96,8 +96,6 @@ namespace ILLightenComparer
     public interface IComparerProvider
     {
         IComparer<T> GetComparer<T>();
-
-        //IEqualityComparer<T> GetEqualityComparer<T>();
     }
 
     public interface IComparerProvider<in T>
@@ -105,7 +103,5 @@ namespace ILLightenComparer
         IComparer<T> GetComparer();
 
         IComparer<TOther> GetComparer<TOther>();
-
-        //IEqualityComparer<T> GetEqualityComparer();
     }
 }
