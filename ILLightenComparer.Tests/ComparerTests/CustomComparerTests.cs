@@ -21,11 +21,11 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var expected1 = x.Item1.CompareTo(y.Item1);
                 var expected2 = x.Item2?.CompareTo(y.Item2) ?? _fixture.Create<int>();
 
-                var builder = new ComparerBuilder().SetCustomComparer(new CustomisableComparer<string>((a, b) => 0));
+                var builder = new ComparerBuilder(c => c.SetCustomComparer(new CustomisableComparer<string>((a, b) => 0)));
                 var comparer1 = builder.GetComparer<Tuple<int, string>>();
                 var comparer2 = builder
-                                .SetCustomComparer<string>(null)
-                                .SetCustomComparer(new CustomisableComparer<int>((a, b) => 0))
+                                .Configure(c => c.SetCustomComparer<string>(null)
+                                                 .SetCustomComparer(new CustomisableComparer<int>((a, b) => 0)))
                                 .GetComparer<Tuple<int, string>>();
 
                 comparer1.Compare(x, y).Should().Be(expected1);
@@ -44,9 +44,9 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var builder = new ComparerBuilder();
             var comparer = builder
-                           .SetCustomComparer<SampleStructCustomComparer>()
+                           .Configure(c => c.SetCustomComparer<SampleStructCustomComparer>())
                            .GetComparer<SampleObject<SampleStruct<string>>>();
-            builder.SetCustomComparer<SampleStruct<string>>(null);
+            builder.Configure(c => c.SetCustomComparer<SampleStruct<string>>(null));
 
             comparer.Compare(x, y).Should().Be(expected);
         }
@@ -59,9 +59,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
                 var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
 
-                var comparer = new ComparerBuilder()
-                               .SetCustomComparer<SampleStructCustomComparer>()
-                               .GetComparer<SampleObject<SampleStruct<string>>>();
+                var comparer = new ComparerBuilder(c => c.SetCustomComparer<SampleStructCustomComparer>())
+                    .GetComparer<SampleObject<SampleStruct<string>>>();
 
                 comparer.Compare(x, y).Should().Be(0);
             });
@@ -96,9 +95,9 @@ namespace ILLightenComparer.Tests.ComparerTests
                 }));
                 var expected = referenceComparer.Compare(x, y);
 
-                var comparer = new ComparerBuilder(c => c.DefaultIgnoreCollectionOrder(true))
-                               .SetCustomComparer(new CustomisableComparer<int>((a, b) => 0))
-                               .GetComparer<SampleObject<int[]>>();
+                var comparer = new ComparerBuilder(c => c.DefaultIgnoreCollectionOrder(true)
+                                                         .SetCustomComparer(new CustomisableComparer<int>((a, b) => 0)))
+                    .GetComparer<SampleObject<int[]>>();
 
                 var actual = comparer.Compare(x, y);
 
@@ -114,9 +113,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var x = _fixture.Create<SampleStruct<string>>();
                 var y = _fixture.Create<SampleStruct<string>>();
 
-                var comparer = new ComparerBuilder()
-                               .SetCustomComparer<SampleStructCustomComparer>()
-                               .GetComparer<SampleStruct<string>>();
+                var comparer = new ComparerBuilder(c => c.SetCustomComparer<SampleStructCustomComparer>())
+                    .GetComparer<SampleStruct<string>>();
 
                 comparer.Compare(x, y).Should().Be(0);
             });
@@ -129,9 +127,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             var y = _fixture.Create<Tuple<int, string>>();
             var expected = x.Item1.CompareTo(y.Item1);
 
-            var comparer = new ComparerBuilder()
-                           .SetCustomComparer(new CustomisableComparer<string>((a, b) => 0))
-                           .GetComparer<Tuple<int, string>>();
+            var comparer = new ComparerBuilder(c => c.SetCustomComparer(new CustomisableComparer<string>((a, b) => 0)))
+                .GetComparer<Tuple<int, string>>();
 
             comparer.Compare(x, y).Should().Be(expected);
         }

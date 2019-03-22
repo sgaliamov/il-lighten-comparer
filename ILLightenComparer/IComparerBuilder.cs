@@ -20,10 +20,6 @@ namespace ILLightenComparer
         IComparerBuilder<T> For<T>(Action<IConfigurationBuilder<T>> config);
 
         IComparerBuilder Configure(Action<IConfigurationBuilder> config);
-
-        IComparerBuilder SetCustomComparer<T>(IComparer<T> instance);
-
-        IComparerBuilder SetCustomComparer<TComparer>();
     }
 
     /// <summary>
@@ -74,6 +70,10 @@ namespace ILLightenComparer
         IConfigurationBuilder MembersOrder(Type type, string[] value);
 
         IConfigurationBuilder StringComparisonType(Type type, StringComparison? value);
+
+        IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance);
+
+        IConfigurationBuilder SetCustomComparer<TComparer>();
 
         IConfigurationBuilder<T> Configure<T>(Action<IConfigurationBuilder<T>> config);
     }

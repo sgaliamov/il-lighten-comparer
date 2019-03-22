@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters;
-using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer
 {
@@ -12,7 +11,7 @@ namespace ILLightenComparer
     /// </summary>
     public sealed class ComparerBuilder : IComparerBuilder
     {
-        private ConfigurationProvider _configurationProvider = new ConfigurationProvider();
+        private readonly ConfigurationProvider _configurationProvider = new ConfigurationProvider();
         private Lazy<Context> _context;
 
         public ComparerBuilder()
@@ -45,34 +44,6 @@ namespace ILLightenComparer
             config(_configurationProvider);
 
             // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
-            InitContext();
-
-            return this;
-        }
-
-        public IComparerBuilder SetCustomComparer<T>(IComparer<T> instance)
-        {
-            InitContext();
-
-            _configurationProvider.SetCustomComparer(typeof(T), instance);
-
-            return this;
-        }
-
-        public IComparerBuilder SetCustomComparer<TComparer>()
-        {
-            var genericType = typeof(TComparer);
-            var genericInterface = genericType.GetGenericInterface(typeof(IComparer<>));
-            if (genericInterface == null)
-            {
-                throw new ArgumentException($"{nameof(TComparer)} is not generic {typeof(IComparer<>)}");
-            }
-
-            var type = genericInterface.GenericTypeArguments[0];
-            var comparer = genericType.Create<TComparer>();
-
-            _configurationProvider.SetCustomComparer(type, comparer);
-
             InitContext();
 
             return this;
@@ -113,7 +84,7 @@ namespace ILLightenComparer
             {
                 _subject._configurationProvider.Configure(config);
 
-                _subject.InitContext(); // todo: test
+                _subject.InitContext(); // todo: test init order
 
                 return this;
             }
@@ -129,11 +100,6 @@ namespace ILLightenComparer
             {
                 return _subject.GetComparer<TOther>();
             }
-
-            //public IEqualityComparer<T> GetEqualityComparer()
-            //{
-            //    return _subject.GetEqualityComparer<T>();
-            //}
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Config
@@ -155,15 +156,38 @@ namespace ILLightenComparer.Config
             return _customComparers.ContainsKey(type);
         }
 
-        public void SetCustomComparer(Type type, object instance)
+        public IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance)
+        {
+            return SetCustomComparer(typeof(T), instance);
+        }
+
+        public IConfigurationBuilder SetCustomComparer<TComparer>()
+        {
+            var genericType = typeof(TComparer);
+            var genericInterface = genericType.GetGenericInterface(typeof(IComparer<>));
+            if (genericInterface == null)
+            {
+                throw new ArgumentException($"{nameof(TComparer)} is not generic {typeof(IComparer<>)}");
+            }
+
+            var type = genericInterface.GenericTypeArguments[0];
+            var comparer = genericType.Create<TComparer>();
+
+            return SetCustomComparer(type, comparer);
+        }
+
+        private ConfigurationProvider SetCustomComparer(Type type, object instance)
         {
             if (instance == null)
             {
                 _customComparers.TryRemove(type, out _);
-                return;
+            }
+            else
+            {
+                _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
             }
 
-            _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
+            return this;
         }
 
         private Configuration GetOrCreate(Type type)
