@@ -49,12 +49,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         private static IComparer<AbstractMembers> CreateComparer()
         {
             return new ComparerBuilder()
-                   .For<AnotherNestedObject>(c => c.OrderMembers(new[]
-                   {
-                       nameof(AnotherNestedObject.Value),
-                       nameof(AnotherNestedObject.Key),
-                       nameof(AnotherNestedObject.Text)
-                   }))
+                   .For<AnotherNestedObject>(c => c.OrderMembers(order =>
+                       order.Member(o => o.Value)
+                            .Member(o => o.Key)
+                            .Member(o => o.Text)
+                   ))
                    .For<AbstractMembers>()
                    .GetComparer();
         }

@@ -193,10 +193,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             actual.Should().BePositive();
         }
 
-        private IComparer<SelfSealed> ComparerSelfSealed =>
-            _builder.For<SelfSealed>(c => c.IgnoreMember(new[] { nameof(SelfSealed.Id) }))
-                    .GetComparer();
-
+        private IComparer<SelfSealed> ComparerSelfSealed => _builder.For<SelfSealed>(c => c.IgnoreMember(o => o.Id)).GetComparer();
         private readonly Fixture _fixture;
         private IComparer<SelfOpened> ComparerSelfOpened => _builder.For<SelfOpened>().GetComparer();
         private IComparer<OneSealed> ComparerForOneSealed => _builder.For<OneSealed>().GetComparer();

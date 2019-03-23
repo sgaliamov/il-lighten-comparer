@@ -71,13 +71,6 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultMembersOrder(string[] value)
-        {
-            _default.SetMembersOrder(value ?? MembersOrderDefault);
-
-            return this;
-        }
-
         public IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value)
         {
             _default.StringComparisonType = value ?? StringComparisonTypeDefault;
@@ -115,9 +108,16 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder OrderMembers(Type type, string[] value)
+        public IConfigurationBuilder OrderMembers<T>(Action<IMembersOrder<T>> order)
         {
-            GetOrCreate(type).SetMembersOrder(value ?? MembersOrderDefault);
+            if (order == null)
+            {
+                GetOrCreate(typeof(T)).SetMembersOrder(MembersOrderDefault);
+            }
+
+            var members = new List<string>();
+
+            GetOrCreate(typeof(T)).SetMembersOrder(members);
 
             return this;
         }
@@ -248,9 +248,9 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> OrderMembers(string[] value)
+            public IConfigurationBuilder<T> OrderMembers(Action<IMembersOrder<T>> order)
             {
-                _subject.OrderMembers(typeof(T), value);
+                _subject.OrderMembers(order);
 
                 return this;
             }

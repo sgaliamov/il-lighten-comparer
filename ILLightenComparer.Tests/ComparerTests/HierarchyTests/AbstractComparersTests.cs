@@ -21,7 +21,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public void Comparison_uses_only_members_of_base_class()
         {
             var builder = new ComparerBuilder().For<BaseNestedObject>(
-                c => c.DetectCycles(false).IgnoreMember(new[] { nameof(BaseNestedObject.Key) }));
+                c => c.DetectCycles(false).IgnoreMember(o => o.Key));
 
             Test(builder);
         }
