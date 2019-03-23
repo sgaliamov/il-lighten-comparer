@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -69,22 +68,20 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         [Fact]
         public void Cycle_detection_in_multiple_threads_works()
         {
-            Helper.Parallel(
-                () =>
-                {
-                    var comparer = new ComparerBuilder().GetComparer<OneSealed>();
+            Helper.Parallel(() =>
+            {
+                var comparer = new ComparerBuilder().GetComparer<OneSealed>();
 
-                    var one = _fixture.Create<OneSealed>();
-                    var other = _fixture.Create<OneSealed>();
-                    one.Two.Three.One = one;
-                    other.Two.Three.One = other;
+                var one = _fixture.Create<OneSealed>();
+                var other = _fixture.Create<OneSealed>();
+                one.Two.Three.One = one;
+                other.Two.Three.One = other;
 
-                    var expected = one.Value.CompareTo(other.Value);
-                    var actual = comparer.Compare(one, other);
+                var expected = one.Value.CompareTo(other.Value);
+                var actual = comparer.Compare(one, other);
 
-                    actual.Should().Be(expected);
-                },
-                Environment.ProcessorCount * 10);
+                actual.Should().Be(expected);
+            });
         }
 
         [Fact]

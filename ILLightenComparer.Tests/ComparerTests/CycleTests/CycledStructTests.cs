@@ -10,12 +10,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         public CycledStructTests()
         {
             _builder = new ComparerBuilder(config =>
-                           config.OrderMembers<CycledStruct>(
+                           config.DefineMembersOrder<CycledStruct>(
                                order => order.Member(o => o.Property)
                                              .Member(o => o.FirstObject)
                                              .Member(o => o.SecondObject)))
                        .For<CycledStructObject>(config =>
-                           config.OrderMembers(order =>
+                           config.DefineMembersOrder(order =>
                                      order.Member(o => o.TextField)
                                           .Member(o => o.FirstStruct)
                                           .Member(o => o.SecondStruct))

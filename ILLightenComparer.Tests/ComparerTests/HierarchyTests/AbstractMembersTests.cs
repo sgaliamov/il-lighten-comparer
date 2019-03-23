@@ -165,11 +165,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 .For<SealedNestedObject>(c =>
                     c.IgnoreMember(o => o.DeepNestedField)
                      .IgnoreMember(o => o.DeepNestedProperty)
-                     .OrderMembers(order =>
+                     .DefineMembersOrder(order =>
                          order.Member(o => o.Key)
                               .Member(o => o.Text)))
                 .For<AnotherNestedObject>(c => c
-                    .OrderMembers(order =>
+                    .DefineMembersOrder(order =>
                         order.Member(o => o.Value)
                              .Member(o => o.Key)
                              .Member(o => o.Text))

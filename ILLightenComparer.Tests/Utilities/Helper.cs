@@ -58,6 +58,11 @@ namespace ILLightenComparer.Tests.Utilities
             return value;
         }
 
+        public static void Parallel(ThreadStart action)
+        {
+            Parallel(action, Environment.ProcessorCount * 10);
+        }
+
         public static void Parallel(ThreadStart action, int count)
         {
             var threads = Enumerable

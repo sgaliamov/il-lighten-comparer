@@ -59,7 +59,7 @@ namespace ILLightenComparer
 
     public interface IMembersOrder<T>
     {
-        IMembersOrder<T> Member<TMember>(Expression<Func<T, TMember>> memberSelector);
+        IMembersOrder<T> Member<TMember>(Expression<Func<T, TMember>> selector);
     }
 
     public interface IConfigurationBuilder : IDefaultConfigurationBuilder
@@ -68,11 +68,11 @@ namespace ILLightenComparer
 
         IConfigurationBuilder IgnoreCollectionsOrder(Type type, bool? value);
 
-        IConfigurationBuilder IgnoreMember<T, TMember>(params Expression<Func<T, TMember>>[] memberSelectors);
+        IConfigurationBuilder IgnoreMember<T, TMember>(params Expression<Func<T, TMember>>[] selectors);
 
         IConfigurationBuilder IncludeFields(Type type, bool? value);
 
-        IConfigurationBuilder OrderMembers<T>(Action<IMembersOrder<T>> order);
+        IConfigurationBuilder DefineMembersOrder<T>(Action<IMembersOrder<T>> order);
 
         IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value);
 
@@ -89,11 +89,11 @@ namespace ILLightenComparer
 
         IConfigurationBuilder<T> IgnoreCollectionsOrder(bool? value);
 
-        IConfigurationBuilder<T> IgnoreMember<TMember>(params Expression<Func<T, TMember>>[] memberSelectors);
+        IConfigurationBuilder<T> IgnoreMember<TMember>(params Expression<Func<T, TMember>>[] selectors);
 
         IConfigurationBuilder<T> IncludeFields(bool? value);
 
-        IConfigurationBuilder<T> OrderMembers(Action<IMembersOrder<T>> order);
+        IConfigurationBuilder<T> DefineMembersOrder(Action<IMembersOrder<T>> order);
 
         IConfigurationBuilder<T> SetStringComparisonType(StringComparison? value);
     }

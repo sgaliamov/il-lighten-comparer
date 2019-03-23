@@ -15,7 +15,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             _comparer = new ComparerBuilder()
                         .Configure(builder => builder
                             .ConfigureFor<NestedStruct>(c => c
-                                .OrderMembers(order => order.Member(o => o.Property)
+                                .DefineMembersOrder(order => order.Member(o => o.Property)
                                                             .Member(o => o.NullableProperty))))
                         .For<HierarchicalObject>()
                         .Configure(c => c.IgnoreMember(o => o.ComparableField)
@@ -71,17 +71,17 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public void Run_generic_tests()
         {
             var builder = new ComparerBuilder()
-                          .For<SealedNestedObject>(config => config.OrderMembers(order =>
+                          .For<SealedNestedObject>(config => config.DefineMembersOrder(order =>
                               order.Member(o => o.DeepNestedField)
                                    .Member(o => o.DeepNestedProperty)
                                    .Member(o => o.Key)
                                    .Member(o => o.Text)
                           ))
-                          .For<NestedStruct>(config => config.OrderMembers(order =>
+                          .For<NestedStruct>(config => config.DefineMembersOrder(order =>
                               order.Member(o => o.Property)
                                    .Member(o => o.NullableProperty)
                           ))
-                          .For<HierarchicalObject>(config => config.OrderMembers(order =>
+                          .For<HierarchicalObject>(config => config.DefineMembersOrder(order =>
                               order.Member(o => o.ComparableField)
                                    .Member(o => o.Value)
                                    .Member(o => o.FirstProperty)

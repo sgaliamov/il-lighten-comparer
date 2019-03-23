@@ -92,9 +92,9 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder IgnoreMember<T, TMember>(Expression<Func<T, TMember>>[] memberSelectors)
+        public IConfigurationBuilder IgnoreMember<T, TMember>(Expression<Func<T, TMember>>[] selectors)
         {
-            var members = GetMembers(memberSelectors);
+            var members = GetMembers(selectors);
 
             GetOrCreate(typeof(T)).SetIgnoredMembers(members);
 
@@ -108,16 +108,20 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder OrderMembers<T>(Action<IMembersOrder<T>> order)
+        public IConfigurationBuilder DefineMembersOrder<T>(Action<IMembersOrder<T>> order)
         {
             if (order == null)
             {
                 GetOrCreate(typeof(T)).SetMembersOrder(MembersOrderDefault);
+
+                return this;
             }
 
-            var members = new List<string>();
+            var members = new MembersOrder<T>();
 
-            GetOrCreate(typeof(T)).SetMembersOrder(members);
+            order(members);
+
+            GetOrCreate(typeof(T)).SetMembersOrder(members.Order);
 
             return this;
         }
@@ -174,24 +178,6 @@ namespace ILLightenComparer.Config
             return _customComparers.ContainsKey(type);
         }
 
-        private static string[] GetMembers<T, TMember>(Expression<Func<T, TMember>>[] memberSelectors)
-        {
-            var members = memberSelectors
-                          ?.Select((selector, index) =>
-                          {
-                              if (selector.Body.NodeType != ExpressionType.MemberAccess)
-                              {
-                                  throw new ArgumentException($"Member selector is expected at {index}.", nameof(memberSelectors));
-                              }
-
-                              var body = (MemberExpression)selector.Body;
-
-                              return body.Member.Name;
-                          })
-                          .ToArray();
-            return members;
-        }
-
         private ConfigurationProvider SetCustomComparer(Type type, object instance)
         {
             if (instance == null)
@@ -209,6 +195,37 @@ namespace ILLightenComparer.Config
         private Configuration GetOrCreate(Type type)
         {
             return _configurations.GetOrAdd(type, _ => new Configuration(_default));
+        }
+
+        private static string[] GetMembers<T, TMember>(IEnumerable<Expression<Func<T, TMember>>> memberSelectors)
+        {
+            return memberSelectors?.Select(GetMemberName).ToArray();
+        }
+
+        private static string GetMemberName<T, TMember>(Expression<Func<T, TMember>> selector)
+        {
+            if (selector.Body.NodeType != ExpressionType.MemberAccess)
+            {
+                throw new ArgumentException("Member selector is expected.", nameof(selector));
+            }
+
+            var body = (MemberExpression)selector.Body;
+
+            return body.Member.Name;
+        }
+
+        private sealed class MembersOrder<T> : IMembersOrder<T>
+        {
+            private readonly List<string> _order = new List<string>();
+
+            public IEnumerable<string> Order => _order;
+
+            public IMembersOrder<T> Member<TMember>(Expression<Func<T, TMember>> selector)
+            {
+                _order.Add(GetMemberName(selector));
+
+                return this;
+            }
         }
 
         private sealed class Proxy<T> : IConfigurationBuilder<T>
@@ -234,9 +251,9 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>>[] memberSelectors)
+            public IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>>[] selectors)
             {
-                _subject.IgnoreMember(memberSelectors);
+                _subject.IgnoreMember(selectors);
 
                 return this;
             }
@@ -248,9 +265,9 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> OrderMembers(Action<IMembersOrder<T>> order)
+            public IConfigurationBuilder<T> DefineMembersOrder(Action<IMembersOrder<T>> order)
             {
-                _subject.OrderMembers(order);
+                _subject.DefineMembersOrder(order);
 
                 return this;
             }
