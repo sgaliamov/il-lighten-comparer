@@ -68,9 +68,8 @@
 - [x] smart `IComparerBuilder`
 - [x] customization setting to override comparer with specific implementation
 - [x] create separate context after set new configuration?
-- [ ] ignore existing `IComparable` implementation
-- [ ] define order for members using expressions, order of generated code affects sorting
-- [ ] use expressions to define ignored properties
+- [x] define order for members using expressions, order of generated code affects sorting
+- [x] use expressions to define ignored properties
 
 ## Phase 5 Release One
 
@@ -89,7 +88,7 @@
 
 - [ ] implement `Equals`
 
-## Phase 8 Optimizations
+## Phase 8 Improvements
 
 - [x] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
 - [x] reuse local variables for same types
@@ -97,6 +96,7 @@
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
 - [x] cache instances by type and **configuration** in `Context.GetComparerType`
+- [ ] ignore existing `IComparable` implementation
 - [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need to have deal with addresses?
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
 - [ ] optimization for a last member - just return its result
