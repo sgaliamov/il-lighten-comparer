@@ -15,9 +15,6 @@ skip_tags: true
 
 skip_branch_with_pr: true
 
-pull_requests:
-  do_not_increment_build_number: true
-
 environment:
   project: .\src\ILLightenComparer\ILLightenComparer.csproj
 
