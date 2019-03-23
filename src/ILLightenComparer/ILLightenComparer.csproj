@@ -1,16 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/sgaliamov/il-lighten-comparer.git</RepositoryUrl>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/sgaliamov/il-lighten-comparer/master/LICENSE</PackageLicenseUrl>
+        <PackageTags></PackageTags>
+        <PackageProjectUrl>https://sgaliamov.github.io/il-lighten-comparer/</PackageProjectUrl>
+        <Version></Version>
+        <AssemblyVersion></AssemblyVersion>
+        <FileVersion></FileVersion>
+        <Description></Description>
+    </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'!='Debug'">
-    <Compile Remove="Shared\ILEmitter.debug.cs" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)'!='Debug'">
+        <Compile Remove="Shared\ILEmitter.debug.cs" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+    </ItemGroup>
 
 </Project>
