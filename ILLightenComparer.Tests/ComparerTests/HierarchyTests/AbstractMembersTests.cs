@@ -163,22 +163,17 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         private readonly IComparer<AbstractMembers> _comparer =
             new ComparerBuilder()
                 .For<SealedNestedObject>(c =>
-                    c.IgnoredMembers(new[]
-                     {
-                         nameof(SealedNestedObject.DeepNestedField),
-                         nameof(SealedNestedObject.DeepNestedProperty)
-                     })
-                     .MembersOrder(new[]
-                     {
-                         nameof(SealedNestedObject.Key),
-                         nameof(SealedNestedObject.Text)
-                     }))
-                .For<AnotherNestedObject>(c => c.MembersOrder(new[]
-                {
-                    nameof(AnotherNestedObject.Value),
-                    nameof(AnotherNestedObject.Key),
-                    nameof(AnotherNestedObject.Text)
-                }))
+                    c.IgnoreMember(o => o.DeepNestedField)
+                     .IgnoreMember(o => o.DeepNestedProperty)
+                     .DefineMembersOrder(order =>
+                         order.Member(o => o.Key)
+                              .Member(o => o.Text)))
+                .For<AnotherNestedObject>(c => c
+                    .DefineMembersOrder(order =>
+                        order.Member(o => o.Value)
+                             .Member(o => o.Key)
+                             .Member(o => o.Text))
+                )
                 .For<AbstractMembers>()
                 .GetComparer();
     }

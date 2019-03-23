@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
@@ -26,35 +25,32 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             };
 
             Helper.Parallel(() =>
+            {
+                var comparer = CreateComparer();
+
+                var other = new AbstractMembers
                 {
-                    var comparer = CreateComparer();
+                    NotSealedProperty = _fixture.Create<AnotherNestedObject>()
+                };
 
-                    var other = new AbstractMembers
-                    {
-                        NotSealedProperty = _fixture.Create<AnotherNestedObject>()
-                    };
+                var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
 
-                    var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
-
-                    Helper.Parallel(() =>
-                        {
-                            var actual = comparer.Compare(one, other).Normalize();
-                            actual.Should().Be(expected);
-                        },
-                        Environment.ProcessorCount);
-                },
-                Environment.ProcessorCount * 10);
+                Helper.Parallel(() =>
+                {
+                    var actual = comparer.Compare(one, other).Normalize();
+                    actual.Should().Be(expected);
+                });
+            });
         }
 
         private static IComparer<AbstractMembers> CreateComparer()
         {
             return new ComparerBuilder()
-                   .For<AnotherNestedObject>(c => c.MembersOrder(new[]
-                   {
-                       nameof(AnotherNestedObject.Value),
-                       nameof(AnotherNestedObject.Key),
-                       nameof(AnotherNestedObject.Text)
-                   }))
+                   .For<AnotherNestedObject>(c => c.DefineMembersOrder(
+                       order => order.Member(o => o.Value)
+                                     .Member(o => o.Key)
+                                     .Member(o => o.Text)
+                   ))
                    .For<AbstractMembers>()
                    .GetComparer();
         }

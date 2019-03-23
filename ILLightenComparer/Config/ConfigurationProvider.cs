@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 
@@ -24,6 +25,7 @@ namespace ILLightenComparer.Config
         private const bool IgnoreCollectionOrderDefault = false;
         private static readonly string[] IgnoredMembersDefault = new string[0];
         private static readonly string[] MembersOrderDefault = new string[0];
+
         private readonly Configurations _configurations;
         private readonly ComparersCollection _customComparers;
 
@@ -48,42 +50,28 @@ namespace ILLightenComparer.Config
             _default = new Configuration(provider._default);
         }
 
-        public IConfigurationBuilder DefaultDetectCycles(bool? value)
+        public IConfigurationBuilder SetDefaultCyclesDetection(bool? value)
         {
             _default.DetectCycles = value ?? DetectCyclesDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder DefaultIgnoreCollectionOrder(bool? value)
+        public IConfigurationBuilder SetDefaultCollectionsOrderIgnoring(bool? value)
         {
             _default.IgnoreCollectionOrder = value ?? IgnoreCollectionOrderDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder DefaultIgnoredMembers(string[] value)
-        {
-            _default.SetIgnoredMembers(value ?? IgnoredMembersDefault);
-
-            return this;
-        }
-
-        public IConfigurationBuilder DefaultIncludeFields(bool? value)
+        public IConfigurationBuilder SetDefaultFieldsInclusion(bool? value)
         {
             _default.IncludeFields = value ?? IncludeFieldsDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder DefaultMembersOrder(string[] value)
-        {
-            _default.SetMembersOrder(value ?? MembersOrderDefault);
-
-            return this;
-        }
-
-        public IConfigurationBuilder DefaultStringComparisonType(StringComparison? value)
+        public IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value)
         {
             _default.StringComparisonType = value ?? StringComparisonTypeDefault;
 
@@ -97,16 +85,18 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder IgnoreCollectionOrder(Type type, bool? value)
+        public IConfigurationBuilder IgnoreCollectionsOrder(Type type, bool? value)
         {
             GetOrCreate(type).IgnoreCollectionOrder = value ?? IgnoreCollectionOrderDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder IgnoredMembers(Type type, string[] value)
+        public IConfigurationBuilder IgnoreMember<T, TMember>(Expression<Func<T, TMember>>[] selectors)
         {
-            GetOrCreate(type).SetIgnoredMembers(value ?? IgnoredMembersDefault);
+            var members = GetMembers(selectors);
+
+            GetOrCreate(typeof(T)).SetIgnoredMembers(members);
 
             return this;
         }
@@ -118,14 +108,25 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder MembersOrder(Type type, string[] value)
+        public IConfigurationBuilder DefineMembersOrder<T>(Action<IMembersOrder<T>> order)
         {
-            GetOrCreate(type).SetMembersOrder(value ?? MembersOrderDefault);
+            if (order == null)
+            {
+                GetOrCreate(typeof(T)).SetMembersOrder(MembersOrderDefault);
+
+                return this;
+            }
+
+            var members = new MembersOrder<T>();
+
+            order(members);
+
+            GetOrCreate(typeof(T)).SetMembersOrder(members.Order);
 
             return this;
         }
 
-        public IConfigurationBuilder StringComparisonType(Type type, StringComparison? value)
+        public IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value)
         {
             GetOrCreate(type).StringComparisonType = value ?? StringComparisonTypeDefault;
 
@@ -196,7 +197,38 @@ namespace ILLightenComparer.Config
             return _configurations.GetOrAdd(type, _ => new Configuration(_default));
         }
 
-        private class Proxy<T> : IConfigurationBuilder<T>
+        private static string[] GetMembers<T, TMember>(IEnumerable<Expression<Func<T, TMember>>> memberSelectors)
+        {
+            return memberSelectors?.Select(GetMemberName).ToArray();
+        }
+
+        private static string GetMemberName<T, TMember>(Expression<Func<T, TMember>> selector)
+        {
+            if (selector.Body.NodeType != ExpressionType.MemberAccess)
+            {
+                throw new ArgumentException("Member selector is expected.", nameof(selector));
+            }
+
+            var body = (MemberExpression)selector.Body;
+
+            return body.Member.Name;
+        }
+
+        private sealed class MembersOrder<T> : IMembersOrder<T>
+        {
+            private readonly List<string> _order = new List<string>();
+
+            public IEnumerable<string> Order => _order;
+
+            public IMembersOrder<T> Member<TMember>(Expression<Func<T, TMember>> selector)
+            {
+                _order.Add(GetMemberName(selector));
+
+                return this;
+            }
+        }
+
+        private sealed class Proxy<T> : IConfigurationBuilder<T>
         {
             private readonly ConfigurationProvider _subject;
 
@@ -212,16 +244,16 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoreCollectionOrder(bool? value)
+            public IConfigurationBuilder<T> IgnoreCollectionsOrder(bool? value)
             {
-                _subject.IgnoreCollectionOrder(typeof(T), value);
+                _subject.IgnoreCollectionsOrder(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoredMembers(string[] value)
+            public IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>>[] selectors)
             {
-                _subject.IgnoredMembers(typeof(T), value);
+                _subject.IgnoreMember(selectors);
 
                 return this;
             }
@@ -233,16 +265,16 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> MembersOrder(string[] value)
+            public IConfigurationBuilder<T> DefineMembersOrder(Action<IMembersOrder<T>> order)
             {
-                _subject.MembersOrder(typeof(T), value);
+                _subject.DefineMembersOrder(order);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> StringComparisonType(StringComparison? value)
+            public IConfigurationBuilder<T> SetStringComparisonType(StringComparison? value)
             {
-                _subject.StringComparisonType(typeof(T), value);
+                _subject.SetStringComparisonType(typeof(T), value);
 
                 return this;
             }
