@@ -13,7 +13,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public HierarchyTests()
         {
             _comparer = new ComparerBuilder()
-                        .Configure(builder => builder.ConfigureFor<NestedStruct>(config => config.MembersOrder(new[]
+                        .Configure(builder => builder.ConfigureFor<NestedStruct>(config => config.OrderMembers(new[]
                         {
                             nameof(NestedStruct.Property),
                             nameof(NestedStruct.NullableProperty)
@@ -74,19 +74,19 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public void Run_generic_tests()
         {
             var builder = new ComparerBuilder()
-                          .For<SealedNestedObject>(config => config.MembersOrder(new[]
+                          .For<SealedNestedObject>(config => config.OrderMembers(new[]
                           {
                               nameof(SealedNestedObject.DeepNestedField),
                               nameof(SealedNestedObject.DeepNestedProperty),
                               nameof(SealedNestedObject.Key),
                               nameof(SealedNestedObject.Text)
                           }))
-                          .For<NestedStruct>(config => config.MembersOrder(new[]
+                          .For<NestedStruct>(config => config.OrderMembers(new[]
                           {
                               nameof(NestedStruct.Property),
                               nameof(NestedStruct.NullableProperty)
                           }))
-                          .For<HierarchicalObject>(config => config.MembersOrder(new[]
+                          .For<HierarchicalObject>(config => config.OrderMembers(new[]
                           {
                               nameof(HierarchicalObject.ComparableField),
                               nameof(HierarchicalObject.Value),

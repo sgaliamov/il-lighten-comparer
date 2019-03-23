@@ -168,12 +168,12 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                          nameof(SealedNestedObject.DeepNestedField),
                          nameof(SealedNestedObject.DeepNestedProperty)
                      })
-                     .MembersOrder(new[]
+                     .OrderMembers(new[]
                      {
                          nameof(SealedNestedObject.Key),
                          nameof(SealedNestedObject.Text)
                      }))
-                .For<AnotherNestedObject>(c => c.MembersOrder(new[]
+                .For<AnotherNestedObject>(c => c.OrderMembers(new[]
                 {
                     nameof(AnotherNestedObject.Value),
                     nameof(AnotherNestedObject.Key),

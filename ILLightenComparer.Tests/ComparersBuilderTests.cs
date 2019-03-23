@@ -22,6 +22,6 @@ namespace ILLightenComparer.Tests
         //    comparer.Should().NotBeNull();
         //}
 
-        private readonly IComparerBuilder _builder = new ComparerBuilder(config => config.DefaultIncludeFields(false));
+        private readonly IComparerBuilder _builder = new ComparerBuilder(config => config.SetDefaultFieldsInclusion(false));
     }
 }

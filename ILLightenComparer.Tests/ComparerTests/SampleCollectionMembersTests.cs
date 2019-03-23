@@ -79,7 +79,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Ignoring_order_does_not_add_side_effect_for<TElement>()
         {
-            var comparer = new ComparerBuilder(c => c.DefaultIgnoreCollectionOrder(true)).GetComparer<TElement[]>();
+            var comparer = new ComparerBuilder(c => c.SetDefaultCollectionsOrderIgnoring(true)).GetComparer<TElement[]>();
 
             var fixture = FixtureBuilder.GetInstance();
             var sample = fixture.Create<TElement[]>();

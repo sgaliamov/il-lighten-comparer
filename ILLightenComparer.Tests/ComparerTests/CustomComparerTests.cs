@@ -95,7 +95,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 }));
                 var expected = referenceComparer.Compare(x, y);
 
-                var comparer = new ComparerBuilder(c => c.DefaultIgnoreCollectionOrder(true)
+                var comparer = new ComparerBuilder(c => c.SetDefaultCollectionsOrderIgnoring(true)
                                                          .SetCustomComparer(new CustomisableComparer<int>((a, b) => 0)))
                     .GetComparer<SampleObject<int[]>>();
 

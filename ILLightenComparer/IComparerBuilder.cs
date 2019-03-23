@@ -46,31 +46,34 @@ namespace ILLightenComparer
         IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config);
     }
 
-    public interface IConfigurationBuilder
+    public interface IDefaultConfigurationBuilder
     {
-        IConfigurationBuilder DefaultDetectCycles(bool? value);
+        IConfigurationBuilder SetDefaultCyclesDetection(bool? value);
 
-        IConfigurationBuilder DefaultIgnoreCollectionOrder(bool? value);
+        IConfigurationBuilder SetDefaultCollectionsOrderIgnoring(bool? value);
 
-        IConfigurationBuilder DefaultIgnoredMembers(params string[] value);
+        IConfigurationBuilder SetDefaultIgnoredMembers(params string[] value);
 
-        IConfigurationBuilder DefaultIncludeFields(bool? value);
+        IConfigurationBuilder SetDefaultFieldsInclusion(bool? value);
 
-        IConfigurationBuilder DefaultMembersOrder(params string[] value);
+        IConfigurationBuilder SetDefaultMembersOrder(params string[] value);
 
-        IConfigurationBuilder DefaultStringComparisonType(StringComparison? value);
+        IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value);
+    }
 
+    public interface IConfigurationBuilder : IDefaultConfigurationBuilder
+    {
         IConfigurationBuilder DetectCycles(Type type, bool? value);
 
-        IConfigurationBuilder IgnoreCollectionOrder(Type type, bool? value);
+        IConfigurationBuilder IgnoreCollectionsOrder(Type type, bool? value);
 
         IConfigurationBuilder IgnoreMembers(Type type, params string[] value);
 
         IConfigurationBuilder IncludeFields(Type type, bool? value);
 
-        IConfigurationBuilder MembersOrder(Type type, params string[] value);
+        IConfigurationBuilder OrderMembers(Type type, params string[] value);
 
-        IConfigurationBuilder StringComparisonType(Type type, StringComparison? value);
+        IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value);
 
         IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance);
 
@@ -83,7 +86,7 @@ namespace ILLightenComparer
     {
         IConfigurationBuilder<T> DetectCycles(bool? value);
 
-        IConfigurationBuilder<T> IgnoreCollectionOrder(bool? value);
+        IConfigurationBuilder<T> IgnoreCollectionsOrder(bool? value);
 
         IConfigurationBuilder<T> IgnoreMembers(params string[] value);
 
@@ -91,9 +94,9 @@ namespace ILLightenComparer
 
         IConfigurationBuilder<T> IncludeFields(bool? value);
 
-        IConfigurationBuilder<T> MembersOrder(params string[] value);
+        IConfigurationBuilder<T> OrderMembers(params string[] value);
 
-        IConfigurationBuilder<T> StringComparisonType(StringComparison? value);
+        IConfigurationBuilder<T> SetStringComparisonType(StringComparison? value);
     }
 
     public interface IComparerProvider
