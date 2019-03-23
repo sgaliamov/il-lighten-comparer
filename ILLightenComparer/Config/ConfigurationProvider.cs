@@ -99,7 +99,7 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder IgnoreMembers<T, TMember>(Expression<Func<T, TMember>>[] memberSelectors)
+        public IConfigurationBuilder IgnoreMember<T, TMember>(Expression<Func<T, TMember>>[] memberSelectors)
         {
             var members = GetMembers(memberSelectors);
 
@@ -234,9 +234,9 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoreMembers<TMember>(Expression<Func<T, TMember>>[] memberSelectors)
+            public IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>>[] memberSelectors)
             {
-                _subject.IgnoreMembers(memberSelectors);
+                _subject.IgnoreMember(memberSelectors);
 
                 return this;
             }

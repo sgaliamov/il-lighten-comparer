@@ -19,7 +19,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                             nameof(NestedStruct.NullableProperty)
                         })))
                         .For<HierarchicalObject>()
-                        .Configure(config => config.IgnoreMembers(new[]
+                        .Configure(config => config.IgnoreMember(new[]
                         {
                             nameof(HierarchicalObject.ComparableField),
                             nameof(HierarchicalObject.Value),

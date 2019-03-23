@@ -194,7 +194,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         private IComparer<SelfSealed> ComparerSelfSealed =>
-            _builder.For<SelfSealed>(c => c.IgnoreMembers(new[] { nameof(SelfSealed.Id) }))
+            _builder.For<SelfSealed>(c => c.IgnoreMember(new[] { nameof(SelfSealed.Id) }))
                     .GetComparer();
 
         private readonly Fixture _fixture;
