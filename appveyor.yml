@@ -1,6 +1,6 @@
 ﻿image: Ubuntu1804
 
-# version: 0.1.{build}
+version: 0.1.{build}
 
 clone_depth: 1
 
@@ -15,33 +15,36 @@ skip_tags: true
 
 skip_branch_with_pr: true
 
-# pull_requests:
-#   do_not_increment_build_number: true
+pull_requests:
+  do_not_increment_build_number: true
 
-assembly_info:
-  patch: false
+environment:
+  project: .\src\ILLightenComparer\ILLightenComparer.csproj
 
-# dotnet_csproj:
-#   patch: true
-#   file: '**\*.csproj'
-#   version: '{version}'
-#   package_version: '{version}'
-#   assembly_version: '{version}'
-#   file_version: '{version}'
-#   informational_version: '{version}'
+# assembly_info:
+#   patch: false
 
-install:
-  - choco install gitversion.portable -pre -y
+dotnet_csproj:
+  patch: true
+  file: '{project}'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
 
-before_build:
-  - nuget restore
-  - ps: gitversion /l console /output buildserver /updateAssemblyInfo
+# install:
+#   - choco install gitversion.portable -pre -y
+
+# before_build:
+#   - nuget restore
+#   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
 
 build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
-  project: .\src\ILLightenComparer\ILLightenComparer.csproj
+  project: project
 
 deploy:
 - provider: Environment
