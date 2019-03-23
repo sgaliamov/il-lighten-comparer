@@ -18,24 +18,14 @@ skip_branch_with_pr: true
 environment:
   project: .\src\ILLightenComparer\ILLightenComparer.csproj
 
-# assembly_info:
-#   patch: false
-
 dotnet_csproj:
   patch: true
-  file: '{project}'
+  file: '**\*.csproj'
   version: '{version}'
   package_version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'
   informational_version: '{version}'
-
-# install:
-#   - choco install gitversion.portable -pre -y
-
-# before_build:
-#   - nuget restore
-#   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
 
 build:
   publish_nuget: true
@@ -48,9 +38,3 @@ deploy:
   name: appveyor-nuget
   on:
     branch: master
-
-
-# after_build:
-#   - cmd: ECHO nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-#   - cmd: nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-#   - cmd: appveyor PushArtifact "<NuSpec>.%GitVersion_NuGetVersion%.nupkg"
