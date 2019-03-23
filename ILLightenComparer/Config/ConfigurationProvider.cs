@@ -64,13 +64,6 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultIgnoredMembers(string[] value)
-        {
-            _default.SetIgnoredMembers(value ?? IgnoredMembersDefault);
-
-            return this;
-        }
-
         public IConfigurationBuilder SetDefaultFieldsInclusion(bool? value)
         {
             _default.IncludeFields = value ?? IncludeFieldsDefault;
@@ -106,31 +99,13 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder IgnoreMembers(Type type, string[] value)
-        {
-            GetOrCreate(type).SetIgnoredMembers(value);
-
-            return this;
-        }
-
         public IConfigurationBuilder IgnoreMembers<T, TMember>(Expression<Func<T, TMember>>[] memberSelectors)
         {
-            var members = memberSelectors
-                          ?.Select((selector, index) =>
-                          {
-                              if (selector.Body.NodeType != ExpressionType.MemberAccess)
-                              {
-                                  throw new ArgumentException($"Member selector is expected at {index}.", nameof(memberSelectors));
-                              }
+            var members = GetMembers(memberSelectors);
 
-                              var body = (MemberExpression)selector.Body;
+            GetOrCreate(typeof(T)).SetIgnoredMembers(members);
 
-                              return body.Member.Name;
-                          })
-                          .ToArray();
-
-
-            return IgnoreMembers(typeof(T), members);
+            return this;
         }
 
         public IConfigurationBuilder IncludeFields(Type type, bool? value)
@@ -199,6 +174,24 @@ namespace ILLightenComparer.Config
             return _customComparers.ContainsKey(type);
         }
 
+        private static string[] GetMembers<T, TMember>(Expression<Func<T, TMember>>[] memberSelectors)
+        {
+            var members = memberSelectors
+                          ?.Select((selector, index) =>
+                          {
+                              if (selector.Body.NodeType != ExpressionType.MemberAccess)
+                              {
+                                  throw new ArgumentException($"Member selector is expected at {index}.", nameof(memberSelectors));
+                              }
+
+                              var body = (MemberExpression)selector.Body;
+
+                              return body.Member.Name;
+                          })
+                          .ToArray();
+            return members;
+        }
+
         private ConfigurationProvider SetCustomComparer(Type type, object instance)
         {
             if (instance == null)
@@ -237,13 +230,6 @@ namespace ILLightenComparer.Config
             public IConfigurationBuilder<T> IgnoreCollectionsOrder(bool? value)
             {
                 _subject.IgnoreCollectionsOrder(typeof(T), value);
-
-                return this;
-            }
-
-            public IConfigurationBuilder<T> IgnoreMembers(string[] value)
-            {
-                _subject.IgnoreMembers(typeof(T), value);
 
                 return this;
             }

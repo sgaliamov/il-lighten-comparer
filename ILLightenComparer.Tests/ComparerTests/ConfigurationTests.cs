@@ -29,14 +29,12 @@ namespace ILLightenComparer.Tests.ComparerTests
             var expected = new SampleObjectComparer<int>().Compare(x, y);
 
             var builder = new ComparerBuilder();
-            var comparer1 = builder.For<SampleObject<int>>(c => c.IgnoreMembers(
-                                       nameof(SampleObject<int>.Field),
-                                       nameof(SampleObject<int>.Property)))
+            var comparer1 = builder.For<SampleObject<int>>(c => c.IgnoreMembers(o => o.Field, o => o.Property))
                                    .GetComparer();
-            var comparer2 = builder.Configure(c => c.IgnoreMembers(typeof(SampleObject<int>), null))
+            var comparer2 = builder.Configure(c => c.IgnoreMembers<SampleObject<int>, int>(null))
                                    .GetComparer<SampleObject<int>>();
             var comparer3 = builder.Configure(c => c.IgnoreMembers((SampleObject<int> o) => o.Field))
-                                   .Configure(c => c.IgnoreMembers(typeof(SampleObject<int>), null))
+                                   .Configure(c => c.IgnoreMembers<SampleObject<int>, int>(null))
                                    .GetComparer<SampleObject<int>>();
 
             comparer1.Compare(x, y).Should().Be(0);

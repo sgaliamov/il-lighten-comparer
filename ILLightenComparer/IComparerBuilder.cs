@@ -52,11 +52,7 @@ namespace ILLightenComparer
 
         IConfigurationBuilder SetDefaultCollectionsOrderIgnoring(bool? value);
 
-        IConfigurationBuilder SetDefaultIgnoredMembers(params string[] value);
-
         IConfigurationBuilder SetDefaultFieldsInclusion(bool? value);
-
-        IConfigurationBuilder SetDefaultMembersOrder(params string[] value);
 
         IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value);
     }
@@ -66,8 +62,6 @@ namespace ILLightenComparer
         IConfigurationBuilder DetectCycles(Type type, bool? value);
 
         IConfigurationBuilder IgnoreCollectionsOrder(Type type, bool? value);
-
-        IConfigurationBuilder IgnoreMembers(Type type, params string[] value);
 
         IConfigurationBuilder IgnoreMembers<T, TMember>(params Expression<Func<T, TMember>>[] memberSelectors);
 
@@ -89,8 +83,6 @@ namespace ILLightenComparer
         IConfigurationBuilder<T> DetectCycles(bool? value);
 
         IConfigurationBuilder<T> IgnoreCollectionsOrder(bool? value);
-
-        IConfigurationBuilder<T> IgnoreMembers(params string[] value);
 
         IConfigurationBuilder<T> IgnoreMembers<TMember>(params Expression<Func<T, TMember>>[] memberSelectors);
 
