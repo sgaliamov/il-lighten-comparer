@@ -15,8 +15,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var y = _fixture.Create<SampleObject<int>>();
 
             var comparer = new ComparerBuilder()
-                           .For<SampleObject<int>>(c => c.IgnoreMember(o => o.Field)
-                                                         .IgnoreMember(o => o.Property))
+                           .For<SampleObject<int>>(c => c.IgnoreMembers(o => o.Field, o => o.Property))
                            .GetComparer();
 
             comparer.Compare(x, y).Should().Be(0);
@@ -36,9 +35,13 @@ namespace ILLightenComparer.Tests.ComparerTests
                                    .GetComparer();
             var comparer2 = builder.Configure(c => c.IgnoreMembers(typeof(SampleObject<int>), null))
                                    .GetComparer<SampleObject<int>>();
+            var comparer3 = builder.For<SampleObject<int>>(c => c.IgnoreMembers(o => o.Field))
+                                   .Configure(c => c.IgnoreMembers(null))
+                                   .GetComparer();
 
             comparer1.Compare(x, y).Should().Be(0);
             comparer2.Compare(x, y).Should().Be(expected);
+            comparer3.Compare(x, y).Should().Be(expected);
         }
 
         private readonly Fixture _fixture = new Fixture();

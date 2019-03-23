@@ -113,6 +113,35 @@ namespace ILLightenComparer.Config
             return this;
         }
 
+        public IConfigurationBuilder IgnoreMembers<T, TMember>(params Expression<Func<T, TMember>>[] memberSelectors)
+        {
+            if (memberSelectors == null)
+            {
+                IgnoreMembers(typeof(T), null);
+
+                return this;
+            }
+
+            var members = memberSelectors
+                          .Select((selector, index) =>
+                          {
+                              if (selector.Body.NodeType != ExpressionType.MemberAccess)
+                              {
+                                  throw new ArgumentException($"Member selector is expected at {index}.", nameof(memberSelectors));
+                              }
+
+                              var body = (MemberExpression)selector.Body;
+
+                              return body.Member.Name;
+                          })
+                          .ToArray();
+
+
+            IgnoreMembers(typeof(T), members);
+
+            return this;
+        }
+
         public IConfigurationBuilder IncludeFields(Type type, bool? value)
         {
             GetOrCreate(type).IncludeFields = value ?? IncludeFieldsDefault;
@@ -228,16 +257,9 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>> memberSelector)
+            public IConfigurationBuilder<T> IgnoreMembers<TMember>(params Expression<Func<T, TMember>>[] memberSelectors)
             {
-                if (memberSelector.Body.NodeType != ExpressionType.MemberAccess)
-                {
-                    throw new ArgumentException("Member selector is expected.", nameof(memberSelector));
-                }
-
-                var body = (MemberExpression)memberSelector.Body;
-
-                _subject.IgnoreMembers(typeof(T), body.Member.Name);
+                _subject.IgnoreMembers(memberSelectors);
 
                 return this;
             }
