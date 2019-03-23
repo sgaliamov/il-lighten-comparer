@@ -7,14 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILLightenComparer", "ILLigh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILLightenComparer.Tests", "ILLightenComparer.Tests\ILLightenComparer.Tests.csproj", "{35E037F9-65A4-4468-A9BA-BC3A3DC8BC95}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{95D10BD1-83EB-48D7-9C39-311AE089DE0B}"
-	ProjectSection(SolutionItems) = preProject
-		activity-diagram.html = activity-diagram.html
-		readme.md = readme.md
-		reasoning.md = reasoning.md
-		roadmap.md = roadmap.md
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILLightenComparer.Benchmarks", "ILLightenComparer.Benchmarks\ILLightenComparer.Benchmarks.csproj", "{52C5C857-3A08-4D74-B954-1B99FEB403D5}"
 EndProject
 Global
