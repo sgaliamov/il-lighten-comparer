@@ -106,24 +106,17 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder IgnoreMembers(Type type, params string[] value)
+        public IConfigurationBuilder IgnoreMembers(Type type, string[] value)
         {
             GetOrCreate(type).SetIgnoredMembers(value);
 
             return this;
         }
 
-        public IConfigurationBuilder IgnoreMembers<T, TMember>(params Expression<Func<T, TMember>>[] memberSelectors)
+        public IConfigurationBuilder IgnoreMembers<T, TMember>(Expression<Func<T, TMember>>[] memberSelectors)
         {
-            if (memberSelectors == null)
-            {
-                IgnoreMembers(typeof(T), null);
-
-                return this;
-            }
-
             var members = memberSelectors
-                          .Select((selector, index) =>
+                          ?.Select((selector, index) =>
                           {
                               if (selector.Body.NodeType != ExpressionType.MemberAccess)
                               {
@@ -137,9 +130,7 @@ namespace ILLightenComparer.Config
                           .ToArray();
 
 
-            IgnoreMembers(typeof(T), members);
-
-            return this;
+            return IgnoreMembers(typeof(T), members);
         }
 
         public IConfigurationBuilder IncludeFields(Type type, bool? value)
@@ -257,7 +248,7 @@ namespace ILLightenComparer.Config
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoreMembers<TMember>(params Expression<Func<T, TMember>>[] memberSelectors)
+            public IConfigurationBuilder<T> IgnoreMembers<TMember>(Expression<Func<T, TMember>>[] memberSelectors)
             {
                 _subject.IgnoreMembers(memberSelectors);
 
