@@ -1,6 +1,6 @@
 ﻿image: Ubuntu1804
 
-version: 0.1.{build}
+# version: 0.1.{build}
 
 clone_depth: 1
 
@@ -15,17 +15,27 @@ skip_tags: true
 
 skip_branch_with_pr: true
 
-pull_requests:
-  do_not_increment_build_number: true
+# pull_requests:
+#   do_not_increment_build_number: true
 
-dotnet_csproj:
-  patch: true
-  file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
-  assembly_version: '{version}'
-  file_version: '{version}'
-  informational_version: '{version}'
+assembly_info:
+  patch: false
+
+# dotnet_csproj:
+#   patch: true
+#   file: '**\*.csproj'
+#   version: '{version}'
+#   package_version: '{version}'
+#   assembly_version: '{version}'
+#   file_version: '{version}'
+#   informational_version: '{version}'
+
+install:
+  - choco install gitversion.portable -pre -y
+
+before_build:
+  - nuget restore
+  - ps: gitversion /l console /output buildserver /updateAssemblyInfo
 
 build:
   publish_nuget: true
@@ -38,18 +48,6 @@ deploy:
   name: appveyor-nuget
   on:
     branch: master
-
-
-
-# install:
-#   - choco install gitversion.portable -pre -y
-
-# assembly_info:
-#   patch: false
-
-# before_build:
-#   - nuget restore
-#   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
 
 
 # after_build:
