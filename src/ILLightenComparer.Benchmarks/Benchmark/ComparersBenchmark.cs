@@ -10,14 +10,16 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     [RankColumn]
     public class ComparersBenchmark
     {
-        private const int N = 100000;
+        private const int N = 10000;
 
         private static readonly Fixture Fixture = new Fixture();
 
         private static readonly IComparer<MovieSampleObject> Native = MovieSampleObject.Comparer;
 
         private static readonly IComparer<MovieSampleObject> ILLightenComparer
-            = new ComparerBuilder()
+            = new ComparerBuilder(c =>
+                  c.SetDefaultCyclesDetection(false)
+                   .SetDefaultFieldsInclusion(false))
               .For<MovieSampleObject>()
               .GetComparer();
 

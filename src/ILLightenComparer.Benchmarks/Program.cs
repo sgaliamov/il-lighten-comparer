@@ -8,7 +8,9 @@ namespace ILLightenComparer.Benchmarks
     {
         public static void Main(string[] args)
         {
-            var compare = new ComparerBuilder()
+            var compare = new ComparerBuilder(c =>
+                              c.SetDefaultCyclesDetection(false)
+                               .SetDefaultFieldsInclusion(false))
                           .GetComparer<MovieSampleObject>()
                           .Compare(new MovieSampleObject(), new MovieSampleObject());
 

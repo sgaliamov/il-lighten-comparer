@@ -6,7 +6,8 @@
 
 * High performance.
 * Support for complex classes and structures.
-* Configurable.
+* High configurable.
+* Fluent API.
 * Cycle detection.
 * Collections comparison.
 
@@ -23,9 +24,9 @@ Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical core
 ``` c
 |          Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD | Rank |
 |---------------- |---------:|----------:|----------:|---------:|------:|--------:|-----:|
-|     IL_Comparer | 63.23 ms | 1.2523 ms | 2.3827 ms | 63.57 ms |  4.72 |    0.18 |    3 |
-|   Nito_Comparer | 22.49 ms | 0.1738 ms | 0.1626 ms | 22.48 ms |  1.70 |    0.05 |    2 |
-| Native_Comparer | 13.32 ms | 0.2583 ms | 0.3536 ms | 13.21 ms |  1.00 |    0.00 |    1 |
+| Native_Comparer | 1.121 ms | 0.0220 ms | 0.0343 ms | 1.111 ms |  1.00 |    0.00 |    1 |
+|     IL_Comparer | 1.209 ms | 0.0241 ms | 0.0338 ms | 1.207 ms |  1.08 |    0.03 |    2 |
+|   Nito_Comparer | 1.795 ms | 0.0153 ms | 0.0143 ms | 1.793 ms |  1.58 |    0.05 |    3 |
 ```
 
 ## Remarks
