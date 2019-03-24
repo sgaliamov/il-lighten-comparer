@@ -15,23 +15,18 @@ skip_tags: true
 
 skip_branch_with_pr: true
 
-environment:
-  project: .\src\ILLightenComparer\ILLightenComparer.csproj
-
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
   version: '{version}'
-  package_version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'
-  informational_version: '{version}'
 
 build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
-  project: project
+  project: .\src\ILLightenComparer\ILLightenComparer.csproj
 
 deploy:
 - provider: Environment
