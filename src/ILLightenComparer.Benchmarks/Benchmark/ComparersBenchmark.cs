@@ -7,10 +7,9 @@ using Nito.Comparers;
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
     [MedianColumn]
-    [RankColumn]
     public class ComparersBenchmark
     {
-        private const int N = 10000;
+        private const int N = 100000;
 
         private static readonly Fixture Fixture = new Fixture();
 
@@ -76,6 +75,15 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             }
         }
 
+        [Benchmark(Baseline = true)]
+        public void Native_Comparer()
+        {
+            for (var i = 0; i < N; i++)
+            {
+                _out = Native.Compare(_one[i], _other[i]);
+            }
+        }
+
         [Benchmark]
         public void IL_Comparer()
         {
@@ -91,15 +99,6 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             for (var i = 0; i < N; i++)
             {
                 _out = NitoComparer.Compare(_one[i], _other[i]);
-            }
-        }
-
-        [Benchmark(Baseline = true)]
-        public void Native_Comparer()
-        {
-            for (var i = 0; i < N; i++)
-            {
-                _out = Native.Compare(_one[i], _other[i]);
             }
         }
     }
