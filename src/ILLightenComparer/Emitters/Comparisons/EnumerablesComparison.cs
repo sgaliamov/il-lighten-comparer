@@ -19,6 +19,7 @@ namespace ILLightenComparer.Emitters.Comparisons
 
             ElementType = variable
                           .VariableType
+                          .GetGenericInterface(typeof(IEnumerable<>))
                           .GetGenericArguments()
                           .SingleOrDefault()
                           ?? throw new ArgumentException(nameof(variable));

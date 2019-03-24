@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Running;
+﻿using System;
+using BenchmarkDotNet.Running;
 using ILLightenComparer.Benchmarks.Benchmark;
 
 namespace ILLightenComparer.Benchmarks
@@ -7,6 +8,12 @@ namespace ILLightenComparer.Benchmarks
     {
         public static void Main(string[] args)
         {
+            var comparer = new ComparerBuilder().GetComparer<MovieSampleObject>();
+
+            var compare = comparer.Compare(new MovieSampleObject(), new MovieSampleObject());
+
+            Console.WriteLine(compare);
+
             BenchmarkRunner.Run<ComparersBenchmark>();
         }
     }

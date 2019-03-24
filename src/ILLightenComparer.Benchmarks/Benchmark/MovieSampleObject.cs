@@ -7,7 +7,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     {
         public static IComparer<MovieSampleObject> Comparer { get; } = new MovieSampleObjectRelationalComparer();
 
-        public string[] Actors { get; set; }
+        public Dictionary<int, string> Actors { get; set; }
         public string Genre { get; set; }
         public int Id { get; set; }
         public decimal Price { get; set; }
@@ -33,8 +33,8 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                     return -1;
                 }
 
-                var enumeratorX = x.Actors.GetEnumerator();
-                var enumeratorY = y.Actors.GetEnumerator();
+                using (var enumeratorX = x.Actors.GetEnumerator())
+                using (var enumeratorY = y.Actors.GetEnumerator())
                 {
                     while (true)
                     {
@@ -56,10 +56,16 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                             return 1;
                         }
 
-                        var xCurrent = (string)enumeratorX.Current;
-                        var yCurrent = (string)enumeratorY.Current;
+                        var (xKey, xValue) = enumeratorX.Current;
+                        var (yKey, yValue) = enumeratorY.Current;
 
-                        var compare = string.Compare(xCurrent, yCurrent, StringComparison.Ordinal);
+                        var compare = xKey.CompareTo(yKey);
+                        if (compare != 0)
+                        {
+                            return compare;
+                        }
+
+                        compare = string.Compare(xValue, yValue, StringComparison.Ordinal);
                         if (compare != 0)
                         {
                             return compare;
