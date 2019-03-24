@@ -28,6 +28,15 @@ build:
   verbosity: minimal
   project: .\src\ILLightenComparer\ILLightenComparer.csproj
 
+test:
+  assemblies:
+    - '**\*.tests.dll'
+
+befor_deply:
+- pwsh: |
+    dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols --no-build --no-dependencies
+    Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nuget-package"
+
 deploy:
 - provider: Environment
   name: appveyor-nuget
