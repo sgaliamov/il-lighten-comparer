@@ -59,12 +59,7 @@ namespace ILLightenComparer.Tests.Samples.Comparers
 
                     if (xDone)
                     {
-                        if (yDone)
-                        {
-                            return 0;
-                        }
-
-                        return -1;
+                        return yDone ? 0 : -1;
                     }
 
                     if (yDone)

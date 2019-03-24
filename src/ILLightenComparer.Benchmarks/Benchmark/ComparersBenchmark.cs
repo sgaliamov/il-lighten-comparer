@@ -24,7 +24,12 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         private static readonly IComparer<MovieSampleObject> NitoComparer
             = Nito.Comparers.ComparerBuilder
                   .For<MovieSampleObject>()
-                  .Default();
+                  .OrderBy(x => x.Actors)
+                  .ThenBy(x => x.Genre)
+                  .ThenBy(x => x.Id)
+                  .ThenBy(x => x.Price)
+                  .ThenBy(x => x.ReleaseDate)
+                  .ThenBy(x => x.Title);
 
         private readonly MovieSampleObject[] _one = new MovieSampleObject[N];
         private readonly MovieSampleObject[] _other = new MovieSampleObject[N];
@@ -69,8 +74,8 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             }
         }
 
-        [Benchmark(Baseline = true)]
-        public void IL_Comparer() // fastest
+        [Benchmark]
+        public void IL_Comparer()
         {
             for (var i = 0; i < N; i++)
             {
@@ -87,7 +92,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             }
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public void Native_Comparer()
         {
             for (var i = 0; i < N; i++)
