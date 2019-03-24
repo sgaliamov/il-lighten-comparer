@@ -13,19 +13,19 @@
 ## Benchmarks
 
 ``` ini
-BenchmarkDotNet=v0.11.2, OS=Windows 10.0.17134.407 (1803/April2018Update/Redstone4)
+BenchmarkDotNet=v0.11.4, OS=Windows 10.0.17763.379 (1809/October2018Update/Redstone5)
 Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical cores
-Frequency=2531248 Hz, Resolution=395.0620 ns, Timer=TSC
-.NET Core SDK=2.1.500
-  [Host]     : .NET Core 2.1.6 (CoreCLR 4.6.27019.06, CoreFX 4.6.27019.05), 64bit RyuJIT
-  DefaultJob : .NET Core 2.1.6 (CoreCLR 4.6.27019.06, CoreFX 4.6.27019.05), 64bit RyuJIT
+.NET Core SDK=2.2.103
+  [Host]     : .NET Core 2.2.1 (CoreCLR 4.6.27207.03, CoreFX 4.6.27207.03), 64bit RyuJIT
+  DefaultJob : .NET Core 2.2.1 (CoreCLR 4.6.27207.03, CoreFX 4.6.27207.03), 64bit RyuJIT
 ```
 
 ``` c
-|          Method |     Mean |    Error |   StdDev |   Median | Ratio | Rank |
-|---------------- |---------:|---------:|---------:|---------:|------:|-----:|
-|     IL_Comparer | 240.3 us | 2.676 us | 2.503 us | 240.4 us |  0.70 |    1 |
-| Native_Comparer | 343.2 us | 3.218 us | 2.853 us | 343.7 us |  1.00 |    2 |
+|          Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD | Rank |
+|---------------- |---------:|----------:|----------:|---------:|------:|--------:|-----:|
+|     IL_Comparer | 63.23 ms | 1.2523 ms | 2.3827 ms | 63.57 ms |  4.72 |    0.18 |    3 |
+|   Nito_Comparer | 22.49 ms | 0.1738 ms | 0.1626 ms | 22.48 ms |  1.70 |    0.05 |    2 |
+| Native_Comparer | 13.32 ms | 0.2583 ms | 0.3536 ms | 13.21 ms |  1.00 |    0.00 |    1 |
 ```
 
 ## Remarks

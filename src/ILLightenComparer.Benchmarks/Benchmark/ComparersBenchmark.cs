@@ -10,7 +10,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     [RankColumn]
     public class ComparersBenchmark
     {
-        private const int N = 1000;
+        private const int N = 100000;
 
         private static readonly Fixture Fixture = new Fixture();
 
