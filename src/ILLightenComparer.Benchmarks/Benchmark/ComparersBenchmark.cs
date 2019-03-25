@@ -13,7 +13,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
         private readonly IComparer<T> _il;
-        private readonly IComparer<T> _native;
+        private readonly IComparer<T> _manual;
         private readonly IComparer<T> _nito;
 
         private readonly T[] _one = new T[N];
@@ -22,9 +22,9 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         // ReSharper disable once NotAccessedField.Local
         private int _out;
 
-        protected ComparersBenchmark(IComparer<T> native, IComparer<T> il, IComparer<T> nito)
+        protected ComparersBenchmark(IComparer<T> manual, IComparer<T> il, IComparer<T> nito)
         {
-            _native = native;
+            _manual = manual;
             _il = il;
             _nito = nito;
         }
@@ -52,7 +52,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                 _one[i] = _fixture.Create<T>();
                 _other[i] = _fixture.Create<T>();
 
-                var compare = Normalize(_native.Compare(_one[i], _other[i]));
+                var compare = Normalize(_manual.Compare(_one[i], _other[i]));
 
                 if (compare != Normalize(_il.Compare(_one[i], _other[i])))
                 {
@@ -66,16 +66,16 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             }
         }
 
-        [Benchmark(Baseline = true)]
-        public void Native_Comparer()
+        [Benchmark(Description = "Manual implementation")]
+        public void Manual_Comparer()
         {
             for (var i = 0; i < N; i++)
             {
-                _out = _native.Compare(_one[i], _other[i]);
+                _out = _manual.Compare(_one[i], _other[i]);
             }
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true, Description = "IL Lighten Comparer")]
         public void IL_Comparer()
         {
             for (var i = 0; i < N; i++)
@@ -84,7 +84,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             }
         }
 
-        [Benchmark]
+        [Benchmark(Description = "Nito Comparer")]
         public void Nito_Comparer()
         {
             for (var i = 0; i < N; i++)

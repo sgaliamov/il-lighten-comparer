@@ -118,3 +118,4 @@
 - [ ] float, double, date time precision
 - [ ] `checked` subs
 - [ ] compare references and the end?
+- [ ] automatic cycle detection when needed
