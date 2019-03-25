@@ -7,7 +7,7 @@ using ILLightenComparer.Emitters;
 namespace ILLightenComparer
 {
     /// <summary>
-    ///     Implements api to configure and get comparers.
+    ///     Implements the API to configure and generate comparers.
     /// </summary>
     public sealed class ComparerBuilder : IComparerBuilder
     {
