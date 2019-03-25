@@ -67,7 +67,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
     public sealed class MovieSampleObject
     {
-        public static IComparer<MovieSampleObject> Comparer { get; } = new MovieSampleObjectRelationalComparer();
+        public static IComparer<MovieSampleObject> Comparer { get; } = new RelationalComparer();
 
         public ActorsCollection Actors { get; set; }
         public string Genre { get; set; }
@@ -76,7 +76,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         public DateTime ReleaseDate { get; set; }
         public string Title { get; set; }
 
-        private sealed class MovieSampleObjectRelationalComparer : IComparer<MovieSampleObject>
+        private sealed class RelationalComparer : IComparer<MovieSampleObject>
         {
             public int Compare(MovieSampleObject x, MovieSampleObject y)
             {

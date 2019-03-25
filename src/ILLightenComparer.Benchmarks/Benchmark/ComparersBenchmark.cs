@@ -2,41 +2,32 @@
 using System.Collections.Generic;
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
-using Nito.Comparers;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
     [MedianColumn]
-    public class ComparersBenchmark
+    public abstract class ComparersBenchmark<T>
     {
         private const int N = 100000;
 
-        private static readonly Fixture Fixture = new Fixture();
+        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IComparer<T> _il;
+        private readonly IComparer<T> _native;
+        private readonly IComparer<T> _nito;
 
-        private static readonly IComparer<MovieSampleObject> Native = MovieSampleObject.Comparer;
-
-        private static readonly IComparer<MovieSampleObject> ILLightenComparer
-            = new ComparerBuilder(c =>
-                  c.SetDefaultCyclesDetection(false)
-                   .SetDefaultFieldsInclusion(false))
-              .For<MovieSampleObject>()
-              .GetComparer();
-
-        private static readonly IComparer<MovieSampleObject> NitoComparer
-            = Nito.Comparers.ComparerBuilder
-                  .For<MovieSampleObject>()
-                  .OrderBy(x => x.Actors)
-                  .ThenBy(x => x.Genre)
-                  .ThenBy(x => x.Id)
-                  .ThenBy(x => x.Price)
-                  .ThenBy(x => x.ReleaseDate)
-                  .ThenBy(x => x.Title);
-
-        private readonly MovieSampleObject[] _one = new MovieSampleObject[N];
-        private readonly MovieSampleObject[] _other = new MovieSampleObject[N];
+        private readonly T[] _one = new T[N];
+        private readonly T[] _other = new T[N];
 
         // ReSharper disable once NotAccessedField.Local
         private int _out;
+
+        protected ComparersBenchmark(IComparer<T> native, IComparer<T> il, IComparer<T> nito)
+        {
+            _native = native;
+            _il = il;
+            _nito = nito;
+        }
 
         [GlobalSetup]
         public void Setup()
@@ -58,17 +49,17 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
             for (var i = 0; i < N; i++)
             {
-                _one[i] = Fixture.Create<MovieSampleObject>();
-                _other[i] = Fixture.Create<MovieSampleObject>();
+                _one[i] = _fixture.Create<T>();
+                _other[i] = _fixture.Create<T>();
 
-                var compare = Normalize(Native.Compare(_one[i], _other[i]));
+                var compare = Normalize(_native.Compare(_one[i], _other[i]));
 
-                if (compare != Normalize(ILLightenComparer.Compare(_one[i], _other[i])))
+                if (compare != Normalize(_il.Compare(_one[i], _other[i])))
                 {
-                    throw new InvalidOperationException("ILLightenComparer comparer is broken.");
+                    throw new InvalidOperationException("Light comparer is broken.");
                 }
 
-                if (compare != Normalize(NitoComparer.Compare(_one[i], _other[i])))
+                if (compare != Normalize(_nito.Compare(_one[i], _other[i])))
                 {
                     throw new InvalidOperationException("Nito comparer is broken.");
                 }
@@ -80,7 +71,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         {
             for (var i = 0; i < N; i++)
             {
-                _out = Native.Compare(_one[i], _other[i]);
+                _out = _native.Compare(_one[i], _other[i]);
             }
         }
 
@@ -89,7 +80,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         {
             for (var i = 0; i < N; i++)
             {
-                _out = ILLightenComparer.Compare(_one[i], _other[i]);
+                _out = _il.Compare(_one[i], _other[i]);
             }
         }
 
@@ -98,7 +89,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         {
             for (var i = 0; i < N; i++)
             {
-                _out = NitoComparer.Compare(_one[i], _other[i]);
+                _out = _nito.Compare(_one[i], _other[i]);
             }
         }
     }

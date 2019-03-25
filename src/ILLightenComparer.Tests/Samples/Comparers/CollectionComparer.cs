@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ILLightenComparer.Tests.Samples.Comparers
 {
-    internal sealed class CollectionComparer<TItem> : IComparer<IEnumerable<TItem>>, IComparer
+    public sealed class CollectionComparer<TItem> : IComparer<IEnumerable<TItem>>, IComparer
     {
         private readonly IComparer<TItem> _itemComparer;
         private readonly bool _sort;
