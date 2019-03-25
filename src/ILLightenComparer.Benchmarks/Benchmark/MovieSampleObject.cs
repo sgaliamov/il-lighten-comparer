@@ -9,16 +9,6 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         public int CompareTo(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return 1;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return 0;
-            }
-
             return obj is ActorsCollection other
                        ? CompareTo(other)
                        : throw new ArgumentException($"Object must be of type {nameof(ActorsCollection)}");
@@ -26,6 +16,26 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         public int CompareTo(ActorsCollection other)
         {
+            if (ReferenceEquals(null, other))
+            {
+                return 1;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return 0;
+            }
+
+            if (Actors == null)
+            {
+                return other.Actors == null ? 0 : -1;
+            }
+
+            if (other.Actors == null)
+            {
+                return 1;
+            }
+
             using (var enumeratorX = Actors.GetEnumerator())
             using (var enumeratorY = other.Actors.GetEnumerator())
             {
@@ -95,10 +105,17 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                     return -1;
                 }
 
-                var actorsComparison = x.Actors.CompareTo(y.Actors);
-                if (actorsComparison != 0)
+                if (x.Actors != null)
                 {
-                    return actorsComparison;
+                    var actorsComparison = x.Actors.CompareTo(y.Actors);
+                    if (actorsComparison != 0)
+                    {
+                        return actorsComparison;
+                    }
+                }
+                else if (y.Actors != null)
+                {
+                    return -1;
                 }
 
                 var genreComparison = string.Compare(x.Genre, y.Genre, StringComparison.Ordinal);

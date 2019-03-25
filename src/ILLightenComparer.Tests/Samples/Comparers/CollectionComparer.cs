@@ -25,12 +25,7 @@ namespace ILLightenComparer.Tests.Samples.Comparers
         {
             if (x == null)
             {
-                if (y == null)
-                {
-                    return 0;
-                }
-
-                return -1;
+                return y == null ? 0 : -1;
             }
 
             if (y == null)
