@@ -31,6 +31,14 @@ Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical core
 |   Nito_Comparer | 26.40 ms | 0.8624 ms | 2.5428 ms | 25.06 ms |  1.67 |    0.26 |
 ```
 
+``` c
+|          Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
+|---------------- |---------:|----------:|----------:|---------:|------:|--------:|
+| Native_Comparer | 3.024 ms | 0.0588 ms | 0.0933 ms | 3.012 ms |  1.00 |    0.00 |
+|     IL_Comparer | 1.924 ms | 0.0156 ms | 0.0146 ms | 1.925 ms |  0.63 |    0.02 |
+|   Nito_Comparer | 6.109 ms | 0.0487 ms | 0.0456 ms | 6.094 ms |  2.00 |    0.06 |
+```
+
 ## Remarks
 
 * *protected* and *private* members are ignored during comparison.

@@ -10,7 +10,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         private sealed class RelationalComparer : IComparer<LightStruct>
         {
-            private readonly CollectionComparer<LightStruct> _collectionComparer = new CollectionComparer<LightStruct>();
+            private readonly CollectionComparer<char> _collectionComparer = new CollectionComparer<char>();
 
             public int Compare(LightStruct x, LightStruct y)
             {
