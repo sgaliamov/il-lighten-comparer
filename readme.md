@@ -6,14 +6,14 @@
 
 * High performance.
 * Support for complex classes and structures.
-* High configurable.
+* Highly configurable.
 * Fluent API.
 * Cycle detection.
 * Collections comparison.
 
 ## Benchmarks
 
-On 1 000 000 iterations.
+On 1000000 iterations with [MovieSampleObject](src/ILLightenComparer.Benchmarks/Benchmark/MovieSampleObject.cs).
 
 ``` ini
 BenchmarkDotNet=v0.11.4, OS=Windows 10.0.17763.379 (1809/October2018Update/Redstone5)
