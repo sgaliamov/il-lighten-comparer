@@ -73,7 +73,7 @@
 
 ## Phase 5 Release One
 
-- [ ] benchmarks
+- [x] benchmarks
 - [ ] setup CI/CD
 - [ ] add documentation comments
 - [ ] code coverage

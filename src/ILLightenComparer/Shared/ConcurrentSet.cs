@@ -2,5 +2,5 @@
 
 namespace ILLightenComparer.Shared
 {
-    public sealed class ConcurrentSet<T> : ConcurrentDictionary<T, byte> { }
+    internal sealed class ConcurrentSet<T> : ConcurrentDictionary<T, byte> { }
 }

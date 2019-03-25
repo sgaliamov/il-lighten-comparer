@@ -95,7 +95,7 @@ namespace ILLightenComparer.Emitters
         }
     }
 
-    public interface IContext
+    internal interface IContext
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
     }

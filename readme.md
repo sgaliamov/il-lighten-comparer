@@ -13,7 +13,6 @@
 
 ## Benchmarks
 
-On 1000000 iterations with [MovieSampleObject](src/ILLightenComparer.Benchmarks/Benchmark/MovieSampleObject.cs).
 
 ``` ini
 BenchmarkDotNet=v0.11.4, OS=Windows 10.0.17763.379 (1809/October2018Update/Redstone5)
@@ -23,6 +22,8 @@ Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical core
   DefaultJob : .NET Core 2.2.1 (CoreCLR 4.6.27207.03, CoreFX 4.6.27207.03), 64bit RyuJIT
 ```
 
+On 1000000 iterations with regular model [MovieSampleObject](src/ILLightenComparer.Benchmarks/Benchmark/MovieSampleObject.cs).
+
 ``` c
 |          Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
 |---------------- |---------:|----------:|----------:|---------:|------:|--------:|
@@ -30,6 +31,8 @@ Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical core
 |     IL_Comparer | 16.36 ms | 0.3667 ms | 0.9530 ms | 16.07 ms |  1.03 |    0.14 |
 |   Nito_Comparer | 26.40 ms | 0.8624 ms | 2.5428 ms | 25.06 ms |  1.67 |    0.26 |
 ```
+
+On 1000000 iterations with lighten structure [LightStruct](src/ILLightenComparer.Benchmarks/Benchmark/LightStruct.cs).
 
 ``` c
 |          Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
