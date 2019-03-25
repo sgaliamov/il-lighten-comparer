@@ -1,2 +1,2 @@
-Remove-Item ".\*\obj\*" -Force -Recurse
-Remove-Item ".\*\bin\*" -Force -Recurse
+Remove-Item ".\src\**\obj\*" -Force -Recurse
+Remove-Item ".\src\**\bin\*" -Force -Recurse
