@@ -1,0 +1,13 @@
+{
+  "markdownlint.config": {
+    "MD031": false
+  },
+  "cSpell.words": [
+    "Redstone",
+    "Skylake",
+    "Struct",
+    "nito",
+    "sbyte",
+    "ushort"
+]
+}
