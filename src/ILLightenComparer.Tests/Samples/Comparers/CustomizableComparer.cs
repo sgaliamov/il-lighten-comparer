@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.Samples.Comparers
 {
-    internal class CustomisableComparer<T> : IComparer<T>
+    internal class CustomizableComparer<T> : IComparer<T>
     {
         private readonly Func<T, T, int> _comparer;
 
-        public CustomisableComparer(Func<T, T, int> comparer)
+        public CustomizableComparer(Func<T, T, int> comparer)
         {
             _comparer = comparer;
         }

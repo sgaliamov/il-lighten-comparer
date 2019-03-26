@@ -2,8 +2,6 @@
 
 **ILLightenComparer** is a library that can generate implementation of `IComparer<T>` on runtime using advantages of IL code emission with main focus on **performance**.
 
-Why yet another comparer? Because I can ¯_(ツ)_/¯.
-
 ## Features
 
 * High performance.
@@ -12,6 +10,8 @@ Why yet another comparer? Because I can ¯_(ツ)_/¯.
 * Fluent intuitive API.
 * Cycle detection.
 * Collections comparison.
+* .NET Standard 2.0
+* No 3rd party dependencies.
 
 ## Benchmarks
 
@@ -26,21 +26,21 @@ Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical core
 With regular models like [MovieModel](src/ILLightenComparer.Benchmarks/Benchmark/MovieObject.cs) generated comparer is criminally close to manual implementation.
 
 ``` c
-|                  Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
-|------------------------ |---------:|----------:|----------:|---------:|------:|--------:|
-|   'IL Lighten Comparer' | 12.90 ms | 0.2700 ms | 0.3214 ms | 12.77 ms |  1.00 |    0.00 |
+| Method                  |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
+| ----------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
+| 'IL Lighten Comparer'   | 12.90 ms | 0.2700 ms | 0.3214 ms | 12.77 ms |  1.00 |    0.00 |
 | 'Manual implementation' | 12.47 ms | 0.2760 ms | 0.7785 ms | 12.15 ms |  1.00 |    0.09 |
-|         'Nito Comparer' | 16.45 ms | 0.3627 ms | 1.0111 ms | 16.32 ms |  1.33 |    0.07 |
+| 'Nito Comparer'         | 16.45 ms | 0.3627 ms | 1.0111 ms | 16.32 ms |  1.33 |    0.07 |
 ```
 
 With light optimized structures like [LightStruct](src/ILLightenComparer.Benchmarks/Benchmark/LightStruct.cs) `ILLightenComparer` able to give serious performance boost.
 
 ``` c
-|                  Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
-|------------------------ |---------:|----------:|----------:|---------:|------:|--------:|
-|   'IL Lighten Comparer' | 2.151 ms | 0.0862 ms | 0.2473 ms | 2.105 ms |  1.00 |    0.00 |
+| Method                  |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
+| ----------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
+| 'IL Lighten Comparer'   | 2.151 ms | 0.0862 ms | 0.2473 ms | 2.105 ms |  1.00 |    0.00 |
 | 'Manual implementation' | 3.236 ms | 0.0643 ms | 0.0570 ms | 3.225 ms |  1.40 |    0.16 |
-|         'Nito Comparer' | 6.968 ms | 0.2257 ms | 0.6655 ms | 6.647 ms |  3.28 |    0.43 |
+| 'Nito Comparer'         | 6.968 ms | 0.2257 ms | 0.6655 ms | 6.647 ms |  3.28 |    0.43 |
 ```
 
 ## Configuration options
@@ -51,25 +51,117 @@ With light optimized structures like [LightStruct](src/ILLightenComparer.Benchma
 * Including fields into comparison.
 * Defining order in which members will be compared.
 * Defining string comparison type.
-* Defining custom comparers.
+* Defining custom comparers by type or instance.
 
-## Examples
+## [Examples](./src/ILLightenComparer.Tests/ExamplesTests.cs)
 
 ### Basic usage
 
-### Ignoring collection order
+``` csharp
+var comparer = new ComparerBuilder().GetComparer<Tuple<int, string>>();
+var result = comparer.Compare(x, y);
+```
 
-### Ignoring specific members
+### Ignore collection order
 
-### Defining custom comparer
+``` csharp
+var x = new[] { 1, 2, 3 };
+var y = new[] { 2, 3, 1 };
 
-In some cases you may want use your own implementation.
+var comparer = new ComparerBuilder()
+                .For<int[]>(c => c.IgnoreCollectionsOrder(true))
+                .GetComparer();
+
+var result = comparer.Compare(x, y);
+result.Should().Be(0);
+```
+
+### Ignore specific members
+
+``` csharp
+var x = new Tuple<int, string, double>(1, "value 1", 1.1);
+var y = new Tuple<int, string, double>(1, "value 2", 2.2);
+
+var comparer = new ComparerBuilder()
+                .For<Tuple<int, string, double>>()
+                .Configure(c => c.IgnoreMember(o => o.Item2)
+                                 .IgnoreMember(o => o.Item3))
+                .GetComparer();
+
+var result = comparer.Compare(x, y);
+result.Should().Be(0);
+```
+
+### Define custom comparer
+
+``` csharp
+var x = _fixture.Create<Tuple<int, string>>();
+var y = _fixture.Create<Tuple<int, string>>();
+var customComparer = new CustomizableComparer<Tuple<int, string>>((a, b) => 0); // makes all objects always equal
+
+var comparer = new ComparerBuilder()
+                .Configure(c => c.SetCustomComparer(customComparer))
+                .GetComparer<Tuple<int, string>>();
+
+var result = comparer.Compare(x, y);
+result.Should().Be(0);
+```
+
+### Define multiple configurations
+
+``` csharp
+var builder = new ComparerBuilder(c => c.SetDefaultCyclesDetection(false)); // defines initial configuration
+
+// adds some configuration later
+builder.Configure(c => c.SetStringComparisonType(
+                            typeof(Tuple<int, string, Tuple<short, string>>),
+                            StringComparison.InvariantCultureIgnoreCase)
+                        .IgnoreMember<Tuple<int, string, Tuple<short, string>>, int>(o => o.Item1));
+
+// defines configuration for specific types
+builder.For<Tuple<short, string>>(c => c.DefineMembersOrder(
+    order => order.Member(o => o.Item2)
+                  .Member(o => o.Item2)));
+
+// adds additional configuration to existing configuration
+builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false));
+
+var comparer = builder.GetComparer<Tuple<int, string, Tuple<short, string>>>();
+```
 
 ## Remarks
 
-* *protected* and *private* members are ignored during comparison.
+* To help generate more effective code use `sealed` classes and small types (`sbyte`, `byte`, `char`, `short`, `ushort`) when possible.
 * Configuration is fixed for generated comparer. If you want to change configuration you have to request new comparer:
+  ``` csharp
+  var x = new Tuple<int, string>(1, "text");
+  var y = new Tuple<int, string>(2, "TEXT");
+
+  // initially configuration defines case insensitive string comparison
+  var builder = new ComparerBuilder()
+      .For<Tuple<int, string>>(c => c.SetStringComparisonType(StringComparison.CurrentCultureIgnoreCase)
+                                     .DetectCycles(false));
+
+  // in addition, setup to ignore first member
+  builder.Configure(c => c.IgnoreMember(o => o.Item1));
+
+  // this version takes in account only case insensitive second member
+  var ignoreCaseComparer = builder.GetComparer();
+
+  // override string comparison type with case sensitive value and build new comparer
+  var originalCaseComparer = builder.For<Tuple<int, string>>()
+                                    .Configure(c => c.SetStringComparisonType(StringComparison.Ordinal))
+                                    .GetComparer();
+
+  // first comparer still ignore case for strings
+  ignoreCaseComparer.Compare(x, y).Should().Be(0);
+
+  // second comparer still ignore first member but uses new string comparison type
+  var result = originalCaseComparer.Compare(x, y);
+  result.Should().Be(string.Compare("text", "TEXT", StringComparison.Ordinal));
+  ```
 * For safety reasons cycle detection is enabled by default. But when you are sure that it is not possible you can disable it and get significant performance boost.
+* *protected* and *private* members are ignored during comparison.
 
 ## What next
 
