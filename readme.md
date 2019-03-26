@@ -23,13 +23,13 @@ Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical core
   DefaultJob : .NET Core 2.2.1 (CoreCLR 4.6.27207.03, CoreFX 4.6.27207.03), 64bit RyuJIT
 ```
 
-With regular models like [MovieObject](src/ILLightenComparer.Benchmarks/Benchmark/MovieObject.cs) generated comparer criminally close to manual implementation.
+With regular models like [MovieModel](src/ILLightenComparer.Benchmarks/Benchmark/MovieObject.cs) generated comparer is criminally close to manual implementation.
 
 ``` c
 |                  Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
 |------------------------ |---------:|----------:|----------:|---------:|------:|--------:|
-| 'Manual implementation' | 12.47 ms | 0.2760 ms | 0.7785 ms | 12.15 ms |  1.00 |    0.09 |
 |   'IL Lighten Comparer' | 12.90 ms | 0.2700 ms | 0.3214 ms | 12.77 ms |  1.00 |    0.00 |
+| 'Manual implementation' | 12.47 ms | 0.2760 ms | 0.7785 ms | 12.15 ms |  1.00 |    0.09 |
 |         'Nito Comparer' | 16.45 ms | 0.3627 ms | 1.0111 ms | 16.32 ms |  1.33 |    0.07 |
 ```
 
@@ -38,8 +38,8 @@ With light optimized structures like [LightStruct](src/ILLightenComparer.Benchma
 ``` c
 |                  Method |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
 |------------------------ |---------:|----------:|----------:|---------:|------:|--------:|
-| 'Manual implementation' | 3.236 ms | 0.0643 ms | 0.0570 ms | 3.225 ms |  1.40 |    0.16 |
 |   'IL Lighten Comparer' | 2.151 ms | 0.0862 ms | 0.2473 ms | 2.105 ms |  1.00 |    0.00 |
+| 'Manual implementation' | 3.236 ms | 0.0643 ms | 0.0570 ms | 3.225 ms |  1.40 |    0.16 |
 |         'Nito Comparer' | 6.968 ms | 0.2257 ms | 0.6655 ms | 6.647 ms |  3.28 |    0.43 |
 ```
 
@@ -68,7 +68,7 @@ In some cases you may want use your own implementation.
 ## Remarks
 
 * *protected* and *private* members are ignored during comparison.
-* Configuration is fixed for generated comparer. If you want to change configuration you need request new comparer:
+* Configuration is fixed for generated comparer. If you want to change configuration you have to request new comparer:
 * For safety reasons cycle detection is enabled by default. But when you are sure that it is not possible you can disable it and get significant performance boost.
 
 ## What next
@@ -77,9 +77,3 @@ In some cases you may want use your own implementation.
 2. Support more types.
 3. Add more settings.
 4. Improve performance.
-
-## Links
-
-* [Activity diagram](./docs/activity-diagram.html).
-* [Implementation details](./docs/reasoning.md).
-* [Roadmap](./docs/roadmap.md).

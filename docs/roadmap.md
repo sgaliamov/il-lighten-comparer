@@ -74,10 +74,10 @@
 ## Phase 5 Release One
 
 - [x] benchmarks
-- [ ] setup CI/CD
-- [ ] add documentation comments
-- [ ] code coverage
+- [x] add documentation comments
 - [ ] documentation and examples
+- [ ] setup CI/CD
+- [ ] code coverage
 - [ ] review *todo*
 - [ ] publish
 

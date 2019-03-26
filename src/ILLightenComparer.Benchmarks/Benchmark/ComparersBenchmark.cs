@@ -66,21 +66,21 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             }
         }
 
-        [Benchmark(Description = "Manual implementation")]
-        public void Manual_Comparer()
-        {
-            for (var i = 0; i < N; i++)
-            {
-                _out = _manual.Compare(_one[i], _other[i]);
-            }
-        }
-
         [Benchmark(Baseline = true, Description = "IL Lighten Comparer")]
         public void IL_Comparer()
         {
             for (var i = 0; i < N; i++)
             {
                 _out = _il.Compare(_one[i], _other[i]);
+            }
+        }
+
+        [Benchmark(Description = "Manual implementation")]
+        public void Manual_Comparer()
+        {
+            for (var i = 0; i < N; i++)
+            {
+                _out = _manual.Compare(_one[i], _other[i]);
             }
         }
 

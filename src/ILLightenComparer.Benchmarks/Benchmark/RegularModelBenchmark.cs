@@ -3,20 +3,20 @@ using Nito.Comparers;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
-    public class RegularModelBenchmark : ComparersBenchmark<MovieObject>
+    public class RegularModelBenchmark : ComparersBenchmark<MovieModel>
     {
-        private static readonly IComparer<MovieObject> Manual = MovieObject.Comparer;
+        private static readonly IComparer<MovieModel> Manual = MovieModel.Comparer;
 
-        private static readonly IComparer<MovieObject> ILLightenComparer
+        private static readonly IComparer<MovieModel> ILLightenComparer
             = new ComparerBuilder(c =>
                   c.SetDefaultCyclesDetection(false)
                    .SetDefaultFieldsInclusion(false))
-              .For<MovieObject>()
+              .For<MovieModel>()
               .GetComparer();
 
-        private static readonly IComparer<MovieObject> NitoComparer
+        private static readonly IComparer<MovieModel> NitoComparer
             = Nito.Comparers.ComparerBuilder
-                  .For<MovieObject>()
+                  .For<MovieModel>()
                   .OrderBy(x => x.Actors)
                   .ThenBy(x => x.Genre)
                   .ThenBy(x => x.Id)
