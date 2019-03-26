@@ -13,8 +13,8 @@ namespace ILLightenComparer.Emitters
         {
             NullableComparison.Create,
             IntegralsComparison.Create,
-            ComparablesComparison.Create,
             StringsComparison.Create,
+            ComparablesComparison.Create,
             MembersComparison.Create,
             HierarchicalsComparison.Create,
             ArraysComparison.Create,
