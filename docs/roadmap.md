@@ -75,7 +75,7 @@
 
 - [x] benchmarks
 - [x] add documentation comments
-- [ ] documentation and examples
+- [x] documentation and examples
 - [ ] setup CI/CD
 - [ ] code coverage
 - [ ] review *todo*

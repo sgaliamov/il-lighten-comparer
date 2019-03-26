@@ -1,6 +1,6 @@
 # IL Lighten Comparer
 
-**ILLightenComparer** is a library that can generate implementation of `IComparer<T>` on runtime using advantages of IL code emission with main focus on **performance**.
+**ILLightenComparer** is a library that can generate `IComparer<T>` implementation on runtime using advantages of IL code emission with main focus on **performance**.
 
 ## Features
 
@@ -11,9 +11,9 @@
 * Cycle detection.
 * Collections comparison.
 * .NET Standard 2.0
-* No 3rd party dependencies.
+* No 3<sup>rd</sup> party dependencies.
 
-## Benchmarks
+## [Benchmarks](src/ILLightenComparer.Benchmarks/Benchmark/ComparersBenchmark.cs)
 
 ``` ini
 BenchmarkDotNet=v0.11.4, OS=Windows 10.0.17763.379 (1809/October2018Update/Redstone5)
@@ -53,7 +53,7 @@ With light optimized structures like [LightStruct](src/ILLightenComparer.Benchma
 * Defining string comparison type.
 * Defining custom comparers by type or instance.
 
-## [Examples](./src/ILLightenComparer.Tests/ExamplesTests.cs)
+## [Examples](src/ILLightenComparer.Tests/ExamplesTests.cs)
 
 ### Basic usage
 
@@ -125,13 +125,10 @@ builder.For<Tuple<short, string>>(c => c.DefineMembersOrder(
 
 // adds additional configuration to existing configuration
 builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false));
-
-var comparer = builder.GetComparer<Tuple<int, string, Tuple<short, string>>>();
 ```
 
 ## Remarks
 
-* To help generate more effective code use `sealed` classes and small types (`sbyte`, `byte`, `char`, `short`, `ushort`) when possible.
 * Configuration is fixed for generated comparer. If you want to change configuration you have to request new comparer:
   ``` csharp
   var x = new Tuple<int, string>(1, "text");
@@ -148,18 +145,19 @@ var comparer = builder.GetComparer<Tuple<int, string, Tuple<short, string>>>();
   // this version takes in account only case insensitive second member
   var ignoreCaseComparer = builder.GetComparer();
 
-  // override string comparison type with case sensitive value and build new comparer
+  // override string comparison type with case sensitive setting and build new comparer
   var originalCaseComparer = builder.For<Tuple<int, string>>()
                                     .Configure(c => c.SetStringComparisonType(StringComparison.Ordinal))
                                     .GetComparer();
 
-  // first comparer still ignore case for strings
+  // first comparer ignores case for strings still
   ignoreCaseComparer.Compare(x, y).Should().Be(0);
 
-  // second comparer still ignore first member but uses new string comparison type
+  // second comparer still ignores first member but uses new string comparison type
   var result = originalCaseComparer.Compare(x, y);
   result.Should().Be(string.Compare("text", "TEXT", StringComparison.Ordinal));
   ```
+* To help generate more effective code use `sealed` classes and small types (`sbyte`, `byte`, `char`, `short`, `ushort`) when possible.
 * For safety reasons cycle detection is enabled by default. But when you are sure that it is not possible you can disable it and get significant performance boost.
 * *protected* and *private* members are ignored during comparison.
 

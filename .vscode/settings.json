@@ -1,6 +1,7 @@
 {
   "markdownlint.config": {
-    "MD031": false
+    "MD031": false,
+    "MD033": false
   },
   "cSpell.words": [
     "Redstone",
@@ -10,5 +11,5 @@
     "sbyte",
     "typeof",
     "ushort"
-]
+  ]
 }
