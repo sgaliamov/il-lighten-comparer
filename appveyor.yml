@@ -1,6 +1,4 @@
-﻿image: Ubuntu1804
-
-version: 0.1.{build}
+﻿image: Visual Studio 2017
 
 clone_depth: 1
 
@@ -15,18 +13,33 @@ skip_tags: true
 
 skip_branch_with_pr: true
 
-dotnet_csproj:
-  patch: true
-  file: '**\*.csproj'
-  version: '{version}'
-  assembly_version: '{version}'
-  file_version: '{version}'
+assembly_info:
+  patch: false
+
+# dotnet_csproj:
+#   patch: true
+#   file: '**\*.csproj'
+#   version: '{version}'
+#   assembly_version: '{version}'
+#   file_version: '{version}'
+
+install:
+  - choco install gitversion.portable -pre -y
+  - nuget restore
+
+before_build:
+  - pwsh: gitversion /l console /output buildserver /updateAssemblyInfo
 
 build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
   project: .\src\ILLightenComparer\ILLightenComparer.csproj
+
+# after_build:
+#   - cmd: ECHO nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+#   - cmd: nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+#   - cmd: appveyor PushArtifact "<NuSpec>.%GitVersion_NuGetVersion%.nupkg"
 
 test:
   assemblies:
@@ -37,8 +50,8 @@ befor_deply:
     dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols --no-build --no-dependencies
     Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nuget-package"
 
-deploy:
-- provider: Environment
-  name: appveyor-nuget
-  on:
-    branch: master
+# deploy:
+# - provider: Environment
+#   name: appveyor-nuget
+#   on:
+#     branch: master
