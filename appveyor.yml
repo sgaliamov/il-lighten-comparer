@@ -1,6 +1,6 @@
 ﻿image: Visual Studio 2017
 
-version: {build}
+version: '{build}'
 
 clone_depth: 1
 
