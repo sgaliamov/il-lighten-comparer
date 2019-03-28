@@ -30,13 +30,15 @@ skip_branch_with_pr: true
   # - nuget restore
 
 before_build:
-  - pwsh: gitversion /l console /output buildserver /updateAssemblyInfo
+  - pwsh: |
+      gitversion /l console /output buildserver /updateAssemblyInfo /verbosity warn
+      dotnet restore .\src
 
 build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
-  project: .\src\ILLightenComparer.sln
+  project: .\src
 
 # after_build:
 #   - cmd: ECHO nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
