@@ -6,8 +6,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/sgaliamov/il-lighten-comparer.git</RepositoryUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/sgaliamov/il-lighten-comparer/master/LICENSE</PackageLicenseUrl>
-    <PackageTags></PackageTags>
+    <PackageLicense>https://raw.githubusercontent.com/sgaliamov/il-lighten-comparer/master/LICENSE</PackageLicense>
+    <PackageTags>IComparer, Reflection, MSIL, IL, Emit</PackageTags>
     <PackageProjectUrl>https://sgaliamov.github.io/il-lighten-comparer/</PackageProjectUrl>
     <Description>ADD DESCRIPTION</Description>
   </PropertyGroup>

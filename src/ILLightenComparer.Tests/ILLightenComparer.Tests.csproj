@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.2</TargetFrameworks>
-    <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
     <ServerGarbageCollection>true</ServerGarbageCollection>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
