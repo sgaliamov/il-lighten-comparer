@@ -9,7 +9,7 @@
 * Highly configurable.
 * Fluent intuitive API.
 * Cycle detection.
-* Collections comparison.
+* Collections comparison (`IEnumerable<T>`, arrays).
 * .NET Standard 2.0
 * No 3<sup>rd</sup> party dependencies.
 
@@ -160,6 +160,8 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 * To help generate more effective code use `sealed` classes and small types (`sbyte`, `byte`, `char`, `short`, `ushort`) when possible.
 * For safety reasons cycle detection is enabled by default. But when you are sure that it is not possible you can disable it and get significant performance boost.
 * *protected* and *private* members are ignored during comparison.
+* [Multidimensional arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/multidimensional-arrays) are not supported now, but [Jagged arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/jagged-arrays) are.
+* If a type implements `IComparable<T>` interface this implementations will be used.
 
 ## What next
 
@@ -167,3 +169,5 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 2. Support more types.
 3. Add more settings.
 4. Improve performance.
+
+In case of unexpected behavior please create an [issue](issues/new) and provide the data structure that you use.

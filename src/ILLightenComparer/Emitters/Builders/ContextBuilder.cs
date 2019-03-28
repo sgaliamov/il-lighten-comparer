@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-
-[assembly: InternalsVisibleTo("<ILLightenComparer>")]
 
 namespace ILLightenComparer.Emitters.Builders
 {
@@ -25,10 +22,10 @@ namespace ILLightenComparer.Emitters.Builders
             _comparerTypeBuilder = new ComparerTypeBuilder(context, configurations);
 
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
-                new AssemblyName("<ILLightenComparer>"),
+                new AssemblyName("IL-Lighten-Comparer"),
                 AssemblyBuilderAccess.RunAndCollect);
 
-            _moduleBuilder = assembly.DefineDynamicModule("<ILLightenComparer>.dll");
+            _moduleBuilder = assembly.DefineDynamicModule("IL-Lighten-Comparer.dll");
         }
 
         public MethodInfo GetStaticCompareMethod(Type type)
