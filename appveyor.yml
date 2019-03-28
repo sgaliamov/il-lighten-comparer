@@ -15,8 +15,8 @@ skip_tags: true
 
 skip_branch_with_pr: true
 
-assembly_info:
-  patch: false
+# assembly_info:
+#   patch: false
 
 # dotnet_csproj:
 #   patch: true
@@ -56,8 +56,8 @@ artifacts:
 #     dotnet pack .\src\ILLightenComparer\ILLightenComparer.csproj --include-source --include-symbols --no-build --no-dependencies -c $env:CONFIGURATION -p bin\publish
 #     Push-AppveyorArtifact bin\publish -FileName ILLightenComparer -DeploymentName "nuget-package"
 
-# deploy:
-# - provider: Environment
-#   name: appveyor-nuget
-#   on:
-#     branch: master
+deploy:
+- provider: Environment
+  name: appveyor-nuget
+  on:
+    branch: master
