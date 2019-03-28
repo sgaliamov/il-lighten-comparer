@@ -1,5 +1,7 @@
 ﻿image: Visual Studio 2017
 
+version: {build}
+
 clone_depth: 1
 
 configuration: release
@@ -47,8 +49,8 @@ test:
 
 artifacts:
   - path: '**\*.nupkg'
-  - name: nuget-package
-  - type: NuGetPackage
+    name: nuget-package
+    type: NuGetPackage
 # befor_deply:
 # - pwsh: |
 #     dotnet pack .\src\ILLightenComparer\ILLightenComparer.csproj --include-source --include-symbols --no-build --no-dependencies -c $env:CONFIGURATION -p bin\publish
