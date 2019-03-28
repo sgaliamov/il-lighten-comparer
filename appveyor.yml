@@ -25,7 +25,7 @@ assembly_info:
 
 install:
   - choco install gitversion.portable -pre -y
-  - nuget restore
+  # - nuget restore
 
 before_build:
   - pwsh: gitversion /l console /output buildserver /updateAssemblyInfo
@@ -34,7 +34,7 @@ build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
-  project: .\src\ILLightenComparer\ILLightenComparer.csproj
+  project: .\src\ILLightenComparer.sln
 
 # after_build:
 #   - cmd: ECHO nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
@@ -45,10 +45,14 @@ test:
   assemblies:
     - '**\*.tests.dll'
 
-befor_deply:
-- pwsh: |
-    dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols --no-build --no-dependencies
-    Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nuget-package"
+artifacts:
+  - path: '**\*.nupkg'
+  - name: nuget-package
+  - type: NuGetPackage
+# befor_deply:
+# - pwsh: |
+#     dotnet pack .\src\ILLightenComparer\ILLightenComparer.csproj --include-source --include-symbols --no-build --no-dependencies -c $env:CONFIGURATION -p bin\publish
+#     Push-AppveyorArtifact bin\publish -FileName ILLightenComparer -DeploymentName "nuget-package"
 
 # deploy:
 # - provider: Environment
