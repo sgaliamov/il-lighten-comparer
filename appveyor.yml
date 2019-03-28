@@ -1,8 +1,6 @@
 ﻿image: Visual Studio 2017
 
-version: '{build}'
-
-# clone_depth: 1
+version: 'build-{build}'
 
 configuration: release
 
@@ -15,20 +13,6 @@ skip_tags: true
 
 skip_branch_with_pr: true
 
-# assembly_info:
-#   patch: false
-
-# dotnet_csproj:
-#   patch: true
-#   file: '**\*.csproj'
-#   version: '{version}'
-#   assembly_version: '{version}'
-#   file_version: '{version}'
-
-# install:
-#   - choco install gitversion.portable -pre -y
-  # - nuget restore
-
 before_build:
   - pwsh: |
       gitversion /l console /output buildserver /updateAssemblyInfo /verbosity warn
@@ -40,11 +24,6 @@ build:
   verbosity: minimal
   project: .\src
 
-# after_build:
-#   - cmd: ECHO nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-#   - cmd: nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-#   - cmd: appveyor PushArtifact "<NuSpec>.%GitVersion_NuGetVersion%.nupkg"
-
 test:
   assemblies:
     - '**\*.tests.dll'
@@ -53,10 +32,6 @@ artifacts:
   - path: '**\*.nupkg'
     name: nuget-package
     type: NuGetPackage
-# befor_deply:
-# - pwsh: |
-#     dotnet pack .\src\ILLightenComparer\ILLightenComparer.csproj --include-source --include-symbols --no-build --no-dependencies -c $env:CONFIGURATION -p bin\publish
-#     Push-AppveyorArtifact bin\publish -FileName ILLightenComparer -DeploymentName "nuget-package"
 
 deploy:
 - provider: Environment
