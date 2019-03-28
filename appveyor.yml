@@ -25,8 +25,8 @@ skip_branch_with_pr: true
 #   assembly_version: '{version}'
 #   file_version: '{version}'
 
-install:
-  - choco install gitversion.portable -pre -y
+# install:
+#   - choco install gitversion.portable -pre -y
   # - nuget restore
 
 before_build:
