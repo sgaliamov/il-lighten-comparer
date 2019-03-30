@@ -39,7 +39,7 @@ build_script:
 
 test_script:
 - pwsh: |
-    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+    if ($env:CONFIGURATION -eq 'debug') {
       nuget install OpenCover -Verbosity quiet -Version 4.6.519
       $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
       Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
