@@ -36,7 +36,7 @@ before_build:
 - pwsh: gitversion /l console /output buildserver /verbosity warn
 
 build_script:
-- pwsh:
+- pwsh: |
     dotnet build .\src -c $env:CONFIGURATION -v m
     dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols `
         --no-build --no-dependencies -c $env:CONFIGURATION -v m -o publish
