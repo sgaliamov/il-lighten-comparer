@@ -1,5 +1,4 @@
-﻿#if !DEBUG // to run long test on release mode only
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,10 +135,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                         comparer = (IComparer)Activator.CreateInstance(comparerType, comparer);
                     }
 
-                    new GenericTests().GenericTest(type, comparer, sort, Constants.SmallCount);
+                    new GenericTests().GenericTest(type, comparer, sort, Constants.SmallCount, Constants.SmallCount);
                 });
         }
     }
 }
-
-#endif

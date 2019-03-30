@@ -21,7 +21,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             _comparerBuilder = comparerBuilder;
         }
 
-        public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times)
+        public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times, int count = Constants.BigCount)
         {
             var method = type.GetOrAddProperty(
                 nameof(GenericTest),
@@ -29,14 +29,14 @@ namespace ILLightenComparer.Tests.ComparerTests
                 {
                     var methodInfo = GetTestMethod(type);
 
-                    return (Action<IComparerBuilder, IComparer, int>)methodInfo.CreateDelegate(
-                        typeof(Action<IComparerBuilder, IComparer, int>));
+                    return (Action<IComparerBuilder, IComparer, int, int>)methodInfo.CreateDelegate(
+                        typeof(Action<IComparerBuilder, IComparer, int, int>));
                 });
 
             var builder = _comparerBuilder ?? new ComparerBuilder();
             builder.Configure(c => c.SetDefaultCollectionsOrderIgnoring(sort));
 
-            method(builder, referenceComparer, times);
+            method(builder, referenceComparer, times, count);
         }
 
         private static MethodInfo GetTestMethod(Type objType)
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                    .MakeGenericMethod(objType);
         }
 
-        private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times)
+        private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times, int count)
         {
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
@@ -62,10 +62,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                     Comparison_with_same_produces_0(referenceComparer, typedComparer);
                 },
                 () => Comparisons_work_identical(referenceComparer, typedComparer, times),
-                () => Sorting_must_work_the_same_as_for_reference_comparer(
-                    referenceComparer,
-                    typedComparer,
-                    Constants.BigCount),
+                () => Sorting_must_work_the_same_as_for_reference_comparer(referenceComparer, typedComparer, count),
                 () => Mutate_class_members_and_test_comparison(referenceComparer, typedComparer)
             );
         }
