@@ -38,9 +38,9 @@ build_script:
 #     - '**\*.tests.dll'
 
 artifacts:
-  - path: '.\src\ILLightenComparer\bin\publish\*.nupkg'
-    name: nuget-package
-    type: NuGetPackage
+- path: '.\src\ILLightenComparer\publish\*.nupkg'
+  name: nuget-package
+  type: NuGetPackage
 
 # before_deploy:
 # - pwsh: |
