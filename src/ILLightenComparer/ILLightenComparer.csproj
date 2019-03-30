@@ -3,16 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/sgaliamov/il-lighten-comparer.git</RepositoryUrl>
     <PackageLicense>https://raw.githubusercontent.com/sgaliamov/il-lighten-comparer/master/LICENSE</PackageLicense>
     <PackageTags>IComparer, Reflection, MSIL, IL, Emit</PackageTags>
     <PackageProjectUrl>https://sgaliamov.github.io/il-lighten-comparer/</PackageProjectUrl>
     <Description>ADD DESCRIPTION</Description>
-    <Version></Version>
-    <AssemblyVersion></AssemblyVersion>
-    <FileVersion></FileVersion>
+    <Version>0.0.0</Version>
+    <AssemblyVersion>0.0.0</AssemblyVersion>
+    <FileVersion>0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'!='Debug'">

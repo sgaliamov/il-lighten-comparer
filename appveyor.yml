@@ -20,9 +20,9 @@ before_build:
 dotnet_csproj:
   patch: true
   file: src\ILLightenComparer\ILLightenComparer.csproj
-  version: '{GitVersion_MajorMinorPatch}'
-  assembly_version: '{GitVersion_MajorMinorPatch}'
-  file_version: '{GitVersion_MajorMinorPatch}'
+  version: $(GitVersion_NuGetVersion)
+  assembly_version: $(GitVersion_NuGetVersion)
+  file_version: $(GitVersion_NuGetVersion)
 
 build_script:
 - pwsh: |
