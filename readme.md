@@ -1,5 +1,7 @@
 # IL Lighten Comparer
 
+[![Build status](https://ci.appveyor.com/api/projects/status/u9qs6c5v1qbvda2b/branch/master?svg=true)](https://ci.appveyor.com/project/sgaliamov/il-lighten-comparer/branch/master)
+
 **ILLightenComparer** is a library that can generate `IComparer<T>` implementation on runtime using advantages of IL code emission with main focus on **performance**.
 
 ## Features

@@ -14,8 +14,9 @@ skip_tags: true
 skip_branch_with_pr: true
 
 before_build:
-  - pwsh: |
-      gitversion /l console /output buildserver /verbosity warn
+- pwsh: |
+    $env
+    gitversion /l console /output buildserver /verbosity warn
 
 dotnet_csproj:
   patch: true
@@ -38,12 +39,9 @@ build_script:
 
 before_deploy:
 - pwsh: |
-    if ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
-        dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols --no-build --no-dependencies
-
-        Get-ChildItem .\src\ILLightenComparer\**\*.nupkg -Recurse | ForEach-Object {
-            Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nuget-package"
-        }
+    dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols --no-build --no-dependencies
+    Get-ChildItem .\src\ILLightenComparer\**\*.nupkg -Recurse | ForEach-Object {
+        Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nuget-package"
     }
 
 deploy:
