@@ -22,8 +22,8 @@ dotnet_csproj:
   informational_version: $(GitVersion_InformationalVersion)
 
 before_build:
-- pwsh: |
-    gitversion /l console /output buildserver /verbosity warn
+- pwsh: gitversion /output buildserver /verbosity warn
+- pwsh: Get-ChildItem 'env:'
 
 build_script:
 - pwsh: |
@@ -42,33 +42,8 @@ artifacts:
   name: nuget-package
   type: NuGetPackage
 
-# before_deploy:
-# - pwsh: |
-#     Get-ChildItem .\src\ILLightenComparer\**\*.nupkg -Recurse | ForEach-Object {
-#       Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nuget-package"
-#     }
-
 deploy:
 - provider: Environment
   name: appveyor-nuget
   on:
     branch: master
-
-
-# install:
-#   - choco install gitversion.portable -pre -y
-
-# assembly_info:
-#   patch: false
-
-# before_build:
-#   - nuget restore
-#   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
-
-# build:
-#   project: <your sln file>
-
-# after_build:
-#   - cmd: ECHO nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-#   - cmd: nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-#   - cmd: appveyor PushArtifact "<NuSpec>.%GitVersion_NuGetVersion%.nupkg"
