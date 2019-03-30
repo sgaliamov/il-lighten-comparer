@@ -47,8 +47,8 @@ before_deploy:
 deploy:
 - provider: Environment
   name: appveyor-nuget
-  on:
-    branch: master
+  # on:
+  #   branch: master
 
 
 # install:
