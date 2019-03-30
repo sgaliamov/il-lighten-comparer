@@ -26,8 +26,8 @@ dotnet_csproj:
 
 build_script:
 - pwsh: |
-    if ($env:APPVEYOR_REPO_BRANCH -ne master) {
-        $env:CONFIGURATION = debug
+    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+        $env:CONFIGURATION = 'debug'
     }
     dotnet build ./src -c $env:CONFIGURATION -v m
 
@@ -35,11 +35,21 @@ build_script:
 #   assemblies:
 #     - '**\*.tests.dll'
 
-# deploy:
-# - provider: Environment
-#   name: appveyor-nuget
-#   on:
-#     branch: master
+before_deploy:
+- pwsh: |
+    if ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
+        dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols --no-build --no-dependencies
+
+        Get-ChildItem .\src\ILLightenComparer\**\*.nupkg -Recurse | ForEach-Object {
+            Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nuget-package"
+        }
+    }
+
+deploy:
+- provider: Environment
+  name: appveyor-nuget
+  on:
+    branch: master
 
 
 # install:
