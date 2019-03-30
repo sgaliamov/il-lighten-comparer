@@ -15,7 +15,7 @@ skip_branch_with_pr: true
 
 before_build:
   - pwsh: |
-      gitversion /l console /output buildserver /updateAssemblyInfo /verbosity warn
+      gitversion /l console /output buildserver /verbosity warn
 
 dotnet_csproj:
   patch: true
