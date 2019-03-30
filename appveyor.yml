@@ -15,26 +15,47 @@ skip_branch_with_pr: true
 
 before_build:
   - pwsh: |
-      dotnet restore .\src
       gitversion /l console /output buildserver /updateAssemblyInfo /verbosity warn
 
-build:
-  publish_nuget: true
-  publish_nuget_symbols: true
-  verbosity: minimal
-  project: .\src
+dotnet_csproj:
+  patch: true
+  file: src\ILLightenComparer\ILLightenComparer.csproj
+  version: '{GitVersion_NuGetVersion}'
+  assembly_version: '{GitVersion_NuGetVersion}'
+  file_version: '{GitVersion_NuGetVersion}'
 
-test:
-  assemblies:
-    - '**\*.tests.dll'
+build_script:
+- pwsh: |
+    if ($env:APPVEYOR_REPO_BRANCH -ne master) {
+        $env:CONFIGURATION = debug
+    }
+    dotnet build ./src -c $env:CONFIGURATION -v m
 
-artifacts:
-  - path: '**\*.nupkg'
-    name: nuget-package
-    type: NuGetPackage
+# test:
+#   assemblies:
+#     - '**\*.tests.dll'
 
-deploy:
-- provider: Environment
-  name: appveyor-nuget
-  on:
-    branch: master
+# deploy:
+# - provider: Environment
+#   name: appveyor-nuget
+#   on:
+#     branch: master
+
+
+# install:
+#   - choco install gitversion.portable -pre -y
+
+# assembly_info:
+#   patch: false
+
+# before_build:
+#   - nuget restore
+#   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
+
+# build:
+#   project: <your sln file>
+
+# after_build:
+#   - cmd: ECHO nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+#   - cmd: nuget pack <Project>\<NuSpec>.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+#   - cmd: appveyor PushArtifact "<NuSpec>.%GitVersion_NuGetVersion%.nupkg"

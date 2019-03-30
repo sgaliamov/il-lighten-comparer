@@ -170,4 +170,4 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 3. Add more settings.
 4. Improve performance.
 
-In case of unexpected behavior please create an [issue](issues/new) and provide the data structure that you use.
+In case of unexpected behavior please welcome to create an [issue](/sgaliamov/il-lighten-comparer/issues/new) and provide the type that you use.
