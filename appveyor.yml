@@ -30,8 +30,10 @@ init:
     if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
         $env:CONFIGURATION = 'debug'
     }
-    gitversion /l console /output buildserver /verbosity warn
     $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
+
+before_build:
+- pwsh: gitversion /l console /output buildserver /verbosity warn
 
 build_script:
 - pwsh:
