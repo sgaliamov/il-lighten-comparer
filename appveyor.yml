@@ -15,8 +15,8 @@ skip_branch_with_pr: true
 
 before_build:
   - pwsh: |
-      gitversion /l console /output buildserver /updateAssemblyInfo /verbosity warn
       dotnet restore .\src
+      gitversion /l console /output buildserver /updateAssemblyInfo /verbosity warn
 
 build:
   publish_nuget: true
