@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
+
+[assembly: InternalsVisibleTo("IL-Lighten-Comparer")]
 
 namespace ILLightenComparer.Emitters.Builders
 {
