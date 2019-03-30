@@ -135,7 +135,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                         comparer = (IComparer)Activator.CreateInstance(comparerType, comparer);
                     }
 
-                    new GenericTests().GenericTest(type, comparer, sort, Constants.SmallCount, Constants.SmallCount);
+                    new GenericTests().GenericTest(type, comparer, sort, 1, 2);
                 });
         }
     }

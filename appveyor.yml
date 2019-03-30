@@ -25,23 +25,25 @@ dotnet_csproj:
   file_version: $(GitVersion_MajorMinorPatch)
   informational_version: $(GitVersion_InformationalVersion)
 
+init:
+- pwsh: |
+    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+        Set-AppveyorBuildVariable 'CONFIGURATION' 'debug'
+    }
+
 before_build:
 - pwsh: gitversion /l console /output buildserver /verbosity warn
 
 build_script:
 - pwsh: |
-    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
-        $env:CONFIGURATION = 'debug'
-    }
     dotnet build .\src -c $env:CONFIGURATION -v m
     dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols `
         --no-build --no-dependencies -c $env:CONFIGURATION -v m -o publish
 
 test_script:
 - pwsh: |
-    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+    if ($env:CONFIGURATION -eq 'debug') {
       nuget install OpenCover -Verbosity quiet -Version 4.6.519
-      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
       Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
 
       Get-ChildItem .\**\*.Tests.csproj -Recurse | ForEach-Object {
