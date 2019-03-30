@@ -28,9 +28,8 @@ dotnet_csproj:
 init:
 - pwsh: |
     if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
-        $env:CONFIGURATION = 'debug'
+        Set-AppveyorBuildVariable 'CONFIGURATION' 'debug'
     }
-    $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
 
 before_build:
 - pwsh: gitversion /l console /output buildserver /verbosity warn
