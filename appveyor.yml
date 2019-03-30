@@ -13,6 +13,10 @@ skip_tags: true
 
 skip_branch_with_pr: true
 
+environment:
+  OpenCoverToken:
+    secure: Pn8fcFeMu/oGCqsK70UiOauIHM1PShVqPxY3wB1jw0mT0G/QALa5NFlcN9XoGYww
+
 dotnet_csproj:
   patch: true
   file: src\ILLightenComparer\ILLightenComparer.csproj
@@ -33,17 +37,13 @@ build_script:
     dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols `
         --no-build --no-dependencies -c $env:CONFIGURATION -v m -o publish
 
-before_test:
-- pwsh: |
-    if ($env:APPVEYOR_REPO_BRANCH -eq 'develop') {
-        nuget install OpenCover -Verbosity quiet -Version 4.6.519
-        $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
-        Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-    }
-
 test_script:
 - pwsh: |
-    if ($env:APPVEYOR_REPO_BRANCH -eq 'develop') {
+    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+      nuget install OpenCover -Verbosity quiet -Version 4.6.519
+      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
+      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+
       Get-ChildItem .\**\*.Tests.csproj -Recurse | ForEach-Object {
           .\OpenCover.4.6.519\tools\OpenCover.Console.exe `
               -register:user `
@@ -59,11 +59,11 @@ test_script:
 
           bash codecov.sh -f 'coverage.xml' -t $env:OpenCoverToken
       }
-  } else {
-      Get-ChildItem .\**\*.Tests.csproj -Recurse | ForEach-Object {
-          dotnet test $_ --no-build -c release
-      }
-  }
+    } else {
+        Get-ChildItem .\**\*.Tests.csproj -Recurse | ForEach-Object {
+            dotnet test $_ --no-build -c $env:CONFIGURATION
+        }
+    }
 
 artifacts:
 - path: '.\src\ILLightenComparer\publish\*.nupkg'
