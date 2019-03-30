@@ -9,6 +9,7 @@ namespace ILLightenComparer.Benchmarks
         {
             BenchmarkRunner.Run<LightStructBenchmark>();
             BenchmarkRunner.Run<RegularModelBenchmark>();
+            BenchmarkRunner.Run<CompareIntegral>();
         }
     }
 }
