@@ -3,16 +3,24 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>S. Galiamov</Authors>
+    <Description>Runtime comparer compiler.</Description>
+    <Owners>S. Galiamov</Owners>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://sgaliamov.github.io/il-lighten-comparer</PackageProjectUrl>
+    <PackageTags>IComparer, Reflection, MSIL, IL, Runtime code generation, Comparison</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/sgaliamov/il-lighten-comparer.git</RepositoryUrl>
-    <PackageLicense>https://raw.githubusercontent.com/sgaliamov/il-lighten-comparer/master/LICENSE</PackageLicense>
-    <PackageTags>IComparer, Reflection, MSIL, IL, Emit</PackageTags>
-    <PackageProjectUrl>https://sgaliamov.github.io/il-lighten-comparer/</PackageProjectUrl>
-    <Description>Runtime comparer compiler.</Description>
-    <Version>0.0.0</Version>
-    <AssemblyVersion>0.0.0</AssemblyVersion>
-    <FileVersion>0.0.0</FileVersion>
-    <InformationalVersion>0.0.0</InformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>0.0.0.0</Version>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <FileVersion>0.0.0.0</FileVersion>
+    <InformationalVersion>0.0.0.0</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
