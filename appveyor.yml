@@ -17,11 +17,7 @@ environment:
 
 init:
 - pwsh: |
-    Exit-AppveyorBuild
-    if ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
-      if (($env:APPVEYOR_REPO_TAG -ne $true) -and ($env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null)) {
-      }
-    } else {
+    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
         Set-AppveyorBuildVariable 'CONFIGURATION' 'debug'
     }
 
