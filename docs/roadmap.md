@@ -79,6 +79,7 @@
 - [x] setup CI/CD
 - [x] code coverage
 - [ ] review *todo*
+- [ ] review reasoning
 - [ ] publish
 
 ## Phase 6 GetHashCode

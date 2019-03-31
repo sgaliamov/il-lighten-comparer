@@ -11,7 +11,7 @@
 1. Create `release` branch with next version as a name.
 2. Create PR from the release branch to `master`. Make sure that all checks is passed.
 3. Squash and merge RP.
-4. Set version tag for the merge commit and push it to `origin/master`. *Note*: it will not trigger CI/CD because of `skip_tags: true` setting.
+4. Set version tag for the merge commit and push it to `origin/master`.
 5. Add [release notes](https://github.com/sgaliamov/il-lighten-comparer/tags) and publish the release.
 6. Create pull request from `master` to `develop` and complete it.
 7. [Deploy](https://ci.appveyor.com/environment/40781/deployments/new) to [nuget.org](https://nuget.org) if need be.
