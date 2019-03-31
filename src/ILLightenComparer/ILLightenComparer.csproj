@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <Authors>S. Galiamov</Authors>
-    <Description>Runtime comparer compiler.</Description>
+    <Description>ILLightenComparer is a library that can generate IComparer&lt;T&gt; implementation on runtime using advantages of IL code emission with main focus on performance.</Description>
     <Owners>S. Galiamov</Owners>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sgaliamov.github.io/il-lighten-comparer</PackageProjectUrl>

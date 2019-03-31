@@ -17,7 +17,7 @@
 * .NET Standard 2.0
 * No 3<sup>rd</sup> party dependencies.
 
-## [Benchmarks](src/ILLightenComparer.Benchmarks/Benchmark/ComparersBenchmark.cs)
+## [Benchmarks](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Program.cs)
 
 ``` ini
 BenchmarkDotNet=v0.11.4, OS=Windows 10.0.17763.379 (1809/October2018Update/Redstone5)
@@ -27,25 +27,21 @@ Intel Core i7-6700HQ CPU 2.60GHz (Skylake), 1 CPU, 8 logical and 4 physical core
   DefaultJob : .NET Core 2.2.1 (CoreCLR 4.6.27207.03, CoreFX 4.6.27207.03), 64bit RyuJIT
 ```
 
-With regular models like [MovieModel](src/ILLightenComparer.Benchmarks/Benchmark/MovieObject.cs) generated comparer is criminally close to manual implementation.
+With regular models like [MovieModel](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Benchmark/MovieModel.cs) generated comparer is criminally close to manual implementation.
 
-``` c
-| Method                  |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
-| ----------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
-| 'IL Lighten Comparer'   | 12.90 ms | 0.2700 ms | 0.3214 ms | 12.77 ms |  1.00 |    0.00 |
-| 'Manual implementation' | 12.47 ms | 0.2760 ms | 0.7785 ms | 12.15 ms |  1.00 |    0.09 |
-| 'Nito Comparer'         | 16.45 ms | 0.3627 ms | 1.0111 ms | 16.32 ms |  1.33 |    0.07 |
-```
+| Method                |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
+| --------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
+| IL Lighten Comparer   | 12.90 ms | 0.2700 ms | 0.3214 ms | 12.77 ms |  1.00 |    0.00 |
+| Manual implementation | 12.47 ms | 0.2760 ms | 0.7785 ms | 12.15 ms |  1.00 |    0.09 |
+| Nito Comparer         | 16.45 ms | 0.3627 ms | 1.0111 ms | 16.32 ms |  1.33 |    0.07 |
 
-With light optimized structures like [LightStruct](src/ILLightenComparer.Benchmarks/Benchmark/LightStruct.cs) `ILLightenComparer` able to give serious performance boost.
+With light optimized structures like [LightStruct](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Benchmark/LightStruct.cs) `ILLightenComparer` able to give serious performance boost.
 
-``` c
-| Method                  |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
-| ----------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
-| 'IL Lighten Comparer'   | 2.151 ms | 0.0862 ms | 0.2473 ms | 2.105 ms |  1.00 |    0.00 |
-| 'Manual implementation' | 3.236 ms | 0.0643 ms | 0.0570 ms | 3.225 ms |  1.40 |    0.16 |
-| 'Nito Comparer'         | 6.968 ms | 0.2257 ms | 0.6655 ms | 6.647 ms |  3.28 |    0.43 |
-```
+| Method                |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
+| --------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
+| IL Lighten Comparer   | 2.151 ms | 0.0862 ms | 0.2473 ms | 2.105 ms |  1.00 |    0.00 |
+| Manual implementation | 3.236 ms | 0.0643 ms | 0.0570 ms | 3.225 ms |  1.40 |    0.16 |
+| Nito Comparer         | 6.968 ms | 0.2257 ms | 0.6655 ms | 6.647 ms |  3.28 |    0.43 |
 
 ## Configuration options
 
@@ -57,7 +53,7 @@ With light optimized structures like [LightStruct](src/ILLightenComparer.Benchma
 * Defining string comparison type.
 * Defining custom comparers by type or instance.
 
-## [Examples](src/ILLightenComparer.Tests/ExamplesTests.cs)
+## [Examples](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Tests/Examples.cs)
 
 ### Basic usage
 
@@ -174,4 +170,4 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 3. Add more settings.
 4. Improve performance.
 
-In case of unexpected behavior please welcome to create an [issue](/sgaliamov/il-lighten-comparer/issues/new) and provide the type that you use.
+In case of unexpected behavior please welcome to create an [issue](https://github.com/sgaliamov/il-lighten-comparer/issues/new) and provide the type that you use.

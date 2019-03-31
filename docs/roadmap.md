@@ -76,8 +76,8 @@
 - [x] benchmarks
 - [x] add documentation comments
 - [x] documentation and examples
-- [ ] setup CI/CD
-- [ ] code coverage
+- [x] setup CI/CD
+- [x] code coverage
 - [ ] review *todo*
 - [ ] publish
 

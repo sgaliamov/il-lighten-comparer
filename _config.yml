@@ -1,1 +1,3 @@
-theme: minima
+theme: jekyll-theme-primer
+title: title
+description: description
