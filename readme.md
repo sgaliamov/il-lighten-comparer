@@ -1,4 +1,4 @@
-# IL Lighten Comparer
+# Fast comparer library
 
 [![Build status](https://ci.appveyor.com/api/projects/status/u9qs6c5v1qbvda2b/branch/master?svg=true)](https://ci.appveyor.com/project/sgaliamov/il-lighten-comparer/branch/master)
 [![codecov](https://codecov.io/gh/sgaliamov/il-lighten-comparer/graph/badge.svg)](https://codecov.io/gh/sgaliamov/il-lighten-comparer)
