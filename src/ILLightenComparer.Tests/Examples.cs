@@ -62,7 +62,7 @@ namespace ILLightenComparer.Tests
         }
 
         [Fact]
-        public void Fix_configuration()
+        public void Fixed_configuration()
         {
             var x = new Tuple<int, string>(1, "text");
             var y = new Tuple<int, string>(2, "TEXT");

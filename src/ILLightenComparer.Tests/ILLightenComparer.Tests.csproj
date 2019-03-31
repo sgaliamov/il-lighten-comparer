@@ -6,10 +6,6 @@
     <ServerGarbageCollection>true</ServerGarbageCollection>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DebugType>full</DebugType>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.8.0" />
     <PackageReference Include="DeepCloner" Version="0.10.2" />
