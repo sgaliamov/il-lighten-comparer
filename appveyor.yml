@@ -17,10 +17,9 @@ environment:
 
 init:
 - pwsh: |
-    Get-ChildItem 'env:'
+    Exit-AppveyorBuild
     if ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
-      if (!$env:APPVEYOR_REPO_TAG -and !$env:APPVEYOR_PULL_REQUEST_NUMBER) {
-        Exit-AppveyorBuild
+      if (($env:APPVEYOR_REPO_TAG -ne $true) -and ($env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null)) {
       }
     } else {
         Set-AppveyorBuildVariable 'CONFIGURATION' 'debug'
