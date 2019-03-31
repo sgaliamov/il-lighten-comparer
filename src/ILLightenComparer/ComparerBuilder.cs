@@ -43,7 +43,6 @@ namespace ILLightenComparer
         {
             config(_configurationProvider);
 
-            // todo: test - define configuration, get comparer, change configuration, get comparer, they should be different
             InitContext();
 
             return this;

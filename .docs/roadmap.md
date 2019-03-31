@@ -76,10 +76,11 @@
 - [x] benchmarks
 - [x] add documentation comments
 - [x] documentation and examples
-- [ ] setup CI/CD
-- [ ] code coverage
-- [ ] review *todo*
-- [ ] publish
+- [x] setup CI/CD
+- [x] code coverage
+- [x] review *todo*
+- [x] review reasoning
+- [x] publish
 
 ## Phase 6 GetHashCode
 
