@@ -78,7 +78,7 @@
 - [x] documentation and examples
 - [x] setup CI/CD
 - [x] code coverage
-- [ ] review *todo*
+- [x] review *todo*
 - [ ] review reasoning
 - [ ] publish
 
