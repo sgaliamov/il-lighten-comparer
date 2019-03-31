@@ -17,6 +17,7 @@ environment:
 
 init:
 - pwsh: |
+    Get-ChildItem 'env:'
     if ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
       if (!$env:APPVEYOR_REPO_TAG -and !$env:APPVEYOR_PULL_REQUEST_NUMBER) {
         Exit-AppveyorBuild
