@@ -9,13 +9,17 @@ branches:
   - develop
   - master
 
-skip_tags: true
-
 skip_branch_with_pr: true
 
 environment:
   OpenCoverToken:
     secure: Pn8fcFeMu/oGCqsK70UiOauIHM1PShVqPxY3wB1jw0mT0G/QALa5NFlcN9XoGYww
+
+init:
+- pwsh: |
+    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+        Set-AppveyorBuildVariable 'CONFIGURATION' 'debug'
+    }
 
 dotnet_csproj:
   patch: true
@@ -24,12 +28,6 @@ dotnet_csproj:
   assembly_version: $(GitVersion_MajorMinorPatch)
   file_version: $(GitVersion_MajorMinorPatch)
   informational_version: $(GitVersion_InformationalVersion)
-
-init:
-- pwsh: |
-    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
-        Set-AppveyorBuildVariable 'CONFIGURATION' 'debug'
-    }
 
 before_build:
 - pwsh: gitversion /l console /output buildserver /verbosity warn
@@ -77,3 +75,4 @@ deploy:
   name: appveyor-nuget
   on:
     branch: master
+    APPVEYOR_REPO_TAG: true
