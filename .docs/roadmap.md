@@ -80,7 +80,7 @@
 - [x] code coverage
 - [x] review *todo*
 - [x] review reasoning
-- [ ] publish
+- [x] publish
 
 ## Phase 6 GetHashCode
 
