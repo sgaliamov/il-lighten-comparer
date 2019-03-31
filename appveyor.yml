@@ -1,0 +1,79 @@
+﻿image: Visual Studio 2017
+
+version: 'build-{build}'
+
+configuration: release
+
+branches:
+  only:
+  - develop
+  - master
+
+skip_tags: true
+
+skip_branch_with_pr: true
+
+environment:
+  OpenCoverToken:
+    secure: Pn8fcFeMu/oGCqsK70UiOauIHM1PShVqPxY3wB1jw0mT0G/QALa5NFlcN9XoGYww
+
+dotnet_csproj:
+  patch: true
+  file: src\ILLightenComparer\ILLightenComparer.csproj
+  version: $(GitVersion_NuGetVersion)
+  assembly_version: $(GitVersion_MajorMinorPatch)
+  file_version: $(GitVersion_MajorMinorPatch)
+  informational_version: $(GitVersion_InformationalVersion)
+
+init:
+- pwsh: |
+    if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+        Set-AppveyorBuildVariable 'CONFIGURATION' 'debug'
+    }
+
+before_build:
+- pwsh: gitversion /l console /output buildserver /verbosity warn
+
+build_script:
+- pwsh: |
+    dotnet build .\src -c $env:CONFIGURATION -v m
+    dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols `
+        --no-build --no-dependencies -c $env:CONFIGURATION -v m -o publish
+
+test_script:
+- pwsh: |
+    if ($env:CONFIGURATION -eq 'debug') {
+      nuget install OpenCover -Verbosity quiet -Version 4.6.519
+      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+
+      Get-ChildItem .\**\*.Tests.csproj -Recurse | ForEach-Object {
+          .\OpenCover.4.6.519\tools\OpenCover.Console.exe `
+              -register:user `
+              -target:'C:\Program Files\dotnet\dotnet.exe' `
+              -targetargs:"test $_ --no-build -c debug" `
+              -output:'coverage.xml' `
+              -oldstyle `
+              -returntargetcode
+
+          if (!$?) {
+              throw "`nTests for $_ failed."
+          }
+
+          bash codecov.sh -f 'coverage.xml' -t $env:OpenCoverToken
+      }
+    } else {
+        Get-ChildItem .\**\*.Tests.csproj -Recurse | ForEach-Object {
+            dotnet test $_ --no-build -c $env:CONFIGURATION
+        }
+    }
+
+artifacts:
+- path: '.\src\ILLightenComparer\publish\*.nupkg'
+  name: nuget-package
+  type: NuGetPackage
+
+deploy:
+- provider: Environment
+  name: appveyor-nuget
+  on:
+    branch: master
