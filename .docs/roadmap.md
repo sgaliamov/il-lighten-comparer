@@ -120,3 +120,4 @@
 - [ ] `checked` subs
 - [ ] compare references and the end?
 - [ ] automatic cycle detection when needed
+- [ ] possible to merge `MembersComparison` and `HierarchicalsComparison` but need to create `LocalVariable` class
