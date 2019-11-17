@@ -12,18 +12,17 @@ namespace ILLightenComparer.Emitters
     internal sealed class CompareEmitter
     {
         private readonly CompareVisitor _compareVisitor;
-        private readonly Converter _converter;
+        private readonly ComparisonsProvider _comparisons;
 
         public CompareEmitter(Context context, IConfigurationProvider configurationProvider)
         {
-            var membersProvider = new MembersProvider(configurationProvider);
-            _converter = new Converter(configurationProvider);
-            _compareVisitor = new CompareVisitor(context, configurationProvider, membersProvider, _converter);
+            _comparisons = new ComparisonsProvider(configurationProvider);
+            _compareVisitor = new CompareVisitor(context, _comparisons, configurationProvider);
         }
 
         public void Emit(Type objectType, ILEmitter il)
         {
-            var comparison = _converter.CreateComparison(new ArgumentVariable(objectType));
+            var comparison = _comparisons.GetComparison(new ArgumentVariable(objectType));
 
             comparison.Accept(this, il);
         }

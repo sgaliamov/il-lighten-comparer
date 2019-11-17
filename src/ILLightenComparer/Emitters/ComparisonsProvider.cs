@@ -7,7 +7,7 @@ using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Emitters
 {
-    internal sealed class Converter
+    internal sealed class ComparisonsProvider
     {
         private static readonly Func<IVariable, IComparison>[] ComparisonConverters =
         {
@@ -23,12 +23,12 @@ namespace ILLightenComparer.Emitters
 
         private readonly IConfigurationProvider _configurations;
 
-        public Converter(IConfigurationProvider configurations)
+        public ComparisonsProvider(IConfigurationProvider configurations)
         {
             _configurations = configurations;
         }
 
-        public IComparison CreateComparison(IVariable variable)
+        public IComparison GetComparison(IVariable variable)
         {
             var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer)

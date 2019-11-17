@@ -10,12 +10,12 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
     internal sealed class ArrayComparer
     {
         private readonly CompareVisitor _compareVisitor;
-        private readonly Converter _converter;
+        private readonly ComparisonsProvider _comparisons;
 
-        public ArrayComparer(CompareVisitor compareVisitor, Converter converter)
+        public ArrayComparer(CompareVisitor compareVisitor, ComparisonsProvider comparisons)
         {
             _compareVisitor = compareVisitor;
-            _converter = converter;
+            _comparisons = comparisons;
         }
 
         public ILEmitter Compare(
@@ -43,7 +43,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             {
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
-                var itemComparison = _converter.CreateComparison(itemVariable);
+                var itemComparison = _comparisons.GetComparison(itemVariable);
                 itemComparison.Accept(_compareVisitor, il, continueLoop);
 
                 if (itemComparison.PutsResultInStack)

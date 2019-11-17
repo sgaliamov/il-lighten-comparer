@@ -21,7 +21,6 @@ namespace ILLightenComparer.Emitters
         public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            // todo: think about relations and shared responsibilities with `ContextBuilder`
             _contextBuilder = new ContextBuilder(this, configurations);
         }
 
