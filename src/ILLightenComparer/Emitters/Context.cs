@@ -10,7 +10,7 @@ using ILLightenComparer.Shared;
 namespace ILLightenComparer.Emitters
 {
     /// <summary>
-    ///     Provides access to cached comparers and comparison methods to compile types.
+    ///     Provides access to cached comparers and static comparison methods.
     /// </summary>
     internal sealed class Context : IComparerProvider, IContext
     {

@@ -56,9 +56,7 @@ namespace ILLightenComparer.Extensions
                        $"{type.DisplayName()} does not have {name} property.");
         }
 
-        /// <summary>
-        ///     <summary>Returns the underlying type of the specified enumeration or Nullable.</summary>
-        /// </summary>
+        /// <summary>Returns the underlying type of the specified enumeration or Nullable.</summary>
         /// <param name="type">The type whose underlying type will be retrieved.</param>
         /// <returns>The underlying type of <paramref name="type">type</paramref>.</returns>
         public static Type GetUnderlyingType(this Type type)
