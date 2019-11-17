@@ -42,22 +42,21 @@ namespace ILLightenComparer.Emitters.Builders
 
         private void BuildStaticCompareMethod(Type objectType, MethodBuilder staticMethodBuilder)
         {
-            using (var il = staticMethodBuilder.CreateILEmitter())
+            using var il = staticMethodBuilder.CreateILEmitter();
+
+            if (!objectType.IsValueType
+                && !objectType.IsSealedComparable()
+                && !objectType.ImplementsGeneric(typeof(IEnumerable<>)))
             {
-                if (!objectType.IsValueType
-                    && !objectType.IsSealedComparable()
-                    && !objectType.ImplementsGeneric(typeof(IEnumerable<>)))
-                {
-                    il.EmitArgumentsReferenceComparison();
-                }
-
-                if (IsDetectCycles(objectType))
-                {
-                    EmitCycleDetection(il);
-                }
-
-                _compareEmitter.Emit(objectType, il);
+                il.EmitArgumentsReferenceComparison();
             }
+
+            if (IsDetectCycles(objectType))
+            {
+                EmitCycleDetection(il);
+            }
+
+            _compareEmitter.Emit(objectType, il);
         }
 
         private void BuildInstanceCompareMethod(
@@ -70,15 +69,14 @@ namespace ILLightenComparer.Emitters.Builders
             var interfaceMethod = genericInterface.GetMethod(MethodName.Compare);
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
-            using (var il = methodBuilder.CreateILEmitter())
-            {
-                il.LoadArgument(Arg.This)
-                  .Emit(OpCodes.Ldfld, contextField)
-                  .LoadArgument(Arg.X)
-                  .LoadArgument(Arg.Y);
+            using var il = methodBuilder.CreateILEmitter();
 
-                EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
-            }
+            il.LoadArgument(Arg.This)
+              .Emit(OpCodes.Ldfld, contextField)
+              .LoadArgument(Arg.X)
+              .LoadArgument(Arg.Y);
+
+            EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
         }
 
         private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
@@ -93,8 +91,8 @@ namespace ILLightenComparer.Emitters.Builders
                 return;
             }
 
-            il.Emit(OpCodes.Newobj, Method.SetConstructor)
-              .Emit(OpCodes.Newobj, Method.SetConstructor)
+            il.Emit(OpCodes.Newobj, Method.ConcurrentSetConstructor)
+              .Emit(OpCodes.Newobj, Method.ConcurrentSetConstructor)
               .Call(staticCompareMethod)
               .Return();
         }
@@ -118,19 +116,19 @@ namespace ILLightenComparer.Emitters.Builders
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.X)
               .LoadConstant(0)
-              .Emit(OpCodes.Call, Method.SetAdd)
+              .Emit(OpCodes.Call, Method.ConcurrentSetAddMethod)
               .LoadArgument(Arg.SetY)
               .LoadArgument(Arg.Y)
               .LoadConstant(0)
-              .Emit(OpCodes.Call, Method.SetAdd)
+              .Emit(OpCodes.Call, Method.ConcurrentSetAddMethod)
               .Emit(OpCodes.Or)
               .LoadConstant(0)
               .Emit(OpCodes.Ceq)
               .Branch(OpCodes.Brfalse_S, out var next)
               .LoadArgument(Arg.SetX)
-              .Emit(OpCodes.Call, Method.SetGetCount)
+              .Emit(OpCodes.Call, Method.ConcurrentSetGetCountProperty)
               .LoadArgument(Arg.SetY)
-              .Emit(OpCodes.Call, Method.SetGetCount)
+              .Emit(OpCodes.Call, Method.ConcurrentSetGetCountProperty)
               .Emit(OpCodes.Sub)
               .Return()
               .MarkLabel(next);

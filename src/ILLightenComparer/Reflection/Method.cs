@@ -21,13 +21,13 @@ namespace ILLightenComparer.Reflection
             nameof(string.Compare),
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
-        public static readonly ConstructorInfo SetConstructor =
+        public static readonly ConstructorInfo ConcurrentSetConstructor =
             typeof(ConcurrentSet<object>).GetConstructor(Type.EmptyTypes);
 
-        public static readonly MethodInfo SetAdd =
+        public static readonly MethodInfo ConcurrentSetAddMethod =
             typeof(ConcurrentSet<object>).GetMethod(nameof(ConcurrentSet<object>.TryAdd), new[] { typeof(object), typeof(byte) });
 
-        public static readonly MethodInfo SetGetCount =
+        public static readonly MethodInfo ConcurrentSetGetCountProperty =
             typeof(ConcurrentSet<object>).GetProperty(nameof(ConcurrentSet<object>.Count))?.GetGetMethod();
 
         public static MethodInfo DelayedCompare =

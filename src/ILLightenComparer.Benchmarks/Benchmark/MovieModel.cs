@@ -54,18 +54,16 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                         return 1;
                     }
 
-                    // ReSharper disable UseDeconstruction
-                    var xCurrent = enumeratorX.Current;
-                    var yCurrent = enumeratorY.Current;
-                    // ReSharper restore UseDeconstruction
+                    var (keyX, valueX) = enumeratorX.Current;
+                    var (keyY, valueY) = enumeratorY.Current;
 
-                    var compare = xCurrent.Key.CompareTo(yCurrent.Key);
+                    var compare = keyX.CompareTo(keyY);
                     if (compare != 0)
                     {
                         return compare;
                     }
 
-                    compare = string.Compare(xCurrent.Value, yCurrent.Value, StringComparison.Ordinal);
+                    compare = string.Compare(valueX, valueY, StringComparison.Ordinal);
                     if (compare != 0)
                     {
                         return compare;

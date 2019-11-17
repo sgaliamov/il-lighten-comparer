@@ -220,7 +220,7 @@ namespace ILLightenComparer.Shared
             }
         }
 
-        public ILEmitter LoadLocal(LocalBuilder local)
+        public ILEmitter LoadLocal(LocalVariableInfo local)
         {
             return LoadLocal(local.LocalIndex);
         }
@@ -247,7 +247,7 @@ namespace ILLightenComparer.Shared
             return this;
         }
 
-        public ILEmitter LoadAddress(LocalBuilder local)
+        public ILEmitter LoadAddress(LocalVariableInfo local)
         {
             var localIndex = local.LocalIndex;
             var opCode = localIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emitters;
 using ILLightenComparer.Reflection;
@@ -36,8 +37,8 @@ namespace ILLightenComparer.Extensions
 
         public static ILEmitter EmitCheckNullablesForValue(
             this ILEmitter il,
-            LocalBuilder nullableX,
-            LocalBuilder nullableY,
+            LocalVariableInfo nullableX,
+            LocalVariableInfo nullableY,
             Type nullableType,
             Label ifBothNull)
         {
@@ -61,8 +62,8 @@ namespace ILLightenComparer.Extensions
 
         public static ILEmitter EmitReferenceComparison(
             this ILEmitter il,
-            LocalBuilder x,
-            LocalBuilder y,
+            LocalVariableInfo x,
+            LocalVariableInfo y,
             Label ifEqual)
         {
             return il.LoadLocal(x)
