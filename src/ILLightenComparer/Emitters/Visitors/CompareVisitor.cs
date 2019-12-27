@@ -19,7 +19,6 @@ namespace ILLightenComparer.Emitters.Visitors
         private readonly ComparisonsProvider _comparisons;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
-
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(

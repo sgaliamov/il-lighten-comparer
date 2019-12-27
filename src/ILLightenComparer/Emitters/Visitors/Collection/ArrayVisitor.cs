@@ -33,7 +33,9 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
             var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
 
+            #if DEBUG
             EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
+            #endif
 
             if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder)
             {
@@ -44,8 +46,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         }
 
         private static void EmitCheckForNegativeCount(
-            LocalBuilder countX,
-            LocalBuilder countY,
+            LocalVariableInfo countX,
+            LocalVariableInfo countY,
             MemberInfo memberType,
             ILEmitter il)
         {
