@@ -8,7 +8,6 @@ using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Shared
 {
-    // ReSharper disable once PartialTypeWithSinglePart
     internal sealed partial class ILEmitter : IDisposable
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
@@ -18,76 +17,66 @@ namespace ILLightenComparer.Shared
         private readonly Dictionary<Type, List<LocalBuilder>> _locals = new Dictionary<Type, List<LocalBuilder>>();
         private readonly Stack<Scope> _scopes = new Stack<Scope>();
 
-        public ILEmitter(ILGenerator il)
-        {
+        public ILEmitter(ILGenerator il) {
             _il = il;
             LocalsScope();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             _scopes.Pop();
             DebugOutput();
         }
 
-        public ILEmitter Emit(OpCode opCode)
-        {
+        public ILEmitter Emit(OpCode opCode) {
             DebugLine($"\t\t{opCode}");
             _il.Emit(opCode);
 
             return this;
         }
 
-        public ILEmitter Emit(OpCode opCode, int arg)
-        {
+        public ILEmitter Emit(OpCode opCode, int arg) {
             DebugLine($"\t\t{opCode} {arg}");
             _il.Emit(opCode, arg);
 
             return this;
         }
 
-        public ILEmitter DefineLabel(out Label label)
-        {
+        public ILEmitter DefineLabel(out Label label) {
             label = _il.DefineLabel();
             AddDebugLabel(label);
 
             return this;
         }
 
-        public ILEmitter MarkLabel(Label label)
-        {
+        public ILEmitter MarkLabel(Label label) {
             DebugMarkLabel(label);
             _il.MarkLabel(label);
 
             return this;
         }
 
-        public ILEmitter Emit(OpCode opCode, Label label)
-        {
+        public ILEmitter Emit(OpCode opCode, Label label) {
             DebugEmitLabel(opCode, label);
             _il.Emit(opCode, label);
 
             return this;
         }
 
-        public ILEmitter Emit(OpCode opCode, MethodInfo methodInfo)
-        {
+        public ILEmitter Emit(OpCode opCode, MethodInfo methodInfo) {
             DebugLine($"\t\t{opCode} {methodInfo.DisplayName()}");
             _il.Emit(opCode, methodInfo);
 
             return this;
         }
 
-        public ILEmitter Emit(OpCode opCode, FieldInfo field)
-        {
+        public ILEmitter Emit(OpCode opCode, FieldInfo field) {
             DebugLine($"\t\t{opCode} {field.DisplayName()}");
             _il.Emit(opCode, field);
 
             return this;
         }
 
-        public ILEmitter Emit(OpCode opCode, ConstructorInfo constructorInfo)
-        {
+        public ILEmitter Emit(OpCode opCode, ConstructorInfo constructorInfo) {
             DebugLine($"\t\t{opCode} {constructorInfo.DisplayName()}");
             _il.Emit(opCode, constructorInfo);
 
@@ -118,11 +107,9 @@ namespace ILLightenComparer.Shared
         //    return this;
         //}
 
-        public ILEmitter Call(MethodInfo methodInfo)
-        {
+        public ILEmitter Call(MethodInfo methodInfo) {
             var owner = methodInfo.DeclaringType;
-            if (owner == null)
-            {
+            if (owner == null) {
                 throw new InvalidOperationException(
                     $"It's not expected that {methodInfo.DisplayName()} doesn't have a declaring type.");
             }
@@ -134,18 +121,11 @@ namespace ILLightenComparer.Shared
             return Emit(opCode, methodInfo);
         }
 
-        public ILEmitter Return()
-        {
-            return Emit(OpCodes.Ret);
-        }
+        public ILEmitter Return() => Emit(OpCodes.Ret);
 
-        public ILEmitter Return(int value)
-        {
-            return LoadConstant(value).Return();
-        }
+        public ILEmitter Return(int value) => LoadConstant(value).Return();
 
-        public ILEmitter EmitCast(Type objectType)
-        {
+        public ILEmitter EmitCast(Type objectType) {
             var castOp = objectType.IsValueType
                              ? OpCodes.Unbox_Any
                              : OpCodes.Castclass;
@@ -156,11 +136,9 @@ namespace ILLightenComparer.Shared
             return this;
         }
 
-        public ILEmitter Branch(OpCode opCode, Label label)
-        {
+        public ILEmitter Branch(OpCode opCode, Label label) {
             if (opCode.FlowControl != FlowControl.Branch
-                && opCode.FlowControl != FlowControl.Cond_Branch)
-            {
+                && opCode.FlowControl != FlowControl.Cond_Branch) {
                 throw new ArgumentOutOfRangeException(nameof(opCode),
                     $"Only a branch instruction is allowed. OpCode: {opCode}.");
             }
@@ -168,11 +146,9 @@ namespace ILLightenComparer.Shared
             return Emit(opCode, label);
         }
 
-        public ILEmitter Branch(OpCode opCode, out Label label)
-        {
+        public ILEmitter Branch(OpCode opCode, out Label label) {
             if (opCode.FlowControl != FlowControl.Branch
-                && opCode.FlowControl != FlowControl.Cond_Branch)
-            {
+                && opCode.FlowControl != FlowControl.Cond_Branch) {
                 throw new ArgumentOutOfRangeException(nameof(opCode),
                     $"Only a branch instruction is allowed. OpCode: {opCode}.");
             }
@@ -180,10 +156,8 @@ namespace ILLightenComparer.Shared
             return DefineLabel(out label).Emit(opCode, label);
         }
 
-        public ILEmitter LoadArgument(ushort argumentIndex)
-        {
-            switch (argumentIndex)
-            {
+        public ILEmitter LoadArgument(ushort argumentIndex) {
+            switch (argumentIndex) {
                 case 0: return Emit(OpCodes.Ldarg_0);
                 case 1: return Emit(OpCodes.Ldarg_1);
                 case 2: return Emit(OpCodes.Ldarg_2);
@@ -194,16 +168,13 @@ namespace ILLightenComparer.Shared
             }
         }
 
-        public ILEmitter LoadArgumentAddress(ushort argumentIndex)
-        {
+        public ILEmitter LoadArgumentAddress(ushort argumentIndex) {
             var opCode = argumentIndex <= ShortFormLimit ? OpCodes.Ldarga_S : OpCodes.Ldarga;
             return Emit(opCode, argumentIndex);
         }
 
-        public ILEmitter LoadConstant(int value)
-        {
-            switch (value)
-            {
+        public ILEmitter LoadConstant(int value) {
+            switch (value) {
                 case -1: return Emit(OpCodes.Ldc_I4_M1);
                 case 0: return Emit(OpCodes.Ldc_I4_0);
                 case 1: return Emit(OpCodes.Ldc_I4_1);
@@ -220,15 +191,10 @@ namespace ILLightenComparer.Shared
             }
         }
 
-        public ILEmitter LoadLocal(LocalVariableInfo local)
-        {
-            return LoadLocal(local.LocalIndex);
-        }
+        public ILEmitter LoadLocal(LocalVariableInfo local) => LoadLocal(local.LocalIndex);
 
-        public ILEmitter LoadLocal(int localIndex)
-        {
-            switch (localIndex)
-            {
+        public ILEmitter LoadLocal(int localIndex) {
+            switch (localIndex) {
                 case 0: return Emit(OpCodes.Ldloc_0);
                 case 1: return Emit(OpCodes.Ldloc_1);
                 case 2: return Emit(OpCodes.Ldloc_2);
@@ -239,16 +205,14 @@ namespace ILLightenComparer.Shared
             }
         }
 
-        public ILEmitter LoadString(string value)
-        {
+        public ILEmitter LoadString(string value) {
             DebugLine($"\t\t{OpCodes.Ldstr} \"{value}\"");
             _il.Emit(OpCodes.Ldstr, value);
 
             return this;
         }
 
-        public ILEmitter LoadAddress(LocalVariableInfo local)
-        {
+        public ILEmitter LoadAddress(LocalVariableInfo local) {
             var localIndex = local.LocalIndex;
             var opCode = localIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
 
@@ -258,10 +222,8 @@ namespace ILLightenComparer.Shared
             return this;
         }
 
-        public ILEmitter Store(LocalBuilder local)
-        {
-            switch (local.LocalIndex)
-            {
+        public ILEmitter Store(LocalBuilder local) {
+            switch (local.LocalIndex) {
                 case 0: return Emit(OpCodes.Stloc_0);
                 case 1: return Emit(OpCodes.Stloc_1);
                 case 2: return Emit(OpCodes.Stloc_2);
@@ -275,16 +237,14 @@ namespace ILLightenComparer.Shared
             }
         }
 
-        public ILEmitter Store(Type localType, out LocalBuilder local)
-        {
+        public ILEmitter Store(Type localType, out LocalBuilder local) {
             var scope = _scopes.Peek();
             local = scope.ResolveLocal(localType);
 
             return Store(local);
         }
 
-        public IDisposable LocalsScope()
-        {
+        public IDisposable LocalsScope() {
             var scope = new Scope(this);
             _scopes.Push(scope);
 
@@ -296,38 +256,31 @@ namespace ILLightenComparer.Shared
             private readonly ILEmitter _owner;
             private readonly Dictionary<Type, int> _state;
 
-            public Scope(ILEmitter owner)
-            {
+            public Scope(ILEmitter owner) {
                 _owner = owner;
                 _state = _owner._counter.ToDictionary(x => x.Key, x => x.Value);
             }
 
-            public void Dispose()
-            {
-                foreach (var type in new List<Type>(_owner._counter.Keys))
-                {
+            public void Dispose() {
+                foreach (var type in new List<Type>(_owner._counter.Keys)) {
                     _owner._counter[type] = _state.TryGetValue(type, out var count) ? count : 0;
                 }
 
                 _owner._scopes.Pop();
             }
 
-            public LocalBuilder ResolveLocal(Type type)
-            {
-                if (!_owner._locals.TryGetValue(type, out var list))
-                {
+            public LocalBuilder ResolveLocal(Type type) {
+                if (!_owner._locals.TryGetValue(type, out var list)) {
                     _owner._locals[type] = list = new List<LocalBuilder>();
                 }
 
-                if (!_owner._counter.TryGetValue(type, out var count))
-                {
+                if (!_owner._counter.TryGetValue(type, out var count)) {
                     count = 0;
                 }
 
                 _owner._counter[type] = count + 1;
 
-                if (list.Count != count)
-                {
+                if (list.Count != count) {
                     return list[count];
                 }
 
@@ -350,14 +303,12 @@ namespace ILLightenComparer.Shared
 
         // ReSharper restore PartialMethodWithSinglePart
 
-        #if DEBUG
+#if DEBUG
 
-        public ILEmitter DebugWriteLine(LocalBuilder local)
-        {
+        public ILEmitter DebugWriteLine(LocalBuilder local) {
             DebugLine($"\t\tWrite local: {local.LocalIndex}");
             _il.Emit(OpCodes.Ldloca, local);
-            if (local.LocalType != null && local.LocalType != typeof(string))
-            {
+            if (local.LocalType != null && local.LocalType != typeof(string)) {
                 _il.Emit(OpCodes.Callvirt, local.LocalType.GetMethod(nameof(ToString), Type.EmptyTypes));
             }
 
@@ -366,8 +317,7 @@ namespace ILLightenComparer.Shared
             return this;
         }
 
-        public ILEmitter DebugWriteLine(string message)
-        {
+        public ILEmitter DebugWriteLine(string message) {
             DebugLine($"\t\tWrite: {message}");
             _il.Emit(OpCodes.Ldstr, message);
             _il.Emit(OpCodes.Call, typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) }));
@@ -375,7 +325,7 @@ namespace ILLightenComparer.Shared
             return this;
         }
 
-        #endif
+#endif
 
         #endregion
     }

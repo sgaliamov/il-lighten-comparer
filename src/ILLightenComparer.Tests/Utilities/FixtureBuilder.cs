@@ -12,8 +12,7 @@ namespace ILLightenComparer.Tests.Utilities
     public static class FixtureBuilder
     {
         private static readonly Lazy<Fixture> Fixture = new Lazy<Fixture>(
-            () =>
-            {
+            () => {
                 var f = new Fixture { RepeatCount = Constants.SmallCount };
 
                 f.Customize(new DomainCustomization());
@@ -23,8 +22,7 @@ namespace ILLightenComparer.Tests.Utilities
             LazyThreadSafetyMode.ExecutionAndPublication);
 
         private static readonly Lazy<Fixture> SimpleFixture = new Lazy<Fixture>(
-            () =>
-            {
+            () => {
                 var f = new Fixture { RepeatCount = Constants.SmallCount };
 
                 f.Customize(new SupportMutableValueTypesCustomization());
@@ -34,33 +32,22 @@ namespace ILLightenComparer.Tests.Utilities
             },
             LazyThreadSafetyMode.ExecutionAndPublication);
 
-        public static Fixture GetInstance()
-        {
-            return Fixture.Value;
-        }
+        public static Fixture GetInstance() => Fixture.Value;
 
-        public static Fixture GetSimpleInstance()
-        {
-            return SimpleFixture.Value;
-        }
+        public static Fixture GetSimpleInstance() => SimpleFixture.Value;
 
-        public static IEnumerable<T> CreateMutants<T>(this Fixture fixture, T prototype)
-        {
-            if (typeof(T).IsValueType)
-            {
+        public static IEnumerable<T> CreateMutants<T>(this Fixture fixture, T prototype) {
+            if (typeof(T).IsValueType) {
                 throw new ArgumentException("T should be a class.", nameof(T));
             }
 
             var clone = prototype.DeepClone();
-            foreach (var member in new ObjectWalker(new Member(clone)))
-            {
-                if (member.Parent?.GetType().IsValueType ?? false)
-                {
+            foreach (var member in new ObjectWalker(new Member(clone))) {
+                if (member.Parent?.GetType().IsValueType ?? false) {
                     continue;
                 }
 
-                if (!member.ValueType.IsPrimitive() && member.Value != null)
-                {
+                if (!member.ValueType.IsPrimitive() && member.Value != null) {
                     continue;
                 }
 
@@ -76,31 +63,25 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static object Create(this Fixture fixture, Type type)
-        {
+        public static object Create(this Fixture fixture, Type type) {
             var context = fixture.GetOrAddProperty(nameof(SpecimenContext), () => new SpecimenContext(fixture));
 
             return context.Resolve(type);
         }
 
-        private static Action<object, object> GetSetValueAction(Member member)
-        {
-            switch (member.MemberInfo)
-            {
+        private static Action<object, object> GetSetValueAction(Member member) {
+            switch (member.MemberInfo) {
                 case FieldInfo fieldInfo: return fieldInfo.SetValue;
                 case PropertyInfo propertyInfo: return propertyInfo.SetValue;
                 default: throw new InvalidOperationException();
             }
         }
 
-        private static object GetNewValue(Type type, object oldValue)
-        {
+        private static object GetNewValue(Type type, object oldValue) {
             var times = 5;
-            while (true)
-            {
+            while (true) {
                 var newValue = SimpleFixture.Value.Create(type);
-                if (!newValue.Equals(oldValue))
-                {
+                if (!newValue.Equals(oldValue)) {
                     return newValue;
                 }
 

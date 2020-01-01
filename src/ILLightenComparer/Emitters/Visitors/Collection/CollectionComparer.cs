@@ -13,14 +13,12 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         private readonly IConfigurationProvider _configurations;
         private readonly VariableLoader _loader;
 
-        public CollectionComparer(IConfigurationProvider configurations, VariableLoader loader)
-        {
+        public CollectionComparer(IConfigurationProvider configurations, VariableLoader loader) {
             _configurations = configurations;
             _loader = loader;
         }
 
-        public (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IComparison comparison, ILEmitter il, Label gotoNext)
-        {
+        public (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IComparison comparison, ILEmitter il, Label gotoNext) {
             var variable = comparison.Variable;
             variable.Load(_loader, il, Arg.X).Store(variable.VariableType, out var collectionX);
             variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, out var collectionY);
@@ -30,18 +28,15 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             return (collectionX, collectionY);
         }
 
-        public void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
-        {
+        public void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray) {
             // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
             var useSimpleSorting = !_configurations.HasCustomComparer(elementType)
                                    && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
-            if (useSimpleSorting)
-            {
+            if (useSimpleSorting) {
                 EmitSortArray(il, elementType, xArray);
                 EmitSortArray(il, elementType, yArray);
             }
-            else
-            {
+            else {
                 var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
                 il.LoadArgument(Arg.Context)
@@ -53,8 +48,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             }
         }
 
-        private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
-        {
+        private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer) {
             var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
             var sortMethod = Method.GetArraySortWithComparer(elementType);
 
@@ -66,8 +60,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
               .Call(sortMethod);
         }
 
-        private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array)
-        {
+        private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array) {
             var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
             var sortMethod = Method.GetArraySort(elementType);
 

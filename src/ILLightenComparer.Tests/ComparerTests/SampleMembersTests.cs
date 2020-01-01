@@ -11,27 +11,23 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleMembersTests
     {
         [Fact]
-        public void Compare_sample_objects()
-        {
+        public void Compare_sample_objects() {
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false);
             Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true);
         }
 
         [Fact]
-        public void Compare_sample_structs()
-        {
+        public void Compare_sample_structs() {
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false);
             Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true);
         }
 
-        private static void Test(Type genericSampleType, Type genericSampleComparer, bool nullable)
-        {
+        private static void Test(Type genericSampleType, Type genericSampleComparer, bool nullable) {
             var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
 
             Parallel.ForEach(
                 types,
-                item =>
-                {
+                item => {
                     var (type, referenceComparer) = item;
                     var objectType = genericSampleType.MakeGenericType(type);
                     var comparerType = genericSampleComparer.MakeGenericType(type);

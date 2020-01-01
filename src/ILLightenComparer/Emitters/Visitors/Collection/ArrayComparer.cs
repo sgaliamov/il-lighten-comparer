@@ -12,8 +12,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         private readonly CompareVisitor _compareVisitor;
         private readonly ComparisonsProvider _comparisons;
 
-        public ArrayComparer(CompareVisitor compareVisitor, ComparisonsProvider comparisons)
-        {
+        public ArrayComparer(CompareVisitor compareVisitor, ComparisonsProvider comparisons) {
             _compareVisitor = compareVisitor;
             _comparisons = comparisons;
         }
@@ -26,28 +25,24 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             LocalBuilder countX,
             LocalBuilder countY,
             ILEmitter il,
-            Label afterLoop)
-        {
+            Label afterLoop) {
             il.LoadConstant(0)
               .Store(typeof(int), out var index)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
 
-            using (il.LocalsScope())
-            {
+            using (il.LocalsScope()) {
                 EmitCheckIfLoopsAreDone(index, countX, countY, il, afterLoop);
             }
 
-            using (il.LocalsScope())
-            {
+            using (il.LocalsScope()) {
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
                 var itemComparison = _comparisons.GetComparison(itemVariable);
                 itemComparison.Accept(_compareVisitor, il, continueLoop);
 
-                if (itemComparison.PutsResultInStack)
-                {
+                if (itemComparison.PutsResultInStack) {
                     il.EmitReturnNotZero(continueLoop);
                 }
 
@@ -64,8 +59,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             Type arrayType,
             LocalBuilder arrayX,
             LocalBuilder arrayY,
-            ILEmitter il)
-        {
+            ILEmitter il) {
             il.LoadLocal(arrayX)
               .Emit(OpCodes.Call, arrayType.GetPropertyGetter(MethodName.Length))
               .Store(typeof(int), out var countX)
@@ -81,8 +75,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             LocalBuilder countX,
             LocalBuilder countY,
             ILEmitter il,
-            Label afterLoop)
-        {
+            Label afterLoop) {
             il.LoadLocal(index)
               .LoadLocal(countX)
               .Emit(OpCodes.Ceq)

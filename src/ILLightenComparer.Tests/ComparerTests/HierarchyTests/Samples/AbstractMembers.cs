@@ -16,59 +16,48 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 
         private sealed class RelationalComparer : IComparer<AbstractMembers>
         {
-            public int Compare(AbstractMembers x, AbstractMembers y)
-            {
-                if (ReferenceEquals(x, y))
-                {
+            public int Compare(AbstractMembers x, AbstractMembers y) {
+                if (ReferenceEquals(x, y)) {
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y))
-                {
+                if (ReferenceEquals(null, y)) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x))
-                {
+                if (ReferenceEquals(null, x)) {
                     return -1;
                 }
 
                 var abstractPropertyComparison = Comparer<AbstractNestedObject>.Default.Compare(x.AbstractProperty, y.AbstractProperty);
-                if (abstractPropertyComparison != 0)
-                {
+                if (abstractPropertyComparison != 0) {
                     return abstractPropertyComparison;
                 }
 
                 var interfacePropertyComparison = Comparer<INestedObject>.Default.Compare(x.InterfaceField, y.InterfaceField);
-                if (interfacePropertyComparison != 0)
-                {
+                if (interfacePropertyComparison != 0) {
                     return interfacePropertyComparison;
                 }
 
                 var compare = Comparer<BaseNestedObject>.Default.Compare(x.NotSealedProperty, y.NotSealedProperty);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
-                if (x.ObjectField == null)
-                {
-                    if (y.ObjectField == null)
-                    {
+                if (x.ObjectField == null) {
+                    if (y.ObjectField == null) {
                         return 0;
                     }
 
                     return -1;
                 }
 
-                if (y.ObjectField == null)
-                {
+                if (y.ObjectField == null) {
                     return 1;
                 }
 
                 if (x.ObjectField is IComparable comparable
-                    && y.ObjectField.GetType() == x.ObjectField.GetType())
-                {
+                    && y.ObjectField.GetType() == x.ObjectField.GetType()) {
                     return comparable.CompareTo(y.ObjectField);
                 }
 

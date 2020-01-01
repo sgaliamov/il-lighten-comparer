@@ -18,27 +18,24 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
             VariableLoader loader,
-            ComparisonsProvider comparisons)
-        {
+            ComparisonsProvider comparisons) {
             _configurations = configurations;
             _collectionComparer = new CollectionComparer(configurations, loader);
             _arrayComparer = new ArrayComparer(compareVisitor, comparisons);
         }
 
-        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label afterLoop)
-        {
+        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label afterLoop) {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
             var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
             var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
 
-            #if DEBUG
+#if DEBUG
             EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
-            #endif
+#endif
 
-            if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder)
-            {
+            if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder) {
                 _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 
@@ -49,8 +46,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             LocalVariableInfo countX,
             LocalVariableInfo countY,
             MemberInfo memberType,
-            ILEmitter il)
-        {
+            ILEmitter il) {
             il.LoadConstant(0)
               .LoadLocal(countX)
               .Branch(OpCodes.Bgt_S, out var negativeException)

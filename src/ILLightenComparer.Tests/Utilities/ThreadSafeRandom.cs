@@ -7,30 +7,20 @@ namespace ILLightenComparer.Tests.Utilities
         private static readonly Random Global = new Random();
         [ThreadStatic] private static Random _local;
 
-        public static double NextDouble()
-        {
-            return GetInstance().NextDouble();
-        }
+        public static double NextDouble() => GetInstance().NextDouble();
 
-        public static int Next(int minValue, int maxValue)
-        {
-            return GetInstance().Next(minValue, maxValue);
-        }
+        public static int Next(int minValue, int maxValue) => GetInstance().Next(minValue, maxValue);
 
-        private static Random GetInstance()
-        {
-            if (_local != null)
-            {
+        private static Random GetInstance() {
+            if (_local != null) {
                 return _local;
             }
 
             return _local = new Random(GetSeed());
         }
 
-        private static int GetSeed()
-        {
-            lock (Global)
-            {
+        private static int GetSeed() {
+            lock (Global) {
                 return Global.Next();
             }
         }

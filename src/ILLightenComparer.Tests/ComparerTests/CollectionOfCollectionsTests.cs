@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
-using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
@@ -13,10 +12,8 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class CollectionOfCollectionsTests
     {
         [Fact]
-        public void Compare_array_of_array()
-        {
-            Type[] GetCollectionTypes(Type type)
-            {
+        public void Compare_array_of_array() {
+            Type[] GetCollectionTypes(Type type) {
                 var array1Type = type.MakeArrayType();
                 var array2Type = array1Type.MakeArrayType();
 
@@ -27,10 +24,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_array_of_list()
-        {
-            Type[] GetCollectionTypes(Type type)
-            {
+        public void Compare_array_of_list() {
+            Type[] GetCollectionTypes(Type type) {
                 var arrayType = type.MakeArrayType();
                 var listType = typeof(List<>).MakeGenericType(arrayType);
 
@@ -41,10 +36,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_list_of_array()
-        {
-            Type[] GetCollectionTypes(Type type)
-            {
+        public void Compare_list_of_array() {
+            Type[] GetCollectionTypes(Type type) {
                 var listType = typeof(List<>).MakeGenericType(type);
                 var arrayType = listType.MakeArrayType();
 
@@ -55,10 +48,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_list_of_list()
-        {
-            Type[] GetCollectionTypes(Type type)
-            {
+        public void Compare_list_of_list() {
+            Type[] GetCollectionTypes(Type type) {
                 var list1Type = typeof(List<>).MakeGenericType(type);
                 var list2Type = typeof(List<>).MakeGenericType(list1Type);
 
@@ -69,8 +60,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_multi_arrays()
-        {
+        public void Compare_multi_arrays() {
             var builder = new ComparerBuilder();
 
             Assert.Throws<NotSupportedException>(() => builder.For<SampleObject<IEnumerable<int[,]>>>().GetComparer());
@@ -83,8 +73,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
         }
 
-        private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes)
-        {
+        private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes) {
             Parallel.Invoke(
                 () => CompareCollectionOfCollections(getCollectionTypes, null, null),
                 () => CompareCollectionOfCollections(getCollectionTypes, typeof(SampleObject<>), typeof(SampleObjectComparer<>)),
@@ -95,8 +84,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static void CompareCollectionOfCollections(
             Func<Type, Type[]> getCollectionTypes,
             Type genericContainer,
-            Type genericSampleComparer)
-        {
+            Type genericSampleComparer) {
             CompareCollectionOfCollections(getCollectionTypes, false, false, genericContainer, genericSampleComparer);
             CompareCollectionOfCollections(getCollectionTypes, true, false, genericContainer, genericSampleComparer);
             CompareCollectionOfCollections(getCollectionTypes, false, true, genericContainer, genericSampleComparer);
@@ -108,13 +96,11 @@ namespace ILLightenComparer.Tests.ComparerTests
             bool sort,
             bool nullable,
             Type genericSampleType,
-            Type genericSampleComparer)
-        {
+            Type genericSampleComparer) {
             var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
             Parallel.ForEach(
                 types,
-                item =>
-                {
+                item => {
                     var (type, referenceComparer) = item;
                     var collections = getCollectionTypes(type);
                     var comparerTypes = collections
@@ -128,8 +114,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
                     type = collections.Last();
 
-                    if (genericSampleType != null)
-                    {
+                    if (genericSampleType != null) {
                         var comparerType = genericSampleComparer.MakeGenericType(type);
                         type = genericSampleType.MakeGenericType(type);
                         comparer = (IComparer)Activator.CreateInstance(comparerType, comparer);

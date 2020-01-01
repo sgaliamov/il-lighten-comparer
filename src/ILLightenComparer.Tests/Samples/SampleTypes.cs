@@ -9,10 +9,8 @@ namespace ILLightenComparer.Tests.Samples
 {
     internal static class SampleTypes
     {
-        static SampleTypes()
-        {
-            Types = new Dictionary<Type, IComparer>
-            {
+        static SampleTypes() {
+            Types = new Dictionary<Type, IComparer> {
                 { typeof(sbyte), null },
                 { typeof(byte), null },
                 { typeof(char), null },
@@ -29,12 +27,10 @@ namespace ILLightenComparer.Tests.Samples
                 { typeof(string), null },
                 { typeof(SampleComparableBaseObject<EnumSmall?>), null },
                 { typeof(SampleComparableChildObject<EnumSmall?>), null },
-                { typeof(SampleComparableStruct<EnumSmall?>), null },
-                {
+                { typeof(SampleComparableStruct<EnumSmall?>), null }, {
                     typeof(SampleObject<EnumSmall?>),
                     new SampleObjectComparer<EnumSmall?>()
-                },
-                {
+                }, {
                     typeof(SampleStruct<EnumSmall?>),
                     new SampleStructComparer<EnumSmall?>()
                 }

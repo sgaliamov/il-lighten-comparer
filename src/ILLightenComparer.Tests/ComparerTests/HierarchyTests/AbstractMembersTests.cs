@@ -14,17 +14,14 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     public sealed class AbstractMembersTests
     {
         [Fact]
-        public void Abstract_property_comparison()
-        {
-            Test(x => new AbstractMembers
-            {
+        public void Abstract_property_comparison() {
+            Test(x => new AbstractMembers {
                 AbstractProperty = x
             });
         }
 
         [Fact]
-        public void Attempt_to_compare_different_sibling_types_throws_argument_exception()
-        {
+        public void Attempt_to_compare_different_sibling_types_throws_argument_exception() {
             var sealedNestedObject = _fixture
                                      .Build<SealedNestedObject>()
                                      .Without(x => x.DeepNestedField)
@@ -33,13 +30,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
             var anotherNestedObject = _fixture.Create<AnotherNestedObject>();
 
-            var one = new AbstractMembers
-            {
+            var one = new AbstractMembers {
                 InterfaceField = sealedNestedObject
             };
 
-            var another = new AbstractMembers
-            {
+            var another = new AbstractMembers {
                 InterfaceField = anotherNestedObject
             };
 
@@ -47,18 +42,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Attempt_to_compare_inherited_types_throws_argument_exception()
-        {
+        public void Attempt_to_compare_inherited_types_throws_argument_exception() {
             var sealedNestedObject = _fixture.Create<BaseNestedObject>();
             var anotherNestedObject = _fixture.Create<AnotherNestedObject>();
 
-            var one = new AbstractMembers
-            {
+            var one = new AbstractMembers {
                 NotSealedProperty = sealedNestedObject
             };
 
-            var another = new AbstractMembers
-            {
+            var another = new AbstractMembers {
                 NotSealedProperty = anotherNestedObject
             };
 
@@ -66,46 +58,36 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Interface_field_comparison()
-        {
-            Test(x => new AbstractMembers
-            {
+        public void Interface_field_comparison() {
+            Test(x => new AbstractMembers {
                 InterfaceField = x
             });
         }
 
         [Fact]
-        public void Not_sealed_property_comparison()
-        {
-            Test(x => new AbstractMembers
-            {
+        public void Not_sealed_property_comparison() {
+            Test(x => new AbstractMembers {
                 NotSealedProperty = x
             });
         }
 
         [Fact]
-        public void Object_field_comparison()
-        {
-            Test(x => new AbstractMembers
-            {
+        public void Object_field_comparison() {
+            Test(x => new AbstractMembers {
                 ObjectField = x
             });
         }
 
         [Fact]
-        public void Replaced_member_does_not_break_comparison()
-        {
-            var one = new AbstractMembers
-            {
+        public void Replaced_member_does_not_break_comparison() {
+            var one = new AbstractMembers {
                 NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
             _comparer.Compare(one, one.DeepClone()).Should().Be(0);
 
-            for (var i = 0; i < 100; i++)
-            {
+            for (var i = 0; i < 100; i++) {
                 one.NotSealedProperty = _fixture.Create<AnotherNestedObject>();
-                var other = new AbstractMembers
-                {
+                var other = new AbstractMembers {
                     NotSealedProperty = _fixture.Create<AnotherNestedObject>()
                 };
 
@@ -117,11 +99,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void When_left_member_is_null_comparison_produces_negative_value()
-        {
+        public void When_left_member_is_null_comparison_produces_negative_value() {
             var one = new AbstractMembers();
-            var other = new AbstractMembers
-            {
+            var other = new AbstractMembers {
                 NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
 
@@ -129,10 +109,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void When_right_member_is_null_comparison_produces_positive_value()
-        {
-            var one = new AbstractMembers
-            {
+        public void When_right_member_is_null_comparison_produces_positive_value() {
+            var one = new AbstractMembers {
                 NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
             var another = new AbstractMembers();
@@ -140,8 +118,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             _comparer.Compare(one, another).Should().BePositive();
         }
 
-        private void Test(Func<SealedNestedObject, AbstractMembers> selector)
-        {
+        private void Test(Func<SealedNestedObject, AbstractMembers> selector) {
             var original = _fixture
                            .Build<SealedNestedObject>()
                            .Without(x => x.DeepNestedField)

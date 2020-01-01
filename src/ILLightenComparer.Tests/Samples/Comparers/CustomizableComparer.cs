@@ -7,14 +7,8 @@ namespace ILLightenComparer.Tests.Samples.Comparers
     {
         private readonly Func<T, T, int> _comparer;
 
-        public CustomizableComparer(Func<T, T, int> comparer)
-        {
-            _comparer = comparer;
-        }
+        public CustomizableComparer(Func<T, T, int> comparer) => _comparer = comparer;
 
-        public int Compare(T x, T y)
-        {
-            return _comparer(x, y);
-        }
+        public int Compare(T x, T y) => _comparer(x, y);
     }
 }

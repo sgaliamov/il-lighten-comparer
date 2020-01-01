@@ -10,13 +10,12 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public sealed class HierarchyTests
     {
-        public HierarchyTests()
-        {
+        public HierarchyTests() {
             _comparer = new ComparerBuilder()
                         .Configure(builder => builder
                             .ConfigureFor<NestedStruct>(c => c
                                 .DefineMembersOrder(order => order.Member(o => o.Property)
-                                                            .Member(o => o.NullableProperty))))
+                                                                  .Member(o => o.NullableProperty))))
                         .For<HierarchicalObject>()
                         .Configure(c => c.IgnoreMember(o => o.ComparableField)
                                          .IgnoreMember(o => o.Value)
@@ -28,11 +27,9 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Compare_nested_null_structs()
-        {
+        public void Compare_nested_null_structs() {
             var one = new HierarchicalObject();
-            var other = new HierarchicalObject
-            {
+            var other = new HierarchicalObject {
                 NestedNullableStructProperty = _fixture.Create<NestedStruct>()
             };
 
@@ -44,18 +41,14 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Compare_nested_structs()
-        {
-            for (var i = 0; i < 10; i++)
-            {
-                var one = new HierarchicalObject
-                {
+        public void Compare_nested_structs() {
+            for (var i = 0; i < 10; i++) {
+                var one = new HierarchicalObject {
                     NestedStructField = _fixture.Create<NestedStruct>(),
                     NestedNullableStructProperty = _fixture.Create<NestedStruct>()
                 };
 
-                var other = new HierarchicalObject
-                {
+                var other = new HierarchicalObject {
                     NestedStructField = _fixture.Create<NestedStruct>(),
                     NestedNullableStructProperty = _fixture.Create<NestedStruct>()
                 };
@@ -68,8 +61,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Run_generic_tests()
-        {
+        public void Run_generic_tests() {
             var builder = new ComparerBuilder()
                           .For<SealedNestedObject>(config => config.DefineMembersOrder(order =>
                               order.Member(o => o.DeepNestedField)

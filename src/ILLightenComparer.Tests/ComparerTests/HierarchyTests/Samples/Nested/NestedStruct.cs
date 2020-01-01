@@ -12,31 +12,25 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 
         public sealed class RelationalComparer : IComparer<NestedStruct>
         {
-            public int Compare(NestedStruct x, NestedStruct y)
-            {
+            public int Compare(NestedStruct x, NestedStruct y) {
                 var valueComparison = x.Property.CompareTo(y.Property);
-                if (valueComparison != 0)
-                {
+                if (valueComparison != 0) {
                     return valueComparison;
                 }
 
                 return Nullable.Compare(x.NullableProperty, y.NullableProperty);
             }
 
-            public int Compare(NestedStruct? x, NestedStruct? y)
-            {
-                if (x.HasValue)
-                {
-                    if (y.HasValue)
-                    {
+            public int Compare(NestedStruct? x, NestedStruct? y) {
+                if (x.HasValue) {
+                    if (y.HasValue) {
                         return Compare(x.Value, y.Value);
                     }
 
                     return 1;
                 }
 
-                if (y.HasValue)
-                {
+                if (y.HasValue) {
                     return -1;
                 }
 

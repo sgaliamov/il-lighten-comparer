@@ -4,21 +4,18 @@ using System.Reflection.Emit;
 
 namespace ILLightenComparer.Extensions
 {
-    public static class ModuleBuilderExtensions
+    internal static class ModuleBuilderExtensions
     {
         public static TypeBuilder DefineType(
             this ModuleBuilder moduleBuilder,
             string name,
-            params Type[] interfaceTypes)
-        {
+            params Type[] interfaceTypes) {
             var type = moduleBuilder.DefineType(name, TypeAttributes.Sealed | TypeAttributes.Public);
-            if (interfaceTypes == null)
-            {
+            if (interfaceTypes == null) {
                 return type;
             }
 
-            foreach (var interfaceType in interfaceTypes)
-            {
+            foreach (var interfaceType in interfaceTypes) {
                 type.AddInterfaceImplementation(interfaceType);
             }
 

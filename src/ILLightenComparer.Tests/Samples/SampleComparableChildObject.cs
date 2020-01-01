@@ -12,41 +12,30 @@ namespace ILLightenComparer.Tests.Samples
         public TMember ChildField;
         public TMember ChildProperty { get; set; }
 
-        public int CompareTo(SampleComparableChildObject<TMember> other)
-        {
-            if (ReferenceEquals(this, other))
-            {
+        public int CompareTo(SampleComparableChildObject<TMember> other) {
+            if (ReferenceEquals(this, other)) {
                 return 0;
             }
 
-            if (ReferenceEquals(null, other))
-            {
+            if (ReferenceEquals(null, other)) {
                 return 1;
             }
 
             var compare = base.CompareTo(other);
-            if (compare != 0)
-            {
+            if (compare != 0) {
                 return compare;
             }
 
             compare = ChildComparer.Compare(ChildField, other.ChildField);
-            if (compare != 0)
-            {
+            if (compare != 0) {
                 return compare;
             }
 
             return ChildComparer.Compare(ChildProperty, other.ChildProperty);
         }
 
-        public override string ToString()
-        {
-            return $"{{ {Field}, {Property}, {ChildField}, {ChildProperty} }}";
-        }
+        public override string ToString() => $"{{ {Field}, {Property}, {ChildField}, {ChildProperty} }}";
 
-        public override int CompareTo(SampleComparableBaseObject<TMember> other)
-        {
-            return CompareTo(other as SampleComparableChildObject<TMember>);
-        }
+        public override int CompareTo(SampleComparableBaseObject<TMember> other) => CompareTo(other as SampleComparableChildObject<TMember>);
     }
 }

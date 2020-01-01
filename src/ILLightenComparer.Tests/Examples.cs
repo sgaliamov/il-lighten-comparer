@@ -9,8 +9,7 @@ namespace ILLightenComparer.Tests
     public sealed class Examples
     {
         [Fact]
-        public void Basic_usage()
-        {
+        public void Basic_usage() {
             var x = _fixture.Create<Tuple<int, string>>();
             var y = _fixture.Create<Tuple<int, string>>();
 
@@ -22,8 +21,7 @@ namespace ILLightenComparer.Tests
         }
 
         [Fact]
-        public void Define_custom_comparer()
-        {
+        public void Define_custom_comparer() {
             var x = _fixture.Create<Tuple<int, string>>();
             var y = _fixture.Create<Tuple<int, string>>();
             var customComparer = new CustomizableComparer<Tuple<int, string>>((a, b) => 0); // makes all objects always equal
@@ -38,8 +36,7 @@ namespace ILLightenComparer.Tests
         }
 
         [Fact]
-        public void Define_multiple_configurations()
-        {
+        public void Define_multiple_configurations() {
             var builder = new ComparerBuilder(c => c.SetDefaultCyclesDetection(false)); // defines initial configuration
 
             // adds some configuration later
@@ -62,8 +59,7 @@ namespace ILLightenComparer.Tests
         }
 
         [Fact]
-        public void Fixed_configuration()
-        {
+        public void Fixed_configuration() {
             var x = new Tuple<int, string>(1, "text");
             var y = new Tuple<int, string>(2, "TEXT");
 
@@ -92,8 +88,7 @@ namespace ILLightenComparer.Tests
         }
 
         [Fact]
-        public void Ignore_collection_order()
-        {
+        public void Ignore_collection_order() {
             var x = new[] { 1, 2, 3 };
             var y = new[] { 2, 3, 1 };
 
@@ -107,8 +102,7 @@ namespace ILLightenComparer.Tests
         }
 
         [Fact]
-        public void Ignore_specific_members()
-        {
+        public void Ignore_specific_members() {
             var x = new Tuple<int, string, double>(1, "value 1", 1.1);
             var y = new Tuple<int, string, double>(1, "value 2", 2.2);
 

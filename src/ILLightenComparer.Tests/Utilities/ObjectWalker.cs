@@ -11,28 +11,21 @@ namespace ILLightenComparer.Tests.Utilities
         private readonly HashSet<Member> _cache = new HashSet<Member>();
         private readonly Stack<Member> _toWalk = new Stack<Member>();
 
-        public ObjectWalker(Member root)
-        {
+        public ObjectWalker(Member root) {
             Schedule(root);
         }
 
         public Member Current { get; private set; }
 
-        public ObjectWalker GetEnumerator()
-        {
-            return this;
-        }
+        public ObjectWalker GetEnumerator() => this;
 
-        public bool MoveNext()
-        {
-            if (_toWalk.Count == 0)
-            {
+        public bool MoveNext() {
+            if (_toWalk.Count == 0) {
                 return false;
             }
 
             Current = _toWalk.Pop();
-            if (Current.Value == null || Current.ValueType.IsPrimitive() || Current.ValueType.IsNullable())
-            {
+            if (Current.Value == null || Current.ValueType.IsPrimitive() || Current.ValueType.IsNullable()) {
                 return true;
             }
 
@@ -44,10 +37,8 @@ namespace ILLightenComparer.Tests.Utilities
                           .Where(x => x.MemberType == MemberTypes.Property
                                       || x.MemberType == MemberTypes.Field);
 
-            foreach (var info in members)
-            {
-                switch (info)
-                {
+            foreach (var info in members) {
+                switch (info) {
                     case FieldInfo fieldInfo:
                         Schedule(new Member(
                             Current.Value,
@@ -72,15 +63,12 @@ namespace ILLightenComparer.Tests.Utilities
             return true;
         }
 
-        private void Schedule(Member toSchedule)
-        {
-            if (_cache.Contains(toSchedule))
-            {
+        private void Schedule(Member toSchedule) {
+            if (_cache.Contains(toSchedule)) {
                 return;
             }
 
-            if (toSchedule.Value is IEnumerable)
-            {
+            if (toSchedule.Value is IEnumerable) {
                 return;
             }
 
@@ -92,8 +80,7 @@ namespace ILLightenComparer.Tests.Utilities
 
     internal sealed class Member
     {
-        public Member(object parent, MemberInfo memberInfo, Type valueType, object value)
-        {
+        public Member(object parent, MemberInfo memberInfo, Type valueType, object value) {
             Parent = parent;
             MemberInfo = memberInfo;
             ValueType = valueType;
@@ -108,25 +95,20 @@ namespace ILLightenComparer.Tests.Utilities
         public object Value { get; }
         public Type ValueType { get; }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
+        public override bool Equals(object obj) {
+            if (ReferenceEquals(null, obj)) {
                 return false;
             }
 
-            if (ReferenceEquals(this, obj))
-            {
+            if (ReferenceEquals(this, obj)) {
                 return true;
             }
 
             return obj is Member other && Equals(other);
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
+        public override int GetHashCode() {
+            unchecked {
                 var hashCode = 397;
                 hashCode = (hashCode * 397) ^ (MemberInfo != null ? MemberInfo.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Parent != null ? Parent.GetHashCode() : 0);
@@ -135,11 +117,9 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public bool Equals(Member other)
-        {
-            return Equals(MemberInfo, other.MemberInfo)
-                   && Equals(Parent, other.Parent)
-                   && Equals(Value, other.Value);
-        }
+        public bool Equals(Member other) =>
+            Equals(MemberInfo, other.MemberInfo)
+            && Equals(Parent, other.Parent)
+            && Equals(Value, other.Value);
     }
 }

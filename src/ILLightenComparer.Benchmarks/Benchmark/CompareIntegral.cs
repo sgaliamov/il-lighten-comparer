@@ -22,12 +22,10 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         // ReSharper restore NotAccessedField.Local
 
         [GlobalSetup]
-        public void Setup()
-        {
+        public void Setup() {
             var random = new Random();
 
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _one[i] = (byte)random.Next(byte.MinValue, byte.MaxValue);
                 _other[i] = (byte)random.Next(byte.MinValue, byte.MaxValue);
             }
@@ -36,37 +34,30 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         [Benchmark(Baseline = true)]
         public void Sub() // fastest
         {
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _out = _one[i] - _other[i];
             }
         }
 
         [Benchmark]
-        public void CompareTo()
-        {
-            for (var i = 0; i < N; i++)
-            {
+        public void CompareTo() {
+            for (var i = 0; i < N; i++) {
                 _out = _one[i].CompareTo(_other[i]);
             }
         }
 
         [Benchmark]
-        public void Ifs()
-        {
-            for (var i = 0; i < N; i++)
-            {
+        public void Ifs() {
+            for (var i = 0; i < N; i++) {
                 var one = _one[i];
                 var other = _other[i];
 
                 _out = 0;
 
-                if (one < other)
-                {
+                if (one < other) {
                     _out = -1;
                 }
-                else if (one > other)
-                {
+                else if (one > other) {
                     _out = 1;
                 }
             }

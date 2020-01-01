@@ -10,24 +10,19 @@ namespace ILLightenComparer.Tests.Utilities
         private readonly double _minMaxProbability;
         private readonly int _upper;
 
-        public CustomNumericGenerator(int lower, int upper, double minMaxProbability)
-        {
+        public CustomNumericGenerator(int lower, int upper, double minMaxProbability) {
             _lower = lower;
             _upper = upper;
             _minMaxProbability = minMaxProbability;
         }
 
-        public object Create(object request, ISpecimenContext context)
-        {
-            return request is Type type
-                       ? CreateRandom(type)
-                       : new NoSpecimen();
-        }
+        public object Create(object request, ISpecimenContext context) =>
+            request is Type type
+                ? CreateRandom(type)
+                : new NoSpecimen();
 
-        private object CreateRandom(Type request)
-        {
-            switch (Type.GetTypeCode(request))
-            {
+        private object CreateRandom(Type request) {
+            switch (Type.GetTypeCode(request)) {
                 case TypeCode.Byte:
                     return MinMax<byte>(request) ?? (byte)GetNextRandom();
 
@@ -65,26 +60,18 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        private T? MinMax<T>(IReflect request) where T : struct
-        {
-            if (ThreadSafeRandom.NextDouble() >= _minMaxProbability)
-            {
+        private T? MinMax<T>(IReflect request) where T : struct {
+            if (ThreadSafeRandom.NextDouble() >= _minMaxProbability) {
                 return null;
             }
 
-            object Get(IReflect t, string name)
-            {
-                return t.GetField(name, BindingFlags.Static | BindingFlags.Public).GetValue(null);
-            }
+            object Get(IReflect t, string name) => t.GetField(name, BindingFlags.Static | BindingFlags.Public).GetValue(null);
 
             return ThreadSafeRandom.NextDouble() < 0.5
                        ? (T)Get(request, "MinValue")
                        : (T)Get(request, "MaxValue");
         }
 
-        private long GetNextRandom()
-        {
-            return ThreadSafeRandom.Next(_lower, _upper);
-        }
+        private long GetNextRandom() => ThreadSafeRandom.Next(_lower, _upper);
     }
 }

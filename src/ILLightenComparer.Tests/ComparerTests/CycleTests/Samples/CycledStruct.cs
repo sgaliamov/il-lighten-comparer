@@ -14,14 +14,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 
         public sealed class RelationalComparer : IComparer<CycledStruct>
         {
-            public int Compare(CycledStruct x, CycledStruct y)
-            {
+            public int Compare(CycledStruct x, CycledStruct y) {
                 var setX = new ConcurrentSet<object>();
                 var setY = new ConcurrentSet<object>();
 
                 var compare = Compare(x, y, setX, setY);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
@@ -32,37 +30,30 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 CycledStruct? x,
                 CycledStruct? y,
                 ConcurrentSet<object> xSet,
-                ConcurrentSet<object> ySet)
-            {
-                if (x.HasValue)
-                {
-                    if (y.HasValue)
-                    {
+                ConcurrentSet<object> ySet) {
+                if (x.HasValue) {
+                    if (y.HasValue) {
                         return Compare(x.Value, y.Value, xSet, ySet);
                     }
 
                     return 1;
                 }
 
-                if (y.HasValue)
-                {
+                if (y.HasValue) {
                     return -1;
                 }
 
                 return 0;
             }
 
-            public static int Compare(CycledStruct x, CycledStruct y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
-            {
+            public static int Compare(CycledStruct x, CycledStruct y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet) {
                 var compare = Nullable.Compare(x.Property, y.Property);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
                 compare = CycledStructObject.RelationalComparer.Compare(x.FirstObject, y.FirstObject, xSet, ySet);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
