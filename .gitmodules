@@ -1,0 +1,3 @@
+[submodule "external/illuminator"]
+	path = external/illuminator
+	url = git@github.com:sgaliamov/illuminator.git
