@@ -1,7 +1,6 @@
-﻿using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Extensions;
+﻿using ILLightenComparer.Emitters.Variables;
 using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors
 {
@@ -76,8 +75,8 @@ namespace ILLightenComparer.Emitters.Visitors
                      .LoadAddress(x);
         }
 
-        public ILEmitter Load(ArgumentVariable variable, ILEmitter il, ushort arg) => il.LoadArgument(arg);
+        public ILEmitter Load(ILEmitter il, ushort arg) => il.LoadArgument(arg);
 
-        public ILEmitter LoadAddress(ArgumentVariable variable, ILEmitter il, ushort arg) => il.LoadArgumentAddress(arg);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => il.LoadArgumentAddress(arg);
     }
 }

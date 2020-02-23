@@ -6,6 +6,7 @@ using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters
 {

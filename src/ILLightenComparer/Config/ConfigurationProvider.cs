@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Config
 {
@@ -146,7 +147,7 @@ namespace ILLightenComparer.Config
         public IConfigurationBuilder SetCustomComparer<TComparer>()
         {
             var genericType = typeof(TComparer);
-            var genericInterface = genericType.GetGenericInterface(typeof(IComparer<>));
+            var genericInterface = genericType.FindGenericInterface(typeof(IComparer<>));
             if (genericInterface == null) {
                 throw new ArgumentException($"{nameof(TComparer)} is not generic {typeof(IComparer<>)}");
             }
