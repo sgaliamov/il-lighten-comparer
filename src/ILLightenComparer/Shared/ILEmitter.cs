@@ -330,22 +330,24 @@ namespace ILLightenComparer.Shared
 
 #if DEBUG
 
-        public ILEmitter DebugWriteLine(LocalBuilder local) {
+        public ILEmitter DebugWriteLine(LocalBuilder local)
+        {
             DebugLine($"\t\tWrite local: {local.LocalIndex}");
             _il.Emit(OpCodes.Ldloca, local);
             if (local.LocalType != null && local.LocalType != typeof(string)) {
                 _il.Emit(OpCodes.Callvirt, local.LocalType.GetMethod(nameof(ToString), Type.EmptyTypes));
             }
 
-            _il.Emit(OpCodes.Call, typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) }));
+            _il.Emit(OpCodes.Call, typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(string) }));
 
             return this;
         }
 
-        public ILEmitter DebugWriteLine(string message) {
+        public ILEmitter DebugWriteLine(string message)
+        {
             DebugLine($"\t\tWrite: {message}");
             _il.Emit(OpCodes.Ldstr, message);
-            _il.Emit(OpCodes.Call, typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) }));
+            _il.Emit(OpCodes.Call, typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(string) }));
 
             return this;
         }
