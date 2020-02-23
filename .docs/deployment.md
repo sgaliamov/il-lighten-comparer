@@ -9,6 +9,6 @@
 ## Release
 
 1. Create PR from `develop` branch to `master`. Make sure that all checks is passed.
-2. Squash (?) and merge RP.
+2. Merge RP (do not squash `develop`).
 3. Add [release notes](https://github.com/sgaliamov/il-lighten-comparer/tags) and publish the release.
 4. [Deploy](https://ci.appveyor.com/environment/40781/deployments/new) to [nuget.org](https://nuget.org) if need be.
