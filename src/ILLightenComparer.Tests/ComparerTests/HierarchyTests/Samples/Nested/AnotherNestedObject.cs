@@ -8,13 +8,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 
         public override int CompareTo(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
+            if (ReferenceEquals(null, obj)) {
                 return 1;
             }
 
-            if (ReferenceEquals(this, obj))
-            {
+            if (ReferenceEquals(this, obj)) {
                 return 0;
             }
 
@@ -26,8 +24,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
         private int CompareTo(AnotherNestedObject other)
         {
             var compare = string.Compare(Value, other.Value, StringComparison.Ordinal);
-            if (compare != 0)
-            {
+            if (compare != 0) {
                 return compare;
             }
 

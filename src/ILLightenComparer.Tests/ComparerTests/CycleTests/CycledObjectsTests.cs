@@ -50,8 +50,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         public void Cross_reference_should_not_fail()
         {
             var other = new SelfSealed();
-            var one = new SelfSealed
-            {
+            var one = new SelfSealed {
                 First = other,
                 Second = other
             };
@@ -68,8 +67,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         [Fact]
         public void Cycle_detection_in_multiple_threads_works()
         {
-            Helper.Parallel(() =>
-            {
+            Helper.Parallel(() => {
                 var comparer = new ComparerBuilder().GetComparer<OneSealed>();
 
                 var one = _fixture.Create<OneSealed>();
@@ -88,8 +86,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         public void Detects_cycle_on_second_member()
         {
             var one = new SelfSealed();
-            one.Second = new SelfSealed
-            {
+            one.Second = new SelfSealed {
                 First = one
             };
             /*
@@ -102,10 +99,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
                 N   2
             */
 
-            var other = new SelfSealed
-            {
-                Second = new SelfSealed
-                {
+            var other = new SelfSealed {
+                Second = new SelfSealed {
                     First = new SelfSealed()
                 }
             };
@@ -130,10 +125,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         public void Object_with_bigger_cycle_is_bigger()
         {
             var one = new SelfSealed();
-            one.First = new SelfSealed
-            {
-                First = new SelfSealed
-                {
+            one.First = new SelfSealed {
+                First = new SelfSealed {
                     First = one
                 }
             };
@@ -172,13 +165,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             other.Two.Three.One = _fixture.Create<OneSealed>();
             other.Two.Three.One.Value = one.Value;
             other.Two.Three.One.Two.Three.One = other;
-            var x = new SampleComparableChildObject<OneSealed>
-            {
+            var x = new SampleComparableChildObject<OneSealed> {
                 ChildField = null,
                 ChildProperty = other
             };
-            var y = new SampleComparableChildObject<OneSealed>
-            {
+            var y = new SampleComparableChildObject<OneSealed> {
                 ChildField = null,
                 ChildProperty = one
             };

@@ -97,14 +97,12 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             Parallel.ForEach(
                 SampleTypes.Types,
-                item =>
-                {
+                item => {
                     var (type, referenceComparer) = item;
                     var itemComparer = referenceComparer;
                     var objectType = type;
 
-                    if (makeNullable && type.IsValueType)
-                    {
+                    if (makeNullable && type.IsValueType) {
                         itemComparer = Helper.CreateNullableComparer(objectType, itemComparer);
                         objectType = objectType.MakeNullable();
                     }

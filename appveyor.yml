@@ -1,4 +1,4 @@
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 version: 'build-{build}'
 
@@ -21,6 +21,12 @@ init:
         Set-AppveyorBuildVariable 'CONFIGURATION' 'debug'
     }
 
+install:
+- git submodule update --init --recursive
+
+before_build:
+- pwsh: gitversion /l console /output buildserver /verbosity warn
+
 dotnet_csproj:
   patch: true
   file: src\ILLightenComparer\ILLightenComparer.csproj
@@ -28,9 +34,6 @@ dotnet_csproj:
   assembly_version: $(GitVersion_MajorMinorPatch)
   file_version: $(GitVersion_MajorMinorPatch)
   informational_version: $(GitVersion_InformationalVersion)
-
-before_build:
-- pwsh: gitversion /l console /output buildserver /verbosity warn
 
 build_script:
 - pwsh: |
@@ -66,7 +69,7 @@ test_script:
     }
 
 artifacts:
-- path: '.\src\ILLightenComparer\publish\*.nupkg'
+- path: '.\publish\*.nupkg'
   name: nuget-package
   type: NuGetPackage
 

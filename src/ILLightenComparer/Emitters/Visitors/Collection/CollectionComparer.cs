@@ -4,7 +4,8 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
@@ -35,17 +36,15 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
             var useSimpleSorting = !_configurations.HasCustomComparer(elementType)
                                    && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
-            if (useSimpleSorting)
-            {
+            if (useSimpleSorting) {
                 EmitSortArray(il, elementType, xArray);
                 EmitSortArray(il, elementType, yArray);
             }
-            else
-            {
+            else {
                 var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
                 il.LoadArgument(Arg.Context)
-                  .Emit(OpCodes.Call, getComparerMethod)
+                  .Call(getComparerMethod)
                   .Store(getComparerMethod.ReturnType, out var comparer);
 
                 EmitSortArray(il, elementType, xArray, comparer);

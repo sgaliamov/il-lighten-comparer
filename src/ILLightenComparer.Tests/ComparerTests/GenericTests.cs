@@ -16,17 +16,13 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
         private readonly IComparerBuilder _comparerBuilder;
 
-        public GenericTests(IComparerBuilder comparerBuilder = null)
-        {
-            _comparerBuilder = comparerBuilder;
-        }
+        public GenericTests(IComparerBuilder comparerBuilder = null) => _comparerBuilder = comparerBuilder;
 
         public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times, int count = Constants.BigCount)
         {
             var method = type.GetOrAddProperty(
                 nameof(GenericTest),
-                () =>
-                {
+                () => {
                     var methodInfo = GetTestMethod(type);
 
                     return (Action<IComparerBuilder, IComparer, int, int>)methodInfo.CreateDelegate(
@@ -39,12 +35,10 @@ namespace ILLightenComparer.Tests.ComparerTests
             method(builder, referenceComparer, times, count);
         }
 
-        private static MethodInfo GetTestMethod(Type objType)
-        {
-            return typeof(GenericTests)
-                   .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
-                   .MakeGenericMethod(objType);
-        }
+        private static MethodInfo GetTestMethod(Type objType) =>
+            typeof(GenericTests)
+                .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
+                .MakeGenericMethod(objType);
 
         private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times, int count)
         {
@@ -53,8 +47,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var typedComparer = comparersBuilder.GetComparer<T>();
 
             Parallel.Invoke(
-                () =>
-                {
+                () => {
                     Comparison_of_null_with_object_produces_negative_value(referenceComparer, typedComparer);
                     Comparison_of_object_with_null_produces_positive_value(referenceComparer, typedComparer);
                     Comparison_when_both_null_produces_0(referenceComparer, typedComparer);
@@ -69,8 +62,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Comparison_of_null_with_object_produces_negative_value<T>(IComparer referenceComparer, IComparer<T> typedComparer)
         {
-            if (!typeof(T).IsClass && !typeof(T).IsNullable())
-            {
+            if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
             }
 
@@ -83,8 +75,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             IComparer referenceComparer,
             IComparer<T> typedComparer)
         {
-            if (!typeof(T).IsClass && !typeof(T).IsNullable())
-            {
+            if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
             }
 
@@ -95,8 +86,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Comparison_when_both_null_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
         {
-            if (!typeof(T).IsClass && !typeof(T).IsNullable())
-            {
+            if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
             }
 
@@ -128,8 +118,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             if (typeof(T).GetGenericInterface(typeof(IEnumerable<>)) != null) { return; }
 
             var original = Fixture.Create<T>();
-            foreach (var mutant in Fixture.CreateMutants(original))
-            {
+            foreach (var mutant in Fixture.CreateMutants(original)) {
                 referenceComparer.Compare(mutant, original).Should().NotBe(0);
                 typedComparer.Compare(mutant, original).Should().NotBe(0);
             }
@@ -155,8 +144,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static void Comparisons_work_identical<T>(IComparer referenceComparer, IComparer<T> typedComparer, int times)
         {
             var type = typeof(T);
-            for (var i = 0; i < times; i++)
-            {
+            for (var i = 0; i < times; i++) {
                 var x = Create<T>();
                 var y = Create<T>();
 
@@ -174,26 +162,22 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             var type = typeof(T);
 
-            if ((!type.IsValueType || type.IsNullable()) && ThreadSafeRandom.NextDouble() < Constants.NullProbability)
-            {
+            if ((!type.IsValueType || type.IsNullable()) && ThreadSafeRandom.NextDouble() < Constants.NullProbability) {
                 return default;
             }
 
             var result = Fixture.Create<T>();
 
-            if (type.IsValueType)
-            {
+            if (type.IsValueType) {
                 return result;
             }
 
-            if (type.IsArray && result is IList list)
-            {
+            if (type.IsArray && result is IList list) {
                 return (T)AppendNulls(list); // todo: test
             }
 
             var genericInterface = type.GetGenericInterface(typeof(IEnumerable<>));
-            if (genericInterface != null)
-            {
+            if (genericInterface != null) {
                 return AppendNulls(result, genericInterface);
             }
 
@@ -202,10 +186,8 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static IList AppendNulls(IList list)
         {
-            for (var i = 0; i < list.Count; i++)
-            {
-                if (ThreadSafeRandom.NextDouble() < Constants.NullProbability)
-                {
+            for (var i = 0; i < list.Count; i++) {
+                if (ThreadSafeRandom.NextDouble() < Constants.NullProbability) {
                     list[i] = null;
                 }
             }
@@ -216,8 +198,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static T AppendNulls<T>(T result, Type genericInterface)
         {
             var elementType = genericInterface.GetGenericArguments()[0];
-            if (elementType.IsValueType && !elementType.IsNullable())
-            {
+            if (elementType.IsValueType && !elementType.IsNullable()) {
                 return result;
             }
 
@@ -228,8 +209,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                                      .GetGenericMethod(nameof(Enumerable.AsEnumerable), BindingFlags.Static | BindingFlags.Public)
                                      .MakeGenericMethod(elementType);
 
-            foreach (var item in (IEnumerable)result)
-            {
+            foreach (var item in (IEnumerable)result) {
                 var parameters = ThreadSafeRandom.NextDouble() < Constants.NullProbability
                                      ? new[] { (object)null }
                                      : new[] { item };
@@ -242,8 +222,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static IEnumerable<T> CreateMany<T>(int count)
         {
-            for (var j = 0; j < count; j++)
-            {
+            for (var j = 0; j < count; j++) {
                 yield return Create<T>();
             }
         }

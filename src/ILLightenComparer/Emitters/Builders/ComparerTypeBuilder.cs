@@ -5,7 +5,8 @@ using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Builders
 {
@@ -42,22 +43,19 @@ namespace ILLightenComparer.Emitters.Builders
 
         private void BuildStaticCompareMethod(Type objectType, MethodBuilder staticMethodBuilder)
         {
-            using (var il = staticMethodBuilder.CreateILEmitter())
-            {
-                if (!objectType.IsValueType
-                    && !objectType.IsSealedComparable()
-                    && !objectType.ImplementsGeneric(typeof(IEnumerable<>)))
-                {
-                    il.EmitArgumentsReferenceComparison();
-                }
+            using var il = staticMethodBuilder.CreateILEmitter();
 
-                if (IsDetectCycles(objectType))
-                {
-                    EmitCycleDetection(il);
-                }
-
-                _compareEmitter.Emit(objectType, il);
+            if (!objectType.IsValueType
+                && !objectType.IsSealedComparable()
+                && !objectType.ImplementsGeneric(typeof(IEnumerable<>))) {
+                il.EmitArgumentsReferenceComparison();
             }
+
+            if (IsDetectCycles(objectType)) {
+                EmitCycleDetection(il);
+            }
+
+            _compareEmitter.Emit(objectType, il);
         }
 
         private void BuildInstanceCompareMethod(
@@ -70,70 +68,63 @@ namespace ILLightenComparer.Emitters.Builders
             var interfaceMethod = genericInterface.GetMethod(MethodName.Compare);
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
-            using (var il = methodBuilder.CreateILEmitter())
-            {
-                il.LoadArgument(Arg.This)
-                  .Emit(OpCodes.Ldfld, contextField)
-                  .LoadArgument(Arg.X)
-                  .LoadArgument(Arg.Y);
+            using var il = methodBuilder.CreateILEmitter();
 
-                EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
-            }
+            il.LoadArgument(Arg.This)
+              .LoadField(contextField)
+              .LoadArgument(Arg.X)
+              .LoadArgument(Arg.Y);
+
+            EmitStaticCompareMethodCall(il, staticCompareMethod, objectType);
         }
 
         private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
-            if (!IsCreateCycleDetectionSets(objectType))
-            {
-                il.Emit(OpCodes.Ldnull)
-                  .Emit(OpCodes.Ldnull)
+            if (!IsCreateCycleDetectionSets(objectType)) {
+                il.LoadNull()
+                  .LoadNull()
                   .Call(staticCompareMethod)
                   .Return();
 
                 return;
             }
 
-            il.Emit(OpCodes.Newobj, Method.SetConstructor)
-              .Emit(OpCodes.Newobj, Method.SetConstructor)
+            il.New(Method.ConcurrentSetConstructor)
+              .New(Method.ConcurrentSetConstructor)
               .Call(staticCompareMethod)
               .Return();
         }
 
-        private bool IsCreateCycleDetectionSets(Type objectType)
-        {
-            return _configuration.Get(objectType).DetectCycles
-                   && !objectType.GetUnderlyingType().IsPrimitive()
-                   && !objectType.IsSealedComparable();
-        }
+        private bool IsCreateCycleDetectionSets(Type objectType) =>
+            _configuration.Get(objectType).DetectCycles
+            && !objectType.GetUnderlyingType().IsPrimitive()
+            && !objectType.IsSealedComparable();
 
-        private bool IsDetectCycles(Type objectType)
-        {
-            return objectType.IsClass
-                   && IsCreateCycleDetectionSets(objectType)
-                   && !objectType.ImplementsGeneric(typeof(IEnumerable<>));
-        }
+        private bool IsDetectCycles(Type objectType) =>
+            objectType.IsClass
+            && IsCreateCycleDetectionSets(objectType)
+            && !objectType.ImplementsGeneric(typeof(IEnumerable<>));
 
         private static void EmitCycleDetection(ILEmitter il)
         {
-            il.LoadArgument(Arg.SetX)
-              .LoadArgument(Arg.X)
-              .LoadConstant(0)
-              .Emit(OpCodes.Call, Method.SetAdd)
-              .LoadArgument(Arg.SetY)
-              .LoadArgument(Arg.Y)
-              .LoadConstant(0)
-              .Emit(OpCodes.Call, Method.SetAdd)
-              .Emit(OpCodes.Or)
-              .LoadConstant(0)
-              .Emit(OpCodes.Ceq)
-              .Branch(OpCodes.Brfalse_S, out var next)
-              .LoadArgument(Arg.SetX)
-              .Emit(OpCodes.Call, Method.SetGetCount)
-              .LoadArgument(Arg.SetY)
-              .Emit(OpCodes.Call, Method.SetGetCount)
-              .Emit(OpCodes.Sub)
-              .Return()
-              .MarkLabel(next);
+            il.AreSame(
+                il => il.Or(
+                    il => il
+                        .LoadArgument(Arg.SetX)
+                        .LoadArgument(Arg.X)
+                        .LoadConstant(0)
+                        .Call(Method.ConcurrentSetAddMethod),
+                    il => il
+                        .LoadArgument(Arg.SetY)
+                        .LoadArgument(Arg.Y)
+                        .LoadConstant(0)
+                        .Call(Method.ConcurrentSetAddMethod)),
+                il => il.LoadConstant(0))
+            .Branch(OpCodes.Brfalse_S, out var next) // todo: Beq?
+            .Sub(il => il.LoadArgument(Arg.SetX).Call(Method.ConcurrentSetGetCountProperty),
+                 il => il.LoadArgument(Arg.SetY).Call(Method.ConcurrentSetGetCountProperty))
+            .Return()
+            .MarkLabel(next);
         }
 
         private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)
@@ -145,13 +136,12 @@ namespace ILLightenComparer.Emitters.Builders
                 CallingConventions.HasThis,
                 parameters);
 
-            using (var il = constructorInfo.CreateILEmitter())
-            {
+            using (var il = constructorInfo.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
-                  .Emit(OpCodes.Call, typeof(object).GetConstructor(Type.EmptyTypes))
-                  .LoadArgument(Arg.This)
-                  .LoadArgument(1)
-                  .Emit(OpCodes.Stfld, contextField)
+                  .Call(typeof(object).GetConstructor(Type.EmptyTypes))
+                  .SetField(il => il.LoadArgument(Arg.This),
+                            il => il.LoadArgument(1),
+                            contextField)
                   .Return();
             }
 
@@ -160,10 +150,9 @@ namespace ILLightenComparer.Emitters.Builders
                 typeBuilder,
                 parameters);
 
-            using (var il = methodBuilder.CreateILEmitter())
-            {
+            using (var il = methodBuilder.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
-                  .Emit(OpCodes.Newobj, constructorInfo)
+                  .New(constructorInfo)
                   .Return();
             }
         }

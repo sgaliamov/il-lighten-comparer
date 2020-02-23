@@ -21,13 +21,13 @@ namespace ILLightenComparer.Reflection
             nameof(string.Compare),
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
-        public static readonly ConstructorInfo SetConstructor =
+        public static readonly ConstructorInfo ConcurrentSetConstructor =
             typeof(ConcurrentSet<object>).GetConstructor(Type.EmptyTypes);
 
-        public static readonly MethodInfo SetAdd =
+        public static readonly MethodInfo ConcurrentSetAddMethod =
             typeof(ConcurrentSet<object>).GetMethod(nameof(ConcurrentSet<object>.TryAdd), new[] { typeof(object), typeof(byte) });
 
-        public static readonly MethodInfo SetGetCount =
+        public static readonly MethodInfo ConcurrentSetGetCountProperty =
             typeof(ConcurrentSet<object>).GetProperty(nameof(ConcurrentSet<object>.Count))?.GetGetMethod();
 
         public static MethodInfo DelayedCompare =
@@ -48,10 +48,9 @@ namespace ILLightenComparer.Reflection
         {
             return typeof(Array)
                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                   .Where(x => x.Name == nameof(Array.Sort))
-                   .Where(x => x.IsGenericMethodDefinition)
-                   .Single(x =>
-                   {
+                   .Where(x => x.Name == nameof(Array.Sort)
+                            && x.IsGenericMethodDefinition)
+                   .Single(x => {
                        var parameters = x.GetParameters();
 
                        return parameters.Length == 2
@@ -66,10 +65,9 @@ namespace ILLightenComparer.Reflection
         {
             return typeof(Array)
                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                   .Where(x => x.Name == nameof(Array.Sort))
-                   .Where(x => x.IsGenericMethodDefinition)
-                   .Single(x =>
-                   {
+                   .Where(x => x.Name == nameof(Array.Sort)
+                            && x.IsGenericMethodDefinition)
+                   .Single(x => {
                        var parameters = x.GetParameters();
                        return parameters.Length == 1 && parameters[0].ParameterType.IsArray;
                    })
@@ -78,8 +76,7 @@ namespace ILLightenComparer.Reflection
 
         public static Type[] StaticCompareMethodParameters(Type objectType)
         {
-            return new[]
-            {
+            return new[] {
                 typeof(IContext),
                 objectType,
                 objectType,

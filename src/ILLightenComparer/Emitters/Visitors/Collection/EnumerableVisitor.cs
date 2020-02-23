@@ -4,7 +4,7 @@ using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
@@ -13,28 +13,27 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
         private readonly CompareVisitor _compareVisitor;
+        private readonly ComparisonsProvider _comparisons;
         private readonly IConfigurationProvider _configurations;
-        private readonly Converter _converter;
 
         public EnumerableVisitor(
             IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
             VariableLoader loader,
-            Converter converter)
+            ComparisonsProvider comparisons)
         {
             _configurations = configurations;
             _compareVisitor = compareVisitor;
-            _converter = converter;
+            _comparisons = comparisons;
             _collectionComparer = new CollectionComparer(configurations, loader);
-            _arrayComparer = new ArrayComparer(compareVisitor, converter);
+            _arrayComparer = new ArrayComparer(compareVisitor, comparisons);
         }
 
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label afterLoop)
         {
             var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
 
-            if (_configurations.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder)
-            {
+            if (_configurations.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder) {
                 return EmitCompareAsSortedArrays(comparison, il, afterLoop, x, y);
             }
 
@@ -95,22 +94,19 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         {
             il.DefineLabel(out var continueLoop).MarkLabel(continueLoop);
 
-            using (il.LocalsScope())
-            {
+            using (il.LocalsScope()) {
                 var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
 
                 EmitCheckIfLoopsAreDone(xDone, yDone, il, gotoNext);
             }
 
-            using (il.LocalsScope())
-            {
+            using (il.LocalsScope()) {
                 var itemVariable = new EnumerableItemVariable(comparison.Variable.OwnerType, xEnumerator, yEnumerator);
 
-                var itemComparison = _converter.CreateComparison(itemVariable);
+                var itemComparison = _comparisons.GetComparison(itemVariable);
                 itemComparison.Accept(_compareVisitor, il, continueLoop);
 
-                if (itemComparison.PutsResultInStack)
-                {
+                if (itemComparison.PutsResultInStack) {
                     il.EmitReturnNotZero(continueLoop);
                 }
             }
@@ -126,7 +122,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
               .Branch(OpCodes.Brfalse_S, out var checkY)
               .LoadLocal(yDone)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br, gotoNext)
+              .GoTo(gotoNext)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkY)
@@ -141,16 +137,12 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             LocalBuilder yEnumerator,
             ILEmitter il)
         {
-            il.LoadLocal(xEnumerator)
-              .Call(Method.MoveNext)
-              .LoadConstant(0)
-              .Emit(OpCodes.Ceq)
-              .Store(typeof(int), out var xDone)
-              .LoadLocal(yEnumerator)
-              .Call(Method.MoveNext)
-              .LoadConstant(0)
-              .Emit(OpCodes.Ceq)
-              .Store(typeof(int), out var yDone);
+            il.AreSame(il => il.LoadLocal(xEnumerator).Call(Method.MoveNext),
+                       il => il.LoadConstant(0),
+                       out var xDone)
+              .AreSame(il => il.LoadLocal(yEnumerator).Call(Method.MoveNext),
+                       il => il.LoadConstant(0),
+                       out var yDone);
 
             return (xDone, yDone);
         }

@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using ILLightenComparer.Config;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
+using Illuminator.Extensions;
 
 [assembly: InternalsVisibleTo("IL-Lighten-Comparer")]
 
@@ -31,10 +31,7 @@ namespace ILLightenComparer.Emitters.Builders
             _moduleBuilder = assembly.DefineDynamicModule("IL-Lighten-Comparer.dll");
         }
 
-        public MethodInfo GetStaticCompareMethod(Type type)
-        {
-            return DefineStaticMethod(type).CompareMethod;
-        }
+        public MethodInfo GetStaticCompareMethod(Type type) => DefineStaticMethod(type).CompareMethod;
 
         public MethodInfo GetCompiledCompareMethod(Type type)
         {
@@ -49,15 +46,13 @@ namespace ILLightenComparer.Emitters.Builders
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
-                key => new Lazy<Type>(() =>
-                {
+                key => new Lazy<Type>(() => {
                     var info = DefineStaticMethod(key);
-                    #if DEBUG
-                    if (info.Compiled)
-                    {
+#if DEBUG
+                    if (info.Compiled) {
                         throw new InvalidOperationException("Unexpected context state.");
                     }
-                    #endif
+#endif
 
                     var compiledComparerType = _comparerTypeBuilder.Build(
                         (TypeBuilder)info.CompareMethod.DeclaringType,
@@ -81,8 +76,7 @@ namespace ILLightenComparer.Emitters.Builders
         private StaticMethodInfo DefineStaticMethod(Type objectType)
         {
             var lazy = _staticMethods.GetOrAdd(objectType,
-                key => new Lazy<StaticMethodInfo>(() =>
-                {
+                key => new Lazy<StaticMethodInfo>(() => {
                     var genericInterface = typeof(IComparer<>).MakeGenericType(key);
 
                     var typeBuilder = _moduleBuilder.DefineType(
@@ -104,10 +98,8 @@ namespace ILLightenComparer.Emitters.Builders
         {
             var items = _staticMethods.ToDictionary(x => x.Key, x => x.Value.Value);
 
-            foreach (var item in items)
-            {
-                if (item.Value.Compiled)
-                {
+            foreach (var item in items) {
+                if (item.Value.Compiled) {
                     continue;
                 }
 
@@ -117,10 +109,7 @@ namespace ILLightenComparer.Emitters.Builders
 
         private sealed class StaticMethodInfo
         {
-            public StaticMethodInfo(MethodInfo compareMethod)
-            {
-                CompareMethod = compareMethod;
-            }
+            public StaticMethodInfo(MethodInfo compareMethod) => CompareMethod = compareMethod;
 
             public MethodInfo CompareMethod { get; private set; }
 

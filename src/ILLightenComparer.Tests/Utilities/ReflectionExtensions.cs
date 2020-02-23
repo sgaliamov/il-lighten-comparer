@@ -7,34 +7,27 @@ namespace ILLightenComparer.Tests.Utilities
     {
         public static Type MakeNullable(this Type type)
         {
-            if (!type.IsValueType)
-            {
+            if (!type.IsValueType) {
                 throw new ArgumentException(nameof(type));
             }
 
             return typeof(Nullable<>).MakeGenericType(type);
         }
 
-        public static bool IsNullable(this Type type)
-        {
-            return type.IsValueType
-                   && type.IsGenericType
-                   && !type.IsGenericTypeDefinition
-                   && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
-        }
+        public static bool IsNullable(this Type type) =>
+            type.IsValueType
+            && type.IsGenericType
+            && !type.IsGenericTypeDefinition
+            && ReferenceEquals(type.GetGenericTypeDefinition(), typeof(Nullable<>));
 
-        public static bool IsPrimitive(this Type type)
-        {
-            return type.IsPrimitive
-                   || type.IsEnum
-                   || ReferenceEquals(type, typeof(string))
-                   || ReferenceEquals(type, typeof(decimal));
-        }
+        public static bool IsPrimitive(this Type type) =>
+            type.IsPrimitive
+            || type.IsEnum
+            || ReferenceEquals(type, typeof(string))
+            || ReferenceEquals(type, typeof(decimal));
 
-        public static string DisplayName(this MemberInfo memberInfo)
-        {
-            return $"{memberInfo}"
+        public static string DisplayName(this MemberInfo memberInfo) =>
+            $"{memberInfo}"
                 .Replace("\\, ILLightenComparer.Tests\\, Version=1.0.0.0\\, Culture=neutral\\, PublicKeyToken=null", "");
-        }
     }
 }

@@ -12,7 +12,8 @@ namespace ILLightenComparer.Config
             configuration.MembersOrder,
             configuration.StringComparisonType,
             configuration.DetectCycles,
-            configuration.IgnoreCollectionOrder) { }
+            configuration.IgnoreCollectionOrder)
+        { }
 
         public Configuration(
             IEnumerable<string> ignoredMembers,
@@ -40,19 +41,14 @@ namespace ILLightenComparer.Config
 
         public void SetIgnoredMembers(IEnumerable<string> ignoredMembers)
         {
-            if (ignoredMembers == null)
-            {
+            if (ignoredMembers == null) {
                 IgnoredMembers.Clear();
             }
-            else
-            {
+            else {
                 IgnoredMembers.UnionWith(ignoredMembers);
             }
         }
 
-        public void SetMembersOrder(IEnumerable<string> value)
-        {
-            MembersOrder = value?.Distinct().ToArray() ?? throw new ArgumentNullException(nameof(value));
-        }
+        public void SetMembersOrder(IEnumerable<string> value) => MembersOrder = value?.Distinct().ToArray() ?? throw new ArgumentNullException(nameof(value));
     }
 }

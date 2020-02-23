@@ -84,6 +84,7 @@
 
 ## Phase 6 GetHashCode
 
+- [ ] support for .net core 3
 - [ ] implement `GetHashCode`
 
 ## Phase 7 Equals
@@ -101,6 +102,9 @@
 - [ ] ignore existing `IComparable` implementation
 - [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need to have deal with addresses?
 - [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
+- [ ] add `IgnoreAll()` method to be able simplify comparison setup on specific fields or props only
+- [ ] add `Include(string member)` method in pair with `IgnoreAll`
+- [ ] custom comparison expression for a member to simplify comparison setup
 - [ ] optimization for a last member - just return its result
 - [ ] same for simple types, when arguments are compared directly
 - [ ] change behavior then types are not matched but castable
@@ -120,3 +124,4 @@
 - [ ] `checked` subs
 - [ ] compare references and the end?
 - [ ] automatic cycle detection when needed
+- [ ] possible to merge `MembersComparison` and `HierarchicalsComparison` but need to create `LocalVariable` class

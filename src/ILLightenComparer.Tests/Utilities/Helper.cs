@@ -16,10 +16,8 @@ namespace ILLightenComparer.Tests.Utilities
         public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
         {
             using (var enumeratorOne = one.GetEnumerator())
-            using (var enumeratorOther = other.GetEnumerator())
-            {
-                while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext())
-                {
+            using (var enumeratorOther = other.GetEnumerator()) {
+                while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext()) {
                     var oneCurrent = enumeratorOne.Current;
                     var otherCurrent = enumeratorOther.Current;
 
@@ -33,35 +31,28 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static void ShouldBeEquals<T>(this T x, T y)
         {
-            if (typeof(T).IsPrimitive() || typeof(T).IsNullable())
-            {
+            if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
                 x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
             }
-            else
-            {
+            else {
                 x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>().WithStrictOrdering());
             }
         }
 
         public static int Normalize(this int value)
         {
-            if (value <= -1)
-            {
+            if (value <= -1) {
                 return -1;
             }
 
-            if (value >= 1)
-            {
+            if (value >= 1) {
                 return 1;
             }
 
             return value;
         }
 
-        public static void Parallel(ThreadStart action)
-        {
-            Parallel(action, Environment.ProcessorCount * 10);
-        }
+        public static void Parallel(ThreadStart action) => Parallel(action, Environment.ProcessorCount * 10);
 
         public static void Parallel(ThreadStart action, int count)
         {
@@ -70,13 +61,11 @@ namespace ILLightenComparer.Tests.Utilities
                           .Select(x => new Thread(action))
                           .ToArray();
 
-            foreach (var thread in threads)
-            {
+            foreach (var thread in threads) {
                 thread.Start();
             }
 
-            foreach (var thread in threads)
-            {
+            foreach (var thread in threads) {
                 thread.Join();
             }
         }

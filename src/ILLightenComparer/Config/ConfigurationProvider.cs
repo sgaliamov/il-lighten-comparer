@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Config
 {
@@ -80,6 +81,7 @@ namespace ILLightenComparer.Config
 
         public IConfigurationBuilder DetectCycles(Type type, bool? value)
         {
+            // todo: use default values from _default field, because it can be redefined.
             GetOrCreate(type).DetectCycles = value ?? DetectCyclesDefault;
 
             return this;
@@ -110,8 +112,7 @@ namespace ILLightenComparer.Config
 
         public IConfigurationBuilder DefineMembersOrder<T>(Action<IMembersOrder<T>> order)
         {
-            if (order == null)
-            {
+            if (order == null) {
                 GetOrCreate(typeof(T)).SetMembersOrder(MembersOrderDefault);
 
                 return this;
@@ -141,17 +142,13 @@ namespace ILLightenComparer.Config
             return proxy;
         }
 
-        public IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance)
-        {
-            return SetCustomComparer(typeof(T), instance);
-        }
+        public IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance) => SetCustomComparer(typeof(T), instance);
 
         public IConfigurationBuilder SetCustomComparer<TComparer>()
         {
             var genericType = typeof(TComparer);
-            var genericInterface = genericType.GetGenericInterface(typeof(IComparer<>));
-            if (genericInterface == null)
-            {
+            var genericInterface = genericType.FindGenericInterface(typeof(IComparer<>));
+            if (genericInterface == null) {
                 throw new ArgumentException($"{nameof(TComparer)} is not generic {typeof(IComparer<>)}");
             }
 
@@ -161,51 +158,34 @@ namespace ILLightenComparer.Config
             return SetCustomComparer(type, comparer);
         }
 
-        public Configuration Get(Type type)
-        {
-            return _configurations.TryGetValue(type, out var configuration)
-                       ? configuration
-                       : _default;
-        }
+        public Configuration Get(Type type) =>
+            _configurations.TryGetValue(type, out var configuration)
+                ? configuration
+                : _default;
 
-        public IComparer<T> GetCustomComparer<T>()
-        {
-            return _customComparers.TryGetValue(typeof(T), out var comparer) ? (IComparer<T>)comparer : null;
-        }
+        public IComparer<T> GetCustomComparer<T>() => _customComparers.TryGetValue(typeof(T), out var comparer) ? (IComparer<T>)comparer : null;
 
-        public bool HasCustomComparer(Type type)
-        {
-            return _customComparers.ContainsKey(type);
-        }
+        public bool HasCustomComparer(Type type) => _customComparers.ContainsKey(type);
 
         private ConfigurationProvider SetCustomComparer(Type type, object instance)
         {
-            if (instance == null)
-            {
+            if (instance == null) {
                 _customComparers.TryRemove(type, out _);
             }
-            else
-            {
+            else {
                 _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
             }
 
             return this;
         }
 
-        private Configuration GetOrCreate(Type type)
-        {
-            return _configurations.GetOrAdd(type, _ => new Configuration(_default));
-        }
+        private Configuration GetOrCreate(Type type) => _configurations.GetOrAdd(type, _ => new Configuration(_default));
 
-        private static string[] GetMembers<T, TMember>(IEnumerable<Expression<Func<T, TMember>>> memberSelectors)
-        {
-            return memberSelectors?.Select(GetMemberName).ToArray();
-        }
+        private static string[] GetMembers<T, TMember>(IEnumerable<Expression<Func<T, TMember>>> memberSelectors) => memberSelectors?.Select(GetMemberName).ToArray();
 
         private static string GetMemberName<T, TMember>(Expression<Func<T, TMember>> selector)
         {
-            if (selector.Body.NodeType != ExpressionType.MemberAccess)
-            {
+            if (selector.Body.NodeType != ExpressionType.MemberAccess) {
                 throw new ArgumentException("Member selector is expected.", nameof(selector));
             }
 
@@ -232,10 +212,7 @@ namespace ILLightenComparer.Config
         {
             private readonly ConfigurationProvider _subject;
 
-            public Proxy(ConfigurationProvider subject)
-            {
-                _subject = subject;
-            }
+            public Proxy(ConfigurationProvider subject) => _subject = subject;
 
             public IConfigurationBuilder<T> DetectCycles(bool? value)
             {

@@ -16,8 +16,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Abstract_property_comparison()
         {
-            Test(x => new AbstractMembers
-            {
+            Test(x => new AbstractMembers {
                 AbstractProperty = x
             });
         }
@@ -33,13 +32,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 
             var anotherNestedObject = _fixture.Create<AnotherNestedObject>();
 
-            var one = new AbstractMembers
-            {
+            var one = new AbstractMembers {
                 InterfaceField = sealedNestedObject
             };
 
-            var another = new AbstractMembers
-            {
+            var another = new AbstractMembers {
                 InterfaceField = anotherNestedObject
             };
 
@@ -52,13 +49,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             var sealedNestedObject = _fixture.Create<BaseNestedObject>();
             var anotherNestedObject = _fixture.Create<AnotherNestedObject>();
 
-            var one = new AbstractMembers
-            {
+            var one = new AbstractMembers {
                 NotSealedProperty = sealedNestedObject
             };
 
-            var another = new AbstractMembers
-            {
+            var another = new AbstractMembers {
                 NotSealedProperty = anotherNestedObject
             };
 
@@ -68,8 +63,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Interface_field_comparison()
         {
-            Test(x => new AbstractMembers
-            {
+            Test(x => new AbstractMembers {
                 InterfaceField = x
             });
         }
@@ -77,8 +71,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Not_sealed_property_comparison()
         {
-            Test(x => new AbstractMembers
-            {
+            Test(x => new AbstractMembers {
                 NotSealedProperty = x
             });
         }
@@ -86,8 +79,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Object_field_comparison()
         {
-            Test(x => new AbstractMembers
-            {
+            Test(x => new AbstractMembers {
                 ObjectField = x
             });
         }
@@ -95,17 +87,14 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Replaced_member_does_not_break_comparison()
         {
-            var one = new AbstractMembers
-            {
+            var one = new AbstractMembers {
                 NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
             _comparer.Compare(one, one.DeepClone()).Should().Be(0);
 
-            for (var i = 0; i < 100; i++)
-            {
+            for (var i = 0; i < 100; i++) {
                 one.NotSealedProperty = _fixture.Create<AnotherNestedObject>();
-                var other = new AbstractMembers
-                {
+                var other = new AbstractMembers {
                     NotSealedProperty = _fixture.Create<AnotherNestedObject>()
                 };
 
@@ -120,8 +109,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         public void When_left_member_is_null_comparison_produces_negative_value()
         {
             var one = new AbstractMembers();
-            var other = new AbstractMembers
-            {
+            var other = new AbstractMembers {
                 NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
 
@@ -131,8 +119,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void When_right_member_is_null_comparison_produces_positive_value()
         {
-            var one = new AbstractMembers
-            {
+            var one = new AbstractMembers {
                 NotSealedProperty = _fixture.Create<BaseNestedObject>()
             };
             var another = new AbstractMembers();

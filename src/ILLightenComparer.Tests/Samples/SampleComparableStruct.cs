@@ -13,17 +13,13 @@ namespace ILLightenComparer.Tests.Samples
         public int CompareTo(SampleComparableStruct<TMember> other)
         {
             var compare = Comparer.Compare(Field, other.Field);
-            if (compare != 0)
-            {
+            if (compare != 0) {
                 return compare;
             }
 
             return Comparer.Compare(Property, other.Property);
         }
 
-        public override string ToString()
-        {
-            return $"{{ {Field}, {Property} }}";
-        }
+        public override string ToString() => $"{{ {Field}, {Property} }}";
     }
 }

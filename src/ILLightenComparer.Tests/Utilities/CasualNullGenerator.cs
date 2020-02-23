@@ -23,15 +23,13 @@ namespace ILLightenComparer.Tests.Utilities
 
             var owner = property?.DeclaringType ?? field?.DeclaringType;
             var type = property?.PropertyType ?? field?.FieldType;
-            if (type == null || owner == null)
-            {
+            if (type == null || owner == null) {
                 return new NoSpecimen();
             }
 
             if ((type.IsNullable() || type.IsClass)
                 && !_exclude.Contains(owner)
-                && ThreadSafeRandom.NextDouble() < _probability)
-            {
+                && ThreadSafeRandom.NextDouble() < _probability) {
                 return new OmitSpecimen();
             }
 

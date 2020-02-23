@@ -3,8 +3,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
-using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
@@ -18,11 +18,11 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
             VariableLoader loader,
-            Converter converter)
+            ComparisonsProvider comparisons)
         {
             _configurations = configurations;
             _collectionComparer = new CollectionComparer(configurations, loader);
-            _arrayComparer = new ArrayComparer(compareVisitor, converter);
+            _arrayComparer = new ArrayComparer(compareVisitor, comparisons);
         }
 
         public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label afterLoop)
@@ -33,10 +33,11 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
             var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
 
+#if DEBUG
             EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
+#endif
 
-            if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder)
-            {
+            if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder) {
                 _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 
@@ -44,8 +45,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         }
 
         private static void EmitCheckForNegativeCount(
-            LocalBuilder countX,
-            LocalBuilder countY,
+            LocalVariableInfo countX,
+            LocalVariableInfo countY,
             MemberInfo memberType,
             ILEmitter il)
         {
@@ -57,8 +58,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
               .Branch(OpCodes.Ble_S, out var loopInit)
               .MarkLabel(negativeException)
               .LoadString($"Collection {memberType.DisplayName()} has negative count of elements.")
-              .Emit(OpCodes.Newobj, typeof(IndexOutOfRangeException).GetConstructor(new[] { typeof(string) }))
-              .Emit(OpCodes.Throw)
+              .New(typeof(IndexOutOfRangeException).GetConstructor(new[] { typeof(string) }))
+              .Throw()
               .MarkLabel(loopInit);
         }
     }

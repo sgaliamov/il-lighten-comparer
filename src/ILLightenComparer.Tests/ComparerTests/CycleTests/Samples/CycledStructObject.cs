@@ -10,19 +10,13 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         public CycledStruct? FirstStruct;
         public string TextField;
 
-        public CycledStructObject()
-        {
-            Id = this.GetObjectId();
-        }
+        public CycledStructObject() => Id = this.GetObjectId();
 
         public static IComparer<CycledStructObject> Comparer { get; } = new RelationalComparer();
 
         public CycledStruct SecondStruct { get; set; }
 
-        public override string ToString()
-        {
-            return Id.ToString();
-        }
+        public override string ToString() => Id.ToString();
 
         public sealed class RelationalComparer : IComparer<CycledStructObject>
         {
@@ -40,35 +34,29 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 ConcurrentSet<object> setX,
                 ConcurrentSet<object> setY)
             {
-                if (ReferenceEquals(x, y))
-                {
+                if (ReferenceEquals(x, y)) {
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y))
-                {
+                if (ReferenceEquals(null, y)) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x))
-                {
+                if (ReferenceEquals(null, x)) {
                     return -1;
                 }
 
-                if (!setX.TryAdd(x, 0) & !setY.TryAdd(y, 0))
-                {
+                if (!setX.TryAdd(x, 0) & !setY.TryAdd(y, 0)) {
                     return setX.Count - setY.Count;
                 }
 
                 var compare = string.Compare(x.TextField, y.TextField, StringComparison.Ordinal);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
                 compare = CycledStruct.RelationalComparer.Compare(x.FirstStruct, y.FirstStruct, setX, setY);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 

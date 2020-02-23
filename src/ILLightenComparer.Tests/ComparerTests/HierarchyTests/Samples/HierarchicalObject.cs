@@ -22,25 +22,19 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 
         public sealed class RelationalComparer : IComparer<HierarchicalObject>, IComparer
         {
-            public int Compare(object x, object y)
-            {
-                return Compare(x as HierarchicalObject, y as HierarchicalObject);
-            }
+            public int Compare(object x, object y) => Compare(x as HierarchicalObject, y as HierarchicalObject);
 
             public int Compare(HierarchicalObject x, HierarchicalObject y)
             {
-                if (ReferenceEquals(x, y))
-                {
+                if (ReferenceEquals(x, y)) {
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y))
-                {
+                if (ReferenceEquals(null, y)) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x))
-                {
+                if (ReferenceEquals(null, x)) {
                     return -1;
                 }
 
@@ -51,26 +45,22 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 
 
                 compare = x.Value.CompareTo(y.Value);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
                 compare = Comparer<SealedNestedObject>.Default.Compare(x.FirstProperty, y.FirstProperty);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
                 compare = Comparer<SealedNestedObject>.Default.Compare(x.SecondProperty, y.SecondProperty);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
                 compare = Comparer<SealedNestedObject>.Default.Compare(x.NestedField, y.NestedField);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 

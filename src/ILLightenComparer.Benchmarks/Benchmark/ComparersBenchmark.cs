@@ -34,33 +34,28 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         {
             int Normalize(int value)
             {
-                if (value >= 1)
-                {
+                if (value >= 1) {
                     return 1;
                 }
 
-                if (value <= -1)
-                {
+                if (value <= -1) {
                     return -1;
                 }
 
                 return 0;
             }
 
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _one[i] = _fixture.Create<T>();
                 _other[i] = _fixture.Create<T>();
 
                 var compare = Normalize(_manual.Compare(_one[i], _other[i]));
 
-                if (compare != Normalize(_il.Compare(_one[i], _other[i])))
-                {
+                if (compare != Normalize(_il.Compare(_one[i], _other[i]))) {
                     throw new InvalidOperationException("Light comparer is broken.");
                 }
 
-                if (compare != Normalize(_nito.Compare(_one[i], _other[i])))
-                {
+                if (compare != Normalize(_nito.Compare(_one[i], _other[i]))) {
                     throw new InvalidOperationException("Nito comparer is broken.");
                 }
             }
@@ -69,8 +64,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         [Benchmark(Baseline = true, Description = "IL Lighten Comparer")]
         public void IL_Comparer()
         {
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _out = _il.Compare(_one[i], _other[i]);
             }
         }
@@ -78,8 +72,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         [Benchmark(Description = "Manual implementation")]
         public void Manual_Comparer()
         {
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _out = _manual.Compare(_one[i], _other[i]);
             }
         }
@@ -87,8 +80,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         [Benchmark(Description = "Nito Comparer")]
         public void Nito_Comparer()
         {
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _out = _nito.Compare(_one[i], _other[i]);
             }
         }

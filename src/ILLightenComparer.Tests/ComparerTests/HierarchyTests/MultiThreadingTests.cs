@@ -19,24 +19,20 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         [Fact]
         public void Generate_comparer_for_not_sealed_member_in_parallel_still_works()
         {
-            var one = new AbstractMembers
-            {
+            var one = new AbstractMembers {
                 NotSealedProperty = _fixture.Create<AnotherNestedObject>()
             };
 
-            Helper.Parallel(() =>
-            {
+            Helper.Parallel(() => {
                 var comparer = CreateComparer();
 
-                var other = new AbstractMembers
-                {
+                var other = new AbstractMembers {
                     NotSealedProperty = _fixture.Create<AnotherNestedObject>()
                 };
 
                 var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
 
-                Helper.Parallel(() =>
-                {
+                Helper.Parallel(() => {
                     var actual = comparer.Compare(one, other).Normalize();
                     actual.Should().Be(expected);
                 });

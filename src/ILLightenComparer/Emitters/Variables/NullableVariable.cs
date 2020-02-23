@@ -5,7 +5,8 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Variables
 {
@@ -21,8 +22,7 @@ namespace ILLightenComparer.Emitters.Variables
 
             VariableType = variableType.GetUnderlyingType();
 
-            Nullables = new Dictionary<ushort, LocalBuilder>(2)
-            {
+            Nullables = new Dictionary<ushort, LocalBuilder>(2) {
                 { Arg.X, x ?? throw new ArgumentNullException(nameof(x)) },
                 { Arg.Y, y ?? throw new ArgumentNullException(nameof(y)) }
             };
@@ -39,14 +39,8 @@ namespace ILLightenComparer.Emitters.Variables
         /// </summary>
         public Type VariableType { get; }
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
-        {
-            return visitor.Load(this, il, arg);
-        }
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(this, il, arg);
 
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
-        {
-            return visitor.LoadAddress(this, il, arg);
-        }
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(this, il, arg);
     }
 }
