@@ -27,25 +27,17 @@ namespace ILLightenComparer.Tests.Utilities
             return (T)properties.GetOrAdd(name, (key, x) => x, value());
         }
 
-        public static int GetObjectId<T>(this T target) where T : class
-        {
-            return (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
-        }
+        public static int GetObjectId<T>(this T target) where T : class => (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
 
-        public static string ToJson<T>(this T target)
-        {
-            return JsonConvert.SerializeObject(target);
-        }
+        public static string ToJson<T>(this T target) => JsonConvert.SerializeObject(target);
 
         public static Type GetGenericInterface(this Type type, Type generic)
         {
-            if (!generic.IsGenericType)
-            {
+            if (!generic.IsGenericType) {
                 throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
             }
 
-            if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == generic)
-            {
+            if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == generic) {
                 return type;
             }
 

@@ -20,8 +20,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 var setY = new ConcurrentSet<object>();
 
                 var compare = Compare(x, y, setX, setY);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
@@ -34,18 +33,15 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 ConcurrentSet<object> xSet,
                 ConcurrentSet<object> ySet)
             {
-                if (x.HasValue)
-                {
-                    if (y.HasValue)
-                    {
+                if (x.HasValue) {
+                    if (y.HasValue) {
                         return Compare(x.Value, y.Value, xSet, ySet);
                     }
 
                     return 1;
                 }
 
-                if (y.HasValue)
-                {
+                if (y.HasValue) {
                     return -1;
                 }
 
@@ -55,14 +51,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
             public static int Compare(CycledStruct x, CycledStruct y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
             {
                 var compare = Nullable.Compare(x.Property, y.Property);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 
                 compare = CycledStructObject.RelationalComparer.Compare(x.FirstObject, y.FirstObject, xSet, ySet);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 

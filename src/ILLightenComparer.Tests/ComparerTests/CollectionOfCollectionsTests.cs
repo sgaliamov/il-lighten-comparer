@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
-using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
@@ -113,8 +112,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
             Parallel.ForEach(
                 types,
-                item =>
-                {
+                item => {
                     var (type, referenceComparer) = item;
                     var collections = getCollectionTypes(type);
                     var comparerTypes = collections
@@ -128,8 +126,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
                     type = collections.Last();
 
-                    if (genericSampleType != null)
-                    {
+                    if (genericSampleType != null) {
                         var comparerType = genericSampleComparer.MakeGenericType(type);
                         type = genericSampleType.MakeGenericType(type);
                         comparer = (IComparer)Activator.CreateInstance(comparerType, comparer);

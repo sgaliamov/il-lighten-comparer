@@ -7,67 +7,53 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     {
         public Dictionary<int, string> Actors { get; set; }
 
-        public int CompareTo(object obj)
-        {
-            return obj is ActorsCollection other
-                       ? CompareTo(other)
-                       : throw new ArgumentException($"Object must be of type {nameof(ActorsCollection)}");
-        }
+        public int CompareTo(object obj) =>
+            obj is ActorsCollection other
+                ? CompareTo(other)
+                : throw new ArgumentException($"Object must be of type {nameof(ActorsCollection)}");
 
         public int CompareTo(ActorsCollection other)
         {
-            if (ReferenceEquals(null, other))
-            {
+            if (ReferenceEquals(null, other)) {
                 return 1;
             }
 
-            if (ReferenceEquals(this, other))
-            {
+            if (ReferenceEquals(this, other)) {
                 return 0;
             }
 
-            if (Actors == null)
-            {
+            if (Actors == null) {
                 return other.Actors == null ? 0 : -1;
             }
 
-            if (other.Actors == null)
-            {
+            if (other.Actors == null) {
                 return 1;
             }
 
             using (var enumeratorX = Actors.GetEnumerator())
-            using (var enumeratorY = other.Actors.GetEnumerator())
-            {
-                while (true)
-                {
+            using (var enumeratorY = other.Actors.GetEnumerator()) {
+                while (true) {
                     var xDone = !enumeratorX.MoveNext();
                     var yDone = !enumeratorY.MoveNext();
 
-                    if (xDone)
-                    {
+                    if (xDone) {
                         return yDone ? 0 : -1;
                     }
 
-                    if (yDone)
-                    {
+                    if (yDone) {
                         return 1;
                     }
 
-                    // ReSharper disable UseDeconstruction
-                    var xCurrent = enumeratorX.Current;
-                    var yCurrent = enumeratorY.Current;
-                    // ReSharper restore UseDeconstruction
+                    var (keyX, valueX) = enumeratorX.Current;
+                    var (keyY, valueY) = enumeratorY.Current;
 
-                    var compare = xCurrent.Key.CompareTo(yCurrent.Key);
-                    if (compare != 0)
-                    {
+                    var compare = keyX.CompareTo(keyY);
+                    if (compare != 0) {
                         return compare;
                     }
 
-                    compare = string.Compare(xCurrent.Value, yCurrent.Value, StringComparison.Ordinal);
-                    if (compare != 0)
-                    {
+                    compare = string.Compare(valueX, valueY, StringComparison.Ordinal);
+                    if (compare != 0) {
                         return compare;
                     }
                 }
@@ -90,55 +76,45 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         {
             public int Compare(MovieModel x, MovieModel y)
             {
-                if (ReferenceEquals(x, y))
-                {
+                if (ReferenceEquals(x, y)) {
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y))
-                {
+                if (ReferenceEquals(null, y)) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x))
-                {
+                if (ReferenceEquals(null, x)) {
                     return -1;
                 }
 
-                if (x.Actors != null)
-                {
+                if (x.Actors != null) {
                     var actorsComparison = x.Actors.CompareTo(y.Actors);
-                    if (actorsComparison != 0)
-                    {
+                    if (actorsComparison != 0) {
                         return actorsComparison;
                     }
                 }
-                else if (y.Actors != null)
-                {
+                else if (y.Actors != null) {
                     return -1;
                 }
 
                 var genreComparison = string.Compare(x.Genre, y.Genre, StringComparison.Ordinal);
-                if (genreComparison != 0)
-                {
+                if (genreComparison != 0) {
                     return genreComparison;
                 }
 
                 var idComparison = x.Id.CompareTo(y.Id);
-                if (idComparison != 0)
-                {
+                if (idComparison != 0) {
                     return idComparison;
                 }
 
                 var priceComparison = x.Price.CompareTo(y.Price);
-                if (priceComparison != 0)
-                {
+                if (priceComparison != 0) {
                     return priceComparison;
                 }
 
                 var releaseDateComparison = x.ReleaseDate.CompareTo(y.ReleaseDate);
-                if (releaseDateComparison != 0)
-                {
+                if (releaseDateComparison != 0) {
                     return releaseDateComparison;
                 }
 

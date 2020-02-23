@@ -7,10 +7,9 @@ using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Emitters
 {
-    internal sealed class Converter
+    internal sealed class ComparisonsProvider
     {
-        private static readonly Func<IVariable, IComparison>[] ComparisonConverters =
-        {
+        private static readonly Func<IVariable, IComparison>[] ComparisonConverters = {
             NullableComparison.Create,
             IntegralsComparison.Create,
             StringsComparison.Create,
@@ -23,16 +22,12 @@ namespace ILLightenComparer.Emitters
 
         private readonly IConfigurationProvider _configurations;
 
-        public Converter(IConfigurationProvider configurations)
-        {
-            _configurations = configurations;
-        }
+        public ComparisonsProvider(IConfigurationProvider configurations) => _configurations = configurations;
 
-        public IComparison CreateComparison(IVariable variable)
+        public IComparison GetComparison(IVariable variable)
         {
             var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
-            if (hasCustomComparer)
-            {
+            if (hasCustomComparer) {
                 return new CustomComparison(variable);
             }
 
@@ -40,8 +35,7 @@ namespace ILLightenComparer.Emitters
                              .Select(factory => factory(variable))
                              .FirstOrDefault(x => x != null);
 
-            if (comparison == null)
-            {
+            if (comparison == null) {
                 throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not supported.");
             }
 

@@ -12,10 +12,7 @@ namespace ILLightenComparer.Reflection
     {
         private readonly IConfigurationProvider _configurations;
 
-        public MembersProvider(IConfigurationProvider configurations)
-        {
-            _configurations = configurations;
-        }
+        public MembersProvider(IConfigurationProvider configurations) => _configurations = configurations;
 
         public IVariable[] GetMembers(Type type)
         {
@@ -25,21 +22,18 @@ namespace ILLightenComparer.Reflection
             return Convert(sorted);
         }
 
-        private IEnumerable<MemberInfo> Filter(IReflect type)
-        {
-            return type.GetMembers(BindingFlags.Instance
-                                   | BindingFlags.FlattenHierarchy
-                                   | BindingFlags.Public)
-                       .Where(IncludeFields)
-                       .Where(IgnoredMembers);
-        }
+        private IEnumerable<MemberInfo> Filter(IReflect type) =>
+            type.GetMembers(BindingFlags.Instance
+                            | BindingFlags.FlattenHierarchy
+                            | BindingFlags.Public)
+                .Where(IncludeFields)
+                .Where(IgnoredMembers);
 
         private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members)
         {
             var order = _configurations.Get(ownerType).MembersOrder;
 
-            if (order == null || order.Length == 0)
-            {
+            if (order == null || order.Length == 0) {
                 return DefaultOrder(members);
             }
 
@@ -51,10 +45,8 @@ namespace ILLightenComparer.Reflection
             var order = _configurations.Get(ownerType).MembersOrder;
             var dictionary = members.ToDictionary(x => x.Name);
 
-            foreach (var item in order)
-            {
-                if (!dictionary.TryGetValue(item, out var memberInfo))
-                {
+            foreach (var item in order) {
+                if (!dictionary.TryGetValue(item, out var memberInfo)) {
                     continue;
                 }
 
@@ -63,16 +55,14 @@ namespace ILLightenComparer.Reflection
                 yield return memberInfo;
             }
 
-            foreach (var item in DefaultOrder(dictionary.Values))
-            {
+            foreach (var item in DefaultOrder(dictionary.Values)) {
                 yield return item;
             }
         }
 
         private bool IncludeFields(MemberInfo memberInfo)
         {
-            if (memberInfo.MemberType == MemberTypes.Property)
-            {
+            if (memberInfo.MemberType == MemberTypes.Property) {
                 return true;
             }
 
@@ -88,19 +78,14 @@ namespace ILLightenComparer.Reflection
             return !ignoredMembers.Contains(memberInfo.Name);
         }
 
-        private static IVariable Create(MemberInfo memberInfo)
-        {
-            return PropertyMemberVariable.Create(memberInfo)
-                   ?? FieldMemberVariable.Create(memberInfo)
-                   ?? throw new ArgumentException(
-                       $"Can't create member variable from {memberInfo.DisplayName()}",
-                       nameof(memberInfo));
-        }
+        private static IVariable Create(MemberInfo memberInfo) =>
+            PropertyMemberVariable.Create(memberInfo)
+            ?? FieldMemberVariable.Create(memberInfo)
+            ?? throw new ArgumentException(
+                $"Can't create member variable from {memberInfo.DisplayName()}",
+                nameof(memberInfo));
 
-        private static IVariable[] Convert(IEnumerable<MemberInfo> members)
-        {
-            return members.Select(Create).ToArray();
-        }
+        private static IVariable[] Convert(IEnumerable<MemberInfo> members) => members.Select(Create).ToArray();
 
         private static IEnumerable<MemberInfo> DefaultOrder(IEnumerable<MemberInfo> members)
         {

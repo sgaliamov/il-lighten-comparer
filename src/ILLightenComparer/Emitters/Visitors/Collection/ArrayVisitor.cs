@@ -18,11 +18,11 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
             VariableLoader loader,
-            Converter converter)
+            ComparisonsProvider comparisons)
         {
             _configurations = configurations;
             _collectionComparer = new CollectionComparer(configurations, loader);
-            _arrayComparer = new ArrayComparer(compareVisitor, converter);
+            _arrayComparer = new ArrayComparer(compareVisitor, comparisons);
         }
 
         public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label afterLoop)
@@ -33,10 +33,11 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
             var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
 
+#if DEBUG
             EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
+#endif
 
-            if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder)
-            {
+            if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder) {
                 _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 
@@ -44,8 +45,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         }
 
         private static void EmitCheckForNegativeCount(
-            LocalBuilder countX,
-            LocalBuilder countY,
+            LocalVariableInfo countX,
+            LocalVariableInfo countY,
             MemberInfo memberType,
             ILEmitter il)
         {

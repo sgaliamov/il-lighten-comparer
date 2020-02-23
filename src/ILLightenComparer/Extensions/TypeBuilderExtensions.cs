@@ -28,14 +28,12 @@ namespace ILLightenComparer.Extensions
             this TypeBuilder staticTypeBuilder,
             string name,
             Type returnType,
-            Type[] parameterTypes)
-        {
-            return staticTypeBuilder.DefineMethod(
+            Type[] parameterTypes) =>
+            staticTypeBuilder.DefineMethod(
                 name,
                 MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.Final,
                 CallingConventions.Standard,
                 returnType,
                 parameterTypes);
-        }
     }
 }

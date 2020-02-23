@@ -1,4 +1,4 @@
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 version: 'build-{build}'
 
@@ -66,7 +66,7 @@ test_script:
     }
 
 artifacts:
-- path: '.\src\ILLightenComparer\publish\*.nupkg'
+- path: '.\publish\*.nupkg'
   name: nuget-package
   type: NuGetPackage
 

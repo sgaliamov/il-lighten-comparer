@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -8,7 +7,6 @@ using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Shared
 {
-    // ReSharper disable once PartialTypeWithSinglePart
     internal sealed partial class ILEmitter : IDisposable
     {
         private const byte ShortFormLimit = byte.MaxValue; // 255
@@ -121,8 +119,7 @@ namespace ILLightenComparer.Shared
         public ILEmitter Call(MethodInfo methodInfo)
         {
             var owner = methodInfo.DeclaringType;
-            if (owner == null)
-            {
+            if (owner == null) {
                 throw new InvalidOperationException(
                     $"It's not expected that {methodInfo.DisplayName()} doesn't have a declaring type.");
             }
@@ -134,15 +131,9 @@ namespace ILLightenComparer.Shared
             return Emit(opCode, methodInfo);
         }
 
-        public ILEmitter Return()
-        {
-            return Emit(OpCodes.Ret);
-        }
+        public ILEmitter Return() => Emit(OpCodes.Ret);
 
-        public ILEmitter Return(int value)
-        {
-            return LoadConstant(value).Return();
-        }
+        public ILEmitter Return(int value) => LoadConstant(value).Return();
 
         public ILEmitter EmitCast(Type objectType)
         {
@@ -159,8 +150,7 @@ namespace ILLightenComparer.Shared
         public ILEmitter Branch(OpCode opCode, Label label)
         {
             if (opCode.FlowControl != FlowControl.Branch
-                && opCode.FlowControl != FlowControl.Cond_Branch)
-            {
+                && opCode.FlowControl != FlowControl.Cond_Branch) {
                 throw new ArgumentOutOfRangeException(nameof(opCode),
                     $"Only a branch instruction is allowed. OpCode: {opCode}.");
             }
@@ -171,8 +161,7 @@ namespace ILLightenComparer.Shared
         public ILEmitter Branch(OpCode opCode, out Label label)
         {
             if (opCode.FlowControl != FlowControl.Branch
-                && opCode.FlowControl != FlowControl.Cond_Branch)
-            {
+                && opCode.FlowControl != FlowControl.Cond_Branch) {
                 throw new ArgumentOutOfRangeException(nameof(opCode),
                     $"Only a branch instruction is allowed. OpCode: {opCode}.");
             }
@@ -182,8 +171,7 @@ namespace ILLightenComparer.Shared
 
         public ILEmitter LoadArgument(ushort argumentIndex)
         {
-            switch (argumentIndex)
-            {
+            switch (argumentIndex) {
                 case 0: return Emit(OpCodes.Ldarg_0);
                 case 1: return Emit(OpCodes.Ldarg_1);
                 case 2: return Emit(OpCodes.Ldarg_2);
@@ -202,8 +190,7 @@ namespace ILLightenComparer.Shared
 
         public ILEmitter LoadConstant(int value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case -1: return Emit(OpCodes.Ldc_I4_M1);
                 case 0: return Emit(OpCodes.Ldc_I4_0);
                 case 1: return Emit(OpCodes.Ldc_I4_1);
@@ -220,15 +207,11 @@ namespace ILLightenComparer.Shared
             }
         }
 
-        public ILEmitter LoadLocal(LocalBuilder local)
-        {
-            return LoadLocal(local.LocalIndex);
-        }
+        public ILEmitter LoadLocal(LocalVariableInfo local) => LoadLocal(local.LocalIndex);
 
         public ILEmitter LoadLocal(int localIndex)
         {
-            switch (localIndex)
-            {
+            switch (localIndex) {
                 case 0: return Emit(OpCodes.Ldloc_0);
                 case 1: return Emit(OpCodes.Ldloc_1);
                 case 2: return Emit(OpCodes.Ldloc_2);
@@ -247,7 +230,7 @@ namespace ILLightenComparer.Shared
             return this;
         }
 
-        public ILEmitter LoadAddress(LocalBuilder local)
+        public ILEmitter LoadAddress(LocalVariableInfo local)
         {
             var localIndex = local.LocalIndex;
             var opCode = localIndex <= ShortFormLimit ? OpCodes.Ldloca_S : OpCodes.Ldloca;
@@ -260,8 +243,7 @@ namespace ILLightenComparer.Shared
 
         public ILEmitter Store(LocalBuilder local)
         {
-            switch (local.LocalIndex)
-            {
+            switch (local.LocalIndex) {
                 case 0: return Emit(OpCodes.Stloc_0);
                 case 1: return Emit(OpCodes.Stloc_1);
                 case 2: return Emit(OpCodes.Stloc_2);
@@ -304,8 +286,7 @@ namespace ILLightenComparer.Shared
 
             public void Dispose()
             {
-                foreach (var type in new List<Type>(_owner._counter.Keys))
-                {
+                foreach (var type in new List<Type>(_owner._counter.Keys)) {
                     _owner._counter[type] = _state.TryGetValue(type, out var count) ? count : 0;
                 }
 
@@ -314,20 +295,17 @@ namespace ILLightenComparer.Shared
 
             public LocalBuilder ResolveLocal(Type type)
             {
-                if (!_owner._locals.TryGetValue(type, out var list))
-                {
+                if (!_owner._locals.TryGetValue(type, out var list)) {
                     _owner._locals[type] = list = new List<LocalBuilder>();
                 }
 
-                if (!_owner._counter.TryGetValue(type, out var count))
-                {
+                if (!_owner._counter.TryGetValue(type, out var count)) {
                     count = 0;
                 }
 
                 _owner._counter[type] = count + 1;
 
-                if (list.Count != count)
-                {
+                if (list.Count != count) {
                     return list[count];
                 }
 
@@ -350,18 +328,17 @@ namespace ILLightenComparer.Shared
 
         // ReSharper restore PartialMethodWithSinglePart
 
-        #if DEBUG
+#if DEBUG
 
         public ILEmitter DebugWriteLine(LocalBuilder local)
         {
             DebugLine($"\t\tWrite local: {local.LocalIndex}");
             _il.Emit(OpCodes.Ldloca, local);
-            if (local.LocalType != null && local.LocalType != typeof(string))
-            {
+            if (local.LocalType != null && local.LocalType != typeof(string)) {
                 _il.Emit(OpCodes.Callvirt, local.LocalType.GetMethod(nameof(ToString), Type.EmptyTypes));
             }
 
-            _il.Emit(OpCodes.Call, typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) }));
+            _il.Emit(OpCodes.Call, typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(string) }));
 
             return this;
         }
@@ -370,12 +347,12 @@ namespace ILLightenComparer.Shared
         {
             DebugLine($"\t\tWrite: {message}");
             _il.Emit(OpCodes.Ldstr, message);
-            _il.Emit(OpCodes.Call, typeof(Debug).GetMethod(nameof(Debug.WriteLine), new[] { typeof(string) }));
+            _il.Emit(OpCodes.Call, typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(string) }));
 
             return this;
         }
 
-        #endif
+#endif
 
         #endregion
     }

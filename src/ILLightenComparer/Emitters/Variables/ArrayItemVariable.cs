@@ -28,8 +28,7 @@ namespace ILLightenComparer.Emitters.Variables
 
             VariableType = arrayType.GetElementType();
 
-            Arrays = new Dictionary<ushort, LocalBuilder>(2)
-            {
+            Arrays = new Dictionary<ushort, LocalBuilder>(2) {
                 { Arg.X, xArray ?? throw new ArgumentNullException(nameof(xArray)) },
                 { Arg.Y, yArray ?? throw new ArgumentNullException(nameof(yArray)) }
             };
@@ -41,14 +40,8 @@ namespace ILLightenComparer.Emitters.Variables
         public Type VariableType { get; }
         public Type OwnerType { get; }
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
-        {
-            return visitor.Load(this, il, arg);
-        }
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(this, il, arg);
 
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
-        {
-            return visitor.LoadAddress(this, il, arg);
-        }
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(this, il, arg);
     }
 }

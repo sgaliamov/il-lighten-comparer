@@ -14,30 +14,15 @@ namespace ILLightenComparer
         private readonly ConfigurationProvider _configurationProvider = new ConfigurationProvider();
         private Lazy<Context> _context;
 
-        public ComparerBuilder()
-        {
-            InitContext();
-        }
+        public ComparerBuilder() => InitContext();
 
-        public ComparerBuilder(Action<IConfigurationBuilder> config) : this()
-        {
-            Configure(config);
-        }
+        public ComparerBuilder(Action<IConfigurationBuilder> config) : this() => Configure(config);
 
-        public IComparer<T> GetComparer<T>()
-        {
-            return _context.Value.GetComparer<T>();
-        }
+        public IComparer<T> GetComparer<T>() => _context.Value.GetComparer<T>();
 
-        public IComparerBuilder<T> For<T>()
-        {
-            return new Proxy<T>(this);
-        }
+        public IComparerBuilder<T> For<T>() => new Proxy<T>(this);
 
-        public IComparerBuilder<T> For<T>(Action<IConfigurationBuilder<T>> config)
-        {
-            return new Proxy<T>(this).Configure(config);
-        }
+        public IComparerBuilder<T> For<T>(Action<IConfigurationBuilder<T>> config) => new Proxy<T>(this).Configure(config);
 
         public IComparerBuilder Configure(Action<IConfigurationBuilder> config)
         {
@@ -48,36 +33,24 @@ namespace ILLightenComparer
             return this;
         }
 
-        private void InitContext()
-        {
+        private void InitContext() =>
             _context = new Lazy<Context>(
-                () =>
-                {
+                () => {
                     var contextConfiguration = new ConfigurationProvider(_configurationProvider);
 
                     return new Context(contextConfiguration);
                 },
                 LazyThreadSafetyMode.PublicationOnly);
-        }
 
         private sealed class Proxy<T> : IComparerBuilder<T>
         {
             private readonly ComparerBuilder _subject;
 
-            public Proxy(ComparerBuilder subject)
-            {
-                _subject = subject;
-            }
+            public Proxy(ComparerBuilder subject) => _subject = subject;
 
-            public IComparerBuilder<TOther> For<TOther>()
-            {
-                return _subject.For<TOther>();
-            }
+            public IComparerBuilder<TOther> For<TOther>() => _subject.For<TOther>();
 
-            public IComparerBuilder<TOther> For<TOther>(Action<IConfigurationBuilder<TOther>> config)
-            {
-                return _subject.For(config);
-            }
+            public IComparerBuilder<TOther> For<TOther>(Action<IConfigurationBuilder<TOther>> config) => _subject.For(config);
 
             public IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config)
             {
@@ -90,15 +63,9 @@ namespace ILLightenComparer
 
             public IComparerBuilder Builder => _subject;
 
-            public IComparer<T> GetComparer()
-            {
-                return _subject.GetComparer<T>();
-            }
+            public IComparer<T> GetComparer() => _subject.GetComparer<T>();
 
-            public IComparer<TOther> GetComparer<TOther>()
-            {
-                return _subject.GetComparer<TOther>();
-            }
+            public IComparer<TOther> GetComparer<TOther>() => _subject.GetComparer<TOther>();
         }
     }
 }

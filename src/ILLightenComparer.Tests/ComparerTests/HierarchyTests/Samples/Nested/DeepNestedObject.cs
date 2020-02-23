@@ -14,24 +14,20 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
         {
             public int Compare(DeepNestedObject x, DeepNestedObject y)
             {
-                if (ReferenceEquals(x, y))
-                {
+                if (ReferenceEquals(x, y)) {
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y))
-                {
+                if (ReferenceEquals(null, y)) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x))
-                {
+                if (ReferenceEquals(null, x)) {
                     return -1;
                 }
 
                 var floatFieldComparison = x.FloatField.CompareTo(y.FloatField);
-                if (floatFieldComparison != 0)
-                {
+                if (floatFieldComparison != 0) {
                     return floatFieldComparison;
                 }
 

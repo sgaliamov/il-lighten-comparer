@@ -16,20 +16,17 @@ namespace ILLightenComparer.Emitters.Variables
         {
             OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
 
-            Enumerators = new Dictionary<ushort, LocalBuilder>(2)
-            {
+            Enumerators = new Dictionary<ushort, LocalBuilder>(2) {
                 { Arg.X, xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)) },
                 { Arg.Y, yEnumerator ?? throw new ArgumentNullException(nameof(yEnumerator)) }
             };
 
-            if (yEnumerator.LocalType != xEnumerator.LocalType)
-            {
+            if (yEnumerator.LocalType != xEnumerator.LocalType) {
                 throw new ArgumentException($"Enumerator types are not matched: {xEnumerator}, {yEnumerator}.");
             }
 
             var enumeratorType = xEnumerator.LocalType;
-            if (!enumeratorType.ImplementsGeneric(typeof(IEnumerator<>)))
-            {
+            if (!enumeratorType.ImplementsGeneric(typeof(IEnumerator<>))) {
                 throw new ArgumentException($"Unexpected type {enumeratorType}.", nameof(enumeratorType));
             }
 
@@ -44,14 +41,8 @@ namespace ILLightenComparer.Emitters.Variables
         public Type VariableType { get; }
         public Type OwnerType { get; }
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg)
-        {
-            return visitor.Load(this, il, arg);
-        }
+        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(this, il, arg);
 
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg)
-        {
-            return visitor.LoadAddress(this, il, arg);
-        }
+        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(this, il, arg);
     }
 }

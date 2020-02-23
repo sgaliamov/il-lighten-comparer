@@ -30,8 +30,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             Parallel.ForEach(
                 types,
-                item =>
-                {
+                item => {
                     var (type, referenceComparer) = item;
                     var objectType = genericSampleType.MakeGenericType(type);
                     var comparerType = genericSampleComparer.MakeGenericType(type);

@@ -3,11 +3,11 @@ using BenchmarkDotNet.Attributes;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
-//     Method |      Mean |     Error |    StdDev |    Median | Ratio | RatioSD | Rank |
-// ---------- |----------:|----------:|----------:|----------:|------:|--------:|-----:|
-//        Sub |  9.300 us | 0.0563 us | 0.0527 us |  9.288 us |  1.00 |    0.00 |    1 |
-//  CompareTo |  9.329 us | 0.0517 us | 0.0484 us |  9.319 us |  1.00 |    0.01 |    1 |
-//        Ifs | 46.245 us | 0.1111 us | 0.0985 us | 46.232 us |  4.97 |    0.03 |    2 |
+    //     Method |      Mean |     Error |    StdDev |    Median | Ratio | RatioSD | Rank |
+    // ---------- |----------:|----------:|----------:|----------:|------:|--------:|-----:|
+    //        Sub |  9.300 us | 0.0563 us | 0.0527 us |  9.288 us |  1.00 |    0.00 |    1 |
+    //  CompareTo |  9.329 us | 0.0517 us | 0.0484 us |  9.319 us |  1.00 |    0.01 |    1 |
+    //        Ifs | 46.245 us | 0.1111 us | 0.0985 us | 46.232 us |  4.97 |    0.03 |    2 |
 
     [MedianColumn]
     [RankColumn]
@@ -26,8 +26,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         {
             var random = new Random();
 
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _one[i] = (byte)random.Next(byte.MinValue, byte.MaxValue);
                 _other[i] = (byte)random.Next(byte.MinValue, byte.MaxValue);
             }
@@ -36,8 +35,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         [Benchmark(Baseline = true)]
         public void Sub() // fastest
         {
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _out = _one[i] - _other[i];
             }
         }
@@ -45,8 +43,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         [Benchmark]
         public void CompareTo()
         {
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 _out = _one[i].CompareTo(_other[i]);
             }
         }
@@ -54,19 +51,16 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         [Benchmark]
         public void Ifs()
         {
-            for (var i = 0; i < N; i++)
-            {
+            for (var i = 0; i < N; i++) {
                 var one = _one[i];
                 var other = _other[i];
 
                 _out = 0;
 
-                if (one < other)
-                {
+                if (one < other) {
                     _out = -1;
                 }
-                else if (one > other)
-                {
+                else if (one > other) {
                     _out = 1;
                 }
             }

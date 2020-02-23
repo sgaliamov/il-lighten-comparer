@@ -5,9 +5,6 @@
         public TMember Field;
         public TMember Property { get; set; }
 
-        public override string ToString()
-        {
-            return $"{{ {Field}, {Property} }}";
-        }
+        public override string ToString() => $"{{ {Field}, {Property} }}";
     }
 }

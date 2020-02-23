@@ -39,8 +39,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         {
             var comparer = builder.GetComparer();
 
-            for (var i = 0; i < 10; i++)
-            {
+            for (var i = 0; i < 10; i++) {
                 var x = (T)(object)_fixture.Create<SealedNestedObject>();
                 var y = (T)(object)_fixture.Create<SealedNestedObject>();
 

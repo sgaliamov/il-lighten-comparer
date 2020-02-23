@@ -8,13 +8,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 
         public virtual int CompareTo(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
+            if (ReferenceEquals(null, obj)) {
                 return 1;
             }
 
-            if (ReferenceEquals(this, obj))
-            {
+            if (ReferenceEquals(this, obj)) {
                 return 0;
             }
 
@@ -23,9 +21,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
                        : throw new ArgumentException($"Object must be of type {nameof(AbstractNestedObject)}.");
         }
 
-        private int CompareTo(INestedObject other)
-        {
-            return string.Compare(Text, other.Text, StringComparison.Ordinal);
-        }
+        private int CompareTo(INestedObject other) => string.Compare(Text, other.Text, StringComparison.Ordinal);
     }
 }

@@ -20,8 +20,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer), true);
             Test(typeof(SampleComparableChildObject<>), nameof(SampleComparableChildObject<object>.ChildComparer), true);
 
-            foreach (var item in SampleTypes.Types)
-            {
+            foreach (var item in SampleTypes.Types) {
                 typeof(SampleComparableBaseObject<>)
                     .MakeGenericType(item.Key)
                     .GetField(nameof(SampleComparableBaseObject<object>.UsedCompareTo), BindingFlags.Public | BindingFlags.Static)
@@ -41,8 +40,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Custom_comparable_implementation_should_return_negative_when_first_argument_isnull()
         {
-            var one = new SampleObject<SampleComparableBaseObject<EnumSmall>>
-            {
+            var one = new SampleObject<SampleComparableBaseObject<EnumSmall>> {
                 Property = FixtureBuilder.GetInstance().Create<SampleComparableBaseObject<EnumSmall>>()
             };
 
@@ -60,17 +58,14 @@ namespace ILLightenComparer.Tests.ComparerTests
             var comparer = new ComparerBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
             var fixture = FixtureBuilder.GetInstance();
 
-            var one = new SampleObject<SampleComparableBaseObject<EnumSmall>>
-            {
+            var one = new SampleObject<SampleComparableBaseObject<EnumSmall>> {
                 Property = fixture.Create<SampleComparableChildObject<EnumSmall>>()
             };
             comparer.Compare(one, one.DeepClone()).Should().Be(0);
 
-            for (var i = 0; i < Constants.SmallCount; i++)
-            {
+            for (var i = 0; i < Constants.SmallCount; i++) {
                 one.Property = fixture.Create<SampleComparableChildObject<EnumSmall>>();
-                var other = new SampleObject<SampleComparableBaseObject<EnumSmall>>
-                {
+                var other = new SampleObject<SampleComparableBaseObject<EnumSmall>> {
                     Property = fixture.Create<SampleComparableChildObject<EnumSmall>>()
                 };
 
@@ -88,15 +83,13 @@ namespace ILLightenComparer.Tests.ComparerTests
             var types = makeNullable ? SampleTypes.NullableTypes : SampleTypes.Types;
             Parallel.ForEach(
                 types,
-                item =>
-                {
+                item => {
                     var (type, referenceComparer) = item;
                     var objectType = type;
                     var itemComparer = referenceComparer;
 
                     var comparableType = comparableGenericType.MakeGenericType(objectType);
-                    if (itemComparer != null)
-                    {
+                    if (itemComparer != null) {
                         comparableType
                             .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
                             .SetValue(null, itemComparer);

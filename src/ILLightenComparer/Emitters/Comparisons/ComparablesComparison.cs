@@ -24,21 +24,14 @@ namespace ILLightenComparer.Emitters.Comparisons
         public IVariable Variable { get; }
         public bool PutsResultInStack => true;
 
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext)
-        {
-            return visitor.Visit(this, il, gotoNext);
-        }
+        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext) => visitor.Visit(this, il, gotoNext);
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il)
-        {
-            return visitor.Visit(this, il);
-        }
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static ComparablesComparison Create(IVariable variable)
         {
             // todo: if object implements IComparable, then it should be used anyway?
-            if (variable.VariableType.GetUnderlyingType().IsSealedComparable())
-            {
+            if (variable.VariableType.GetUnderlyingType().IsSealedComparable()) {
                 return new ComparablesComparison(variable);
             }
 

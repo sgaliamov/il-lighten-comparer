@@ -15,8 +15,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             public int Compare(LightStruct x, LightStruct y)
             {
                 var compare = x.Key.CompareTo(y.Key);
-                if (compare != 0)
-                {
+                if (compare != 0) {
                     return compare;
                 }
 

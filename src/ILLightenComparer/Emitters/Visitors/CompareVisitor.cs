@@ -14,25 +14,24 @@ namespace ILLightenComparer.Emitters.Visitors
     internal sealed class CompareVisitor
     {
         private readonly ArrayVisitor _arrayVisitor;
+        private readonly ComparisonsProvider _comparisons;
         private readonly IConfigurationProvider _configurations;
         private readonly Context _context;
-        private readonly Converter _converter;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(
             Context context,
-            IConfigurationProvider configurations,
-            MembersProvider membersProvider,
-            Converter converter)
+            ComparisonsProvider comparisons,
+            IConfigurationProvider configurations)
         {
+            _membersProvider = new MembersProvider(configurations);
             _context = context;
             _configurations = configurations;
-            _membersProvider = membersProvider;
-            _converter = converter;
-            _arrayVisitor = new ArrayVisitor(configurations, this, _loader, converter);
-            _enumerableVisitor = new EnumerableVisitor(configurations, this, _loader, converter);
+            _comparisons = comparisons;
+            _arrayVisitor = new ArrayVisitor(configurations, this, _loader, comparisons);
+            _enumerableVisitor = new EnumerableVisitor(configurations, this, _loader, comparisons);
         }
 
         public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
@@ -46,8 +45,7 @@ namespace ILLightenComparer.Emitters.Visitors
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 
-            if (!variableType.IsValueType && !variableType.IsSealed)
-            {
+            if (!variableType.IsValueType && !variableType.IsSealed) {
                 return EmitCallForDelayedCompareMethod(il, variableType);
             }
 
@@ -61,13 +59,11 @@ namespace ILLightenComparer.Emitters.Visitors
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
-            if (variableType.IsValueType)
-            {
+            if (variableType.IsValueType) {
                 variable.LoadAddress(_loader, il, Arg.X);
                 variable.Load(_loader, il, Arg.Y);
             }
-            else
-            {
+            else {
                 variable.Load(_loader, il, Arg.X).Store(variableType, out var x);
                 variable.Load(_loader, il, Arg.Y)
                         .Store(variableType, out var y)
@@ -89,8 +85,7 @@ namespace ILLightenComparer.Emitters.Visitors
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
-            if (!variableType.GetUnderlyingType().IsIntegral())
-            {
+            if (!variableType.GetUnderlyingType().IsIntegral()) {
                 throw new InvalidOperationException($"Integral type is expected but: {variableType.DisplayName()}.");
             }
 
@@ -123,43 +118,33 @@ namespace ILLightenComparer.Emitters.Visitors
 
             var nullableVariable = new NullableVariable(variableType, variable.OwnerType, nullableX, nullableY);
 
-            return _converter
-                   .CreateComparison(nullableVariable)
+            return _comparisons
+                   .GetComparison(nullableVariable)
                    .Accept(this, il, gotoNext);
         }
 
-        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label gotoNext)
-        {
-            return _arrayVisitor.Visit(comparison, il, gotoNext);
-        }
+        public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label gotoNext) => _arrayVisitor.Visit(comparison, il, gotoNext);
 
-        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label gotoNext)
-        {
-            return _enumerableVisitor.Visit(comparison, il, gotoNext);
-        }
+        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label gotoNext) => _enumerableVisitor.Visit(comparison, il, gotoNext);
 
         public ILEmitter Visit(MembersComparison comparison, ILEmitter il)
         {
             var variableType = comparison.Variable.VariableType;
-            if (variableType.IsPrimitive())
-            {
+            if (variableType.IsPrimitive()) {
                 throw new InvalidOperationException($"{variableType.DisplayName()} is not expected.");
             }
 
             var comparisons = _membersProvider
                               .GetMembers(variableType)
-                              .Select(_converter.CreateComparison);
+                              .Select(_comparisons.GetComparison);
 
-            foreach (var item in comparisons)
-            {
-                using (il.LocalsScope())
-                {
+            foreach (var item in comparisons) {
+                using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext);
 
                     item.Accept(this, il, gotoNext);
 
-                    if (item.PutsResultInStack)
-                    {
+                    if (item.PutsResultInStack) {
                         il.EmitReturnNotZero(gotoNext);
                     }
 

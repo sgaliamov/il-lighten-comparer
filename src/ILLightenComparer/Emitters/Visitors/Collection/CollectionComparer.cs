@@ -35,13 +35,11 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
             var useSimpleSorting = !_configurations.HasCustomComparer(elementType)
                                    && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
-            if (useSimpleSorting)
-            {
+            if (useSimpleSorting) {
                 EmitSortArray(il, elementType, xArray);
                 EmitSortArray(il, elementType, yArray);
             }
-            else
-            {
+            else {
                 var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
                 il.LoadArgument(Arg.Context)
