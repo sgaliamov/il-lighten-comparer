@@ -8,6 +8,7 @@ using ILLightenComparer.Emitters.Visitors.Collection;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors
 {

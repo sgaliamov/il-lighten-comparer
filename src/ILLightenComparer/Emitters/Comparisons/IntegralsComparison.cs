@@ -3,6 +3,7 @@ using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Comparisons
 {

@@ -5,6 +5,7 @@ using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
