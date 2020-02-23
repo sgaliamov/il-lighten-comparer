@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using ILLightenComparer.Emitters.Visitors;
-using ILLightenComparer.Shared;
+using Illuminator;
 
 namespace ILLightenComparer.Emitters.Variables
 {

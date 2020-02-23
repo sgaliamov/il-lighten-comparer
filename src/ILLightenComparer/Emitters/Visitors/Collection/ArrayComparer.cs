@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
@@ -49,11 +49,9 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
                 }
 
                 return il.MarkLabel(continueLoop)
-                         .LoadLocal(index)
-                         .LoadConstant(1)
-                         .Emit(OpCodes.Add)
+                         .Add(il => il.LoadLocal(index), il => il.LoadConstant(1))
                          .Store(index)
-                         .Branch(OpCodes.Br, loopStart);
+                         .GoTo(loopStart);
             }
         }
 
@@ -64,10 +62,10 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             ILEmitter il)
         {
             il.LoadLocal(arrayX)
-              .Emit(OpCodes.Call, arrayType.GetPropertyGetter(MethodName.Length))
+              .Call(arrayType.GetPropertyGetter(MethodName.Length))
               .Store(typeof(int), out var countX)
               .LoadLocal(arrayY)
-              .Emit(OpCodes.Call, arrayType.GetPropertyGetter(MethodName.Length))
+              .Call(arrayType.GetPropertyGetter(MethodName.Length))
               .Store(typeof(int), out var countY);
 
             return (countX, countY);
@@ -80,19 +78,13 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             ILEmitter il,
             Label afterLoop)
         {
-            il.LoadLocal(index)
-              .LoadLocal(countX)
-              .Emit(OpCodes.Ceq)
-              .Store(typeof(int), out var isDoneX)
-              .LoadLocal(index)
-              .LoadLocal(countY)
-              .Emit(OpCodes.Ceq)
-              .Store(typeof(int), out var isDoneY)
+            il.AreSame(il => il.LoadLocal(index), il => il.LoadLocal(countX), out var isDoneX)
+              .AreSame(il => il.LoadLocal(index), il => il.LoadLocal(countY), out var isDoneY)
               .LoadLocal(isDoneX)
               .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
               .LoadLocal(isDoneY)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br, afterLoop)
+              .GoTo(afterLoop)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkIsDoneY)

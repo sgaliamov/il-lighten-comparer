@@ -1,7 +1,7 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
+using Illuminator;
 
 namespace ILLightenComparer.Emitters.Visitors
 {
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Emitters.Visitors
 
         public ILEmitter Load(FieldMemberVariable variable, ILEmitter il, ushort arg) =>
             il.LoadArgument(arg)
-              .Emit(OpCodes.Ldfld, variable.FieldInfo);
+              .LoadField(variable.FieldInfo);
 
         public ILEmitter LoadAddress(FieldMemberVariable variable, ILEmitter il, ushort arg)
         {
@@ -37,7 +37,7 @@ namespace ILLightenComparer.Emitters.Visitors
                 il.LoadArgument(arg);
             }
 
-            return il.Emit(OpCodes.Ldflda, variable.FieldInfo);
+            return il.LoadFieldAddress(variable.FieldInfo);
         }
 
         public ILEmitter Load(ArrayItemVariable variable, ILEmitter il, ushort arg) =>
