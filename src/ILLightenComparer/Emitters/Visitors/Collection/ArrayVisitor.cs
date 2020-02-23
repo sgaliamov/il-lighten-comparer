@@ -50,17 +50,20 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             MemberInfo memberType,
             ILEmitter il)
         {
-            il.LoadConstant(0)
-              .LoadLocal(countX)
-              .Branch(OpCodes.Bgt_S, out var negativeException)
-              .LoadConstant(0)
-              .LoadLocal(countY)
-              .Branch(OpCodes.Ble_S, out var loopInit)
-              .MarkLabel(negativeException)
-              .LoadString($"Collection {memberType.DisplayName()} has negative count of elements.")
-              .New(typeof(IndexOutOfRangeException).GetConstructor(new[] { typeof(string) }))
-              .Throw()
-              .MarkLabel(loopInit);
+            il.Block((il, loopInit) => il
+                .Block((il, negativeException) => il
+                    .Greater(
+                        il => il.LoadConstant(0),
+                        il => il.LoadLocal(countX),
+                        negativeException)
+                    .LessOrEqual(
+                        il => il.LoadConstant(0),
+                        il => il.LoadLocal(countY),
+                        loopInit))
+                .LoadString($"Collection {memberType.DisplayName()} has negative count of elements.")
+                .New(typeof(IndexOutOfRangeException).GetConstructor(new[] { typeof(string) }))
+                .Throw()
+            );
         }
     }
 }
