@@ -3,8 +3,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
-using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
@@ -58,8 +58,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
               .Branch(OpCodes.Ble_S, out var loopInit)
               .MarkLabel(negativeException)
               .LoadString($"Collection {memberType.DisplayName()} has negative count of elements.")
-              .Emit(OpCodes.Newobj, typeof(IndexOutOfRangeException).GetConstructor(new[] { typeof(string) }))
-              .Emit(OpCodes.Throw)
+              .New(typeof(IndexOutOfRangeException).GetConstructor(new[] { typeof(string) }))
+              .Throw()
               .MarkLabel(loopInit);
         }
     }

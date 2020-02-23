@@ -4,7 +4,8 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
@@ -43,7 +44,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
                 var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
                 il.LoadArgument(Arg.Context)
-                  .Emit(OpCodes.Call, getComparerMethod)
+                  .Call(getComparerMethod)
                   .Store(getComparerMethod.ReturnType, out var comparer);
 
                 EmitSortArray(il, elementType, xArray, comparer);

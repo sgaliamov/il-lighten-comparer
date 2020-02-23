@@ -4,7 +4,7 @@ using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
@@ -122,7 +122,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
               .Branch(OpCodes.Brfalse_S, out var checkY)
               .LoadLocal(yDone)
               .Branch(OpCodes.Brfalse_S, out var returnM1)
-              .Branch(OpCodes.Br, gotoNext)
+              .GoTo(gotoNext)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkY)
@@ -137,16 +137,12 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             LocalBuilder yEnumerator,
             ILEmitter il)
         {
-            il.LoadLocal(xEnumerator)
-              .Call(Method.MoveNext)
-              .LoadConstant(0)
-              .Emit(OpCodes.Ceq)
-              .Store(typeof(int), out var xDone)
-              .LoadLocal(yEnumerator)
-              .Call(Method.MoveNext)
-              .LoadConstant(0)
-              .Emit(OpCodes.Ceq)
-              .Store(typeof(int), out var yDone);
+            il.AreSame(il => il.LoadLocal(xEnumerator).Call(Method.MoveNext),
+                       il => il.LoadConstant(0),
+                       out var xDone)
+              .AreSame(il => il.LoadLocal(yEnumerator).Call(Method.MoveNext),
+                       il => il.LoadConstant(0),
+                       out var yDone);
 
             return (xDone, yDone);
         }

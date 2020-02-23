@@ -3,7 +3,7 @@ using System.Linq;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Extensions;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters
 {

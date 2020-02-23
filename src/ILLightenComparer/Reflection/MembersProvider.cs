@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Extensions;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Reflection
 {

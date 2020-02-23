@@ -5,7 +5,8 @@ using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Builders
 {
@@ -70,7 +71,7 @@ namespace ILLightenComparer.Emitters.Builders
             using var il = methodBuilder.CreateILEmitter();
 
             il.LoadArgument(Arg.This)
-              .Emit(OpCodes.Ldfld, contextField)
+              .LoadField(contextField)
               .LoadArgument(Arg.X)
               .LoadArgument(Arg.Y);
 
@@ -80,16 +81,16 @@ namespace ILLightenComparer.Emitters.Builders
         private void EmitStaticCompareMethodCall(ILEmitter il, MethodInfo staticCompareMethod, Type objectType)
         {
             if (!IsCreateCycleDetectionSets(objectType)) {
-                il.Emit(OpCodes.Ldnull)
-                  .Emit(OpCodes.Ldnull)
+                il.LoadNull()
+                  .LoadNull()
                   .Call(staticCompareMethod)
                   .Return();
 
                 return;
             }
 
-            il.Emit(OpCodes.Newobj, Method.ConcurrentSetConstructor)
-              .Emit(OpCodes.Newobj, Method.ConcurrentSetConstructor)
+            il.New(Method.ConcurrentSetConstructor)
+              .New(Method.ConcurrentSetConstructor)
               .Call(staticCompareMethod)
               .Return();
         }
@@ -106,25 +107,24 @@ namespace ILLightenComparer.Emitters.Builders
 
         private static void EmitCycleDetection(ILEmitter il)
         {
-            il.LoadArgument(Arg.SetX)
-              .LoadArgument(Arg.X)
-              .LoadConstant(0)
-              .Emit(OpCodes.Call, Method.ConcurrentSetAddMethod)
-              .LoadArgument(Arg.SetY)
-              .LoadArgument(Arg.Y)
-              .LoadConstant(0)
-              .Emit(OpCodes.Call, Method.ConcurrentSetAddMethod)
-              .Emit(OpCodes.Or)
-              .LoadConstant(0)
-              .Emit(OpCodes.Ceq)
-              .Branch(OpCodes.Brfalse_S, out var next)
-              .LoadArgument(Arg.SetX)
-              .Emit(OpCodes.Call, Method.ConcurrentSetGetCountProperty)
-              .LoadArgument(Arg.SetY)
-              .Emit(OpCodes.Call, Method.ConcurrentSetGetCountProperty)
-              .Emit(OpCodes.Sub)
-              .Return()
-              .MarkLabel(next);
+            il.AreSame(
+                il => il.Or(
+                    il => il
+                        .LoadArgument(Arg.SetX)
+                        .LoadArgument(Arg.X)
+                        .LoadConstant(0)
+                        .Call(Method.ConcurrentSetAddMethod),
+                    il => il
+                        .LoadArgument(Arg.SetY)
+                        .LoadArgument(Arg.Y)
+                        .LoadConstant(0)
+                        .Call(Method.ConcurrentSetAddMethod)),
+                il => il.LoadConstant(0))
+            .Branch(OpCodes.Brfalse_S, out var next) // todo: Beq?
+            .Sub(il => il.LoadArgument(Arg.SetX).Call(Method.ConcurrentSetGetCountProperty),
+                 il => il.LoadArgument(Arg.SetY).Call(Method.ConcurrentSetGetCountProperty))
+            .Return()
+            .MarkLabel(next);
         }
 
         private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)
@@ -138,10 +138,10 @@ namespace ILLightenComparer.Emitters.Builders
 
             using (var il = constructorInfo.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
-                  .Emit(OpCodes.Call, typeof(object).GetConstructor(Type.EmptyTypes))
-                  .LoadArgument(Arg.This)
-                  .LoadArgument(1)
-                  .Emit(OpCodes.Stfld, contextField)
+                  .Call(typeof(object).GetConstructor(Type.EmptyTypes))
+                  .SetField(il => il.LoadArgument(Arg.This),
+                            il => il.LoadArgument(1),
+                            contextField)
                   .Return();
             }
 
@@ -152,7 +152,7 @@ namespace ILLightenComparer.Emitters.Builders
 
             using (var il = methodBuilder.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
-                  .Emit(OpCodes.Newobj, constructorInfo)
+                  .New(constructorInfo)
                   .Return();
             }
         }

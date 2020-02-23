@@ -1,7 +1,6 @@
-﻿using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
+﻿using ILLightenComparer.Emitters.Variables;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors
 {
@@ -26,7 +25,7 @@ namespace ILLightenComparer.Emitters.Visitors
 
         public ILEmitter Load(FieldMemberVariable variable, ILEmitter il, ushort arg) =>
             il.LoadArgument(arg)
-              .Emit(OpCodes.Ldfld, variable.FieldInfo);
+              .LoadField(variable.FieldInfo);
 
         public ILEmitter LoadAddress(FieldMemberVariable variable, ILEmitter il, ushort arg)
         {
@@ -37,7 +36,7 @@ namespace ILLightenComparer.Emitters.Visitors
                 il.LoadArgument(arg);
             }
 
-            return il.Emit(OpCodes.Ldflda, variable.FieldInfo);
+            return il.LoadFieldAddress(variable.FieldInfo);
         }
 
         public ILEmitter Load(ArrayItemVariable variable, ILEmitter il, ushort arg) =>
@@ -76,8 +75,8 @@ namespace ILLightenComparer.Emitters.Visitors
                      .LoadAddress(x);
         }
 
-        public ILEmitter Load(ArgumentVariable variable, ILEmitter il, ushort arg) => il.LoadArgument(arg);
+        public ILEmitter Load(ILEmitter il, ushort arg) => il.LoadArgument(arg);
 
-        public ILEmitter LoadAddress(ArgumentVariable variable, ILEmitter il, ushort arg) => il.LoadArgumentAddress(arg);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => il.LoadArgumentAddress(arg);
     }
 }

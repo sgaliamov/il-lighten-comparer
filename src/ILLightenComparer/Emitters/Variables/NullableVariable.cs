@@ -5,7 +5,8 @@ using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Variables
 {

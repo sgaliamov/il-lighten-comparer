@@ -7,7 +7,8 @@ using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors.Collection;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors
 {
@@ -51,7 +52,7 @@ namespace ILLightenComparer.Emitters.Visitors
 
             var compareMethod = _context.GetStaticCompareMethod(variableType);
 
-            return il.Emit(OpCodes.Call, compareMethod);
+            return il.Call(compareMethod);
         }
 
         public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il, Label gotoNext)
@@ -77,7 +78,7 @@ namespace ILLightenComparer.Emitters.Visitors
                         .LoadLocal(y);
             }
 
-            return il.Emit(OpCodes.Call, comparison.CompareToMethod);
+            return il.Call(comparison.CompareToMethod);
         }
 
         public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il)
@@ -89,10 +90,9 @@ namespace ILLightenComparer.Emitters.Visitors
                 throw new InvalidOperationException($"Integral type is expected but: {variableType.DisplayName()}.");
             }
 
-            variable.Load(_loader, il, Arg.X);
-            variable.Load(_loader, il, Arg.Y);
-
-            return il.Emit(OpCodes.Sub);
+            return il.Sub(
+                il => variable.Load(_loader, il, Arg.X),
+                il => variable.Load(_loader, il, Arg.Y));
         }
 
         public ILEmitter Visit(StringsComparison comparison, ILEmitter il)
@@ -173,7 +173,7 @@ namespace ILLightenComparer.Emitters.Visitors
         {
             var delayedCompare = Method.DelayedCompare.MakeGenericMethod(type);
 
-            return il.Emit(OpCodes.Call, delayedCompare);
+            return il.Call(delayedCompare);
         }
     }
 }

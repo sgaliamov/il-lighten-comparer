@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emitters;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
+using Illuminator;
 
 namespace ILLightenComparer.Extensions
 {
@@ -64,7 +64,7 @@ namespace ILLightenComparer.Extensions
             il.LoadLocal(x)
               .LoadLocal(y)
               .Branch(OpCodes.Bne_Un_S, out var checkX)
-              .Branch(OpCodes.Br, ifEqual)
+              .GoTo(ifEqual)
               .MarkLabel(checkX)
               .LoadLocal(x)
               .Branch(OpCodes.Brtrue_S, out var checkY)
