@@ -24,7 +24,8 @@ namespace ILLightenComparer.Emitters.Visitors
         public CompareVisitor(
             Context context,
             ComparisonsProvider comparisons,
-            IConfigurationProvider configurations) {
+            IConfigurationProvider configurations)
+        {
             _membersProvider = new MembersProvider(configurations);
             _context = context;
             _configurations = configurations;
@@ -33,7 +34,8 @@ namespace ILLightenComparer.Emitters.Visitors
             _enumerableVisitor = new EnumerableVisitor(configurations, this, _loader, comparisons);
         }
 
-        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il) {
+        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
+        {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
@@ -52,7 +54,8 @@ namespace ILLightenComparer.Emitters.Visitors
             return il.Emit(OpCodes.Call, compareMethod);
         }
 
-        public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il, Label gotoNext) {
+        public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il, Label gotoNext)
+        {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
@@ -77,7 +80,8 @@ namespace ILLightenComparer.Emitters.Visitors
             return il.Emit(OpCodes.Call, comparison.CompareToMethod);
         }
 
-        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il) {
+        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il)
+        {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
@@ -91,7 +95,8 @@ namespace ILLightenComparer.Emitters.Visitors
             return il.Emit(OpCodes.Sub);
         }
 
-        public ILEmitter Visit(StringsComparison comparison, ILEmitter il) {
+        public ILEmitter Visit(StringsComparison comparison, ILEmitter il)
+        {
             var variable = comparison.Variable;
 
             variable.Load(_loader, il, Arg.X);
@@ -102,7 +107,8 @@ namespace ILLightenComparer.Emitters.Visitors
             return il.LoadConstant((int)stringComparisonType).Call(Method.StringCompare);
         }
 
-        public ILEmitter Visit(NullableComparison comparison, ILEmitter il, Label gotoNext) {
+        public ILEmitter Visit(NullableComparison comparison, ILEmitter il, Label gotoNext)
+        {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
@@ -121,7 +127,8 @@ namespace ILLightenComparer.Emitters.Visitors
 
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label gotoNext) => _enumerableVisitor.Visit(comparison, il, gotoNext);
 
-        public ILEmitter Visit(MembersComparison comparison, ILEmitter il) {
+        public ILEmitter Visit(MembersComparison comparison, ILEmitter il)
+        {
             var variableType = comparison.Variable.VariableType;
             if (variableType.IsPrimitive()) {
                 throw new InvalidOperationException($"{variableType.DisplayName()} is not expected.");
@@ -148,7 +155,8 @@ namespace ILLightenComparer.Emitters.Visitors
             return il.LoadConstant(0);
         }
 
-        public ILEmitter Visit(CustomComparison comparison, ILEmitter il) {
+        public ILEmitter Visit(CustomComparison comparison, ILEmitter il)
+        {
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
@@ -161,7 +169,8 @@ namespace ILLightenComparer.Emitters.Visitors
             return EmitCallForDelayedCompareMethod(il, variableType);
         }
 
-        private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type) {
+        private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)
+        {
             var delayedCompare = Method.DelayedCompare.MakeGenericMethod(type);
 
             return il.Emit(OpCodes.Call, delayedCompare);

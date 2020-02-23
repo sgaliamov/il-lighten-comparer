@@ -13,7 +13,8 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleComparableTests
     {
         [Fact]
-        public void Compare_comparable_objects() {
+        public void Compare_comparable_objects()
+        {
             Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer), false);
             Test(typeof(SampleComparableChildObject<>), nameof(SampleComparableChildObject<object>.ChildComparer), false);
             Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer), true);
@@ -30,13 +31,15 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Compare_comparable_structs() {
+        public void Compare_comparable_structs()
+        {
             Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer), false);
             Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer), true);
         }
 
         [Fact]
-        public void Custom_comparable_implementation_should_return_negative_when_first_argument_isnull() {
+        public void Custom_comparable_implementation_should_return_negative_when_first_argument_isnull()
+        {
             var one = new SampleObject<SampleComparableBaseObject<EnumSmall>> {
                 Property = FixtureBuilder.GetInstance().Create<SampleComparableBaseObject<EnumSmall>>()
             };
@@ -50,7 +53,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Replaced_comparable_object_is_compared_with_custom_implementation() {
+        public void Replaced_comparable_object_is_compared_with_custom_implementation()
+        {
             var comparer = new ComparerBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
             var fixture = FixtureBuilder.GetInstance();
 
@@ -74,7 +78,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             SampleComparableChildObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
         }
 
-        private static void Test(Type comparableGenericType, string comparerName, bool makeNullable) {
+        private static void Test(Type comparableGenericType, string comparerName, bool makeNullable)
+        {
             var types = makeNullable ? SampleTypes.NullableTypes : SampleTypes.Types;
             Parallel.ForEach(
                 types,

@@ -13,7 +13,8 @@ namespace ILLightenComparer.Tests.Utilities
 
     internal static class Helper
     {
-        public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other) {
+        public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
+        {
             using (var enumeratorOne = one.GetEnumerator())
             using (var enumeratorOther = other.GetEnumerator()) {
                 while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext()) {
@@ -28,7 +29,8 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static void ShouldBeEquals<T>(this T x, T y) {
+        public static void ShouldBeEquals<T>(this T x, T y)
+        {
             if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
                 x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
             }
@@ -37,7 +39,8 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static int Normalize(this int value) {
+        public static int Normalize(this int value)
+        {
             if (value <= -1) {
                 return -1;
             }
@@ -49,11 +52,10 @@ namespace ILLightenComparer.Tests.Utilities
             return value;
         }
 
-        public static void Parallel(ThreadStart action) {
-            Parallel(action, Environment.ProcessorCount * 10);
-        }
+        public static void Parallel(ThreadStart action) => Parallel(action, Environment.ProcessorCount * 10);
 
-        public static void Parallel(ThreadStart action, int count) {
+        public static void Parallel(ThreadStart action, int count)
+        {
             var threads = Enumerable
                           .Range(0, count)
                           .Select(x => new Thread(action))
@@ -68,7 +70,8 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static IComparer CreateNullableComparer(Type type, IComparer valueComparer) {
+        public static IComparer CreateNullableComparer(Type type, IComparer valueComparer)
+        {
             var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(type);
 
             return (IComparer)Activator.CreateInstance(nullableComparerType, valueComparer);

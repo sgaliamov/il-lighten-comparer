@@ -18,7 +18,8 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         public GenericTests(IComparerBuilder comparerBuilder = null) => _comparerBuilder = comparerBuilder;
 
-        public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times, int count = Constants.BigCount) {
+        public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times, int count = Constants.BigCount)
+        {
             var method = type.GetOrAddProperty(
                 nameof(GenericTest),
                 () => {
@@ -39,7 +40,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
                 .MakeGenericMethod(objType);
 
-        private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times, int count) {
+        private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times, int count)
+        {
             if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
 
             var typedComparer = comparersBuilder.GetComparer<T>();
@@ -58,7 +60,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             );
         }
 
-        private static void Comparison_of_null_with_object_produces_negative_value<T>(IComparer referenceComparer, IComparer<T> typedComparer) {
+        private static void Comparison_of_null_with_object_produces_negative_value<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
             }
@@ -70,7 +73,8 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Comparison_of_object_with_null_produces_positive_value<T>(
             IComparer referenceComparer,
-            IComparer<T> typedComparer) {
+            IComparer<T> typedComparer)
+        {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
             }
@@ -80,7 +84,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             typedComparer.Compare(obj, default).Should().BePositive();
         }
 
-        private static void Comparison_when_both_null_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer) {
+        private static void Comparison_when_both_null_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
             }
@@ -89,14 +94,16 @@ namespace ILLightenComparer.Tests.ComparerTests
             typedComparer.Compare(default, default).Should().Be(0);
         }
 
-        private static void Comparison_with_itself_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer) {
+        private static void Comparison_with_itself_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        {
             var obj = Fixture.Create<T>();
 
             referenceComparer.Compare(obj, obj).Should().Be(0);
             typedComparer.Compare(obj, obj).Should().Be(0);
         }
 
-        private static void Comparison_with_same_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer) {
+        private static void Comparison_with_same_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        {
             var obj = Fixture.Create<T>();
             var clone = obj.DeepClone();
 
@@ -104,7 +111,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             typedComparer.Compare(obj, clone).Should().Be(0);
         }
 
-        private static void Mutate_class_members_and_test_comparison<T>(IComparer referenceComparer, IComparer<T> typedComparer) {
+        private static void Mutate_class_members_and_test_comparison<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        {
             if (typeof(T).IsValueType) { return; }
 
             if (typeof(T).GetGenericInterface(typeof(IEnumerable<>)) != null) { return; }
@@ -119,7 +127,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static void Sorting_must_work_the_same_as_for_reference_comparer<T>(
             IComparer referenceComparer,
             IComparer<T> typedComparer,
-            int count) {
+            int count)
+        {
             var original = CreateMany<T>(count).ToArray();
 
             var copy0 = original.DeepClone();
@@ -132,7 +141,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             copy1.ShouldBeSameOrder(copy0);
         }
 
-        private static void Comparisons_work_identical<T>(IComparer referenceComparer, IComparer<T> typedComparer, int times) {
+        private static void Comparisons_work_identical<T>(IComparer referenceComparer, IComparer<T> typedComparer, int times)
+        {
             var type = typeof(T);
             for (var i = 0; i < times; i++) {
                 var x = Create<T>();
@@ -148,7 +158,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static T Create<T>() {
+        private static T Create<T>()
+        {
             var type = typeof(T);
 
             if ((!type.IsValueType || type.IsNullable()) && ThreadSafeRandom.NextDouble() < Constants.NullProbability) {
@@ -173,7 +184,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             return result;
         }
 
-        private static IList AppendNulls(IList list) {
+        private static IList AppendNulls(IList list)
+        {
             for (var i = 0; i < list.Count; i++) {
                 if (ThreadSafeRandom.NextDouble() < Constants.NullProbability) {
                     list[i] = null;
@@ -183,7 +195,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             return list;
         }
 
-        private static T AppendNulls<T>(T result, Type genericInterface) {
+        private static T AppendNulls<T>(T result, Type genericInterface)
+        {
             var elementType = genericInterface.GetGenericArguments()[0];
             if (elementType.IsValueType && !elementType.IsNullable()) {
                 return result;
@@ -207,7 +220,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             return (T)asEnumerableMethod.Invoke(null, new[] { list });
         }
 
-        private static IEnumerable<T> CreateMany<T>(int count) {
+        private static IEnumerable<T> CreateMany<T>(int count)
+        {
             for (var j = 0; j < count; j++) {
                 yield return Create<T>();
             }

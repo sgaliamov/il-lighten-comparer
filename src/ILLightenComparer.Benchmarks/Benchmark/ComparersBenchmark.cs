@@ -22,15 +22,18 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         // ReSharper disable once NotAccessedField.Local
         private int _out;
 
-        protected ComparersBenchmark(IComparer<T> manual, IComparer<T> il, IComparer<T> nito) {
+        protected ComparersBenchmark(IComparer<T> manual, IComparer<T> il, IComparer<T> nito)
+        {
             _manual = manual;
             _il = il;
             _nito = nito;
         }
 
         [GlobalSetup]
-        public void Setup() {
-            int Normalize(int value) {
+        public void Setup()
+        {
+            int Normalize(int value)
+            {
                 if (value >= 1) {
                     return 1;
                 }
@@ -59,21 +62,24 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         }
 
         [Benchmark(Baseline = true, Description = "IL Lighten Comparer")]
-        public void IL_Comparer() {
+        public void IL_Comparer()
+        {
             for (var i = 0; i < N; i++) {
                 _out = _il.Compare(_one[i], _other[i]);
             }
         }
 
         [Benchmark(Description = "Manual implementation")]
-        public void Manual_Comparer() {
+        public void Manual_Comparer()
+        {
             for (var i = 0; i < N; i++) {
                 _out = _manual.Compare(_one[i], _other[i]);
             }
         }
 
         [Benchmark(Description = "Nito Comparer")]
-        public void Nito_Comparer() {
+        public void Nito_Comparer()
+        {
             for (var i = 0; i < N; i++) {
                 _out = _nito.Compare(_one[i], _other[i]);
             }

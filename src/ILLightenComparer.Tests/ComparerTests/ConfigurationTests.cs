@@ -9,7 +9,8 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class ConfigurationTests
     {
         [Fact]
-        public void Ignore_all_members_using_expressions() {
+        public void Ignore_all_members_using_expressions()
+        {
             var x = _fixture.Create<SampleObject<int>>();
             var y = _fixture.Create<SampleObject<int>>();
 
@@ -21,7 +22,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Reset_ignored_members() {
+        public void Reset_ignored_members()
+        {
             var x = _fixture.Create<SampleObject<int>>();
             var y = _fixture.Create<SampleObject<int>>();
             var expected = new SampleObjectComparer<int>().Compare(x, y);

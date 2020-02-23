@@ -13,7 +13,8 @@ namespace ILLightenComparer.Tests.Samples
         public TMember Field;
         public TMember Property { get; set; }
 
-        public virtual int CompareTo(SampleComparableBaseObject<TMember> other) {
+        public virtual int CompareTo(SampleComparableBaseObject<TMember> other)
+        {
             UsedCompareTo = true;
 
             if (ReferenceEquals(this, other)) {

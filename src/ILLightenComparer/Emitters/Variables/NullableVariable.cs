@@ -11,7 +11,8 @@ namespace ILLightenComparer.Emitters.Variables
 {
     internal sealed class NullableVariable : IVariable
     {
-        public NullableVariable(Type variableType, Type ownerType, LocalBuilder x, LocalBuilder y) {
+        public NullableVariable(Type variableType, Type ownerType, LocalBuilder x, LocalBuilder y)
+        {
             if (variableType == null) { throw new ArgumentNullException(nameof(variableType)); }
 
             if (!variableType.IsNullable()) { throw new ArgumentException(nameof(variableType)); }

@@ -10,14 +10,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     public sealed class AbstractComparersTests
     {
         [Fact]
-        public void Comparison_uses_only_members_of_abstract_class() {
+        public void Comparison_uses_only_members_of_abstract_class()
+        {
             var builder = new ComparerBuilder().For<AbstractNestedObject>(c => c.DetectCycles(false));
 
             Test(builder);
         }
 
         [Fact]
-        public void Comparison_uses_only_members_of_base_class() {
+        public void Comparison_uses_only_members_of_base_class()
+        {
             var builder = new ComparerBuilder().For<BaseNestedObject>(
                 c => c.DetectCycles(false).IgnoreMember(o => o.Key));
 
@@ -25,14 +27,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Comparison_uses_only_members_of_base_interface() {
+        public void Comparison_uses_only_members_of_base_interface()
+        {
             var builder = new ComparerBuilder().For<INestedObject>(c => c.DetectCycles(false));
 
             Test(builder);
         }
 
         private void Test<T>(IComparerProvider<T> builder)
-            where T : INestedObject {
+            where T : INestedObject
+        {
             var comparer = builder.GetComparer();
 
             for (var i = 0; i < 10; i++) {

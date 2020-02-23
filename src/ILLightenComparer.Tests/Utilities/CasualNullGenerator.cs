@@ -10,12 +10,14 @@ namespace ILLightenComparer.Tests.Utilities
         private readonly HashSet<Type> _exclude;
         private readonly double _probability;
 
-        public CasualNullGenerator(double probability, params Type[] exclude) {
+        public CasualNullGenerator(double probability, params Type[] exclude)
+        {
             _exclude = new HashSet<Type>(exclude);
             _probability = probability;
         }
 
-        public object Create(object request, ISpecimenContext context) {
+        public object Create(object request, ISpecimenContext context)
+        {
             var property = request as PropertyInfo;
             var field = request as FieldInfo;
 

@@ -4,7 +4,8 @@ namespace ILLightenComparer.Extensions
 {
     internal static class MemberInfoExtensions
     {
-        public static string DisplayName(this MemberInfo memberInfo) {
+        public static string DisplayName(this MemberInfo memberInfo)
+        {
             var name = $"{memberInfo.MemberType} {memberInfo.DeclaringType}::{memberInfo.Name}";
 #if DEBUG
             name = name

@@ -9,7 +9,8 @@ namespace ILLightenComparer.Tests.Samples.Comparers
 
         public SampleStructComparer(IComparer<TMember> memberComparer = null) => _memberComparer = memberComparer ?? Comparer<TMember>.Default;
 
-        public int Compare(object x, object y) {
+        public int Compare(object x, object y)
+        {
             if (ReferenceEquals(x, y)) {
                 return 0;
             }
@@ -25,7 +26,8 @@ namespace ILLightenComparer.Tests.Samples.Comparers
             return Compare((SampleStruct<TMember>)x, (SampleStruct<TMember>)y);
         }
 
-        public int Compare(SampleStruct<TMember> x, SampleStruct<TMember> y) {
+        public int Compare(SampleStruct<TMember> x, SampleStruct<TMember> y)
+        {
             var compare = _memberComparer.Compare(x.Field, y.Field);
             if (compare != 0) {
                 return compare;

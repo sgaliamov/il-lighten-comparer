@@ -10,14 +10,16 @@ namespace ILLightenComparer.Tests.Samples.Comparers
         private readonly IComparer<TItem> _itemComparer;
         private readonly bool _sort;
 
-        public CollectionComparer(IComparer<TItem> itemComparer = null, bool sort = false) {
+        public CollectionComparer(IComparer<TItem> itemComparer = null, bool sort = false)
+        {
             _sort = sort;
             _itemComparer = itemComparer ?? Comparer<TItem>.Default;
         }
 
         public int Compare(object x, object y) => Compare((IEnumerable<TItem>)x, (IEnumerable<TItem>)y);
 
-        public int Compare(IEnumerable<TItem> x, IEnumerable<TItem> y) {
+        public int Compare(IEnumerable<TItem> x, IEnumerable<TItem> y)
+        {
             if (x == null) {
                 return y == null ? 0 : -1;
             }

@@ -11,7 +11,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 {
     internal sealed class ComparablesComparison : IComparison
     {
-        private ComparablesComparison(IVariable variable) {
+        private ComparablesComparison(IVariable variable)
+        {
             Variable = variable;
 
             CompareToMethod = variable.VariableType.GetUnderlyingCompareToMethod()
@@ -27,7 +28,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static ComparablesComparison Create(IVariable variable) {
+        public static ComparablesComparison Create(IVariable variable)
+        {
             // todo: if object implements IComparable, then it should be used anyway?
             if (variable.VariableType.GetUnderlyingType().IsSealedComparable()) {
                 return new ComparablesComparison(variable);

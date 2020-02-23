@@ -20,7 +20,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 
         public sealed class RelationalComparer : IComparer<CycledStructObject>
         {
-            public int Compare(CycledStructObject x, CycledStructObject y) {
+            public int Compare(CycledStructObject x, CycledStructObject y)
+            {
                 var setX = new ConcurrentSet<object>();
                 var setY = new ConcurrentSet<object>();
 
@@ -31,7 +32,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 CycledStructObject x,
                 CycledStructObject y,
                 ConcurrentSet<object> setX,
-                ConcurrentSet<object> setY) {
+                ConcurrentSet<object> setY)
+            {
                 if (ReferenceEquals(x, y)) {
                     return 0;
                 }

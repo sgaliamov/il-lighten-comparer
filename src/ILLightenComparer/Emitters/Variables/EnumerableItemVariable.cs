@@ -12,7 +12,8 @@ namespace ILLightenComparer.Emitters.Variables
 {
     internal sealed class EnumerableItemVariable : IVariable
     {
-        public EnumerableItemVariable(Type ownerType, LocalBuilder xEnumerator, LocalBuilder yEnumerator) {
+        public EnumerableItemVariable(Type ownerType, LocalBuilder xEnumerator, LocalBuilder yEnumerator)
+        {
             OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
 
             Enumerators = new Dictionary<ushort, LocalBuilder>(2) {

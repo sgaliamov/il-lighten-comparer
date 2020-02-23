@@ -17,7 +17,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static IntegralsComparison Create(IVariable variable) {
+        public static IntegralsComparison Create(IVariable variable)
+        {
             if (variable.VariableType.GetUnderlyingType().IsIntegral()) {
                 return new IntegralsComparison(variable);
             }

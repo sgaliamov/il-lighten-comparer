@@ -11,7 +11,8 @@ namespace ILLightenComparer.Tests.Samples.Comparers
 
         public int Compare(object x, object y) => Compare(x as SampleObject<TMember>, y as SampleObject<TMember>);
 
-        public int Compare(SampleObject<TMember> x, SampleObject<TMember> y) {
+        public int Compare(SampleObject<TMember> x, SampleObject<TMember> y)
+        {
             if (ReferenceEquals(x, y)) {
                 return 0;
             }

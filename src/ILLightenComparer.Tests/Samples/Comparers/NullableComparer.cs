@@ -10,7 +10,8 @@ namespace ILLightenComparer.Tests.Samples.Comparers
 
         public NullableComparer(IComparer<TValue> valueComparer = null) => _valueComparer = valueComparer ?? Comparer<TValue>.Default;
 
-        public int Compare(object x, object y) {
+        public int Compare(object x, object y)
+        {
             if (ReferenceEquals(x, y)) {
                 return 0;
             }
@@ -26,7 +27,8 @@ namespace ILLightenComparer.Tests.Samples.Comparers
             return Compare((TValue)x, (TValue)y);
         }
 
-        public int Compare(TValue? x, TValue? y) {
+        public int Compare(TValue? x, TValue? y)
+        {
             if (!x.HasValue) {
                 if (!y.HasValue) {
                     return 0;

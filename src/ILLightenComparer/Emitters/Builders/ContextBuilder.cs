@@ -20,7 +20,8 @@ namespace ILLightenComparer.Emitters.Builders
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<StaticMethodInfo>> _staticMethods = new ConcurrentDictionary<Type, Lazy<StaticMethodInfo>>();
 
-        public ContextBuilder(Context context, IConfigurationProvider configurations) {
+        public ContextBuilder(Context context, IConfigurationProvider configurations)
+        {
             _comparerTypeBuilder = new ComparerTypeBuilder(context, configurations);
 
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
@@ -32,7 +33,8 @@ namespace ILLightenComparer.Emitters.Builders
 
         public MethodInfo GetStaticCompareMethod(Type type) => DefineStaticMethod(type).CompareMethod;
 
-        public MethodInfo GetCompiledCompareMethod(Type type) {
+        public MethodInfo GetCompiledCompareMethod(Type type)
+        {
             EnsureComparerType(type);
 
             return _staticMethods.TryGetValue(type, out var value) && value.Value.Compiled
@@ -40,7 +42,8 @@ namespace ILLightenComparer.Emitters.Builders
                        : throw new InvalidOperationException("Compiled method is expected.");
         }
 
-        public Type EnsureComparerType(Type objectType) {
+        public Type EnsureComparerType(Type objectType)
+        {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
                 key => new Lazy<Type>(() => {
@@ -70,7 +73,8 @@ namespace ILLightenComparer.Emitters.Builders
             return comparerType;
         }
 
-        private StaticMethodInfo DefineStaticMethod(Type objectType) {
+        private StaticMethodInfo DefineStaticMethod(Type objectType)
+        {
             var lazy = _staticMethods.GetOrAdd(objectType,
                 key => new Lazy<StaticMethodInfo>(() => {
                     var genericInterface = typeof(IComparer<>).MakeGenericType(key);
@@ -90,7 +94,8 @@ namespace ILLightenComparer.Emitters.Builders
             return lazy.Value;
         }
 
-        private void FinalizeStartedBuilds() {
+        private void FinalizeStartedBuilds()
+        {
             var items = _staticMethods.ToDictionary(x => x.Key, x => x.Value.Value);
 
             foreach (var item in items) {
@@ -110,7 +115,8 @@ namespace ILLightenComparer.Emitters.Builders
 
             public bool Compiled { get; private set; }
 
-            public void SetCompiledMethod(MethodInfo method) {
+            public void SetCompiledMethod(MethodInfo method)
+            {
                 CompareMethod = method;
                 Compiled = true;
             }

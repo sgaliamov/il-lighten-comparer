@@ -16,7 +16,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
 
         private sealed class RelationalComparer : IComparer<AbstractMembers>
         {
-            public int Compare(AbstractMembers x, AbstractMembers y) {
+            public int Compare(AbstractMembers x, AbstractMembers y)
+            {
                 if (ReferenceEquals(x, y)) {
                     return 0;
                 }

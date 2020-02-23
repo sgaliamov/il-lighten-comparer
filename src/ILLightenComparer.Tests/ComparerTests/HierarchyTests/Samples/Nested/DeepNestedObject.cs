@@ -12,7 +12,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 
         private sealed class RelationalComparer : IComparer<DeepNestedObject>
         {
-            public int Compare(DeepNestedObject x, DeepNestedObject y) {
+            public int Compare(DeepNestedObject x, DeepNestedObject y)
+            {
                 if (ReferenceEquals(x, y)) {
                     return 0;
                 }

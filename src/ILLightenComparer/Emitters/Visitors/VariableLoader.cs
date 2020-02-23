@@ -7,7 +7,8 @@ namespace ILLightenComparer.Emitters.Visitors
 {
     internal sealed class VariableLoader
     {
-        public ILEmitter Load(PropertyMemberVariable variable, ILEmitter il, ushort arg) {
+        public ILEmitter Load(PropertyMemberVariable variable, ILEmitter il, ushort arg)
+        {
             if (variable.OwnerType.IsValueType) {
                 il.LoadArgumentAddress(arg);
             }
@@ -27,7 +28,8 @@ namespace ILLightenComparer.Emitters.Visitors
             il.LoadArgument(arg)
               .Emit(OpCodes.Ldfld, variable.FieldInfo);
 
-        public ILEmitter LoadAddress(FieldMemberVariable variable, ILEmitter il, ushort arg) {
+        public ILEmitter LoadAddress(FieldMemberVariable variable, ILEmitter il, ushort arg)
+        {
             if (variable.OwnerType.IsValueType) {
                 il.LoadArgumentAddress(arg);
             }
@@ -64,7 +66,8 @@ namespace ILLightenComparer.Emitters.Visitors
             il.LoadAddress(variable.Nullables[arg])
               .Call(variable.GetValueMethod);
 
-        public ILEmitter LoadAddress(NullableVariable variable, ILEmitter il, ushort arg) {
+        public ILEmitter LoadAddress(NullableVariable variable, ILEmitter il, ushort arg)
+        {
             var underlyingType = variable.VariableType.GetUnderlyingType();
 
             return il.LoadAddress(variable.Nullables[arg])

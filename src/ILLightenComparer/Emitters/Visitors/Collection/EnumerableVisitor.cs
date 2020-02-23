@@ -20,7 +20,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
             VariableLoader loader,
-            ComparisonsProvider comparisons) {
+            ComparisonsProvider comparisons)
+        {
             _configurations = configurations;
             _compareVisitor = compareVisitor;
             _comparisons = comparisons;
@@ -28,7 +29,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             _arrayComparer = new ArrayComparer(compareVisitor, comparisons);
         }
 
-        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label afterLoop) {
+        public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label afterLoop)
+        {
             var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
 
             if (_configurations.Get(comparison.Variable.OwnerType).IgnoreCollectionOrder) {
@@ -56,7 +58,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             ILEmitter il,
             Label gotoNext,
             LocalBuilder x,
-            LocalBuilder y) {
+            LocalBuilder y)
+        {
             _collectionComparer.EmitArraySorting(il, comparison.ElementType, x, y);
 
             var arrayType = comparison.ElementType.MakeArrayType();
@@ -70,7 +73,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             EnumerablesComparison comparison,
             LocalBuilder xEnumerable,
             LocalBuilder yEnumerable,
-            ILEmitter il) {
+            ILEmitter il)
+        {
             il.LoadLocal(xEnumerable)
               .Call(comparison.GetEnumeratorMethod)
               .Store(comparison.EnumeratorType, out var xEnumerator)
@@ -86,7 +90,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator,
             ILEmitter il,
-            Label gotoNext) {
+            Label gotoNext)
+        {
             il.DefineLabel(out var continueLoop).MarkLabel(continueLoop);
 
             using (il.LocalsScope()) {
@@ -111,7 +116,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             LocalBuilder xDone,
             LocalBuilder yDone,
             ILEmitter il,
-            Label gotoNext) {
+            Label gotoNext)
+        {
             il.LoadLocal(xDone)
               .Branch(OpCodes.Brfalse_S, out var checkY)
               .LoadLocal(yDone)
@@ -129,7 +135,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         private static (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator,
-            ILEmitter il) {
+            ILEmitter il)
+        {
             il.LoadLocal(xEnumerator)
               .Call(Method.MoveNext)
               .LoadConstant(0)
@@ -148,7 +155,8 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             LocalBuilder xEnumerator,
             LocalBuilder yEnumerator,
             ILEmitter il,
-            Label gotoNext) {
+            Label gotoNext)
+        {
             il.LoadLocal(xEnumerator)
               .Branch(OpCodes.Brfalse_S, out var check)
               .LoadLocal(xEnumerator)

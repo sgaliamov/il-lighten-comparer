@@ -24,7 +24,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
         {
             public int Compare(object x, object y) => Compare(x as HierarchicalObject, y as HierarchicalObject);
 
-            public int Compare(HierarchicalObject x, HierarchicalObject y) {
+            public int Compare(HierarchicalObject x, HierarchicalObject y)
+            {
                 if (ReferenceEquals(x, y)) {
                     return 0;
                 }

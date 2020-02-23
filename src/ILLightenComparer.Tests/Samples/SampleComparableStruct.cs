@@ -10,7 +10,8 @@ namespace ILLightenComparer.Tests.Samples
         public TMember Field;
         public TMember Property { get; set; }
 
-        public int CompareTo(SampleComparableStruct<TMember> other) {
+        public int CompareTo(SampleComparableStruct<TMember> other)
+        {
             var compare = Comparer.Compare(Field, other.Field);
             if (compare != 0) {
                 return compare;

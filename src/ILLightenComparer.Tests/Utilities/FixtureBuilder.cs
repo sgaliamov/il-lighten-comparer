@@ -36,7 +36,8 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static Fixture GetSimpleInstance() => SimpleFixture.Value;
 
-        public static IEnumerable<T> CreateMutants<T>(this Fixture fixture, T prototype) {
+        public static IEnumerable<T> CreateMutants<T>(this Fixture fixture, T prototype)
+        {
             if (typeof(T).IsValueType) {
                 throw new ArgumentException("T should be a class.", nameof(T));
             }
@@ -63,13 +64,15 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static object Create(this Fixture fixture, Type type) {
+        public static object Create(this Fixture fixture, Type type)
+        {
             var context = fixture.GetOrAddProperty(nameof(SpecimenContext), () => new SpecimenContext(fixture));
 
             return context.Resolve(type);
         }
 
-        private static Action<object, object> GetSetValueAction(Member member) {
+        private static Action<object, object> GetSetValueAction(Member member)
+        {
             switch (member.MemberInfo) {
                 case FieldInfo fieldInfo: return fieldInfo.SetValue;
                 case PropertyInfo propertyInfo: return propertyInfo.SetValue;
@@ -77,7 +80,8 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        private static object GetNewValue(Type type, object oldValue) {
+        private static object GetNewValue(Type type, object oldValue)
+        {
             var times = 5;
             while (true) {
                 var newValue = SimpleFixture.Value.Create(type);

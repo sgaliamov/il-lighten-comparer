@@ -11,7 +11,8 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static int Next(int minValue, int maxValue) => GetInstance().Next(minValue, maxValue);
 
-        private static Random GetInstance() {
+        private static Random GetInstance()
+        {
             if (_local != null) {
                 return _local;
             }
@@ -19,7 +20,8 @@ namespace ILLightenComparer.Tests.Utilities
             return _local = new Random(GetSeed());
         }
 
-        private static int GetSeed() {
+        private static int GetSeed()
+        {
             lock (Global) {
                 return Global.Next();
             }

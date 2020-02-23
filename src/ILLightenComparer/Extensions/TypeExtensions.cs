@@ -23,7 +23,8 @@ namespace ILLightenComparer.Extensions
             type.GetMethod(MethodName.CreateInstance)
                 .CreateDelegate<Func<T, TReturnType>>()(arg);
 
-        public static TResult Create<TResult>(this Type type) {
+        public static TResult Create<TResult>(this Type type)
+        {
             // todo: benchmark creation
             var ctor = type.GetConstructor(Type.EmptyTypes)
                        ?? throw new ArgumentException(
@@ -36,7 +37,8 @@ namespace ILLightenComparer.Extensions
             return compiled();
         }
 
-        public static MethodInfo GetUnderlyingCompareToMethod(this Type type) {
+        public static MethodInfo GetUnderlyingCompareToMethod(this Type type)
+        {
             var underlyingType = type.GetUnderlyingType();
 
             return underlyingType.GetMethod(MethodName.CompareTo, new[] { underlyingType });
@@ -52,7 +54,8 @@ namespace ILLightenComparer.Extensions
         /// <summary>Returns the underlying type of the specified enumeration or Nullable.</summary>
         /// <param name="type">The type whose underlying type will be retrieved.</param>
         /// <returns>The underlying type of <paramref name="type">type</paramref>.</returns>
-        public static Type GetUnderlyingType(this Type type) {
+        public static Type GetUnderlyingType(this Type type)
+        {
             while (true) {
                 if (type.IsEnum) {
                     return Enum.GetUnderlyingType(type);
@@ -99,7 +102,8 @@ namespace ILLightenComparer.Extensions
 
         public static bool ImplementsGeneric(this Type type, Type generic) => type.GetGenericInterface(generic) != null;
 
-        public static Type GetGenericInterface(this Type type, Type generic) {
+        public static Type GetGenericInterface(this Type type, Type generic)
+        {
             if (!generic.IsGenericType) {
                 throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
             }

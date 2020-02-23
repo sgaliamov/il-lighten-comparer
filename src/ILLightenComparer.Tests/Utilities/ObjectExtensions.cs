@@ -20,19 +20,19 @@ namespace ILLightenComparer.Tests.Utilities
             ConcurrentDictionary<string, object>>();
 
         public static T GetOrAddProperty<T, TTarget>(this TTarget obj, string name, Func<T> value)
-            where TTarget : class {
+            where TTarget : class
+        {
             var properties = ObjectCache.GetOrCreateValue(obj);
 
             return (T)properties.GetOrAdd(name, (key, x) => x, value());
         }
 
-        public static int GetObjectId<T>(this T target) where T : class {
-            return (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
-        }
+        public static int GetObjectId<T>(this T target) where T : class => (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
 
         public static string ToJson<T>(this T target) => JsonConvert.SerializeObject(target);
 
-        public static Type GetGenericInterface(this Type type, Type generic) {
+        public static Type GetGenericInterface(this Type type, Type generic)
+        {
             if (!generic.IsGenericType) {
                 throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
             }
@@ -44,7 +44,8 @@ namespace ILLightenComparer.Tests.Utilities
             return type.GetInterfaces().FirstOrDefault(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
 
-        public static MethodInfo GetGenericMethod(this IReflect fromType, string name, BindingFlags bindingFlags) {
+        public static MethodInfo GetGenericMethod(this IReflect fromType, string name, BindingFlags bindingFlags)
+        {
             return fromType
                    .GetMethods(bindingFlags)
                    .Single(x => x.Name == name && x.IsGenericMethodDefinition);

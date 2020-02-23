@@ -7,7 +7,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
     {
         public EnumSmall? Key { get; set; }
 
-        public override int CompareTo(object obj) {
+        public override int CompareTo(object obj)
+        {
             if (ReferenceEquals(null, obj)) {
                 return 1;
             }
@@ -21,7 +22,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
                        : throw new ArgumentException($"Object must be of type {nameof(BaseNestedObject)}");
         }
 
-        private int CompareTo(BaseNestedObject other) {
+        private int CompareTo(BaseNestedObject other)
+        {
             if (ReferenceEquals(this, other)) {
                 return 0;
             }

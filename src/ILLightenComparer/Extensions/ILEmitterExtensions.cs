@@ -36,7 +36,8 @@ namespace ILLightenComparer.Extensions
             LocalVariableInfo nullableX,
             LocalVariableInfo nullableY,
             Type nullableType,
-            Label ifBothNull) {
+            Label ifBothNull)
+        {
             var hasValueMethod = nullableType.GetPropertyGetter(MethodName.HasValue);
 
             return il.LoadAddress(nullableY)

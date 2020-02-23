@@ -24,7 +24,8 @@ namespace ILLightenComparer
 
         public IComparerBuilder<T> For<T>(Action<IConfigurationBuilder<T>> config) => new Proxy<T>(this).Configure(config);
 
-        public IComparerBuilder Configure(Action<IConfigurationBuilder> config) {
+        public IComparerBuilder Configure(Action<IConfigurationBuilder> config)
+        {
             config(_configurationProvider);
 
             InitContext();
@@ -51,7 +52,8 @@ namespace ILLightenComparer
 
             public IComparerBuilder<TOther> For<TOther>(Action<IConfigurationBuilder<TOther>> config) => _subject.For(config);
 
-            public IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config) {
+            public IComparerBuilder<T> Configure(Action<IConfigurationBuilder<T>> config)
+            {
                 _subject._configurationProvider.ConfigureFor(config);
 
                 _subject.InitContext(); // todo: test init order

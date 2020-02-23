@@ -15,7 +15,8 @@ namespace ILLightenComparer.Emitters.Variables
             Type ownerType,
             LocalBuilder xArray,
             LocalBuilder yArray,
-            LocalBuilder indexVariable) {
+            LocalBuilder indexVariable)
+        {
             if (arrayType == null) { throw new ArgumentNullException(nameof(arrayType)); }
 
             IndexVariable = indexVariable ?? throw new ArgumentNullException(nameof(indexVariable));

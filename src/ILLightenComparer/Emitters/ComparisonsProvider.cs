@@ -24,7 +24,8 @@ namespace ILLightenComparer.Emitters
 
         public ComparisonsProvider(IConfigurationProvider configurations) => _configurations = configurations;
 
-        public IComparison GetComparison(IVariable variable) {
+        public IComparison GetComparison(IVariable variable)
+        {
             var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {
                 return new CustomComparison(variable);

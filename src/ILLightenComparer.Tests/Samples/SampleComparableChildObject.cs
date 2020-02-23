@@ -12,7 +12,8 @@ namespace ILLightenComparer.Tests.Samples
         public TMember ChildField;
         public TMember ChildProperty { get; set; }
 
-        public int CompareTo(SampleComparableChildObject<TMember> other) {
+        public int CompareTo(SampleComparableChildObject<TMember> other)
+        {
             if (ReferenceEquals(this, other)) {
                 return 0;
             }

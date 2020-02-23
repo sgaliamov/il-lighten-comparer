@@ -13,12 +13,14 @@ namespace ILLightenComparer.Emitters
         private readonly CompareVisitor _compareVisitor;
         private readonly ComparisonsProvider _comparisons;
 
-        public CompareEmitter(Context context, IConfigurationProvider configurationProvider) {
+        public CompareEmitter(Context context, IConfigurationProvider configurationProvider)
+        {
             _comparisons = new ComparisonsProvider(configurationProvider);
             _compareVisitor = new CompareVisitor(context, _comparisons, configurationProvider);
         }
 
-        public void Emit(Type objectType, ILEmitter il) {
+        public void Emit(Type objectType, ILEmitter il)
+        {
             var comparison = _comparisons.GetComparison(new ArgumentVariable(objectType));
 
             comparison.Accept(this, il);
@@ -36,7 +38,8 @@ namespace ILLightenComparer.Emitters
 
         public ILEmitter Visit(StringsComparison comparison, ILEmitter il) => _compareVisitor.Visit(comparison, il).Return();
 
-        public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il) {
+        public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il)
+        {
             il.DefineLabel(out var exit);
 
             return _compareVisitor.Visit(comparison, il, exit)
@@ -45,7 +48,8 @@ namespace ILLightenComparer.Emitters
                                   .Return(0);
         }
 
-        public ILEmitter Visit(NullableComparison comparison, ILEmitter il) {
+        public ILEmitter Visit(NullableComparison comparison, ILEmitter il)
+        {
             il.DefineLabel(out var exit);
 
             return _compareVisitor.Visit(comparison, il, exit)
@@ -56,7 +60,8 @@ namespace ILLightenComparer.Emitters
 
         public ILEmitter Visit(CustomComparison comparison, ILEmitter il) => _compareVisitor.Visit(comparison, il).Return();
 
-        private ILEmitter CompareAsCollection(IComparison comparison, ILEmitter il) {
+        private ILEmitter CompareAsCollection(IComparison comparison, ILEmitter il)
+        {
             il.DefineLabel(out var exit);
 
             return comparison.Accept(_compareVisitor, il, exit)

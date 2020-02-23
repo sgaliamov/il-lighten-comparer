@@ -6,7 +6,8 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
     {
         public string Text { get; set; }
 
-        public virtual int CompareTo(object obj) {
+        public virtual int CompareTo(object obj)
+        {
             if (ReferenceEquals(null, obj)) {
                 return 1;
             }

@@ -14,7 +14,8 @@ namespace ILLightenComparer.Reflection
 
         public MembersProvider(IConfigurationProvider configurations) => _configurations = configurations;
 
-        public IVariable[] GetMembers(Type type) {
+        public IVariable[] GetMembers(Type type)
+        {
             var filtered = Filter(type);
             var sorted = Sort(type, filtered);
 
@@ -28,7 +29,8 @@ namespace ILLightenComparer.Reflection
                 .Where(IncludeFields)
                 .Where(IgnoredMembers);
 
-        private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members) {
+        private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members)
+        {
             var order = _configurations.Get(ownerType).MembersOrder;
 
             if (order == null || order.Length == 0) {
@@ -38,7 +40,8 @@ namespace ILLightenComparer.Reflection
             return PredefinedOrder(ownerType, members);
         }
 
-        private IEnumerable<MemberInfo> PredefinedOrder(Type ownerType, IEnumerable<MemberInfo> members) {
+        private IEnumerable<MemberInfo> PredefinedOrder(Type ownerType, IEnumerable<MemberInfo> members)
+        {
             var order = _configurations.Get(ownerType).MembersOrder;
             var dictionary = members.ToDictionary(x => x.Name);
 
@@ -57,7 +60,8 @@ namespace ILLightenComparer.Reflection
             }
         }
 
-        private bool IncludeFields(MemberInfo memberInfo) {
+        private bool IncludeFields(MemberInfo memberInfo)
+        {
             if (memberInfo.MemberType == MemberTypes.Property) {
                 return true;
             }
@@ -67,7 +71,8 @@ namespace ILLightenComparer.Reflection
             return includeFields && memberInfo.MemberType == MemberTypes.Field;
         }
 
-        private bool IgnoredMembers(MemberInfo memberInfo) {
+        private bool IgnoredMembers(MemberInfo memberInfo)
+        {
             var ignoredMembers = _configurations.Get(memberInfo.DeclaringType).IgnoredMembers;
 
             return !ignoredMembers.Contains(memberInfo.Name);
@@ -82,7 +87,8 @@ namespace ILLightenComparer.Reflection
 
         private static IVariable[] Convert(IEnumerable<MemberInfo> members) => members.Select(Create).ToArray();
 
-        private static IEnumerable<MemberInfo> DefaultOrder(IEnumerable<MemberInfo> members) {
+        private static IEnumerable<MemberInfo> DefaultOrder(IEnumerable<MemberInfo> members)
+        {
             return members
                    .OrderBy(x => x.DeclaringType?.FullName ?? string.Empty)
                    .ThenBy(x => x.MemberType)

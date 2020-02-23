@@ -18,7 +18,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static MembersComparison Create(IVariable variable) {
+        public static MembersComparison Create(IVariable variable)
+        {
             if (variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
                 return new MembersComparison(variable);
             }

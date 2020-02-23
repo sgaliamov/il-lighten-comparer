@@ -5,7 +5,8 @@ namespace ILLightenComparer.Benchmarks
 {
     public sealed class Program
     {
-        public static void Main() {
+        public static void Main()
+        {
             BenchmarkRunner.Run<LightStructBenchmark>();
             BenchmarkRunner.Run<RegularModelBenchmark>();
             BenchmarkRunner.Run<CompareIntegral>();

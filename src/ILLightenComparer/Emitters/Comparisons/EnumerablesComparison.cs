@@ -13,7 +13,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 {
     internal sealed class EnumerablesComparison : IComparison
     {
-        private EnumerablesComparison(IVariable variable) {
+        private EnumerablesComparison(IVariable variable)
+        {
             Variable = variable ?? throw new ArgumentNullException(nameof(variable));
 
             ElementType = variable
@@ -41,7 +42,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static EnumerablesComparison Create(IVariable variable) {
+        public static EnumerablesComparison Create(IVariable variable)
+        {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
                 return new EnumerablesComparison(variable);

@@ -9,7 +9,8 @@ namespace ILLightenComparer.Tests.Samples
 {
     internal static class SampleTypes
     {
-        static SampleTypes() {
+        static SampleTypes()
+        {
             Types = new Dictionary<Type, IComparer> {
                 { typeof(sbyte), null },
                 { typeof(byte), null },

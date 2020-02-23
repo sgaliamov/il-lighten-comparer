@@ -12,7 +12,8 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class CustomComparerTests
     {
         [Fact]
-        public void After_change_custom_comparer_new_dynamic_comparer_should_be_created() {
+        public void After_change_custom_comparer_new_dynamic_comparer_should_be_created()
+        {
             Test(() => {
                 var x = _fixture.Create<Tuple<int, string>>();
                 var y = _fixture.Create<Tuple<int, string>>();
@@ -32,7 +33,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void After_clean_custom_comparer_for_value_type_dynamic_comparer_should_be_created() {
+        public void After_clean_custom_comparer_for_value_type_dynamic_comparer_should_be_created()
+        {
             var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
             var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
 
@@ -49,7 +51,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Custom_comparer_defined_as_a_type_should_be_used() {
+        public void Custom_comparer_defined_as_a_type_should_be_used()
+        {
             Test(() => {
                 var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
                 var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
@@ -62,7 +65,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Custom_comparer_should_be_used_for_collection_when_defined() {
+        public void Custom_comparer_should_be_used_for_collection_when_defined()
+        {
             Test(() => {
                 var x = _fixture.Create<SampleObject<int[]>>();
                 var y = _fixture.Create<SampleObject<int[]>>();
@@ -95,7 +99,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Custom_comparer_should_be_used_for_itself() {
+        public void Custom_comparer_should_be_used_for_itself()
+        {
             Test(() => {
                 var x = _fixture.Create<SampleStruct<string>>();
                 var y = _fixture.Create<SampleStruct<string>>();
@@ -108,7 +113,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Custom_instance_comparer_for_primitive_member_should_be_used() {
+        public void Custom_instance_comparer_for_primitive_member_should_be_used()
+        {
             var x = _fixture.Create<Tuple<int, string>>();
             var y = _fixture.Create<Tuple<int, string>>();
             var expected = x.Item1.CompareTo(y.Item1);
@@ -119,9 +125,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             comparer.Compare(x, y).Should().Be(expected);
         }
 
-        private static void Test(Action action) {
-            Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
-        }
+        private static void Test(Action action) => Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 

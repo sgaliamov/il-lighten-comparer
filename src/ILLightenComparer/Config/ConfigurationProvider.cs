@@ -37,55 +37,64 @@ namespace ILLightenComparer.Config
             DetectCyclesDefault,
             IgnoreCollectionOrderDefault);
 
-        public ConfigurationProvider() {
+        public ConfigurationProvider()
+        {
             _configurations = new Configurations();
             _customComparers = new ComparersCollection();
         }
 
-        public ConfigurationProvider(ConfigurationProvider provider) {
+        public ConfigurationProvider(ConfigurationProvider provider)
+        {
             _configurations = new Configurations(provider._configurations.ToDictionary(x => x.Key, x => new Configuration(x.Value)));
             _customComparers = new ComparersCollection(provider._customComparers);
             _default = new Configuration(provider._default);
         }
 
-        public IConfigurationBuilder SetDefaultCyclesDetection(bool? value) {
+        public IConfigurationBuilder SetDefaultCyclesDetection(bool? value)
+        {
             _default.DetectCycles = value ?? DetectCyclesDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultCollectionsOrderIgnoring(bool? value) {
+        public IConfigurationBuilder SetDefaultCollectionsOrderIgnoring(bool? value)
+        {
             _default.IgnoreCollectionOrder = value ?? IgnoreCollectionOrderDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultFieldsInclusion(bool? value) {
+        public IConfigurationBuilder SetDefaultFieldsInclusion(bool? value)
+        {
             _default.IncludeFields = value ?? IncludeFieldsDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value) {
+        public IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value)
+        {
             _default.StringComparisonType = value ?? StringComparisonTypeDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder DetectCycles(Type type, bool? value) {
+        public IConfigurationBuilder DetectCycles(Type type, bool? value)
+        {
             // todo: use default values from _default field, because it can be redefined.
             GetOrCreate(type).DetectCycles = value ?? DetectCyclesDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder IgnoreCollectionsOrder(Type type, bool? value) {
+        public IConfigurationBuilder IgnoreCollectionsOrder(Type type, bool? value)
+        {
             GetOrCreate(type).IgnoreCollectionOrder = value ?? IgnoreCollectionOrderDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder IgnoreMember<T, TMember>(Expression<Func<T, TMember>>[] selectors) {
+        public IConfigurationBuilder IgnoreMember<T, TMember>(Expression<Func<T, TMember>>[] selectors)
+        {
             var members = GetMembers(selectors);
 
             GetOrCreate(typeof(T)).SetIgnoredMembers(members);
@@ -93,13 +102,15 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder IncludeFields(Type type, bool? value) {
+        public IConfigurationBuilder IncludeFields(Type type, bool? value)
+        {
             GetOrCreate(type).IncludeFields = value ?? IncludeFieldsDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder DefineMembersOrder<T>(Action<IMembersOrder<T>> order) {
+        public IConfigurationBuilder DefineMembersOrder<T>(Action<IMembersOrder<T>> order)
+        {
             if (order == null) {
                 GetOrCreate(typeof(T)).SetMembersOrder(MembersOrderDefault);
 
@@ -115,13 +126,15 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        public IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value) {
+        public IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value)
+        {
             GetOrCreate(type).StringComparisonType = value ?? StringComparisonTypeDefault;
 
             return this;
         }
 
-        public IConfigurationBuilder<T> ConfigureFor<T>(Action<IConfigurationBuilder<T>> config) {
+        public IConfigurationBuilder<T> ConfigureFor<T>(Action<IConfigurationBuilder<T>> config)
+        {
             var proxy = new Proxy<T>(this);
             config(proxy);
 
@@ -130,7 +143,8 @@ namespace ILLightenComparer.Config
 
         public IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance) => SetCustomComparer(typeof(T), instance);
 
-        public IConfigurationBuilder SetCustomComparer<TComparer>() {
+        public IConfigurationBuilder SetCustomComparer<TComparer>()
+        {
             var genericType = typeof(TComparer);
             var genericInterface = genericType.GetGenericInterface(typeof(IComparer<>));
             if (genericInterface == null) {
@@ -152,7 +166,8 @@ namespace ILLightenComparer.Config
 
         public bool HasCustomComparer(Type type) => _customComparers.ContainsKey(type);
 
-        private ConfigurationProvider SetCustomComparer(Type type, object instance) {
+        private ConfigurationProvider SetCustomComparer(Type type, object instance)
+        {
             if (instance == null) {
                 _customComparers.TryRemove(type, out _);
             }
@@ -163,13 +178,12 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        private Configuration GetOrCreate(Type type) {
-            return _configurations.GetOrAdd(type, _ => new Configuration(_default));
-        }
+        private Configuration GetOrCreate(Type type) => _configurations.GetOrAdd(type, _ => new Configuration(_default));
 
         private static string[] GetMembers<T, TMember>(IEnumerable<Expression<Func<T, TMember>>> memberSelectors) => memberSelectors?.Select(GetMemberName).ToArray();
 
-        private static string GetMemberName<T, TMember>(Expression<Func<T, TMember>> selector) {
+        private static string GetMemberName<T, TMember>(Expression<Func<T, TMember>> selector)
+        {
             if (selector.Body.NodeType != ExpressionType.MemberAccess) {
                 throw new ArgumentException("Member selector is expected.", nameof(selector));
             }
@@ -185,7 +199,8 @@ namespace ILLightenComparer.Config
 
             public IEnumerable<string> Order => _order;
 
-            public IMembersOrder<T> Member<TMember>(Expression<Func<T, TMember>> selector) {
+            public IMembersOrder<T> Member<TMember>(Expression<Func<T, TMember>> selector)
+            {
                 _order.Add(GetMemberName(selector));
 
                 return this;
@@ -198,37 +213,43 @@ namespace ILLightenComparer.Config
 
             public Proxy(ConfigurationProvider subject) => _subject = subject;
 
-            public IConfigurationBuilder<T> DetectCycles(bool? value) {
+            public IConfigurationBuilder<T> DetectCycles(bool? value)
+            {
                 _subject.DetectCycles(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoreCollectionsOrder(bool? value) {
+            public IConfigurationBuilder<T> IgnoreCollectionsOrder(bool? value)
+            {
                 _subject.IgnoreCollectionsOrder(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>>[] selectors) {
+            public IConfigurationBuilder<T> IgnoreMember<TMember>(Expression<Func<T, TMember>>[] selectors)
+            {
                 _subject.IgnoreMember(selectors);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> IncludeFields(bool? value) {
+            public IConfigurationBuilder<T> IncludeFields(bool? value)
+            {
                 _subject.IncludeFields(typeof(T), value);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> DefineMembersOrder(Action<IMembersOrder<T>> order) {
+            public IConfigurationBuilder<T> DefineMembersOrder(Action<IMembersOrder<T>> order)
+            {
                 _subject.DefineMembersOrder(order);
 
                 return this;
             }
 
-            public IConfigurationBuilder<T> SetStringComparisonType(StringComparison? value) {
+            public IConfigurationBuilder<T> SetStringComparisonType(StringComparison? value)
+            {
                 _subject.SetStringComparisonType(typeof(T), value);
 
                 return this;

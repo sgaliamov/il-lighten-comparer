@@ -12,7 +12,8 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                 ? CompareTo(other)
                 : throw new ArgumentException($"Object must be of type {nameof(ActorsCollection)}");
 
-        public int CompareTo(ActorsCollection other) {
+        public int CompareTo(ActorsCollection other)
+        {
             if (ReferenceEquals(null, other)) {
                 return 1;
             }
@@ -73,7 +74,8 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         private sealed class RelationalComparer : IComparer<MovieModel>
         {
-            public int Compare(MovieModel x, MovieModel y) {
+            public int Compare(MovieModel x, MovieModel y)
+            {
                 if (ReferenceEquals(x, y)) {
                     return 0;
                 }

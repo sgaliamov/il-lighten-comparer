@@ -17,7 +17,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static ArraysComparison Create(IVariable variable) {
+        public static ArraysComparison Create(IVariable variable)
+        {
             var variableType = variable.VariableType;
             if (variableType.IsArray && variableType.GetArrayRank() == 1) {
                 return new ArraysComparison(variable);

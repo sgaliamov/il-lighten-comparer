@@ -10,7 +10,8 @@ namespace ILLightenComparer.Tests.Utilities
         private readonly double _minMaxProbability;
         private readonly int _upper;
 
-        public CustomNumericGenerator(int lower, int upper, double minMaxProbability) {
+        public CustomNumericGenerator(int lower, int upper, double minMaxProbability)
+        {
             _lower = lower;
             _upper = upper;
             _minMaxProbability = minMaxProbability;
@@ -21,7 +22,8 @@ namespace ILLightenComparer.Tests.Utilities
                 ? CreateRandom(type)
                 : new NoSpecimen();
 
-        private object CreateRandom(Type request) {
+        private object CreateRandom(Type request)
+        {
             switch (Type.GetTypeCode(request)) {
                 case TypeCode.Byte:
                     return MinMax<byte>(request) ?? (byte)GetNextRandom();
@@ -60,7 +62,8 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        private T? MinMax<T>(IReflect request) where T : struct {
+        private T? MinMax<T>(IReflect request) where T : struct
+        {
             if (ThreadSafeRandom.NextDouble() >= _minMaxProbability) {
                 return null;
             }

@@ -18,7 +18,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static NullableComparison Create(IVariable variable) {
+        public static NullableComparison Create(IVariable variable)
+        {
             if (variable.VariableType.IsNullable()) {
                 return new NullableComparison(variable);
             }

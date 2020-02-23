@@ -16,7 +16,8 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
-        public static StringsComparison Create(IVariable variable) {
+        public static StringsComparison Create(IVariable variable)
+        {
             if (variable.VariableType == typeof(string)) {
                 return new StringsComparison(variable);
             }
