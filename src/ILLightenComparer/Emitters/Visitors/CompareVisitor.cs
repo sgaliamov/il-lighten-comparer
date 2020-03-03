@@ -104,7 +104,7 @@ namespace ILLightenComparer.Emitters.Visitors
 
             var stringComparisonType = _configurations.Get(variable.OwnerType).StringComparisonType;
 
-            return il.LoadConstant((int)stringComparisonType).Call(Method.StringCompare);
+            return il.LoadInteger((int)stringComparisonType).Call(Method.StringCompare);
         }
 
         public ILEmitter Visit(NullableComparison comparison, ILEmitter il, Label gotoNext)
@@ -152,7 +152,7 @@ namespace ILLightenComparer.Emitters.Visitors
                 }
             }
 
-            return il.LoadConstant(0);
+            return il.LoadInteger(0);
         }
 
         public ILEmitter Visit(CustomComparison comparison, ILEmitter il)

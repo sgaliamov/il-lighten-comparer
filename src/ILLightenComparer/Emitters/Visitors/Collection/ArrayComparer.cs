@@ -28,7 +28,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             ILEmitter il,
             Label afterLoop)
         {
-            il.LoadConstant(0)
+            il.LoadInteger(0)
               .Store(typeof(int), out var index)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var continueLoop)
@@ -49,7 +49,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
                 }
 
                 return il.MarkLabel(continueLoop)
-                         .Add(il => il.LoadLocal(index), il => il.LoadConstant(1))
+                         .Add(il => il.LoadLocal(index), il => il.LoadInteger(1))
                          .Store(index)
                          .GoTo(loopStart);
             }

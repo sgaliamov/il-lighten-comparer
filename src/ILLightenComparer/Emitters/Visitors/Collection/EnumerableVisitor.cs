@@ -138,10 +138,10 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             ILEmitter il)
         {
             il.AreSame(il => il.LoadLocal(xEnumerator).Call(Method.MoveNext),
-                       il => il.LoadConstant(0),
+                       il => il.LoadInteger(0),
                        out var xDone)
               .AreSame(il => il.LoadLocal(yEnumerator).Call(Method.MoveNext),
-                       il => il.LoadConstant(0),
+                       il => il.LoadInteger(0),
                        out var yDone);
 
             return (xDone, yDone);

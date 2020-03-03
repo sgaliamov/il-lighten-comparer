@@ -53,11 +53,11 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             il.Block((il, loopInit) => il
                 .Block((il, negativeException) => il
                     .Greater(
-                        il => il.LoadConstant(0),
+                        il => il.LoadInteger(0),
                         il => il.LoadLocal(countX),
                         negativeException)
                     .LessOrEqual(
-                        il => il.LoadConstant(0),
+                        il => il.LoadInteger(0),
                         il => il.LoadLocal(countY),
                         loopInit))
                 .LoadString($"Collection {memberType.DisplayName()} has negative count of elements.")
