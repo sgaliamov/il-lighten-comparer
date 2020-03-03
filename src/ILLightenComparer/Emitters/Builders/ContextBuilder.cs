@@ -20,9 +20,9 @@ namespace ILLightenComparer.Emitters.Builders
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<StaticMethodInfo>> _staticMethods = new ConcurrentDictionary<Type, Lazy<StaticMethodInfo>>();
 
-        public ContextBuilder(Context context, IConfigurationProvider configurations)
+        public ContextBuilder(IConfigurationProvider configurations)
         {
-            _comparerTypeBuilder = new ComparerTypeBuilder(context, configurations);
+            _comparerTypeBuilder = new ComparerTypeBuilder(this, configurations);
 
             var assembly = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("IL-Lighten-Comparer"),

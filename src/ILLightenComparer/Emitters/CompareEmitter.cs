@@ -1,5 +1,6 @@
 ﻿using System;
 using ILLightenComparer.Config;
+using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors;
@@ -13,7 +14,7 @@ namespace ILLightenComparer.Emitters
         private readonly CompareVisitor _compareVisitor;
         private readonly ComparisonsProvider _comparisons;
 
-        public CompareEmitter(Context context, IConfigurationProvider configurationProvider)
+        public CompareEmitter(ContextBuilder context, IConfigurationProvider configurationProvider)
         {
             _comparisons = new ComparisonsProvider(configurationProvider);
             _compareVisitor = new CompareVisitor(context, _comparisons, configurationProvider);

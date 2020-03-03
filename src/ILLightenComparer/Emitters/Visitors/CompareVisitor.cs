@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
+using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors.Collection;
@@ -17,13 +18,13 @@ namespace ILLightenComparer.Emitters.Visitors
         private readonly ArrayVisitor _arrayVisitor;
         private readonly ComparisonsProvider _comparisons;
         private readonly IConfigurationProvider _configurations;
-        private readonly Context _context;
+        private readonly ContextBuilder _context;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(
-            Context context,
+            ContextBuilder context,
             ComparisonsProvider comparisons,
             IConfigurationProvider configurations)
         {

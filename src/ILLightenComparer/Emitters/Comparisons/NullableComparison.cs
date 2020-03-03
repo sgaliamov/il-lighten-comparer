@@ -2,7 +2,6 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Emitters.Visitors;
-using ILLightenComparer.Extensions;
 using Illuminator;
 using Illuminator.Extensions;
 

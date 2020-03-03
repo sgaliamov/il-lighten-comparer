@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Extensions;
@@ -22,7 +21,7 @@ namespace ILLightenComparer.Emitters
         public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _contextBuilder = new ContextBuilder(this, configurations);
+            _contextBuilder = new ContextBuilder(configurations);
         }
 
         public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
@@ -53,8 +52,6 @@ namespace ILLightenComparer.Emitters
 
             return Compare(xType, x, y, xSet, ySet);
         }
-
-        internal MethodInfo GetStaticCompareMethod(Type type) => _contextBuilder.GetStaticCompareMethod(type);
 
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
