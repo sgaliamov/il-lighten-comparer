@@ -25,17 +25,12 @@ namespace ILLightenComparer.Emitters
             _contextBuilder = new ContextBuilder(this, configurations);
         }
 
-        public IComparer<T> GetComparer<T>()
-        {
-            var comparer = _configurations.GetCustomComparer<T>();
-            if (comparer != null) {
-                return comparer;
-            }
-
-            return (IComparer<T>)_dynamicComparers.GetOrAdd(
+        public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
+            ?? (IComparer<T>)_dynamicComparers.GetOrAdd(
                 typeof(T),
-                key => _contextBuilder.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
-        }
+                key => _contextBuilder
+                    .EnsureComparerType(key)
+                    .CreateInstance<IContext, IComparer<T>>(this));
 
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
@@ -59,7 +54,7 @@ namespace ILLightenComparer.Emitters
             return Compare(xType, x, y, xSet, ySet);
         }
 
-        public MethodInfo GetStaticCompareMethod(Type type) => _contextBuilder.GetStaticCompareMethod(type);
+        internal MethodInfo GetStaticCompareMethod(Type type) => _contextBuilder.GetStaticCompareMethod(type);
 
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
