@@ -1,10 +1,8 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Comparisons;
 using Illuminator;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Visitors.Collection
 {
@@ -33,37 +31,11 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             var (x, y) = _collectionComparer.EmitLoad(comparison, il, afterLoop);
             var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
 
-#if DEBUG
-            EmitCheckForNegativeCount(countX, countY, comparison.Variable.VariableType, il);
-#endif
-
             if (_configurations.Get(variable.OwnerType).IgnoreCollectionOrder) {
                 _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 
             return _arrayComparer.Compare(variableType, variable.OwnerType, x, y, countX, countY, il, afterLoop);
-        }
-
-        private static void EmitCheckForNegativeCount(
-            LocalVariableInfo countX,
-            LocalVariableInfo countY,
-            MemberInfo memberType,
-            ILEmitter il)
-        {
-            il.Block((il, loopInit) => il
-                .Block((il, negativeException) => il
-                    .Greater(
-                        il => il.LoadInteger(0),
-                        il => il.LoadLocal(countX),
-                        negativeException)
-                    .LessOrEqual(
-                        il => il.LoadInteger(0),
-                        il => il.LoadLocal(countY),
-                        loopInit))
-                .LoadString($"Collection {memberType.DisplayName()} has negative count of elements.")
-                .New(typeof(IndexOutOfRangeException).GetConstructor(new[] { typeof(string) }))
-                .Throw()
-            );
         }
     }
 }
