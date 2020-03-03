@@ -31,9 +31,11 @@ namespace ILLightenComparer.Emitters.Builders
             _moduleBuilder = assembly.DefineDynamicModule("IL-Lighten-Comparer.dll");
         }
 
-        public MethodInfo GetStaticCompareMethod(Type type) => DefineStaticMethod(type).CompareMethod;
+        // method info is enough to emit compare on sealed type
+        public MethodInfo GetStaticCompareMethodInfo(Type type) => DefineStaticMethod(type).CompareMethod;
 
-        public MethodInfo GetCompiledCompareMethod(Type type)
+        // is used for delayed calls
+        public MethodInfo GetCompiledStaticCompareMethod(Type type)
         {
             EnsureComparerType(type);
 
@@ -48,12 +50,10 @@ namespace ILLightenComparer.Emitters.Builders
                 objectType,
                 key => new Lazy<Type>(() => {
                     var info = DefineStaticMethod(key);
-#if DEBUG
                     if (info.Compiled) {
-                        throw new InvalidOperationException("Unexpected context state.");
+                        throw new InvalidOperationException("Not compiled method is expected.");
                     }
-#endif
-
+      
                     var compiledComparerType = _comparerTypeBuilder.Build(
                         (TypeBuilder)info.CompareMethod.DeclaringType,
                         (MethodBuilder)info.CompareMethod,

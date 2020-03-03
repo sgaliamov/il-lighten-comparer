@@ -47,11 +47,14 @@ namespace ILLightenComparer.Emitters.Visitors
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 
-            if (!variableType.IsValueType && !variableType.IsSealed) {
+            var typeOfVariableCanBeChangedOnRuntime =
+                !variableType.IsValueType && !variableType.IsSealed;
+
+            if (typeOfVariableCanBeChangedOnRuntime) {
                 return EmitCallForDelayedCompareMethod(il, variableType);
             }
 
-            var compareMethod = _context.GetStaticCompareMethod(variableType);
+            var compareMethod = _context.GetStaticCompareMethodInfo(variableType);
 
             return il.Call(compareMethod);
         }

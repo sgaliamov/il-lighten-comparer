@@ -55,7 +55,7 @@ namespace ILLightenComparer.Emitters
 
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            var compareMethod = _contextBuilder.GetCompiledCompareMethod(type);
+            var compareMethod = _contextBuilder.GetCompiledStaticCompareMethod(type);
 
             var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
             if (!isDeclaringTypeMatchedActualMemberType) {
