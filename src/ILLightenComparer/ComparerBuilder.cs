@@ -18,7 +18,7 @@ namespace ILLightenComparer
 
         public ComparerBuilder(Action<IConfigurationBuilder> config) : this() => Configure(config);
 
-        public IComparer<T> GetComparer<T>() => _context.Value.GetComparer<T>();
+        public IComparer<T> GetComparer<T>() => _context.Value.Builder.GetComparer<T>();
 
         public IComparerBuilder<T> For<T>() => new Proxy<T>(this);
 

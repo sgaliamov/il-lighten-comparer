@@ -1,35 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Builders;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters
 {
-    /// <summary>
-    ///     Provides access to cached comparers and static comparison methods.
-    /// </summary>
-    internal sealed class Context : IComparerProvider, IContext
+    internal sealed class Context : IContext
     {
         private readonly IConfigurationProvider _configurations;
-        private readonly ContextBuilder _contextBuilder;
-        private readonly ComparersCollection _dynamicComparers = new ComparersCollection();
 
         public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _contextBuilder = new ContextBuilder(configurations);
+            Builder = new ContextBuilder(this, configurations);
         }
 
-        public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
-            ?? (IComparer<T>)_dynamicComparers.GetOrAdd(
-                typeof(T),
-                key => _contextBuilder
-                    .EnsureComparerType(key)
-                    .CreateInstance<IContext, IComparer<T>>(this));
+        public ContextBuilder Builder { get; }
 
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
@@ -55,7 +43,7 @@ namespace ILLightenComparer.Emitters
 
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            var compareMethod = _contextBuilder.GetCompiledStaticCompareMethod(type);
+            var compareMethod = Builder.GetCompiledStaticCompareMethod(type);
 
             var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
             if (!isDeclaringTypeMatchedActualMemberType) {

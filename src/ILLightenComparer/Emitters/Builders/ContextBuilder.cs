@@ -6,30 +6,39 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using ILLightenComparer.Config;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
+using ILLightenComparer.Shared;
 using Illuminator.Extensions;
 
 [assembly: InternalsVisibleTo("IL-Lighten-Comparer")]
 
 namespace ILLightenComparer.Emitters.Builders
 {
-    internal sealed class ContextBuilder
+    internal sealed class ContextBuilder : IComparerProvider
     {
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<StaticMethodInfo>> _staticMethods = new ConcurrentDictionary<Type, Lazy<StaticMethodInfo>>();
+        private readonly ComparersCollection _dynamicComparers = new ComparersCollection();
+        private readonly IContext _context;
+        private readonly IConfigurationProvider _configurations;
 
-        public ContextBuilder(IConfigurationProvider configurations)
+        public ContextBuilder(IContext context, IConfigurationProvider configurations)
         {
-            _comparerTypeBuilder = new ComparerTypeBuilder(this, configurations);
-
-            var assembly = AssemblyBuilder.DefineDynamicAssembly(
-                new AssemblyName("IL-Lighten-Comparer"),
-                AssemblyBuilderAccess.RunAndCollect);
-
-            _moduleBuilder = assembly.DefineDynamicModule("IL-Lighten-Comparer.dll");
+            _context = context;
+            _configurations = configurations;
+            _comparerTypeBuilder = new ComparerTypeBuilder(this, _configurations);
+            _moduleBuilder = AssemblyBuilder
+                .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer"), AssemblyBuilderAccess.RunAndCollect)
+                .DefineDynamicModule("IL-Lighten-Comparer.module");
         }
+
+        public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
+            ?? (IComparer<T>)_dynamicComparers.GetOrAdd(
+                typeof(T),
+                key => EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(_context));
 
         // method info is enough to emit compare on sealed type
         public MethodInfo GetStaticCompareMethodInfo(Type type) => DefineStaticMethod(type).CompareMethod;
@@ -53,7 +62,7 @@ namespace ILLightenComparer.Emitters.Builders
                     if (info.Compiled) {
                         throw new InvalidOperationException("Not compiled method is expected.");
                     }
-      
+
                     var compiledComparerType = _comparerTypeBuilder.Build(
                         (TypeBuilder)info.CompareMethod.DeclaringType,
                         (MethodBuilder)info.CompareMethod,
