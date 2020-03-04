@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Builders;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using Illuminator.Extensions;
@@ -10,14 +12,19 @@ namespace ILLightenComparer.Emitters
     internal sealed class Context : IContext
     {
         private readonly IConfigurationProvider _configurations;
+        private readonly ComparersCollection _emittedComparers = new ComparersCollection();
+        private readonly ComparerProvider _provider;
 
         public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            Provider = new ComparerProvider(this, configurations);
+            _provider = new ComparerProvider(configurations);
         }
 
-        public ComparerProvider Provider { get; }
+        public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
+           ?? (IComparer<T>)_emittedComparers.GetOrAdd(
+               typeof(T),
+               key => _provider.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
 
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
@@ -43,7 +50,7 @@ namespace ILLightenComparer.Emitters
 
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            var compareMethod = Provider.GetCompiledStaticCompareMethod(type);
+            var compareMethod = _provider.GetCompiledStaticCompareMethod(type);
 
             var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
             if (!isDeclaringTypeMatchedActualMemberType) {
@@ -67,7 +74,7 @@ namespace ILLightenComparer.Emitters
         }
     }
 
-    internal interface IContext
+    internal interface IContext : IComparerProvider
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
     }
