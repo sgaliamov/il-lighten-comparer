@@ -7,7 +7,6 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using ILLightenComparer.Config;
 using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
 using Illuminator.Extensions;
 
 [assembly: InternalsVisibleTo("IL-Lighten-Comparer")]

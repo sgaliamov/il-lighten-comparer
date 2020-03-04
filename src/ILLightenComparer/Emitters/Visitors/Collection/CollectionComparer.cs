@@ -12,19 +12,14 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
     internal sealed class CollectionComparer
     {
         private readonly IConfigurationProvider _configurations;
-        private readonly VariableLoader _loader;
 
-        public CollectionComparer(IConfigurationProvider configurations, VariableLoader loader)
-        {
-            _configurations = configurations;
-            _loader = loader;
-        }
+        public CollectionComparer(IConfigurationProvider configurations) => _configurations = configurations;
 
         public (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IComparison comparison, ILEmitter il, Label gotoNext)
         {
             var variable = comparison.Variable;
-            variable.Load(_loader, il, Arg.X).Store(variable.VariableType, out var collectionX);
-            variable.Load(_loader, il, Arg.Y).Store(variable.VariableType, out var collectionY);
+            variable.Load(il, Arg.X).Store(variable.VariableType, out var collectionX);
+            variable.Load(il, Arg.Y).Store(variable.VariableType, out var collectionY);
 
             il.EmitReferenceComparison(collectionX, collectionY, gotoNext);
 
@@ -39,8 +34,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             if (useSimpleSorting) {
                 EmitSortArray(il, elementType, xArray);
                 EmitSortArray(il, elementType, yArray);
-            }
-            else {
+            } else {
                 var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
 
                 il.LoadArgument(Arg.Context)

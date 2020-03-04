@@ -19,13 +19,12 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
         public EnumerableVisitor(
             IConfigurationProvider configurations,
             CompareVisitor compareVisitor,
-            VariableLoader loader,
             ComparisonsProvider comparisons)
         {
             _configurations = configurations;
             _compareVisitor = compareVisitor;
             _comparisons = comparisons;
-            _collectionComparer = new CollectionComparer(configurations, loader);
+            _collectionComparer = new CollectionComparer(configurations);
             _arrayComparer = new ArrayComparer(compareVisitor, comparisons);
         }
 

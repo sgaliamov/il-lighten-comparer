@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using ILLightenComparer.Emitters.Visitors;
 using Illuminator;
 
 namespace ILLightenComparer.Emitters.Variables
@@ -15,9 +14,27 @@ namespace ILLightenComparer.Emitters.Variables
         public Type OwnerType => _propertyInfo.DeclaringType;
         public Type VariableType => _propertyInfo.PropertyType;
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(this, il, arg);
+        public ILEmitter Load(ILEmitter il, ushort arg)
+        {
+            if (OwnerType.IsValueType) {
+                il.LoadArgumentAddress(arg);
+            } else {
+                il.LoadArgument(arg);
+            }
 
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(this, il, arg);
+            return il.Call(GetterMethod);
+        }
+
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg)
+        {
+            if (OwnerType.IsValueType) {
+                il.LoadArgumentAddress(arg);
+            } else {
+                il.LoadArgument(arg);
+            }
+
+            return il.Call(GetterMethod);
+        }
 
         public static IVariable Create(MemberInfo memberInfo) =>
             memberInfo is PropertyInfo info

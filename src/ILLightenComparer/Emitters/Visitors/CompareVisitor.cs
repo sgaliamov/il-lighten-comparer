@@ -20,7 +20,6 @@ namespace ILLightenComparer.Emitters.Visitors
         private readonly IConfigurationProvider _configurations;
         private readonly ComparerProvider _context;
         private readonly EnumerableVisitor _enumerableVisitor;
-        private readonly VariableLoader _loader = new VariableLoader();
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(
@@ -32,8 +31,8 @@ namespace ILLightenComparer.Emitters.Visitors
             _context = context;
             _configurations = configurations;
             _comparisons = comparisons;
-            _arrayVisitor = new ArrayVisitor(configurations, this, _loader, comparisons);
-            _enumerableVisitor = new EnumerableVisitor(configurations, this, _loader, comparisons);
+            _arrayVisitor = new ArrayVisitor(configurations, this, comparisons);
+            _enumerableVisitor = new EnumerableVisitor(configurations, this, comparisons);
         }
 
         public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il)
@@ -42,8 +41,8 @@ namespace ILLightenComparer.Emitters.Visitors
             var variableType = variable.VariableType;
 
             il.LoadArgument(Arg.Context);
-            variable.Load(_loader, il, Arg.X);
-            variable.Load(_loader, il, Arg.Y);
+            variable.Load(il, Arg.X);
+            variable.Load(il, Arg.Y);
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 
@@ -65,12 +64,11 @@ namespace ILLightenComparer.Emitters.Visitors
             var variableType = variable.VariableType;
 
             if (variableType.IsValueType) {
-                variable.LoadAddress(_loader, il, Arg.X);
-                variable.Load(_loader, il, Arg.Y);
-            }
-            else {
-                variable.Load(_loader, il, Arg.X).Store(variableType, out var x);
-                variable.Load(_loader, il, Arg.Y)
+                variable.LoadAddress(il, Arg.X);
+                variable.Load(il, Arg.Y);
+            } else {
+                variable.Load(il, Arg.X).Store(variableType, out var x);
+                variable.Load(il, Arg.Y)
                         .Store(variableType, out var y)
                         .LoadLocal(x)
                         .Branch(OpCodes.Brtrue_S, out var call)
@@ -95,16 +93,16 @@ namespace ILLightenComparer.Emitters.Visitors
             }
 
             return il.Sub(
-                il => variable.Load(_loader, il, Arg.X),
-                il => variable.Load(_loader, il, Arg.Y));
+                il => variable.Load(il, Arg.X),
+                il => variable.Load(il, Arg.Y));
         }
 
         public ILEmitter Visit(StringsComparison comparison, ILEmitter il)
         {
             var variable = comparison.Variable;
 
-            variable.Load(_loader, il, Arg.X);
-            variable.Load(_loader, il, Arg.Y);
+            variable.Load(il, Arg.X);
+            variable.Load(il, Arg.Y);
 
             var stringComparisonType = _configurations.Get(variable.OwnerType).StringComparisonType;
 
@@ -116,8 +114,8 @@ namespace ILLightenComparer.Emitters.Visitors
             var variable = comparison.Variable;
             var variableType = variable.VariableType;
 
-            variable.Load(_loader, il, Arg.X).Store(variableType, out var nullableX);
-            variable.Load(_loader, il, Arg.Y).Store(variableType, out var nullableY);
+            variable.Load(il, Arg.X).Store(variableType, out var nullableX);
+            variable.Load(il, Arg.Y).Store(variableType, out var nullableY);
             il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, gotoNext);
 
             var nullableVariable = new NullableVariable(variableType, variable.OwnerType, nullableX, nullableY);
@@ -165,8 +163,8 @@ namespace ILLightenComparer.Emitters.Visitors
             var variableType = variable.VariableType;
 
             il.LoadArgument(Arg.Context);
-            variable.Load(_loader, il, Arg.X);
-            variable.Load(_loader, il, Arg.Y);
+            variable.Load(il, Arg.X);
+            variable.Load(il, Arg.Y);
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 

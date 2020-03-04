@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
@@ -39,8 +38,18 @@ namespace ILLightenComparer.Emitters.Variables
         /// </summary>
         public Type VariableType { get; }
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(this, il, arg);
+        public ILEmitter Load(ILEmitter il, ushort arg) =>
+            il.LoadAddress(Nullables[arg])
+              .Call(GetValueMethod);
 
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(this, il, arg);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg)
+        {
+            var underlyingType = VariableType.GetUnderlyingType();
+
+            return il.LoadAddress(Nullables[arg])
+                     .Call(GetValueMethod)
+                     .Store(underlyingType, out var x)
+                     .LoadAddress(x);
+        }
     }
 }

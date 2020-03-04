@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Reflection;
 using Illuminator;
 
@@ -40,8 +39,16 @@ namespace ILLightenComparer.Emitters.Variables
         public Type VariableType { get; }
         public Type OwnerType { get; }
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(this, il, arg);
+        public ILEmitter Load(ILEmitter il, ushort arg) =>
+            il.LoadLocal(Arrays[arg])
+              .LoadLocal(IndexVariable)
+              .Call(GetItemMethod);
 
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(this, il, arg);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) =>
+             il.LoadLocal(Arrays[arg])
+               .LoadLocal(IndexVariable)
+               .Call(GetItemMethod)
+               .Store(VariableType, out var local)
+               .LoadAddress(local);
     }
 }
