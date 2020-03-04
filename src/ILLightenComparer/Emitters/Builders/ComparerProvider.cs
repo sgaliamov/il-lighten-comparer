@@ -15,17 +15,17 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Builders
 {
-    internal sealed class ContextBuilder : IComparerProvider
+    internal sealed class ComparerProvider : IComparerProvider
     {
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<StaticMethodInfo>> _staticMethods = new ConcurrentDictionary<Type, Lazy<StaticMethodInfo>>();
-        private readonly ComparersCollection _dynamicComparers = new ComparersCollection();
+        private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly IContext _context;
         private readonly IConfigurationProvider _configurations;
 
-        public ContextBuilder(IContext context, IConfigurationProvider configurations)
+        public ComparerProvider(IContext context, IConfigurationProvider configurations)
         {
             _context = context;
             _configurations = configurations;
@@ -36,7 +36,7 @@ namespace ILLightenComparer.Emitters.Builders
         }
 
         public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
-            ?? (IComparer<T>)_dynamicComparers.GetOrAdd(
+            ?? (IComparer<T>)_emittedComparers.GetOrAdd(
                 typeof(T),
                 key => EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(_context));
 
@@ -53,7 +53,7 @@ namespace ILLightenComparer.Emitters.Builders
                        : throw new InvalidOperationException("Compiled method is expected.");
         }
 
-        public Type EnsureComparerType(Type objectType)
+        private Type EnsureComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,

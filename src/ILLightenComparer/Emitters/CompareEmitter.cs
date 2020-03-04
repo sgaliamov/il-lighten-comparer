@@ -14,7 +14,7 @@ namespace ILLightenComparer.Emitters
         private readonly CompareVisitor _compareVisitor;
         private readonly ComparisonsProvider _comparisons;
 
-        public CompareEmitter(ContextBuilder context, IConfigurationProvider configurationProvider)
+        public CompareEmitter(ComparerProvider context, IConfigurationProvider configurationProvider)
         {
             _comparisons = new ComparisonsProvider(configurationProvider);
             _compareVisitor = new CompareVisitor(context, _comparisons, configurationProvider);

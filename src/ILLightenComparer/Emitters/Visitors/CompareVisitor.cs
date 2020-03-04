@@ -18,13 +18,13 @@ namespace ILLightenComparer.Emitters.Visitors
         private readonly ArrayVisitor _arrayVisitor;
         private readonly ComparisonsProvider _comparisons;
         private readonly IConfigurationProvider _configurations;
-        private readonly ContextBuilder _context;
+        private readonly ComparerProvider _context;
         private readonly EnumerableVisitor _enumerableVisitor;
         private readonly VariableLoader _loader = new VariableLoader();
         private readonly MembersProvider _membersProvider;
 
         public CompareVisitor(
-            ContextBuilder context,
+            ComparerProvider context,
             ComparisonsProvider comparisons,
             IConfigurationProvider configurations)
         {

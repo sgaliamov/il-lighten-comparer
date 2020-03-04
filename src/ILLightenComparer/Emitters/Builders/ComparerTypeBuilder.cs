@@ -16,7 +16,7 @@ namespace ILLightenComparer.Emitters.Builders
         private readonly CompareEmitter _compareEmitter;
         private readonly IConfigurationProvider _configuration;
 
-        public ComparerTypeBuilder(ContextBuilder context, IConfigurationProvider configuration)
+        public ComparerTypeBuilder(ComparerProvider context, IConfigurationProvider configuration)
         {
             _configuration = configuration;
             _compareEmitter = new CompareEmitter(context, configuration);

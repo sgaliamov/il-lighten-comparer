@@ -14,10 +14,10 @@ namespace ILLightenComparer.Emitters
         public Context(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            Builder = new ContextBuilder(this, configurations);
+            Provider = new ComparerProvider(this, configurations);
         }
 
-        public ContextBuilder Builder { get; }
+        public ComparerProvider Provider { get; }
 
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
@@ -43,7 +43,7 @@ namespace ILLightenComparer.Emitters
 
         private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
-            var compareMethod = Builder.GetCompiledStaticCompareMethod(type);
+            var compareMethod = Provider.GetCompiledStaticCompareMethod(type);
 
             var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
             if (!isDeclaringTypeMatchedActualMemberType) {
