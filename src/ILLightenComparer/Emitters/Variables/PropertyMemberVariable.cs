@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Illuminator;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Variables
 {
@@ -10,7 +11,6 @@ namespace ILLightenComparer.Emitters.Variables
 
         private PropertyMemberVariable(PropertyInfo propertyInfo) => _propertyInfo = propertyInfo;
 
-        public MethodInfo GetterMethod => _propertyInfo.GetMethod;
         public Type OwnerType => _propertyInfo.DeclaringType;
         public Type VariableType => _propertyInfo.PropertyType;
 
@@ -22,19 +22,12 @@ namespace ILLightenComparer.Emitters.Variables
                 il.LoadArgument(arg);
             }
 
-            return il.Call(GetterMethod);
+            return il.Call(_propertyInfo.GetMethod);
         }
 
-        public ILEmitter LoadAddress(ILEmitter il, ushort arg)
-        {
-            if (OwnerType.IsValueType) {
-                il.LoadArgumentAddress(arg);
-            } else {
-                il.LoadArgument(arg);
-            }
-
-            return il.Call(GetterMethod);
-        }
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => Load(il, arg)
+            .Store(VariableType.GetUnderlyingType(), out var local)
+            .LoadAddress(local);
 
         public static IVariable Create(MemberInfo memberInfo) =>
             memberInfo is PropertyInfo info
