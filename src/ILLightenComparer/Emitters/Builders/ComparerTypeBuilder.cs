@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
+using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
@@ -13,13 +14,13 @@ namespace ILLightenComparer.Emitters.Builders
 {
     internal sealed class ComparerTypeBuilder
     {
-        private readonly CompareEmitter _compareEmitter;
         private readonly IConfigurationProvider _configuration;
+        private readonly ComparisonResolver _resolver;
 
         public ComparerTypeBuilder(ComparerProvider provider, IConfigurationProvider configuration)
         {
             _configuration = configuration;
-            _compareEmitter = new CompareEmitter(provider, _configuration);
+            _resolver = new ComparisonResolver(provider, configuration);
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -56,7 +57,9 @@ namespace ILLightenComparer.Emitters.Builders
                 EmitCycleDetection(il);
             }
 
-            _compareEmitter.Emit(objectType, il);
+            _resolver
+                .GetComparison(new ArgumentVariable(objectType))
+                .Compare(il);
         }
 
         private void BuildInstanceCompareMethod(

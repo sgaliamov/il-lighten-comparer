@@ -44,6 +44,14 @@ namespace ILLightenComparer.Emitters.Comparisons
                    .Compare(il, gotoNext);
         }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Compare(ILEmitter il)
+        {
+            il.DefineLabel(out var exit);
+
+            return Compare(il, exit)
+                .EmitReturnNotZero(exit)
+                .MarkLabel(exit)
+                .Return(0);
+        }
     }
 }

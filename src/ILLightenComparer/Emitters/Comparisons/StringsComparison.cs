@@ -38,6 +38,6 @@ namespace ILLightenComparer.Emitters.Comparisons
             return il.LoadInteger((int)stringComparisonType).Call(Method.StringCompare);
         }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Compare(ILEmitter il) => Compare(il, default).Return();
     }
 }

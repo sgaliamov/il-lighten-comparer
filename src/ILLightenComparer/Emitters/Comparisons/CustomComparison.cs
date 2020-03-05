@@ -30,6 +30,6 @@ namespace ILLightenComparer.Emitters.Comparisons
                      .Call(_delayedCompare);
         }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Compare(ILEmitter il) => Compare(il, default).Return();
     }
 }

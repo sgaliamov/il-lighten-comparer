@@ -38,7 +38,7 @@ namespace ILLightenComparer.Emitters.Comparisons
             return null;
         }
 
-        public bool PutsResultInStack => throw new NotSupportedException();
+        public bool PutsResultInStack => false;
 
         public ILEmitter Compare(ILEmitter il, Label _)
         {
@@ -68,6 +68,6 @@ namespace ILLightenComparer.Emitters.Comparisons
             return il.LoadInteger(0);
         }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Compare(ILEmitter il) => Compare(il, default).Return();
     }
 }

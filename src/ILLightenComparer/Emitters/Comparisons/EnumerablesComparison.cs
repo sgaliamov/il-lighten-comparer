@@ -90,7 +90,14 @@ namespace ILLightenComparer.Emitters.Comparisons
             return il;
         }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Compare(ILEmitter il)
+        {
+             il.DefineLabel(out var exit);
+
+            return Compare(il, exit)
+                .MarkLabel(exit)
+                .Return(0);
+        }
 
         private ILEmitter EmitCompareAsSortedArrays(
             ILEmitter il,

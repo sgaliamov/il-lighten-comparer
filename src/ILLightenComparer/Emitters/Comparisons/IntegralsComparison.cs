@@ -37,6 +37,6 @@ namespace ILLightenComparer.Emitters.Comparisons
                 il => _variable.Load(il, Arg.Y));
         }
 
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        public ILEmitter Compare(ILEmitter il) => Compare(il, default).Return();
     }
 }
