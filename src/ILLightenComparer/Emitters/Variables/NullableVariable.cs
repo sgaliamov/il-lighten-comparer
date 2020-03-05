@@ -32,10 +32,9 @@ namespace ILLightenComparer.Emitters.Variables
             _getValueMethod = variableType.GetPropertyGetter(MethodName.Value);
         }
 
-        public Type OwnerType { get; }
-
         // Underlying type of Nullable.
         public Type VariableType { get; }
+        public Type OwnerType { get; }
 
         public ILEmitter Load(ILEmitter il, ushort arg) =>
             il.LoadAddress(_nullables[arg])

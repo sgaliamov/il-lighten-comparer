@@ -3,7 +3,6 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Comparisons;
 using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using Illuminator;
 
@@ -11,14 +10,10 @@ namespace ILLightenComparer.Emitters
 {
     internal sealed class CompareEmitter
     {
-        private readonly CompareVisitor _compareVisitor;
-        private readonly ComparisonsProvider _comparisons;
+        private readonly ComparisonResolver _comparisons;
 
-        public CompareEmitter(ComparerProvider context, IConfigurationProvider configurationProvider)
-        {
-            _comparisons = new ComparisonsProvider(configurationProvider);
-            _compareVisitor = new CompareVisitor(context, _comparisons, configurationProvider);
-        }
+        public CompareEmitter(ComparerProvider provider, IConfigurationProvider configurationProvider) =>
+            _comparisons = new ComparisonResolver(provider, configurationProvider);
 
         public void Emit(Type objectType, ILEmitter il)
         {
@@ -31,41 +26,41 @@ namespace ILLightenComparer.Emitters
 
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il) => CompareAsCollection(comparison, il);
 
-        public ILEmitter Visit(MembersComparison comparison, ILEmitter il) => _compareVisitor.Visit(comparison, il).Return();
+        public ILEmitter Visit(MembersComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
 
-        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il) => _compareVisitor.Visit(comparison, il).Return();
+        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
 
-        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il) => _compareVisitor.Visit(comparison, il).Return();
+        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
 
-        public ILEmitter Visit(StringsComparison comparison, ILEmitter il) => _compareVisitor.Visit(comparison, il).Return();
+        public ILEmitter Visit(StringsComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
 
         public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il)
         {
             il.DefineLabel(out var exit);
 
-            return _compareVisitor.Visit(comparison, il, exit)
-                                  .EmitReturnNotZero(exit)
-                                  .MarkLabel(exit)
-                                  .Return(0);
+            return comparison.Accept(il, exit)
+                             .EmitReturnNotZero(exit)
+                             .MarkLabel(exit)
+                             .Return(0);
         }
 
         public ILEmitter Visit(NullableComparison comparison, ILEmitter il)
         {
             il.DefineLabel(out var exit);
 
-            return _compareVisitor.Visit(comparison, il, exit)
-                                  .EmitReturnNotZero(exit)
-                                  .MarkLabel(exit)
-                                  .Return(0);
+            return comparison.Accept(il, exit)
+                             .EmitReturnNotZero(exit)
+                             .MarkLabel(exit)
+                             .Return(0);
         }
 
-        public ILEmitter Visit(CustomComparison comparison, ILEmitter il) => _compareVisitor.Visit(comparison, il).Return();
+        public ILEmitter Visit(CustomComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
 
         private ILEmitter CompareAsCollection(IComparison comparison, ILEmitter il)
         {
             il.DefineLabel(out var exit);
 
-            return comparison.Accept(_compareVisitor, il, exit)
+            return comparison.Accept(il, exit)
                              .MarkLabel(exit)
                              .Return(0);
         }

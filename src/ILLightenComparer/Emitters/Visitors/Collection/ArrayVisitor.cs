@@ -13,12 +13,11 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
 
         public ArrayVisitor(
             IConfigurationProvider configurations,
-            CompareVisitor compareVisitor,
-            ComparisonsProvider comparisons)
+            ComparisonResolver comparisons)
         {
             _configurations = configurations;
             _collectionComparer = new CollectionComparer(configurations);
-            _arrayComparer = new ArrayComparer(compareVisitor, comparisons);
+            _arrayComparer = new ArrayComparer(comparisons);
         }
 
         public ILEmitter Visit(ArraysComparison comparison, ILEmitter il, Label afterLoop)

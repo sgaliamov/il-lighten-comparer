@@ -1,6 +1,5 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Emitters.Visitors;
 using Illuminator;
 
 namespace ILLightenComparer.Emitters.Comparisons
@@ -9,7 +8,8 @@ namespace ILLightenComparer.Emitters.Comparisons
     {
         bool PutsResultInStack { get; }
         IVariable Variable { get; }
-        ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext);
+
+        ILEmitter Accept(ILEmitter il, Label gotoNext);
         ILEmitter Accept(CompareEmitter visitor, ILEmitter il);
     }
 }

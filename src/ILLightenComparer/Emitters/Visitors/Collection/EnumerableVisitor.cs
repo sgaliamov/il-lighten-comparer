@@ -12,20 +12,17 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
     {
         private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
-        private readonly CompareVisitor _compareVisitor;
-        private readonly ComparisonsProvider _comparisons;
+        private readonly ComparisonResolver _comparisons;
         private readonly IConfigurationProvider _configurations;
 
         public EnumerableVisitor(
             IConfigurationProvider configurations,
-            CompareVisitor compareVisitor,
-            ComparisonsProvider comparisons)
+            ComparisonResolver comparisons)
         {
             _configurations = configurations;
-            _compareVisitor = compareVisitor;
             _comparisons = comparisons;
             _collectionComparer = new CollectionComparer(configurations);
-            _arrayComparer = new ArrayComparer(compareVisitor, comparisons);
+            _arrayComparer = new ArrayComparer(comparisons);
         }
 
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il, Label afterLoop)
@@ -103,7 +100,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
                 var itemVariable = new EnumerableItemVariable(comparison.Variable.OwnerType, xEnumerator, yEnumerator);
 
                 var itemComparison = _comparisons.GetComparison(itemVariable);
-                itemComparison.Accept(_compareVisitor, il, continueLoop);
+                itemComparison.Accept(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {
                     il.EmitReturnNotZero(continueLoop);

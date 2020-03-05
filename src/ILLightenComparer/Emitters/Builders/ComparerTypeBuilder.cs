@@ -16,10 +16,10 @@ namespace ILLightenComparer.Emitters.Builders
         private readonly CompareEmitter _compareEmitter;
         private readonly IConfigurationProvider _configuration;
 
-        public ComparerTypeBuilder(ComparerProvider context, IConfigurationProvider configuration)
+        public ComparerTypeBuilder(ComparerProvider provider, IConfigurationProvider configuration)
         {
             _configuration = configuration;
-            _compareEmitter = new CompareEmitter(context, configuration);
+            _compareEmitter = new CompareEmitter(provider, _configuration);
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)

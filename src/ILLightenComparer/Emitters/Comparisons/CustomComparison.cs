@@ -1,6 +1,7 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Emitters.Visitors;
+using ILLightenComparer.Reflection;
 using Illuminator;
 
 namespace ILLightenComparer.Emitters.Comparisons
@@ -12,8 +13,24 @@ namespace ILLightenComparer.Emitters.Comparisons
         public bool PutsResultInStack => true;
         public IVariable Variable { get; }
 
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext) => visitor.Visit(this, il);
+        public ILEmitter Accept(ILEmitter il, Label _)
+        {
+            il.LoadArgument(Arg.Context);
+            Variable.Load(il, Arg.X);
+            Variable.Load(il, Arg.Y);
+            il.LoadArgument(Arg.SetX)
+              .LoadArgument(Arg.SetY);
+
+            return EmitCallForDelayedCompareMethod(il, Variable.VariableType);
+        }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+
+        private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)
+        {
+            var delayedCompare = Method.DelayedCompare.MakeGenericMethod(type);
+
+            return il.Call(delayedCompare);
+        }
     }
 }

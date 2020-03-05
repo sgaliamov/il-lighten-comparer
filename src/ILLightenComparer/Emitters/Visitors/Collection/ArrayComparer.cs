@@ -9,14 +9,9 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
 {
     internal sealed class ArrayComparer
     {
-        private readonly CompareVisitor _compareVisitor;
-        private readonly ComparisonsProvider _comparisons;
+        private readonly ComparisonResolver _comparisons;
 
-        public ArrayComparer(CompareVisitor compareVisitor, ComparisonsProvider comparisons)
-        {
-            _compareVisitor = compareVisitor;
-            _comparisons = comparisons;
-        }
+        public ArrayComparer(ComparisonResolver comparisons) => _comparisons = comparisons;
 
         public ILEmitter Compare(
             Type arrayType,
@@ -42,7 +37,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
                 var itemComparison = _comparisons.GetComparison(itemVariable);
-                itemComparison.Accept(_compareVisitor, il, continueLoop);
+                itemComparison.Accept(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {
                     il.EmitReturnNotZero(continueLoop);

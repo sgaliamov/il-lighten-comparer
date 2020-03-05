@@ -1,6 +1,6 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using Illuminator;
 using Illuminator.Extensions;
@@ -14,7 +14,18 @@ namespace ILLightenComparer.Emitters.Comparisons
         public IVariable Variable { get; }
         public bool PutsResultInStack => true;
 
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext) => visitor.Visit(this, il);
+        public ILEmitter Accept(ILEmitter il, Label gotoNext)
+        {
+            var variableType = Variable.VariableType;
+
+            if (!variableType.GetUnderlyingType().IsIntegral()) {
+                throw new InvalidOperationException($"Integral type is expected but: {variableType.DisplayName()}.");
+            }
+
+            return il.Sub(
+                il => Variable.Load(il, Arg.X),
+                il => Variable.Load(il, Arg.Y));
+        }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
