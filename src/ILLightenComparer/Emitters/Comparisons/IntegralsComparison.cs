@@ -9,25 +9,9 @@ namespace ILLightenComparer.Emitters.Comparisons
 {
     internal sealed class IntegralsComparison : IComparison
     {
-        private IntegralsComparison(IVariable variable) => Variable = variable;
+        private readonly IVariable _variable;
 
-        public IVariable Variable { get; }
-        public bool PutsResultInStack => true;
-
-        public ILEmitter Accept(ILEmitter il, Label gotoNext)
-        {
-            var variableType = Variable.VariableType;
-
-            if (!variableType.GetUnderlyingType().IsIntegral()) {
-                throw new InvalidOperationException($"Integral type is expected but: {variableType.DisplayName()}.");
-            }
-
-            return il.Sub(
-                il => Variable.Load(il, Arg.X),
-                il => Variable.Load(il, Arg.Y));
-        }
-
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
+        private IntegralsComparison(IVariable variable) => _variable = variable;
 
         public static IntegralsComparison Create(IVariable variable)
         {
@@ -37,5 +21,22 @@ namespace ILLightenComparer.Emitters.Comparisons
 
             return null;
         }
+
+        public bool PutsResultInStack => true;
+
+        public ILEmitter Compare(ILEmitter il, Label _)
+        {
+            var variableType = _variable.VariableType;
+
+            if (!variableType.GetUnderlyingType().IsIntegral()) {
+                throw new InvalidOperationException($"Integral type is expected but: {variableType.DisplayName()}.");
+            }
+
+            return il.Sub(
+                il => _variable.Load(il, Arg.X),
+                il => _variable.Load(il, Arg.Y));
+        }
+
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
     }
 }

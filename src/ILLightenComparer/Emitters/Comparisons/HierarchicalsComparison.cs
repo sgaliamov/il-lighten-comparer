@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Variables;
@@ -11,19 +11,30 @@ namespace ILLightenComparer.Emitters.Comparisons
     internal sealed class HierarchicalsComparison : IComparison
     {
         private readonly ComparerProvider _context;
+        private readonly IVariable _variable;
+        private readonly MethodInfo _delayedCompare;
 
         private HierarchicalsComparison(ComparerProvider context, IVariable variable)
         {
             _context = context;
-            Variable = variable;
+            _variable = variable;
+            _delayedCompare = Method.DelayedCompare.MakeGenericMethod(_variable.VariableType);
         }
 
-        public IVariable Variable { get; }
+        public static HierarchicalsComparison Create(ComparerProvider provider, IVariable variable)
+        {
+            if (variable.VariableType.IsHierarchical() && !(variable is ArgumentVariable)) {
+                return new HierarchicalsComparison(provider, variable);
+            }
+
+            return null;
+        }
+
         public bool PutsResultInStack => true;
 
-        public ILEmitter Accept(ILEmitter il, Label _)
+        public ILEmitter Compare(ILEmitter il, Label _)
         {
-            var variable = Variable;
+            var variable = _variable;
             var variableType = variable.VariableType;
 
             il.LoadArgument(Arg.Context);
@@ -36,7 +47,7 @@ namespace ILLightenComparer.Emitters.Comparisons
                 !variableType.IsValueType && !variableType.IsSealed;
 
             if (typeOfVariableCanBeChangedOnRuntime) {
-                return EmitCallForDelayedCompareMethod(il, variableType);
+                return il.Call(_delayedCompare);
             }
 
             var compareMethod = _context.GetStaticCompareMethodInfo(variableType);
@@ -44,22 +55,6 @@ namespace ILLightenComparer.Emitters.Comparisons
             return il.Call(compareMethod);
         }
 
-        private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)
-        {
-            var delayedCompare = Method.DelayedCompare.MakeGenericMethod(type);
-
-            return il.Call(delayedCompare);
-        }
-
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
-
-        public static HierarchicalsComparison Create(ComparerProvider provider, IVariable variable)
-        {
-            if (variable.VariableType.IsHierarchical() && !(variable is ArgumentVariable)) {
-                return new HierarchicalsComparison(provider, variable);
-            }
-
-            return null;
-        }
     }
 }

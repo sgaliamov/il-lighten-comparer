@@ -26,19 +26,19 @@ namespace ILLightenComparer.Emitters
 
         public ILEmitter Visit(EnumerablesComparison comparison, ILEmitter il) => CompareAsCollection(comparison, il);
 
-        public ILEmitter Visit(MembersComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
+        public ILEmitter Visit(MembersComparison comparison, ILEmitter il) => comparison.Compare(il, default).Return();
 
-        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
+        public ILEmitter Visit(HierarchicalsComparison comparison, ILEmitter il) => comparison.Compare(il, default).Return();
 
-        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
+        public ILEmitter Visit(IntegralsComparison comparison, ILEmitter il) => comparison.Compare(il, default).Return();
 
-        public ILEmitter Visit(StringsComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
+        public ILEmitter Visit(StringsComparison comparison, ILEmitter il) => comparison.Compare(il, default).Return();
 
         public ILEmitter Visit(ComparablesComparison comparison, ILEmitter il)
         {
             il.DefineLabel(out var exit);
 
-            return comparison.Accept(il, exit)
+            return comparison.Compare(il, exit)
                              .EmitReturnNotZero(exit)
                              .MarkLabel(exit)
                              .Return(0);
@@ -48,19 +48,19 @@ namespace ILLightenComparer.Emitters
         {
             il.DefineLabel(out var exit);
 
-            return comparison.Accept(il, exit)
+            return comparison.Compare(il, exit)
                              .EmitReturnNotZero(exit)
                              .MarkLabel(exit)
                              .Return(0);
         }
 
-        public ILEmitter Visit(CustomComparison comparison, ILEmitter il) => comparison.Accept(il, default).Return();
+        public ILEmitter Visit(CustomComparison comparison, ILEmitter il) => comparison.Compare(il, default).Return();
 
         private ILEmitter CompareAsCollection(IComparison comparison, ILEmitter il)
         {
             il.DefineLabel(out var exit);
 
-            return comparison.Accept(il, exit)
+            return comparison.Compare(il, exit)
                              .MarkLabel(exit)
                              .Return(0);
         }

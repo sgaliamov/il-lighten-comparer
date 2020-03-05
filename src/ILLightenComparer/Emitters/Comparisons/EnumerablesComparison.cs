@@ -15,10 +15,10 @@ namespace ILLightenComparer.Emitters.Comparisons
 {
     internal sealed class EnumerablesComparison : IComparison
     {
-        public Type ElementType { get; }
-        public Type EnumeratorType { get; }
-        public MethodInfo GetEnumeratorMethod { get; }
-
+        private readonly Type _elementType;
+        private readonly Type _enumeratorType;
+        private readonly MethodInfo _getEnumeratorMethod;
+        private readonly IVariable _variable;
         private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
         private readonly ComparisonResolver _comparisons;
@@ -31,9 +31,9 @@ namespace ILLightenComparer.Emitters.Comparisons
         {
             _comparisons = comparisons;
             _configurations = configurations;
-            Variable = variable ?? throw new ArgumentNullException(nameof(variable));
+            _variable = variable ?? throw new ArgumentNullException(nameof(variable));
 
-            ElementType = variable
+            _elementType = variable
                           .VariableType
                           .FindGenericInterface(typeof(IEnumerable<>))
                           .GetGenericArguments()
@@ -41,25 +41,37 @@ namespace ILLightenComparer.Emitters.Comparisons
                           ?? throw new ArgumentException(nameof(variable));
 
             // todo: use read enumerator, not virtual
-            EnumeratorType = typeof(IEnumerator<>).MakeGenericType(ElementType);
+            _enumeratorType = typeof(IEnumerator<>).MakeGenericType(_elementType);
 
-            GetEnumeratorMethod = typeof(IEnumerable<>)
-                                  .MakeGenericType(ElementType)
+            _getEnumeratorMethod = typeof(IEnumerable<>)
+                                  .MakeGenericType(_elementType)
                                   .GetMethod(MethodName.GetEnumerator, Type.EmptyTypes);
 
             _arrayComparer = new ArrayComparer(comparisons);
             _collectionComparer = new CollectionComparer(configurations);
         }
 
-        public IVariable Variable { get; }
+        public static EnumerablesComparison Create(
+            ComparisonResolver comparisons,
+            IConfigurationProvider configurations,
+            IVariable variable)
+        {
+            var variableType = variable.VariableType;
+            if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
+                return new EnumerablesComparison(comparisons, configurations, variable);
+            }
+
+            return null;
+        }
+
         public bool PutsResultInStack => false;
 
-        public ILEmitter Accept(ILEmitter il, Label afterLoop)
+        public ILEmitter Compare(ILEmitter il, Label gotoNext)
         {
-            var (x, y) = _collectionComparer.EmitLoad(this, il, afterLoop);
+            var (x, y) = _collectionComparer.EmitLoad(_variable, il, gotoNext);
 
-            if (_configurations.Get(Variable.OwnerType).IgnoreCollectionOrder) {
-                return EmitCompareAsSortedArrays(il, afterLoop, x, y);
+            if (_configurations.Get(_variable.OwnerType).IgnoreCollectionOrder) {
+                return EmitCompareAsSortedArrays(il, gotoNext, x, y);
             }
 
             var (xEnumerator, yEnumerator) = EmitLoadEnumerators(x, y, il);
@@ -68,15 +80,17 @@ namespace ILLightenComparer.Emitters.Comparisons
             // the problem now with the inner `return` statements, it has to be `leave` instruction
             //il.BeginExceptionBlock(); 
 
-            Loop(xEnumerator, yEnumerator, il, afterLoop);
+            Loop(xEnumerator, yEnumerator, il, gotoNext);
 
             //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(xEnumerator, yEnumerator, il, afterLoop);
+            EmitDisposeEnumerators(xEnumerator, yEnumerator, il, gotoNext);
 
             //il.EndExceptionBlock();
 
             return il;
         }
+
+        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         private ILEmitter EmitCompareAsSortedArrays(
             ILEmitter il,
@@ -84,13 +98,13 @@ namespace ILLightenComparer.Emitters.Comparisons
             LocalBuilder x,
             LocalBuilder y)
         {
-            _collectionComparer.EmitArraySorting(il, ElementType, x, y);
+            _collectionComparer.EmitArraySorting(il, _elementType, x, y);
 
-            var arrayType = ElementType.MakeArrayType();
+            var arrayType = _elementType.MakeArrayType();
 
             var (countX, countY) = _arrayComparer.EmitLoadCounts(arrayType, x, y, il);
 
-            return _arrayComparer.Compare(arrayType, Variable.OwnerType, x, y, countX, countY, il, gotoNext);
+            return _arrayComparer.Compare(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(
@@ -99,11 +113,11 @@ namespace ILLightenComparer.Emitters.Comparisons
             ILEmitter il)
         {
             il.LoadLocal(xEnumerable)
-              .Call(GetEnumeratorMethod)
-              .Store(EnumeratorType, out var xEnumerator)
+              .Call(_getEnumeratorMethod)
+              .Store(_enumeratorType, out var xEnumerator)
               .LoadLocal(yEnumerable)
-              .Call(GetEnumeratorMethod)
-              .Store(EnumeratorType, out var yEnumerator);
+              .Call(_getEnumeratorMethod)
+              .Store(_enumeratorType, out var yEnumerator);
 
             return (xEnumerator, yEnumerator);
         }
@@ -123,10 +137,10 @@ namespace ILLightenComparer.Emitters.Comparisons
             }
 
             using (il.LocalsScope()) {
-                var itemVariable = new EnumerableItemVariable(Variable.OwnerType, xEnumerator, yEnumerator);
+                var itemVariable = new EnumerableItemVariable(_variable.OwnerType, xEnumerator, yEnumerator);
 
                 var itemComparison = _comparisons.GetComparison(itemVariable);
-                itemComparison.Accept(il, continueLoop);
+                itemComparison.Compare(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {
                     il.EmitReturnNotZero(continueLoop);
@@ -184,21 +198,6 @@ namespace ILLightenComparer.Emitters.Comparisons
               .Branch(OpCodes.Brfalse, gotoNext)
               .LoadLocal(yEnumerator)
               .Call(Method.Dispose);
-        }
-
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
-
-        public static EnumerablesComparison Create(
-            ComparisonResolver comparisons,
-            IConfigurationProvider configurations,
-            IVariable variable)
-        {
-            var variableType = variable.VariableType;
-            if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, configurations, variable);
-            }
-
-            return null;
         }
     }
 }

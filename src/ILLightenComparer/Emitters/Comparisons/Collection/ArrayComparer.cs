@@ -37,7 +37,7 @@ namespace ILLightenComparer.Emitters.Comparisons.Collection
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
                 var itemComparison = _comparisons.GetComparison(itemVariable);
-                itemComparison.Accept(il, continueLoop);
+                itemComparison.Compare(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {
                     il.EmitReturnNotZero(continueLoop);

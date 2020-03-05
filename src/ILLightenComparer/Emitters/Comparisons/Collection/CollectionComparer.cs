@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Comparisons;
+using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
@@ -15,9 +15,8 @@ namespace ILLightenComparer.Emitters.Comparisons.Collection
 
         public CollectionComparer(IConfigurationProvider configurations) => _configurations = configurations;
 
-        public (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IComparison comparison, ILEmitter il, Label gotoNext)
+        public (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IVariable variable, ILEmitter il, Label gotoNext)
         {
-            var variable = comparison.Variable;
             variable.Load(il, Arg.X).Store(variable.VariableType, out var collectionX);
             variable.Load(il, Arg.Y).Store(variable.VariableType, out var collectionY);
 

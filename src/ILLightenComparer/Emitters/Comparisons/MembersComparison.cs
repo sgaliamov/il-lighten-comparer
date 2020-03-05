@@ -14,23 +14,35 @@ namespace ILLightenComparer.Emitters.Comparisons
     {
         private readonly MembersProvider _membersProvider;
         private readonly ComparisonResolver _comparisons;
+        private readonly IVariable _variable;
 
         private MembersComparison(
             ComparisonResolver comparisons,
             IConfigurationProvider configurations,
             IVariable variable)
         {
-            Variable = variable;
+            _variable = variable;
             _comparisons = comparisons;
             _membersProvider = new MembersProvider(configurations);
         }
 
-        public IVariable Variable { get; }
+        public static MembersComparison Create(
+            ComparisonResolver comparisons,
+            IConfigurationProvider configurations,
+            IVariable variable)
+        {
+            if (variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
+                return new MembersComparison(comparisons, configurations, variable);
+            }
+
+            return null;
+        }
+
         public bool PutsResultInStack => throw new NotSupportedException();
 
-        public ILEmitter Accept(ILEmitter il, Label _)
+        public ILEmitter Compare(ILEmitter il, Label _)
         {
-            var variableType = Variable.VariableType;
+            var variableType = _variable.VariableType;
             if (variableType.IsPrimitive()) {
                 throw new InvalidOperationException($"{variableType.DisplayName()} is not expected.");
             }
@@ -43,7 +55,7 @@ namespace ILLightenComparer.Emitters.Comparisons
                 using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext);
 
-                    item.Accept(il, gotoNext);
+                    item.Compare(il, gotoNext);
 
                     if (item.PutsResultInStack) {
                         il.EmitReturnNotZero(gotoNext);
@@ -57,17 +69,5 @@ namespace ILLightenComparer.Emitters.Comparisons
         }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
-
-        public static MembersComparison Create(
-            ComparisonResolver comparisons,
-            IConfigurationProvider configurations,
-            IVariable variable)
-        {
-            if (variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
-                return new MembersComparison(comparisons, configurations, variable);
-            }
-
-            return null;
-        }
     }
 }

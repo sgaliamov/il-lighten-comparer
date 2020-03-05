@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Reflection;
@@ -8,29 +8,28 @@ namespace ILLightenComparer.Emitters.Comparisons
 {
     internal sealed class CustomComparison : IComparison
     {
-        public CustomComparison(IVariable variable) => Variable = variable;
+        private readonly IVariable _variable;
+        private readonly MethodInfo _delayedCompare;
+
+        public CustomComparison(IVariable variable)
+        {
+            _variable = variable;
+            _delayedCompare = Method.DelayedCompare.MakeGenericMethod(_variable.VariableType);
+        }
 
         public bool PutsResultInStack => true;
-        public IVariable Variable { get; }
 
-        public ILEmitter Accept(ILEmitter il, Label _)
+        public ILEmitter Compare(ILEmitter il, Label _)
         {
             il.LoadArgument(Arg.Context);
-            Variable.Load(il, Arg.X);
-            Variable.Load(il, Arg.Y);
-            il.LoadArgument(Arg.SetX)
-              .LoadArgument(Arg.SetY);
+            _variable.Load(il, Arg.X);
+            _variable.Load(il, Arg.Y);
 
-            return EmitCallForDelayedCompareMethod(il, Variable.VariableType);
+            return il.LoadArgument(Arg.SetX)
+                     .LoadArgument(Arg.SetY)
+                     .Call(_delayedCompare);
         }
 
         public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
-
-        private static ILEmitter EmitCallForDelayedCompareMethod(ILEmitter il, Type type)
-        {
-            var delayedCompare = Method.DelayedCompare.MakeGenericMethod(type);
-
-            return il.Call(delayedCompare);
-        }
     }
 }
