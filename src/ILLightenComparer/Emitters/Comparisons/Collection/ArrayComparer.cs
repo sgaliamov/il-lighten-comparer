@@ -5,7 +5,7 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Visitors.Collection
+namespace ILLightenComparer.Emitters.Comparisons.Collection
 {
     internal sealed class ArrayComparer
     {

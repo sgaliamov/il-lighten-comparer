@@ -7,7 +7,7 @@ using ILLightenComparer.Reflection;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Emitters.Visitors.Collection
+namespace ILLightenComparer.Emitters.Comparisons.Collection
 {
     internal sealed class CollectionComparer
     {
