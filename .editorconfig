@@ -69,11 +69,11 @@ csharp_style_var_when_type_is_apparent = true:silent
 
 # Expression-bodied members
 csharp_style_expression_bodied_accessors = true:silent
-csharp_style_expression_bodied_constructors = when_on_single_line:silent
+csharp_style_expression_bodied_constructors = when_on_single_line:suggestion
 csharp_style_expression_bodied_indexers = true:silent
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = when_on_single_line:silent
-csharp_style_expression_bodied_methods = when_on_single_line:silent
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
 csharp_style_expression_bodied_operators = when_on_single_line:silent
 csharp_style_expression_bodied_properties = true:silent
 
@@ -111,7 +111,7 @@ csharp_using_directive_placement = outside_namespace:silent
 
 # New line preferences
 csharp_new_line_before_catch = true
-csharp_new_line_before_else = true
+csharp_new_line_before_else = false
 csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_before_members_in_object_initializers = true
@@ -170,7 +170,7 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
-dotnet_naming_rule.private_or_internal_field_should_be_private_fields_naming.severity = silent
+dotnet_naming_rule.private_or_internal_field_should_be_private_fields_naming.severity = suggestion
 dotnet_naming_rule.private_or_internal_field_should_be_private_fields_naming.symbols = private_or_internal_field
 dotnet_naming_rule.private_or_internal_field_should_be_private_fields_naming.style = private_fields_naming
 

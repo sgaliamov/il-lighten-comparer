@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
@@ -12,22 +11,17 @@ namespace ILLightenComparer.Emitters.Comparisons
 {
     internal sealed class ComparablesComparison : IComparison
     {
+        private readonly MethodInfo _compareToMethod;
+        private readonly IVariable _variable;
+
         private ComparablesComparison(IVariable variable)
         {
-            Variable = variable;
+            _variable = variable;
 
-            CompareToMethod = variable.VariableType.GetUnderlyingCompareToMethod()
+            _compareToMethod = variable.VariableType.GetUnderlyingCompareToMethod()
                               ?? throw new ArgumentException(
                                   $"{variable.VariableType.DisplayName()} does not have {MethodName.CompareTo} method.");
         }
-
-        public MethodInfo CompareToMethod { get; }
-        public IVariable Variable { get; }
-        public bool PutsResultInStack => true;
-
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext) => visitor.Visit(this, il, gotoNext);
-
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
 
         public static ComparablesComparison Create(IVariable variable)
         {
@@ -37,6 +31,42 @@ namespace ILLightenComparer.Emitters.Comparisons
             }
 
             return null;
+        }
+
+        public bool PutsResultInStack => true;
+
+        public ILEmitter Compare(ILEmitter il, Label gotoNext)
+        {
+            var variableType = _variable.VariableType;
+
+            if (variableType.IsValueType) {
+                _variable.LoadAddress(il, Arg.X);
+                _variable.Load(il, Arg.Y);
+            } else {
+                _variable.Load(il, Arg.X).Store(variableType, out var x);
+                _variable.Load(il, Arg.Y)
+                        .Store(variableType, out var y)
+                        .LoadLocal(x)
+                        .Branch(OpCodes.Brtrue_S, out var call)
+                        .LoadLocal(y)
+                        .Branch(OpCodes.Brfalse_S, gotoNext)
+                        .Return(-1)
+                        .MarkLabel(call)
+                        .LoadLocal(x)
+                        .LoadLocal(y);
+            }
+
+            return il.Call(_compareToMethod);
+        }
+
+        public ILEmitter Compare(ILEmitter il)
+        {
+            il.DefineLabel(out var exit);
+
+            return Compare(il, exit)
+                .EmitReturnNotZero(exit)
+                .MarkLabel(exit)
+                .Return(0);
         }
     }
 }

@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
+using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
 using Illuminator.Extensions;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Emitters.Builders
 {
     internal sealed class ComparerTypeBuilder
     {
-        private readonly CompareEmitter _compareEmitter;
         private readonly IConfigurationProvider _configuration;
+        private readonly ComparisonResolver _resolver;
 
-        public ComparerTypeBuilder(Context context, IConfigurationProvider configuration)
+        public ComparerTypeBuilder(ComparerProvider provider, IConfigurationProvider configuration)
         {
             _configuration = configuration;
-            _compareEmitter = new CompareEmitter(context, configuration);
+            _resolver = new ComparisonResolver(provider, configuration);
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -55,7 +57,9 @@ namespace ILLightenComparer.Emitters.Builders
                 EmitCycleDetection(il);
             }
 
-            _compareEmitter.Emit(objectType, il);
+            _resolver
+                .GetComparison(new ArgumentVariable(objectType))
+                .Compare(il);
         }
 
         private void BuildInstanceCompareMethod(
@@ -108,21 +112,18 @@ namespace ILLightenComparer.Emitters.Builders
         private static void EmitCycleDetection(ILEmitter il)
         {
             il.AreSame(
-                il => il.Or(
-                    il => il
-                        .LoadArgument(Arg.SetX)
-                        .LoadArgument(Arg.X)
-                        .LoadConstant(0)
-                        .Call(Method.ConcurrentSetAddMethod),
-                    il => il
-                        .LoadArgument(Arg.SetY)
-                        .LoadArgument(Arg.Y)
-                        .LoadConstant(0)
-                        .Call(Method.ConcurrentSetAddMethod)),
-                il => il.LoadConstant(0))
-            .Branch(OpCodes.Brfalse_S, out var next) // todo: Beq?
-            .Sub(il => il.LoadArgument(Arg.SetX).Call(Method.ConcurrentSetGetCountProperty),
-                 il => il.LoadArgument(Arg.SetY).Call(Method.ConcurrentSetGetCountProperty))
+                LoadInteger(0),
+                Or(LoadArgument(Arg.SetX)
+                   | LoadArgument(Arg.X)
+                   | LoadInteger(0)
+                   | Call(Method.ConcurrentSetAddMethod),
+                   LoadArgument(Arg.SetY)
+                   | LoadArgument(Arg.Y)
+                   | LoadInteger(0)
+                   | Call(Method.ConcurrentSetAddMethod)))
+            .Branch(OpCodes.Brfalse_S, out var next)
+            .Sub(LoadArgument(Arg.SetX) | Call(Method.ConcurrentSetGetCountProperty),
+                 LoadArgument(Arg.SetY) | Call(Method.ConcurrentSetGetCountProperty))
             .Return()
             .MarkLabel(next);
         }

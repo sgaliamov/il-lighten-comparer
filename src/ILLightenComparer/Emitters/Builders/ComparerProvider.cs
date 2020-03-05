@@ -13,27 +13,28 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Emitters.Builders
 {
-    internal sealed class ContextBuilder
+    internal sealed class ComparerProvider
     {
         private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<StaticMethodInfo>> _staticMethods = new ConcurrentDictionary<Type, Lazy<StaticMethodInfo>>();
+        private readonly IConfigurationProvider _configurations;
 
-        public ContextBuilder(Context context, IConfigurationProvider configurations)
+        public ComparerProvider(IConfigurationProvider configurations)
         {
-            _comparerTypeBuilder = new ComparerTypeBuilder(context, configurations);
-
-            var assembly = AssemblyBuilder.DefineDynamicAssembly(
-                new AssemblyName("IL-Lighten-Comparer"),
-                AssemblyBuilderAccess.RunAndCollect);
-
-            _moduleBuilder = assembly.DefineDynamicModule("IL-Lighten-Comparer.dll");
+            _configurations = configurations;
+            _comparerTypeBuilder = new ComparerTypeBuilder(this, _configurations);
+            _moduleBuilder = AssemblyBuilder
+                .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer"), AssemblyBuilderAccess.RunAndCollect)
+                .DefineDynamicModule("IL-Lighten-Comparer.module");
         }
 
-        public MethodInfo GetStaticCompareMethod(Type type) => DefineStaticMethod(type).CompareMethod;
+        // method info is enough to emit compare on sealed type
+        public MethodInfo GetStaticCompareMethodInfo(Type type) => DefineStaticMethod(type).CompareMethod;
 
-        public MethodInfo GetCompiledCompareMethod(Type type)
+        // is used for delayed calls
+        public MethodInfo GetCompiledStaticCompareMethod(Type type)
         {
             EnsureComparerType(type);
 
@@ -48,11 +49,9 @@ namespace ILLightenComparer.Emitters.Builders
                 objectType,
                 key => new Lazy<Type>(() => {
                     var info = DefineStaticMethod(key);
-#if DEBUG
                     if (info.Compiled) {
-                        throw new InvalidOperationException("Unexpected context state.");
+                        throw new InvalidOperationException("Not compiled method is expected.");
                     }
-#endif
 
                     var compiledComparerType = _comparerTypeBuilder.Build(
                         (TypeBuilder)info.CompareMethod.DeclaringType,

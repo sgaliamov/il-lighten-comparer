@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
@@ -12,6 +11,9 @@ namespace ILLightenComparer.Emitters.Variables
 {
     internal sealed class NullableVariable : IVariable
     {
+        private readonly MethodInfo _getValueMethod;
+        private readonly Dictionary<ushort, LocalBuilder> _nullables;
+
         public NullableVariable(Type variableType, Type ownerType, LocalBuilder x, LocalBuilder y)
         {
             if (variableType == null) { throw new ArgumentNullException(nameof(variableType)); }
@@ -22,25 +24,30 @@ namespace ILLightenComparer.Emitters.Variables
 
             VariableType = variableType.GetUnderlyingType();
 
-            Nullables = new Dictionary<ushort, LocalBuilder>(2) {
+            _nullables = new Dictionary<ushort, LocalBuilder>(2) {
                 { Arg.X, x ?? throw new ArgumentNullException(nameof(x)) },
                 { Arg.Y, y ?? throw new ArgumentNullException(nameof(y)) }
             };
 
-            GetValueMethod = variableType.GetPropertyGetter(MethodName.Value);
+            _getValueMethod = variableType.GetPropertyGetter(MethodName.Value);
         }
 
-        public MethodInfo GetValueMethod { get; set; }
-        public Dictionary<ushort, LocalBuilder> Nullables { get; }
+        // Underlying type of Nullable.
+        public Type VariableType { get; }
         public Type OwnerType { get; }
 
-        /// <summary>
-        ///     Underlying type of Nullable.
-        /// </summary>
-        public Type VariableType { get; }
+        public ILEmitter Load(ILEmitter il, ushort arg) =>
+            il.LoadAddress(_nullables[arg])
+              .Call(_getValueMethod);
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(this, il, arg);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg)
+        {
+            var underlyingType = VariableType.GetUnderlyingType();
 
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(this, il, arg);
+            return il.LoadAddress(_nullables[arg])
+                     .Call(_getValueMethod)
+                     .Store(underlyingType, out var x)
+                     .LoadAddress(x);
+        }
     }
 }

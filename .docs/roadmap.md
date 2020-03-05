@@ -84,7 +84,8 @@
 
 ## Phase 6 GetHashCode
 
-- [ ] support for .net core 3
+- [x] support for .net core 3
+- [x] create reusable traversing
 - [ ] implement `GetHashCode`
 
 ## Phase 7 Equals
@@ -107,7 +108,7 @@
 - [ ] custom comparison expression for a member to simplify comparison setup
 - [ ] optimization for a last member - just return its result
 - [ ] same for simple types, when arguments are compared directly
-- [ ] change behavior then types are not matched but castable
+- [ ] change behavior then types are not matched but cast-able
 - [ ] do reference comparison only once? done?
 - [ ] use Br_S when possible?
 - [ ] test class with more than 256 properties?

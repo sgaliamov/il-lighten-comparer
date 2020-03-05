@@ -1,29 +1,59 @@
-﻿using System.Reflection.Emit;
+﻿using System.Reflection;
+using System.Reflection.Emit;
+using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Emitters.Variables;
-using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
+using ILLightenComparer.Reflection;
 using Illuminator;
 
 namespace ILLightenComparer.Emitters.Comparisons
 {
     internal sealed class HierarchicalsComparison : IComparison
     {
-        private HierarchicalsComparison(IVariable variable) => Variable = variable;
+        private readonly ComparerProvider _context;
+        private readonly IVariable _variable;
+        private readonly MethodInfo _delayedCompare;
 
-        public IVariable Variable { get; }
-        public bool PutsResultInStack => true;
+        private HierarchicalsComparison(ComparerProvider context, IVariable variable)
+        {
+            _context = context;
+            _variable = variable;
+            _delayedCompare = Method.DelayedCompare.MakeGenericMethod(_variable.VariableType);
+        }
 
-        public ILEmitter Accept(CompareVisitor visitor, ILEmitter il, Label gotoNext) => visitor.Visit(this, il);
-
-        public ILEmitter Accept(CompareEmitter visitor, ILEmitter il) => visitor.Visit(this, il);
-
-        public static HierarchicalsComparison Create(IVariable variable)
+        public static HierarchicalsComparison Create(ComparerProvider provider, IVariable variable)
         {
             if (variable.VariableType.IsHierarchical() && !(variable is ArgumentVariable)) {
-                return new HierarchicalsComparison(variable);
+                return new HierarchicalsComparison(provider, variable);
             }
 
             return null;
         }
+
+        public bool PutsResultInStack => true;
+
+        public ILEmitter Compare(ILEmitter il, Label _)
+        {
+            var variableType = _variable.VariableType;
+
+            il.LoadArgument(Arg.Context);
+            _variable.Load(il, Arg.X);
+            _variable.Load(il, Arg.Y);
+            il.LoadArgument(Arg.SetX)
+              .LoadArgument(Arg.SetY);
+
+            var typeOfVariableCanBeChangedOnRuntime =
+                !variableType.IsValueType && !variableType.IsSealed;
+
+            if (typeOfVariableCanBeChangedOnRuntime) {
+                return il.Call(_delayedCompare);
+            }
+
+            var compareMethod = _context.GetStaticCompareMethodInfo(variableType);
+
+            return il.Call(compareMethod);
+        }
+
+        public ILEmitter Compare(ILEmitter il) => Compare(il, default).Return();
     }
 }

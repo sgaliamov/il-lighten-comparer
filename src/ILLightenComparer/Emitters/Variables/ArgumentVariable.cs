@@ -1,5 +1,4 @@
 ﻿using System;
-using ILLightenComparer.Emitters.Visitors;
 using Illuminator;
 
 namespace ILLightenComparer.Emitters.Variables
@@ -15,8 +14,7 @@ namespace ILLightenComparer.Emitters.Variables
         public Type OwnerType { get; }
         public Type VariableType { get; }
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(il, arg);
-
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(il, arg);
+        public ILEmitter Load(ILEmitter il, ushort arg) =>  il.LoadArgument(arg);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => il.LoadArgumentAddress(arg);
     }
 }

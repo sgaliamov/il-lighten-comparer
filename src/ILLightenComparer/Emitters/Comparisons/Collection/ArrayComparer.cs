@@ -5,18 +5,13 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Visitors.Collection
+namespace ILLightenComparer.Emitters.Comparisons.Collection
 {
     internal sealed class ArrayComparer
     {
-        private readonly CompareVisitor _compareVisitor;
-        private readonly ComparisonsProvider _comparisons;
+        private readonly ComparisonResolver _comparisons;
 
-        public ArrayComparer(CompareVisitor compareVisitor, ComparisonsProvider comparisons)
-        {
-            _compareVisitor = compareVisitor;
-            _comparisons = comparisons;
-        }
+        public ArrayComparer(ComparisonResolver comparisons) => _comparisons = comparisons;
 
         public ILEmitter Compare(
             Type arrayType,
@@ -28,7 +23,7 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
             ILEmitter il,
             Label afterLoop)
         {
-            il.LoadConstant(0)
+            il.LoadInteger(0)
               .Store(typeof(int), out var index)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var continueLoop)
@@ -42,14 +37,14 @@ namespace ILLightenComparer.Emitters.Visitors.Collection
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
                 var itemComparison = _comparisons.GetComparison(itemVariable);
-                itemComparison.Accept(_compareVisitor, il, continueLoop);
+                itemComparison.Compare(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {
                     il.EmitReturnNotZero(continueLoop);
                 }
 
                 return il.MarkLabel(continueLoop)
-                         .Add(il => il.LoadLocal(index), il => il.LoadConstant(1))
+                         .Add(il => il.LoadLocal(index), il => il.LoadInteger(1))
                          .Store(index)
                          .GoTo(loopStart);
             }

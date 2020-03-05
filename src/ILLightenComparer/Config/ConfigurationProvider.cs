@@ -24,8 +24,8 @@ namespace ILLightenComparer.Config
         private const StringComparison StringComparisonTypeDefault = StringComparison.Ordinal;
         private const bool DetectCyclesDefault = true;
         private const bool IgnoreCollectionOrderDefault = false;
-        private static readonly string[] IgnoredMembersDefault = new string[0];
-        private static readonly string[] MembersOrderDefault = new string[0];
+        private static readonly string[] IgnoredMembersDefault = Array.Empty<string>();
+        private static readonly string[] MembersOrderDefault = Array.Empty<string>();
 
         private readonly Configurations _configurations;
         private readonly ComparersCollection _customComparers;

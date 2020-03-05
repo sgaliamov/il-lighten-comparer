@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Visitors;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using Illuminator;
@@ -13,11 +12,14 @@ namespace ILLightenComparer.Emitters.Variables
 {
     internal sealed class EnumerableItemVariable : IVariable
     {
+        private readonly Dictionary<ushort, LocalBuilder> _enumerators;
+        private readonly MethodInfo _getCurrentMethod;
+
         public EnumerableItemVariable(Type ownerType, LocalBuilder xEnumerator, LocalBuilder yEnumerator)
         {
             OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
 
-            Enumerators = new Dictionary<ushort, LocalBuilder>(2) {
+            _enumerators = new Dictionary<ushort, LocalBuilder>(2) {
                 { Arg.X, xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)) },
                 { Arg.Y, yEnumerator ?? throw new ArgumentNullException(nameof(yEnumerator)) }
             };
@@ -34,16 +36,20 @@ namespace ILLightenComparer.Emitters.Variables
             VariableType = enumeratorType?.GetGenericArguments().SingleOrDefault()
                            ?? throw new ArgumentException(nameof(enumeratorType));
 
-            GetCurrentMethod = enumeratorType.GetPropertyGetter(MethodName.Current);
+            _getCurrentMethod = enumeratorType.GetPropertyGetter(MethodName.Current);
         }
 
-        public Dictionary<ushort, LocalBuilder> Enumerators { get; }
-        public MethodInfo GetCurrentMethod { get; }
         public Type VariableType { get; }
         public Type OwnerType { get; }
 
-        public ILEmitter Load(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.Load(this, il, arg);
+        public ILEmitter Load(ILEmitter il, ushort arg) =>
+            il.LoadLocal(_enumerators[arg])
+              .Call(_getCurrentMethod);
 
-        public ILEmitter LoadAddress(VariableLoader visitor, ILEmitter il, ushort arg) => visitor.LoadAddress(this, il, arg);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) =>
+             il.LoadLocal(_enumerators[arg])
+               .Call(_getCurrentMethod)
+               .Store(VariableType, out var local)
+               .LoadAddress(local);
     }
 }
