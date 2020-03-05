@@ -5,12 +5,12 @@ namespace ILLightenComparer.Emitters.Comparisons
 {
     internal interface IComparison
     {
-        // does the comparison puts a result in stack.
+        // does the comparison puts a result into the stack.
         // comparisons with many items does not do it.
         bool PutsResultInStack { get; }
 
         /// <summary>
-        /// Compare and leave result in stack.
+        /// Compare and leave a result in the stack.
         /// </summary>
         ILEmitter Compare(ILEmitter il, Label gotoNext);
 

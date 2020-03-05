@@ -34,12 +34,11 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Compare(ILEmitter il, Label _)
         {
-            var variable = _variable;
-            var variableType = variable.VariableType;
+            var variableType = _variable.VariableType;
 
             il.LoadArgument(Arg.Context);
-            variable.Load(il, Arg.X);
-            variable.Load(il, Arg.Y);
+            _variable.Load(il, Arg.X);
+            _variable.Load(il, Arg.Y);
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 

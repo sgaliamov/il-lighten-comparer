@@ -85,7 +85,7 @@
 ## Phase 6 GetHashCode
 
 - [x] support for .net core 3
-- [ ] create reusable traversing
+- [x] create reusable traversing
 - [ ] implement `GetHashCode`
 
 ## Phase 7 Equals
