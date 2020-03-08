@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ILLightenComparer.Comparer.Builders;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;

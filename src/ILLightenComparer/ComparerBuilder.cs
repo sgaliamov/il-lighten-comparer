@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
+
+[assembly: InternalsVisibleTo("IL-Lighten-Comparer")]
 
 namespace ILLightenComparer
 {

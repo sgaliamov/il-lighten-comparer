@@ -10,7 +10,7 @@ using Illuminator;
 using Illuminator.Extensions;
 using static Illuminator.Functional;
 
-namespace ILLightenComparer.Comparer.Builders
+namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparerTypeBuilder
     {
@@ -47,9 +47,12 @@ namespace ILLightenComparer.Comparer.Builders
         {
             using var il = staticMethodBuilder.CreateILEmitter();
 
-            if (!objectType.IsValueType
-                && !objectType.IsSealedComparable()
-                && !objectType.ImplementsGeneric(typeof(IEnumerable<>))) {
+           var needReferenceComparison =
+                !objectType.IsValueType
+                && !objectType.IsSealedComparable() // rely on provided implementation
+                && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
+
+            if (needReferenceComparison) {
                 il.EmitArgumentsReferenceComparison();
             }
 

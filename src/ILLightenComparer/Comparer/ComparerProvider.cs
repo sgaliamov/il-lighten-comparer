@@ -4,14 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using ILLightenComparer.Config;
 using ILLightenComparer.Reflection;
 using Illuminator.Extensions;
 
-[assembly: InternalsVisibleTo("IL-Lighten-Comparer")]
-
-namespace ILLightenComparer.Comparer.Builders
+namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparerProvider
     {
