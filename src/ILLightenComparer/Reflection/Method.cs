@@ -15,8 +15,8 @@ namespace ILLightenComparer.Reflection
             TContext context,
             TComparable x,
             TComparable y,
-            ConcurrentSet<object> xSet,
-            ConcurrentSet<object> ySet);
+            CycleDetectionSet xSet,
+            CycleDetectionSet ySet);
 
 
         public static readonly MethodInfo StringCompare = typeof(string).GetMethod(
@@ -24,13 +24,13 @@ namespace ILLightenComparer.Reflection
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
         public static readonly ConstructorInfo ConcurrentSetConstructor =
-            typeof(ConcurrentSet<object>).GetConstructor(Type.EmptyTypes);
+            typeof(CycleDetectionSet).GetConstructor(Type.EmptyTypes);
 
         public static readonly MethodInfo ConcurrentSetAddMethod =
-            typeof(ConcurrentSet<object>).GetMethod(nameof(ConcurrentSet<object>.TryAdd), new[] { typeof(object), typeof(byte) });
+            typeof(CycleDetectionSet).GetMethod(nameof(CycleDetectionSet.TryAdd), new[] { typeof(object), typeof(byte) });
 
         public static readonly MethodInfo ConcurrentSetGetCountProperty =
-            typeof(ConcurrentSet<object>).GetProperty(nameof(ConcurrentSet<object>.Count))?.GetGetMethod();
+            typeof(CycleDetectionSet).GetProperty(nameof(CycleDetectionSet.Count))?.GetGetMethod();
 
         public static MethodInfo DelayedCompare =
             typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
@@ -82,8 +82,8 @@ namespace ILLightenComparer.Reflection
                 typeof(IComparerContext),
                 objectType,
                 objectType,
-                typeof(ConcurrentSet<object>),
-                typeof(ConcurrentSet<object>)
+                typeof(CycleDetectionSet),
+                typeof(CycleDetectionSet)
             };
         }
 
@@ -93,8 +93,8 @@ namespace ILLightenComparer.Reflection
             TContext context,
             TComparable x,
             TComparable y,
-            ConcurrentSet<object> xSet,
-            ConcurrentSet<object> ySet)
+            CycleDetectionSet xSet,
+            CycleDetectionSet ySet)
         {
             var isDeclaringTypeMatchedActualMemberType = typeof(TComparable) == actualType;
             if (!isDeclaringTypeMatchedActualMemberType) {

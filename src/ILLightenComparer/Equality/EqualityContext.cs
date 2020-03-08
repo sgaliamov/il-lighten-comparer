@@ -22,7 +22,7 @@ namespace ILLightenComparer.Equality
             _provider = new EqualityProvider(configurations);
         }
 
-        public bool DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
+        public bool DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
         {
             var comparer = _configurations.GetCustomEqualityComparer<T>();
             if (comparer != null) {
@@ -45,7 +45,7 @@ namespace ILLightenComparer.Equality
             return compareMethod.StaticCompare<IEqualityComparerContext, T, bool>(xType, this, x, y, xSet, ySet);
         }
 
-        public int DelayedHash<T>(T comparable, ConcurrentSet<object> cycleDetectionSet)
+        public int DelayedHash<T>(T comparable, CycleDetectionSet cycleDetectionSet)
         {
             var comparer = _configurations.GetCustomEqualityComparer<T>();
             if (comparer != null) {
@@ -67,7 +67,7 @@ namespace ILLightenComparer.Equality
             MethodInfo method,
             Type actualType,
             TComparable comparable,
-            ConcurrentSet<object> cycleDetectionSet)
+            CycleDetectionSet cycleDetectionSet)
         {
             var isDeclaringTypeMatchedActualMemberType = typeof(TComparable) == actualType;
             if (!isDeclaringTypeMatchedActualMemberType) {
@@ -76,7 +76,7 @@ namespace ILLightenComparer.Equality
                     new object[] { this, comparable, cycleDetectionSet });
             }
 
-            var compare = method.CreateDelegate<Func<IEqualityComparerContext, TComparable, ConcurrentSet<object>, int>>();
+            var compare = method.CreateDelegate<Func<IEqualityComparerContext, TComparable, CycleDetectionSet, int>>();
 
             return compare(this, comparable, cycleDetectionSet);
         }
@@ -91,8 +91,8 @@ namespace ILLightenComparer.Equality
 
     internal interface IEqualityComparerContext : IEqualityComparerProvider
     {
-        bool DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
+        bool DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
 
-        int DelayedHash<T>(T x, ConcurrentSet<object> xSet);
+        int DelayedHash<T>(T x, CycleDetectionSet xSet);
     }
 }

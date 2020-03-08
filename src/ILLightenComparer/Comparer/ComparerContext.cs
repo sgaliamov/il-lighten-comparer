@@ -24,7 +24,7 @@ namespace ILLightenComparer.Comparer
                typeof(T),
                key => _provider.EnsureComparerType(key).CreateInstance<IComparerContext, IComparer<T>>(this));
 
-        public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
+        public int DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
         {
             var comparer = _configurations.GetCustomComparer<T>();
             if (comparer != null) {
@@ -51,6 +51,6 @@ namespace ILLightenComparer.Comparer
 
     internal interface IComparerContext : IComparerProvider
     {
-        int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
+        int DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
     }
 }

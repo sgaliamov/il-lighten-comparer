@@ -9,7 +9,7 @@ using ILLightenComparer.Tests.Samples.Comparers;
 
 namespace ILLightenComparer.Tests.Utilities
 {
-    public sealed class ConcurrentSet<T> : ConcurrentDictionary<T, byte> { }
+    public sealed class CycleDetectionSet : ConcurrentDictionary<object, byte> { }
 
     internal static class Helper
     {
