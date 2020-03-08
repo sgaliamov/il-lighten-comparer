@@ -11,12 +11,7 @@ namespace ILLightenComparer.Reflection
 {
     internal static class Method
     {
-        public delegate TOut StaticCompareMethodDelegate<in TContext, in TComparable, out TOut>(
-            TContext context,
-            TComparable x,
-            TComparable y,
-            CycleDetectionSet xSet,
-            CycleDetectionSet ySet);
+
 
 
         public static readonly MethodInfo StringCompare = typeof(string).GetMethod(
@@ -87,7 +82,7 @@ namespace ILLightenComparer.Reflection
             };
         }
 
-        public static TResult StaticCompare<TContext, TComparable, TResult>(
+        public static TResult InvokeCompare<TContext, TComparable, TResult>(
             this MethodInfo method,
             Type actualType,
             TContext context,
@@ -113,7 +108,7 @@ namespace ILLightenComparer.Reflection
             }
 
             var compare = method.CreateDelegate<
-                Method.StaticCompareMethodDelegate<TContext, TComparable, TResult>>();
+                Func<TContext, TComparable, TComparable, CycleDetectionSet, CycleDetectionSet, TResult>>();
 
             return compare(context, x, y, xSet, ySet);
         }

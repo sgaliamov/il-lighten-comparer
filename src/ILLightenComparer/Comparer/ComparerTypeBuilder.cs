@@ -17,10 +17,10 @@ namespace ILLightenComparer.Comparer
         private readonly IConfigurationProvider _configuration;
         private readonly ComparisonResolver _resolver;
 
-        public ComparerTypeBuilder(ComparerProvider provider, IConfigurationProvider configuration)
+        public ComparerTypeBuilder(ComparisonResolver resolver, IConfigurationProvider configuration)
         {
             _configuration = configuration;
-            _resolver = new ComparisonResolver(provider, configuration);
+            _resolver = resolver;
         }
 
         public Type Build(TypeBuilder comparerTypeBuilder, MethodBuilder staticCompareBuilder, Type objectType)
@@ -62,7 +62,7 @@ namespace ILLightenComparer.Comparer
 
             _resolver
                 .GetComparison(new ArgumentVariable(objectType))
-                .Compare(il);
+                .Emit(il);
         }
 
         private void BuildInstanceCompareMethod(
@@ -143,8 +143,8 @@ namespace ILLightenComparer.Comparer
             using (var il = constructorInfo.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
                   .Call(typeof(object).GetConstructor(Type.EmptyTypes))
-                  .SetField(il => il.LoadArgument(Arg.This),
-                            il => il.LoadArgument(1),
+                  .SetField(LoadArgument(Arg.This),
+                            LoadArgument(1),
                             contextField)
                   .Return();
             }

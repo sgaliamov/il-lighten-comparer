@@ -40,7 +40,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public bool PutsResultInStack => false;
 
-        public ILEmitter Compare(ILEmitter il, Label gotoNext)
+        public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {
             var variableType = _variable.VariableType;
 
@@ -54,11 +54,11 @@ namespace ILLightenComparer.Comparer.Comparisons
             return _arrayComparer.Compare(variableType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
-        public ILEmitter Compare(ILEmitter il)
+        public ILEmitter Emit(ILEmitter il)
         {
             il.DefineLabel(out var exit);
 
-            return Compare(il, exit)
+            return Emit(il, exit)
                 .MarkLabel(exit)
                 .Return(0);
         }

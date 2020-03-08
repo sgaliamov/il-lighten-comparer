@@ -66,7 +66,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public bool PutsResultInStack => false;
 
-        public ILEmitter Compare(ILEmitter il, Label gotoNext)
+        public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {
             var (x, y) = _collectionComparer.EmitLoad(_variable, il, gotoNext);
 
@@ -90,11 +90,11 @@ namespace ILLightenComparer.Comparer.Comparisons
             return il;
         }
 
-        public ILEmitter Compare(ILEmitter il)
+        public ILEmitter Emit(ILEmitter il)
         {
             il.DefineLabel(out var exit);
 
-            return Compare(il, exit)
+            return Emit(il, exit)
                 .MarkLabel(exit)
                 .Return(0);
         }
@@ -147,7 +147,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                 var itemVariable = new EnumerableItemVariable(_variable.OwnerType, xEnumerator, yEnumerator);
 
                 var itemComparison = _comparisons.GetComparison(itemVariable);
-                itemComparison.Compare(il, continueLoop);
+                itemComparison.Emit(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {
                     il.EmitReturnNotZero(continueLoop);

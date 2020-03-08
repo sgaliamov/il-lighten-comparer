@@ -21,7 +21,7 @@ namespace ILLightenComparer.Comparer
         public ComparerProvider(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _comparerTypeBuilder = new ComparerTypeBuilder(this, _configurations);
+            _comparerTypeBuilder = new ComparerTypeBuilder(new ComparisonResolver(this, _configurations), _configurations);
             _moduleBuilder = AssemblyBuilder
                 .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer"), AssemblyBuilderAccess.RunAndCollect)
                 .DefineDynamicModule("IL-Lighten-Comparer.module");

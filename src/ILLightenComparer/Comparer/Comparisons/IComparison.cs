@@ -12,11 +12,11 @@ namespace ILLightenComparer.Comparer.Comparisons
         /// <summary>
         /// Compare and leave a result in the stack.
         /// </summary>
-        ILEmitter Compare(ILEmitter il, Label gotoNext);
+        ILEmitter Emit(ILEmitter il, Label gotoNext);
 
         /// <summary>
         /// Compare and return.
         /// </summary>
-        ILEmitter Compare(ILEmitter il);
+        ILEmitter Emit(ILEmitter il);
     }
 }

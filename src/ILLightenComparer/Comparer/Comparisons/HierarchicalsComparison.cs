@@ -31,7 +31,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public bool PutsResultInStack => true;
 
-        public ILEmitter Compare(ILEmitter il, Label _)
+        public ILEmitter Emit(ILEmitter il, Label _)
         {
             var variableType = _variable.VariableType;
 
@@ -53,6 +53,6 @@ namespace ILLightenComparer.Comparer.Comparisons
             return il.Call(compareMethod);
         }
 
-        public ILEmitter Compare(ILEmitter il) => Compare(il, default).Return();
+        public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
     }
 }

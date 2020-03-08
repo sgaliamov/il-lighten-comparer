@@ -40,7 +40,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public bool PutsResultInStack => false;
 
-        public ILEmitter Compare(ILEmitter il, Label _)
+        public ILEmitter Emit(ILEmitter il, Label _)
         {
             var variableType = _variable.VariableType;
             if (variableType.IsPrimitive()) {
@@ -55,7 +55,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                 using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext);
 
-                    item.Compare(il, gotoNext);
+                    item.Emit(il, gotoNext);
 
                     if (item.PutsResultInStack) {
                         il.EmitReturnNotZero(gotoNext);
@@ -68,6 +68,6 @@ namespace ILLightenComparer.Comparer.Comparisons
             return il.LoadInteger(0);
         }
 
-        public ILEmitter Compare(ILEmitter il) => Compare(il, default).Return();
+        public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
     }
 }

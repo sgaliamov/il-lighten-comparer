@@ -19,7 +19,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public bool PutsResultInStack => true;
 
-        public ILEmitter Compare(ILEmitter il, Label _)
+        public ILEmitter Emit(ILEmitter il, Label _)
         {
             il.LoadArgument(Arg.Context);
             _variable.Load(il, Arg.X);
@@ -30,6 +30,6 @@ namespace ILLightenComparer.Comparer.Comparisons
                      .Call(_delayedCompare);
         }
 
-        public ILEmitter Compare(ILEmitter il) => Compare(il, default).Return();
+        public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
     }
 }

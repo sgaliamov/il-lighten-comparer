@@ -42,7 +42,7 @@ namespace ILLightenComparer.Equality
 
             var compareMethod = _provider.GetCompiledStaticCompareMethod(xType);
 
-            return compareMethod.StaticCompare<IEqualityComparerContext, T, bool>(xType, this, x, y, xSet, ySet);
+            return compareMethod.InvokeCompare<IEqualityComparerContext, T, bool>(xType, this, x, y, xSet, ySet);
         }
 
         public int DelayedHash<T>(T comparable, CycleDetectionSet cycleDetectionSet)
@@ -71,6 +71,7 @@ namespace ILLightenComparer.Equality
         {
             var isDeclaringTypeMatchedActualMemberType = typeof(TComparable) == actualType;
             if (!isDeclaringTypeMatchedActualMemberType) {
+                // todo: refactor after Method.InvokeCompare
                 return (int)method.Invoke(
                     null,
                     new object[] { this, comparable, cycleDetectionSet });

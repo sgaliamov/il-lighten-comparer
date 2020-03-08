@@ -45,7 +45,7 @@ namespace ILLightenComparer.Comparer
 
             var compareMethod = _provider.GetCompiledStaticCompareMethod(xType);
 
-            return compareMethod.StaticCompare<IComparerContext, T, int>(xType, this, x, y, xSet, ySet);
+            return compareMethod.InvokeCompare<IComparerContext, T, int>(xType, this, x, y, xSet, ySet);
         }
     }
 
