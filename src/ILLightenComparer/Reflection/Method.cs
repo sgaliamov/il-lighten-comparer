@@ -10,12 +10,17 @@ namespace ILLightenComparer.Reflection
 {
     internal static class Method
     {
-        public delegate int StaticMethodDelegate<in T>(
-            IComparerContext context,
-            T x,
-            T y,
+        public delegate TOut StaticCompareMethodDelegate<in TComparable, in TContext, out TOut>(
+            TContext context,
+            TComparable x,
+            TComparable y,
             ConcurrentSet<object> xSet,
             ConcurrentSet<object> ySet);
+
+         public delegate int StaticHashMethodDelegate<in TComparable, in TContext, out TOut>(
+            TContext context,
+            TComparable comparable,
+            ConcurrentSet<object> cycleDetectionSet);
 
         public static readonly MethodInfo StringCompare = typeof(string).GetMethod(
             nameof(string.Compare),

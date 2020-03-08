@@ -67,7 +67,7 @@ namespace ILLightenComparer.Comparer
                     new object[] { this, x, y, xSet, ySet });
             }
 
-            var compare = compareMethod.CreateDelegate<Method.StaticMethodDelegate<T>>();
+            var compare = compareMethod.CreateDelegate<Method.StaticCompareMethodDelegate<T, IComparerContext, int>>();
 
             return compare(this, x, y, xSet, ySet);
         }
