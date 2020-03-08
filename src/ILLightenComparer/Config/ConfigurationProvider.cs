@@ -15,7 +15,9 @@ namespace ILLightenComparer.Config
     {
         Configuration Get(Type type);
         IComparer<T> GetCustomComparer<T>();
+        IEqualityComparer<T> GetCustomEqualityComparer<T>();
         bool HasCustomComparer(Type type);
+        bool HasCustomEqualityComparer(Type type);
     }
 
     internal sealed class ConfigurationProvider : IConfigurationBuilder, IConfigurationProvider
@@ -29,6 +31,7 @@ namespace ILLightenComparer.Config
 
         private readonly Configurations _configurations;
         private readonly ComparersCollection _customComparers;
+        private readonly ComparersCollection _customEqualityComparers;
 
         private readonly Configuration _default = new Configuration(
             IgnoredMembersDefault,
@@ -42,12 +45,14 @@ namespace ILLightenComparer.Config
         {
             _configurations = new Configurations();
             _customComparers = new ComparersCollection();
+            _customEqualityComparers = new ComparersCollection();
         }
 
         public ConfigurationProvider(ConfigurationProvider provider)
         {
             _configurations = new Configurations(provider._configurations.ToDictionary(x => x.Key, x => new Configuration(x.Value)));
             _customComparers = new ComparersCollection(provider._customComparers);
+            _customEqualityComparers = new ComparersCollection(provider._customEqualityComparers);
             _default = new Configuration(provider._default);
         }
 
@@ -163,9 +168,15 @@ namespace ILLightenComparer.Config
                 ? configuration
                 : _default;
 
-        public IComparer<T> GetCustomComparer<T>() => _customComparers.TryGetValue(typeof(T), out var comparer) ? (IComparer<T>)comparer : null;
+        public IComparer<T> GetCustomComparer<T>() =>
+            _customComparers.TryGetValue(typeof(T), out var comparer) ? (IComparer<T>)comparer : null;
+
+        public IEqualityComparer<T> GetCustomEqualityComparer<T>() =>
+            _customEqualityComparers.TryGetValue(typeof(T), out var comparer) ? (IEqualityComparer<T>)comparer : null;
 
         public bool HasCustomComparer(Type type) => _customComparers.ContainsKey(type);
+
+        public bool HasCustomEqualityComparer(Type type)=> _customEqualityComparers.ContainsKey(type);
 
         private ConfigurationProvider SetCustomComparer(Type type, object instance)
         {

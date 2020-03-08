@@ -214,6 +214,8 @@ namespace ILLightenComparer
         /// <returns>Configuration builder.</returns>
         IConfigurationBuilder SetCustomComparer<TComparer>();
 
+        // todo: setters for equality comparers
+
         /// <summary>
         ///     Defines configuration for comparer of type <see cref="IComparer{T}" />.
         ///     Creates another builder context.
