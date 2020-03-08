@@ -303,6 +303,19 @@ namespace ILLightenComparer
     /// <summary>
     ///     Provides access to generated comparers.
     /// </summary>
+    public interface IEqualityComparerProvider
+    {
+        /// <summary>
+        ///     Returns instance of a equality comparer.
+        /// </summary>
+        /// <typeparam name="T">The type whose instances need to compare.</typeparam>
+        /// <returns>Instance of <see cref="IEqualityComparer{T}" />.</returns>
+        IEqualityComparer<T> GetEqualityComparer<T>();
+    }
+
+    /// <summary>
+    ///     Provides access to generated comparers.
+    /// </summary>
     public interface IComparerProvider<in T>
     {
         /// <summary>

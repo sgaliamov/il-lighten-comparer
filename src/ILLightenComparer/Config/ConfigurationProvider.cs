@@ -171,8 +171,7 @@ namespace ILLightenComparer.Config
         {
             if (instance == null) {
                 _customComparers.TryRemove(type, out _);
-            }
-            else {
+            } else {
                 _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
             }
 

@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Builders;
-using ILLightenComparer.Emitters.Variables;
+using ILLightenComparer.Comparer.Builders;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
+using ILLightenComparer.Variables;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Comparisons
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class HierarchicalsComparison : IComparison
     {

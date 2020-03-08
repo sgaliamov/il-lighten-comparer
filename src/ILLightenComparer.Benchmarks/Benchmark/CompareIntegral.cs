@@ -59,8 +59,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
                 if (one < other) {
                     _out = -1;
-                }
-                else if (one > other) {
+                } else if (one > other) {
                     _out = 1;
                 }
             }

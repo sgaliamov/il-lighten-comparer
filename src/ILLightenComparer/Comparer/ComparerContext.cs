@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using ILLightenComparer.Comparer.Builders;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Builders;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Emitters
+namespace ILLightenComparer.Comparer
 {
-    internal sealed class Context : IContext
+    internal sealed class ComparerContext : IComparerContext
     {
         private readonly IConfigurationProvider _configurations;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly ComparerProvider _provider;
 
-        public Context(IConfigurationProvider configurations)
+        public ComparerContext(IConfigurationProvider configurations)
         {
             _configurations = configurations;
             _provider = new ComparerProvider(configurations);
@@ -24,7 +24,7 @@ namespace ILLightenComparer.Emitters
         public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
            ?? (IComparer<T>)_emittedComparers.GetOrAdd(
                typeof(T),
-               key => _provider.EnsureComparerType(key).CreateInstance<IContext, IComparer<T>>(this));
+               key => _provider.EnsureComparerType(key).CreateInstance<IComparerContext, IComparer<T>>(this));
 
         public int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
         {
@@ -74,7 +74,7 @@ namespace ILLightenComparer.Emitters
         }
     }
 
-    internal interface IContext : IComparerProvider
+    internal interface IComparerContext : IComparerProvider
     {
         int DelayedCompare<T>(T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet);
     }

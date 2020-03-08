@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ILLightenComparer.Emitters;
+using ILLightenComparer.Comparer;
 using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Reflection
@@ -11,7 +11,7 @@ namespace ILLightenComparer.Reflection
     internal static class Method
     {
         public delegate int StaticMethodDelegate<in T>(
-            IContext context,
+            IComparerContext context,
             T x,
             T y,
             ConcurrentSet<object> xSet,
@@ -31,7 +31,7 @@ namespace ILLightenComparer.Reflection
             typeof(ConcurrentSet<object>).GetProperty(nameof(ConcurrentSet<object>.Count))?.GetGetMethod();
 
         public static MethodInfo DelayedCompare =
-            typeof(IContext).GetMethod(nameof(IContext.DelayedCompare));
+            typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
 
         public static MethodInfo GetComparer =
             typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
@@ -77,7 +77,7 @@ namespace ILLightenComparer.Reflection
         public static Type[] StaticCompareMethodParameters(Type objectType)
         {
             return new[] {
-                typeof(IContext),
+                typeof(IComparerContext),
                 objectType,
                 objectType,
                 typeof(ConcurrentSet<object>),

@@ -11,7 +11,7 @@ using Illuminator.Extensions;
 
 [assembly: InternalsVisibleTo("IL-Lighten-Comparer")]
 
-namespace ILLightenComparer.Emitters.Builders
+namespace ILLightenComparer.Comparer.Builders
 {
     internal sealed class ComparerProvider
     {

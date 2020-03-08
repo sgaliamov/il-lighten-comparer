@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ILLightenComparer.Comparer.Builders;
+using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Builders;
-using ILLightenComparer.Emitters.Comparisons;
-using ILLightenComparer.Emitters.Variables;
+using ILLightenComparer.Variables;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Emitters
+namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparisonResolver
     {

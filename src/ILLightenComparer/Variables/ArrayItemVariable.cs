@@ -5,7 +5,7 @@ using System.Reflection.Emit;
 using ILLightenComparer.Reflection;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Variables
+namespace ILLightenComparer.Variables
 {
     internal sealed class ArrayItemVariable : IVariable
     {

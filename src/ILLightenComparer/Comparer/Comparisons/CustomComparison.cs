@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Variables;
+using ILLightenComparer.Variables;
 using ILLightenComparer.Reflection;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Comparisons
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class CustomComparison : IComparison
     {

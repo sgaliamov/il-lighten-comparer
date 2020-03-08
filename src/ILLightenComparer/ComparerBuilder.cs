@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters;
 
 namespace ILLightenComparer
 {
@@ -12,7 +12,7 @@ namespace ILLightenComparer
     public sealed class ComparerBuilder : IComparerBuilder
     {
         private readonly ConfigurationProvider _configurationProvider = new ConfigurationProvider();
-        private Lazy<Context> _context;
+        private Lazy<ComparerContext> _context;
 
         public ComparerBuilder() => InitContext();
 
@@ -34,11 +34,11 @@ namespace ILLightenComparer
         }
 
         private void InitContext() =>
-            _context = new Lazy<Context>(
+            _context = new Lazy<ComparerContext>(
                 () => {
                     var contextConfiguration = new ConfigurationProvider(_configurationProvider);
 
-                    return new Context(contextConfiguration);
+                    return new ComparerContext(contextConfiguration);
                 },
                 LazyThreadSafetyMode.PublicationOnly);
 

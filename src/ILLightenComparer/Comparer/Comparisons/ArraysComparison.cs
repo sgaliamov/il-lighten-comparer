@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Comparer.Comparisons.Collection;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Comparisons.Collection;
-using ILLightenComparer.Emitters.Variables;
+using ILLightenComparer.Variables;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Comparisons
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class ArraysComparison : IComparison
     {

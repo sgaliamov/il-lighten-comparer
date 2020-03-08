@@ -1,7 +1,7 @@
 ﻿using System;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Variables
+namespace ILLightenComparer.Variables
 {
     internal interface IVariable
     {

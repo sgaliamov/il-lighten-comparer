@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Variables;
+using ILLightenComparer.Variables;
 using Illuminator.Extensions;
 
 namespace ILLightenComparer.Reflection

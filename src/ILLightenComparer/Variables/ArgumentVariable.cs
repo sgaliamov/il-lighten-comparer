@@ -1,7 +1,7 @@
 ﻿using System;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Variables
+namespace ILLightenComparer.Variables
 {
     internal sealed class ArgumentVariable : IVariable
     {
@@ -14,7 +14,7 @@ namespace ILLightenComparer.Emitters.Variables
         public Type OwnerType { get; }
         public Type VariableType { get; }
 
-        public ILEmitter Load(ILEmitter il, ushort arg) =>  il.LoadArgument(arg);
+        public ILEmitter Load(ILEmitter il, ushort arg) => il.LoadArgument(arg);
         public ILEmitter LoadAddress(ILEmitter il, ushort arg) => il.LoadArgumentAddress(arg);
     }
 }

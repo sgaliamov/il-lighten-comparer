@@ -1,7 +1,7 @@
 ﻿using System.Reflection.Emit;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Comparisons
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal interface IComparison
     {

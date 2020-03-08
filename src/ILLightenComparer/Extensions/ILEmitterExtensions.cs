@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Reflection;
+using ILLightenComparer.Variables;
 using Illuminator;
 
 namespace ILLightenComparer.Extensions

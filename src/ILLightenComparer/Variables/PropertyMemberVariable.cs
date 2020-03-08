@@ -3,7 +3,7 @@ using System.Reflection;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Emitters.Variables
+namespace ILLightenComparer.Variables
 {
     internal sealed class PropertyMemberVariable : IVariable
     {

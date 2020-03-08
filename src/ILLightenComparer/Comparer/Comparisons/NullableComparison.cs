@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
+using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Emitters.Comparisons
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class NullableComparison : IComparison
     {
@@ -17,7 +17,7 @@ namespace ILLightenComparer.Emitters.Comparisons
             _comparisons = comparisons;
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
         }
-        
+
         public static NullableComparison Create(ComparisonResolver comparisons, IVariable variable)
         {
             if (variable.VariableType.IsNullable()) {

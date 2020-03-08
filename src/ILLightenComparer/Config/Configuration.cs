@@ -43,8 +43,7 @@ namespace ILLightenComparer.Config
         {
             if (ignoredMembers == null) {
                 IgnoredMembers.Clear();
-            }
-            else {
+            } else {
                 IgnoredMembers.UnionWith(ignoredMembers);
             }
         }

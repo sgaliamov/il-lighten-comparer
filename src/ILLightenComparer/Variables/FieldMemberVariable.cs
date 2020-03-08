@@ -2,12 +2,12 @@
 using System.Reflection;
 using Illuminator;
 
-namespace ILLightenComparer.Emitters.Variables
+namespace ILLightenComparer.Variables
 {
     internal sealed class FieldMemberVariable : IVariable
     {
         private readonly FieldInfo _fieldInfo;
-         
+
         private FieldMemberVariable(FieldInfo fieldInfo) => _fieldInfo = fieldInfo;
 
         public Type OwnerType => _fieldInfo.DeclaringType;

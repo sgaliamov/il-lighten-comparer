@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
+using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 using static Illuminator.Functional;
 
-namespace ILLightenComparer.Emitters.Builders
+namespace ILLightenComparer.Comparer.Builders
 {
     internal sealed class ComparerTypeBuilder
     {
@@ -27,7 +27,7 @@ namespace ILLightenComparer.Emitters.Builders
         {
             var contextField = comparerTypeBuilder.DefineField(
                 "_context",
-                typeof(IContext),
+                typeof(IComparerContext),
                 FieldAttributes.InitOnly | FieldAttributes.Private);
 
             BuildConstructorAndFactoryMethod(comparerTypeBuilder, contextField);
@@ -130,7 +130,7 @@ namespace ILLightenComparer.Emitters.Builders
 
         private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)
         {
-            var parameters = new[] { typeof(IContext) };
+            var parameters = new[] { typeof(IComparerContext) };
 
             var constructorInfo = typeBuilder.DefineConstructor(
                 MethodAttributes.Public,

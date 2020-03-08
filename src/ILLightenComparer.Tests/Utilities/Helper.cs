@@ -33,8 +33,7 @@ namespace ILLightenComparer.Tests.Utilities
         {
             if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
                 x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
-            }
-            else {
+            } else {
                 x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>().WithStrictOrdering());
             }
         }

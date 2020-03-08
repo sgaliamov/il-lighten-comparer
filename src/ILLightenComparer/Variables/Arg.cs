@@ -1,4 +1,4 @@
-﻿namespace ILLightenComparer.Emitters.Variables
+﻿namespace ILLightenComparer.Variables
 {
     internal sealed class Arg
     {

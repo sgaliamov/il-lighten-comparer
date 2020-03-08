@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
+using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Emitters.Comparisons
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class ComparablesComparison : IComparison
     {

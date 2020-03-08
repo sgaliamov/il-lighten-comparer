@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Comparer.Comparisons.Collection;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters.Comparisons.Collection;
-using ILLightenComparer.Emitters.Variables;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
+using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Emitters.Comparisons
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class EnumerablesComparison : IComparison
     {
@@ -92,7 +92,7 @@ namespace ILLightenComparer.Emitters.Comparisons
 
         public ILEmitter Compare(ILEmitter il)
         {
-             il.DefineLabel(out var exit);
+            il.DefineLabel(out var exit);
 
             return Compare(il, exit)
                 .MarkLabel(exit)

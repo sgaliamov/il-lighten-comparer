@@ -93,8 +93,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                     if (actorsComparison != 0) {
                         return actorsComparison;
                     }
-                }
-                else if (y.Actors != null) {
+                } else if (y.Actors != null) {
                     return -1;
                 }
 
