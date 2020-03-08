@@ -5,22 +5,19 @@ using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Comparer;
 using ILLightenComparer.Shared;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Reflection
 {
     internal static class Method
     {
-        public delegate TOut StaticCompareMethodDelegate<in TComparable, in TContext, out TOut>(
+        public delegate TOut StaticCompareMethodDelegate<in TContext, in TComparable, out TOut>(
             TContext context,
             TComparable x,
             TComparable y,
             ConcurrentSet<object> xSet,
             ConcurrentSet<object> ySet);
 
-         public delegate int StaticHashMethodDelegate<in TComparable, in TContext, out TOut>(
-            TContext context,
-            TComparable comparable,
-            ConcurrentSet<object> cycleDetectionSet);
 
         public static readonly MethodInfo StringCompare = typeof(string).GetMethod(
             nameof(string.Compare),
@@ -88,6 +85,37 @@ namespace ILLightenComparer.Reflection
                 typeof(ConcurrentSet<object>),
                 typeof(ConcurrentSet<object>)
             };
+        }
+
+        public static TResult StaticCompare<TContext, TComparable, TResult>(
+            this MethodInfo method,
+            Type actualType,
+            TContext context,
+            TComparable x,
+            TComparable y,
+            ConcurrentSet<object> xSet,
+            ConcurrentSet<object> ySet)
+        {
+            var isDeclaringTypeMatchedActualMemberType = typeof(TComparable) == actualType;
+            if (!isDeclaringTypeMatchedActualMemberType) {
+                // todo: cache delegates and benchmark ways:
+                // - direct Invoke;
+                // - DynamicInvoke;
+                // var genericType = typeof(Method.StaticMethodDelegate<>).MakeGenericType(type);
+                // var @delegate = compareMethod.CreateDelegate(genericType);
+                // return (int)@delegate.DynamicInvoke(this, x, y, hash);
+                // - DynamicMethod;
+                // - generate static class wrapper.
+
+                return (TResult)method.Invoke(
+                    null,
+                    new object[] { context, x, y, xSet, ySet });
+            }
+
+            var compare = method.CreateDelegate<
+                Method.StaticCompareMethodDelegate<TContext, TComparable, TResult>>();
+
+            return compare(context, x, y, xSet, ySet);
         }
     }
 }

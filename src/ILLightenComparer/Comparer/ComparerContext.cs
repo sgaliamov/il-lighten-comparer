@@ -4,7 +4,6 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer
 {
@@ -44,32 +43,9 @@ namespace ILLightenComparer.Comparer
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
-            return Compare(xType, x, y, xSet, ySet);
-        }
+            var compareMethod = _provider.GetCompiledStaticCompareMethod(xType);
 
-        private int Compare<T>(Type type, T x, T y, ConcurrentSet<object> xSet, ConcurrentSet<object> ySet)
-        {
-            var compareMethod = _provider.GetCompiledStaticCompareMethod(type);
-
-            var isDeclaringTypeMatchedActualMemberType = typeof(T) == type;
-            if (!isDeclaringTypeMatchedActualMemberType) {
-                // todo: cache delegates and benchmark ways:
-                // - direct Invoke;
-                // - DynamicInvoke;
-                // var genericType = typeof(Method.StaticMethodDelegate<>).MakeGenericType(type);
-                // var @delegate = compareMethod.CreateDelegate(genericType);
-                // return (int)@delegate.DynamicInvoke(this, x, y, hash);
-                // - DynamicMethod;
-                // - generate static class wrapper.
-
-                return (int)compareMethod.Invoke(
-                    null,
-                    new object[] { this, x, y, xSet, ySet });
-            }
-
-            var compare = compareMethod.CreateDelegate<Method.StaticCompareMethodDelegate<T, IComparerContext, int>>();
-
-            return compare(this, x, y, xSet, ySet);
+            return compareMethod.StaticCompare<IComparerContext, T, int>(xType, this, x, y, xSet, ySet);
         }
     }
 
