@@ -70,11 +70,12 @@ namespace ILLightenComparer.Equality
         }
 
         public IEqualityComparer<T> GetEqualityComparer<T>() =>
-          _configurations.GetCustomEqualityComparer<T>()
-             ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T),
-                 key => _genericProvider
-                 .EnsureComparerType(key)
-                 .CreateInstance<IEqualityComparerContext, IEqualityComparer<T>>(this));
+            _configurations.GetCustomEqualityComparer<T>()
+             ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T), key => CreateInstance<T>(key));
+
+        private IEqualityComparer<T> CreateInstance<T>(Type key) => _genericProvider
+            .EnsureComparerType(key)
+            .CreateInstance<IEqualityComparerContext, IEqualityComparer<T>>(this);
 
         private int GetHash<TComparable>(
             MethodInfo method,

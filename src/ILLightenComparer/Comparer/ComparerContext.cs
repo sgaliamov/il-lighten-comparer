@@ -27,21 +27,9 @@ namespace ILLightenComparer.Comparer
             _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);
         }
 
-        private Type BuiltType(StaticMethodsInfo info, Type objectType)
-        {
-            var methodInfo = info.GetMethodInfo(MethodName.Compare);
-            Debug.Assert(!info.IsCompiled(MethodName.Compare), "Not compiled method is expected.");
-
-            return _comparerTypeBuilder.Build(
-                (TypeBuilder)methodInfo.DeclaringType,
-                (MethodBuilder)methodInfo,
-                objectType);
-        }
-
-        public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
-           ?? (IComparer<T>)_emittedComparers.GetOrAdd(
-               typeof(T),
-               key => _genericProvider.EnsureComparerType(key).CreateInstance<IComparerContext, IComparer<T>>(this));
+        public IComparer<T> GetComparer<T>() =>
+            _configurations.GetCustomComparer<T>()
+           ?? (IComparer<T>)_emittedComparers.GetOrAdd(typeof(T), key => CreateInstance<T>(key));
 
         public int DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
         {
@@ -65,6 +53,21 @@ namespace ILLightenComparer.Comparer
             var compareMethod = _provider.GetCompiledStaticCompareMethod(xType);
 
             return compareMethod.InvokeCompare<IComparerContext, T, int>(xType, this, x, y, xSet, ySet);
+        }
+
+        private IComparer<T> CreateInstance<T>(Type key) => _genericProvider
+            .EnsureComparerType(key)
+            .CreateInstance<IComparerContext, IComparer<T>>(this);
+
+        private Type BuiltType(StaticMethodsInfo info, Type objectType)
+        {
+            var methodInfo = info.GetMethodInfo(MethodName.Compare);
+            Debug.Assert(!info.IsCompiled(MethodName.Compare), "Not compiled method is expected.");
+
+            return _comparerTypeBuilder.Build(
+                (TypeBuilder)methodInfo.DeclaringType,
+                (MethodBuilder)methodInfo,
+                objectType);
         }
     }
 
