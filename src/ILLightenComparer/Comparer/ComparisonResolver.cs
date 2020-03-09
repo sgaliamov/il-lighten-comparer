@@ -24,7 +24,7 @@ namespace ILLightenComparer.Comparer
                 (IVariable variable) => StringsComparison.Create(_configurations, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, _configurations, variable),
-                (IVariable variable) => HierarchicalsComparison.Create(provider, variable),
+                (IVariable variable) => IndirectComparison.Create(provider, variable),
                 (IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
                 (IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
             };
