@@ -58,9 +58,9 @@ namespace ILLightenComparer.Equality
 
             var actualType = comparable.GetType();
 
-            var compareMethod = _provider.GetCompiledStaticCompareMethod(actualType);
+            var hashMethod = _provider.GetCompiledStaticHashMethod(actualType);
 
-            return GetHash(compareMethod, actualType, comparable, cycleDetectionSet);
+            return GetHash(hashMethod, actualType, comparable, cycleDetectionSet);
         }
 
         private int GetHash<TComparable>(
@@ -90,7 +90,7 @@ namespace ILLightenComparer.Equality
                    .CreateInstance<IEqualityComparerContext, IEqualityComparer<T>>(this));
     }
 
-    internal interface IEqualityComparerContext : IEqualityComparerProvider
+    internal interface IEqualityComparerContext : IEqualityComparerProvider, IContex
     {
         bool DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
 

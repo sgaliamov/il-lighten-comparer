@@ -49,7 +49,7 @@ namespace ILLightenComparer.Comparer
         }
     }
 
-    internal interface IComparerContext : IComparerProvider
+    internal interface IComparerContext : IComparerProvider, IContex
     {
         int DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
     }

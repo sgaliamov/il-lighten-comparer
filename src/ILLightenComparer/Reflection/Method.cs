@@ -11,9 +11,6 @@ namespace ILLightenComparer.Reflection
 {
     internal static class Method
     {
-
-
-
         public static readonly MethodInfo StringCompare = typeof(string).GetMethod(
             nameof(string.Compare),
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
@@ -62,8 +59,7 @@ namespace ILLightenComparer.Reflection
         {
             return typeof(Array)
                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                   .Where(x => x.Name == nameof(Array.Sort)
-                            && x.IsGenericMethodDefinition)
+                   .Where(x => x.Name == nameof(Array.Sort) && x.IsGenericMethodDefinition)
                    .Single(x => {
                        var parameters = x.GetParameters();
                        return parameters.Length == 1 && parameters[0].ParameterType.IsArray;

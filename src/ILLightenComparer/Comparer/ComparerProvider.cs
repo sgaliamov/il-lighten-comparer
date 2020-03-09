@@ -27,10 +27,10 @@ namespace ILLightenComparer.Comparer
                 .DefineDynamicModule("IL-Lighten-Comparer.module");
         }
 
-        // method info is enough to emit compare on sealed type
+        // method info is enough to emit compare on sealed type in IndirectComparison
         public MethodInfo GetStaticCompareMethodInfo(Type type) => DefineStaticMethod(type).CompareMethod;
 
-        // is used for delayed calls
+        // is used for delayed calls in context
         public MethodInfo GetCompiledStaticCompareMethod(Type type)
         {
             EnsureComparerType(type);
@@ -40,6 +40,7 @@ namespace ILLightenComparer.Comparer
                        : throw new InvalidOperationException("Compiled method is expected.");
         }
 
+        // exposed compiled type to create instance
         public Type EnsureComparerType(Type objectType)
         {
             var lazy = _comparerTypes.GetOrAdd(
