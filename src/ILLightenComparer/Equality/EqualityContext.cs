@@ -14,12 +14,19 @@ namespace ILLightenComparer.Equality
     {
         private readonly IConfigurationProvider _configurations;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
-        private readonly EqualityProvider _provider;
+        private readonly EqualityMethodsProvider _provider;
+        private readonly ComparerTypeBuilder _comparerTypeBuilder;
+        private readonly GenericProvider _genericProvider;
 
         public EqualityContext(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _provider = new EqualityProvider(configurations);
+            _configurations = configurations;
+            var resolver = new ComparisonResolver(null, _configurations);
+            _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);
+            _genericProvider = new GenericProvider(typeof(IEqualityComparer<>), (_) => null);
+
+            _provider = new EqualityMethodsProvider(_genericProvider);
         }
 
         public bool DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
@@ -40,7 +47,7 @@ namespace ILLightenComparer.Equality
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
-            var compareMethod = _provider.GetCompiledStaticCompareMethod(xType);
+            var compareMethod = _provider.GetCompiledStaticEqualsMethod(xType);
 
             return compareMethod.InvokeCompare<IEqualityComparerContext, T, bool>(xType, this, x, y, xSet, ySet);
         }
@@ -85,7 +92,7 @@ namespace ILLightenComparer.Equality
         public IEqualityComparer<T> GetEqualityComparer<T>() =>
             _configurations.GetCustomEqualityComparer<T>()
                ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T),
-                   key => _provider
+                   key => _genericProvider
                    .EnsureComparerType(key)
                    .CreateInstance<IEqualityComparerContext, IEqualityComparer<T>>(this));
     }

@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using ILLightenComparer.Config;
 using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Comparer
 {
-    internal sealed class EqualityProvider
+    internal sealed class EqualityMethodsProvider
     {
-        private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly GenericProvider _genericProvider;
-        private readonly IConfigurationProvider _configurations;
 
-        public EqualityProvider(IConfigurationProvider configurations)
-        {
-            _configurations = configurations;
-            var resolver = new ComparisonResolver(null, _configurations);
-            _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);
-            _genericProvider = new GenericProvider(typeof(IEqualityComparer<>), (_) => null);
-        }
+        public EqualityMethodsProvider(GenericProvider genericProvider) => _genericProvider = genericProvider;
 
         public MethodInfo GetStaticEqualsMethodInfo(Type type) =>
             _genericProvider.GetStaticMethodInfo(type, nameof(Equals));
