@@ -21,7 +21,7 @@ namespace ILLightenComparer.Comparer
         {
             _configurations = configurations;
             _configurations = configurations;
-            _genericProvider = new GenericProvider(typeof(IComparer<>), typeof(IComparerContext), BuiltType);
+            _genericProvider = new GenericProvider(typeof(IComparer<>), BuiltType);
             _provider = new ComparerMethodProvider(_genericProvider);
             var resolver = new ComparisonResolver(_provider, _configurations);
             _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);

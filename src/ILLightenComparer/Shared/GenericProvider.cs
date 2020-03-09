@@ -9,19 +9,20 @@ namespace ILLightenComparer.Shared
 {
     internal sealed class GenericProvider
     {
-        private static MethodInfo[] _interfaceMethods;
-        private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
-        private readonly ModuleBuilder _moduleBuilder;
-        private readonly ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>> _methods = new ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>>();
-        private readonly Type _genericInterface;
-        private readonly Type _contextType;
+        private static readonly Type _contextType = typeof(IContex);
         private readonly Func<StaticMethodsInfo, Type, Type> _buildType;
+        private readonly MethodInfo[] _interfaceMethods;
+        private readonly ModuleBuilder _moduleBuilder;
+        private readonly Type _genericInterface;
+        private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes =
+            new ConcurrentDictionary<Type, Lazy<Type>>();
+        private readonly ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>> _methods =
+            new ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>>();
 
-        public GenericProvider(Type genericInterface, Type contextType, Func<StaticMethodsInfo, Type, Type> buildType)
+        public GenericProvider(Type genericInterface, Func<StaticMethodsInfo, Type, Type> buildType)
         {
             _buildType = buildType;
             _genericInterface = genericInterface;
-            _contextType = contextType;
             _interfaceMethods = genericInterface.GetMethods();
             _moduleBuilder = AssemblyBuilder
                 .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer"), AssemblyBuilderAccess.RunAndCollect)

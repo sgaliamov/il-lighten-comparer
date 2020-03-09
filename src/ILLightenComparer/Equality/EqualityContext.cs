@@ -24,10 +24,7 @@ namespace ILLightenComparer.Equality
             _configurations = configurations;
             var resolver = new ComparisonResolver(null, _configurations);
             _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);
-            _genericProvider = new GenericProvider(
-                typeof(IEqualityComparer<>),
-                typeof(IEqualityComparerContext),
-                BuildType);
+            _genericProvider = new GenericProvider(typeof(IEqualityComparer<>), BuildType);
             _provider = new EqualityMethodsProvider(_genericProvider);
         }
 
