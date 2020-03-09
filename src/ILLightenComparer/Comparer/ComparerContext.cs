@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
@@ -10,19 +12,36 @@ namespace ILLightenComparer.Comparer
     internal sealed class ComparerContext : IComparerContext
     {
         private readonly IConfigurationProvider _configurations;
+        private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
-        private readonly ComparerProvider _provider;
+        private readonly GenericProvider _genericProvider;
+        private readonly ComparerMethodProvider _provider;
 
         public ComparerContext(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _provider = new ComparerProvider(configurations);
+            _configurations = configurations;
+            _genericProvider = new GenericProvider(typeof(IComparer<>), typeof(IComparerContext), BuiltType);
+            _provider = new ComparerMethodProvider(_genericProvider);
+            var resolver = new ComparisonResolver(_provider, _configurations);
+            _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);
+        }
+
+        private Type BuiltType(StaticMethodsInfo info, Type objectType)
+        {
+            var methodInfo = info.GetMethodInfo(MethodName.Compare);
+            Debug.Assert(!info.IsCompiled(MethodName.Compare), "Not compiled method is expected.");
+
+            return _comparerTypeBuilder.Build(
+                (TypeBuilder)methodInfo.DeclaringType,
+                (MethodBuilder)methodInfo,
+                objectType);
         }
 
         public IComparer<T> GetComparer<T>() => _configurations.GetCustomComparer<T>()
            ?? (IComparer<T>)_emittedComparers.GetOrAdd(
                typeof(T),
-               key => _provider.EnsureComparerType(key).CreateInstance<IComparerContext, IComparer<T>>(this));
+               key => _genericProvider.EnsureComparerType(key).CreateInstance<IComparerContext, IComparer<T>>(this));
 
         public int DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
         {

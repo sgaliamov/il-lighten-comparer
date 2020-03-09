@@ -67,17 +67,6 @@ namespace ILLightenComparer.Reflection
                    .MakeGenericMethod(elementType);
         }
 
-        public static Type[] StaticCompareMethodParameters(Type objectType)
-        {
-            return new[] {
-                typeof(IComparerContext),
-                objectType,
-                objectType,
-                typeof(CycleDetectionSet),
-                typeof(CycleDetectionSet)
-            };
-        }
-
         public static TResult InvokeCompare<TContext, TComparable, TResult>(
             this MethodInfo method,
             Type actualType,

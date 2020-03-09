@@ -14,12 +14,14 @@ namespace ILLightenComparer.Shared
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>> _methods = new ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>>();
         private readonly Type _genericInterface;
-        private readonly Func<StaticMethodsInfo, Type> _buildType;
+        private readonly Type _contextType;
+        private readonly Func<StaticMethodsInfo, Type, Type> _buildType;
 
-        public GenericProvider(Type genericInterface, Func<StaticMethodsInfo, Type> buildType)
+        public GenericProvider(Type genericInterface, Type contextType, Func<StaticMethodsInfo, Type, Type> buildType)
         {
             _buildType = buildType;
             _genericInterface = genericInterface;
+            _contextType = contextType;
             _interfaceMethods = genericInterface.GetMethods();
             _moduleBuilder = AssemblyBuilder
                 .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer"), AssemblyBuilderAccess.RunAndCollect)
@@ -47,7 +49,7 @@ namespace ILLightenComparer.Shared
                 key => new Lazy<Type>(() => {
                     var info = DefineStaticMethod(key);
 
-                    var compiledComparerType = _buildType(info);
+                    var compiledComparerType = _buildType(info, key);
 
                     foreach (var item in _interfaceMethods) {
                         var method = compiledComparerType.GetMethod(item.Name);
@@ -78,7 +80,7 @@ namespace ILLightenComparer.Shared
                         .Select(method => {
                             var parameterTypes = method.GetParameters().Select(x => x.ParameterType).ToArray();
 
-                            var staticMethodParameterTypes = new[] { typeof(IContex) }
+                            var staticMethodParameterTypes = new[] { _contextType }
                                 .Concat(parameterTypes)
                                 .Concat(parameterTypes.Select(_ => typeof(CycleDetectionSet)))
                                 .ToArray();

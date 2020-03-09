@@ -12,18 +12,18 @@ namespace ILLightenComparer.Comparer.Comparisons
     /// </summary>
     internal sealed class IndirectComparison : IComparison
     {
-        private readonly ComparerProvider _context;
+        private readonly ComparerMethodProvider _context;
         private readonly IVariable _variable;
         private readonly MethodInfo _delayedCompare;
 
-        private IndirectComparison(ComparerProvider context, IVariable variable)
+        private IndirectComparison(ComparerMethodProvider context, IVariable variable)
         {
             _context = context;
             _variable = variable;
             _delayedCompare = Method.DelayedCompare.MakeGenericMethod(_variable.VariableType);
         }
 
-        public static IndirectComparison Create(ComparerProvider provider, IVariable variable)
+        public static IndirectComparison Create(ComparerMethodProvider provider, IVariable variable)
         {
             if (variable.VariableType.IsHierarchical() && !(variable is ArgumentVariable)) {
                 return new IndirectComparison(provider, variable);

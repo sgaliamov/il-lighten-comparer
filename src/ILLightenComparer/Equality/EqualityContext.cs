@@ -24,8 +24,10 @@ namespace ILLightenComparer.Equality
             _configurations = configurations;
             var resolver = new ComparisonResolver(null, _configurations);
             _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);
-            _genericProvider = new GenericProvider(typeof(IEqualityComparer<>), (_) => null);
-
+            _genericProvider = new GenericProvider(
+                typeof(IEqualityComparer<>),
+                typeof(IEqualityComparerContext),
+                BuildType);
             _provider = new EqualityMethodsProvider(_genericProvider);
         }
 
@@ -70,6 +72,13 @@ namespace ILLightenComparer.Equality
             return GetHash(hashMethod, actualType, comparable, cycleDetectionSet);
         }
 
+        public IEqualityComparer<T> GetEqualityComparer<T>() =>
+          _configurations.GetCustomEqualityComparer<T>()
+             ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T),
+                 key => _genericProvider
+                 .EnsureComparerType(key)
+                 .CreateInstance<IEqualityComparerContext, IEqualityComparer<T>>(this));
+
         private int GetHash<TComparable>(
             MethodInfo method,
             Type actualType,
@@ -89,12 +98,10 @@ namespace ILLightenComparer.Equality
             return compare(this, comparable, cycleDetectionSet);
         }
 
-        public IEqualityComparer<T> GetEqualityComparer<T>() =>
-            _configurations.GetCustomEqualityComparer<T>()
-               ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T),
-                   key => _genericProvider
-                   .EnsureComparerType(key)
-                   .CreateInstance<IEqualityComparerContext, IEqualityComparer<T>>(this));
+        private Type BuildType(StaticMethodsInfo arg1, Type arg2)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal interface IEqualityComparerContext : IEqualityComparerProvider, IContex
