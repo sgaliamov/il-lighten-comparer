@@ -52,7 +52,7 @@ namespace ILLightenComparer.Shared
                     var compiledComparerType = _buildType(info, key);
 
                     foreach (var item in _interfaceMethods) {
-                        var method = compiledComparerType.GetMethod(item.Name);
+                        var method = compiledComparerType.GetMethod(item.Name, BindingFlags.Public | BindingFlags.Static);
                         info.SetCompiledMethod(method);
                     }
 
@@ -76,7 +76,8 @@ namespace ILLightenComparer.Shared
                         $"{typedInterface.FullName}.DynamicComparer",
                         typedInterface);
 
-                    var methodBuilders = _interfaceMethods
+                    var methodBuilders = typedInterface
+                        .GetMethods()
                         .Select(method => {
                             var parameterTypes = method.GetParameters().Select(x => x.ParameterType).ToArray();
 
@@ -101,7 +102,7 @@ namespace ILLightenComparer.Shared
         private void FinalizeStartedBuilds()
         {
             foreach (var item in _methods.ToDictionary(x => x.Key, x => x.Value.Value)) {
-                if (item.Value.IsCompiled(item.Key.Name)) {
+                if (item.Value.AllCompiled()) {
                     continue;
                 }
 
