@@ -208,3 +208,6 @@ dotnet_naming_style.private_fields_naming.required_prefix = _
 dotnet_naming_style.private_fields_naming.required_suffix = 
 dotnet_naming_style.private_fields_naming.word_separator = 
 dotnet_naming_style.private_fields_naming.capitalization = camel_case
+
+# RCS1057: Add empty line between declarations.
+dotnet_diagnostic.RCS1057.severity = silent

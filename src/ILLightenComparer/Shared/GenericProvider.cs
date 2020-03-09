@@ -9,7 +9,6 @@ namespace ILLightenComparer.Shared
 {
     internal sealed class GenericProvider
     {
-        private static readonly Type _contextType = typeof(IContex);
         private readonly Func<StaticMethodsInfo, Type, Type> _buildType;
         private readonly MethodInfo[] _interfaceMethods;
         private readonly ModuleBuilder _moduleBuilder;
@@ -82,7 +81,7 @@ namespace ILLightenComparer.Shared
                         .Select(method => {
                             var parameterTypes = method.GetParameters().Select(x => x.ParameterType).ToArray();
 
-                            var staticMethodParameterTypes = new[] { _contextType }
+                            var staticMethodParameterTypes = new[] { typeof(IContex) }
                                 .Concat(parameterTypes)
                                 .Concat(parameterTypes.Select(_ => typeof(CycleDetectionSet)))
                                 .ToArray();
