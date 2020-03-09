@@ -7,17 +7,20 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Shared
 {
-    internal sealed partial class GenericProvider<TGenericInterface>
+    internal sealed class GenericProvider
     {
-        private static readonly MethodInfo[] _interfaceMethods = typeof(TGenericInterface).GetMethods();
+        private static MethodInfo[] _interfaceMethods;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes = new ConcurrentDictionary<Type, Lazy<Type>>();
         private readonly ModuleBuilder _moduleBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>> _methods = new ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>>();
+        private readonly Type _genericInterface;
         private readonly Func<StaticMethodsInfo, Type> _buildType;
 
-        public GenericProvider(Func<StaticMethodsInfo, Type> buildType)
+        public GenericProvider(Type genericInterface, Func<StaticMethodsInfo, Type> buildType)
         {
             _buildType = buildType;
+            _genericInterface = genericInterface;
+            _interfaceMethods = genericInterface.GetMethods();
             _moduleBuilder = AssemblyBuilder
                 .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer"), AssemblyBuilderAccess.RunAndCollect)
                 .DefineDynamicModule("IL-Lighten-Comparer.module");
@@ -65,7 +68,7 @@ namespace ILLightenComparer.Shared
         {
             var lazy = _methods.GetOrAdd(objectType,
                 key => new Lazy<StaticMethodsInfo>(() => {
-                    var typedInterface = typeof(TGenericInterface).MakeGenericType(key);
+                    var typedInterface = _genericInterface.MakeGenericType(key);
 
                     var typeBuilder = _moduleBuilder.DefineType(
                         $"{typedInterface.FullName}.DynamicComparer",
