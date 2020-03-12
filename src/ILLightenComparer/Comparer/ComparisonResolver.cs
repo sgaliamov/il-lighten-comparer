@@ -14,7 +14,7 @@ namespace ILLightenComparer.Comparer
         private readonly IConfigurationProvider _configurations;
 
         public ComparisonResolver(
-            ComparerMethodProvider provider,
+            ComparersMethodsProvider provider,
             IConfigurationProvider configurations)
         {
             _configurations = configurations;

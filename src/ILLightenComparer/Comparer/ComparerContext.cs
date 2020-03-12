@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
@@ -11,20 +9,20 @@ namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparerContext : IComparerContext
     {
-        private readonly IConfigurationProvider _configurations;
-        private readonly ComparerTypeBuilder _comparerTypeBuilder;
-        private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly GenericProvider _genericProvider;
-        private readonly ComparerMethodProvider _provider;
+        private readonly ComparersCollection _emittedComparers = new ComparersCollection();
+        private readonly IConfigurationProvider _configurations;
+        private readonly ComparersMethodsProvider _provider;
 
         public ComparerContext(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _configurations = configurations;
-            _genericProvider = new GenericProvider(typeof(IComparer<>), BuiltType);
-            _provider = new ComparerMethodProvider(_genericProvider);
+            _provider = new ComparersMethodsProvider(_genericProvider);
             var resolver = new ComparisonResolver(_provider, _configurations);
-            _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);
+            var staticMethodEmitter = new ComparerStaticMethodEmitter(resolver, _configurations);
+            _genericProvider = new GenericProvider(
+                typeof(IComparer<>),
+                new GenericTypeBuilder(_configurations, staticMethodEmitter));
         }
 
         public IComparer<T> GetComparer<T>() =>
@@ -58,20 +56,9 @@ namespace ILLightenComparer.Comparer
         private IComparer<T> CreateInstance<T>(Type key) => _genericProvider
             .EnsureComparerType(key)
             .CreateInstance<IComparerContext, IComparer<T>>(this);
-
-        private Type BuiltType(StaticMethodsInfo info, Type objectType)
-        {
-            var methodInfo = info.GetMethodInfo(MethodName.Compare);
-            Debug.Assert(!info.IsCompiled(MethodName.Compare), "Not compiled method is expected.");
-
-            return _comparerTypeBuilder.Build(
-                (TypeBuilder)methodInfo.DeclaringType,
-                (MethodBuilder)methodInfo,
-                objectType);
-        }
     }
 
-    internal interface IComparerContext : IComparerProvider, IContex
+    internal interface IComparerContext : IComparerProvider, IContext
     {
         int DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
     }

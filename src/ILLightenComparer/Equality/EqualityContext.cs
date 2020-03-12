@@ -12,20 +12,19 @@ namespace ILLightenComparer.Equality
 {
     internal sealed class EqualityContext : IEqualityComparerContext
     {
+        private readonly EqualityMethodsProvider _provider;
         private readonly IConfigurationProvider _configurations;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
-        private readonly EqualityMethodsProvider _provider;
-        private readonly ComparerTypeBuilder _comparerTypeBuilder;
         private readonly GenericProvider _genericProvider;
 
         public EqualityContext(IConfigurationProvider configurations)
         {
             _configurations = configurations;
             _configurations = configurations;
-            var resolver = new ComparisonResolver(null, _configurations);
-            _comparerTypeBuilder = new ComparerTypeBuilder(resolver, _configurations);
-            _genericProvider = new GenericProvider(typeof(IEqualityComparer<>), BuildType);
             _provider = new EqualityMethodsProvider(_genericProvider);
+            _genericProvider = new GenericProvider(
+                typeof(IEqualityComparer<>),
+                new GenericTypeBuilder(_configurations, null));
         }
 
         public bool DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
@@ -95,14 +94,9 @@ namespace ILLightenComparer.Equality
 
             return compare(this, comparable, cycleDetectionSet);
         }
-
-        private Type BuildType(StaticMethodsInfo arg1, Type arg2)
-        {
-            throw new NotImplementedException();
-        }
     }
 
-    internal interface IEqualityComparerContext : IEqualityComparerProvider, IContex
+    internal interface IEqualityComparerContext : IEqualityComparerProvider, IContext
     {
         bool DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
 

@@ -9,20 +9,18 @@ namespace ILLightenComparer.Shared
 {
     internal sealed class GenericProvider
     {
-        private readonly Func<StaticMethodsInfo, Type, Type> _buildType;
-        private readonly MethodInfo[] _interfaceMethods;
-        private readonly ModuleBuilder _moduleBuilder;
         private readonly Type _genericInterface;
+        private readonly ModuleBuilder _moduleBuilder;
+        private readonly GenericTypeBuilder _typeBuilder;
         private readonly ConcurrentDictionary<Type, Lazy<Type>> _comparerTypes =
             new ConcurrentDictionary<Type, Lazy<Type>>();
-        private readonly ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>> _methods =
+        private readonly ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>> _methodsInfo =
             new ConcurrentDictionary<Type, Lazy<StaticMethodsInfo>>();
 
-        public GenericProvider(Type genericInterface, Func<StaticMethodsInfo, Type, Type> buildType)
+        public GenericProvider(Type genericInterface, GenericTypeBuilder typeBuilder)
         {
-            _buildType = buildType;
+            _typeBuilder = typeBuilder;
             _genericInterface = genericInterface;
-            _interfaceMethods = genericInterface.GetMethods();
             _moduleBuilder = AssemblyBuilder
                 .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer"), AssemblyBuilderAccess.RunAndCollect)
                 .DefineDynamicModule("IL-Lighten-Comparer.module");
@@ -36,7 +34,7 @@ namespace ILLightenComparer.Shared
         {
             EnsureComparerType(type);
 
-            return _methods.TryGetValue(type, out var item) && item.Value.IsCompiled(name)
+            return _methodsInfo.TryGetValue(type, out var item) && item.Value.IsCompiled(name)
                 ? item.Value.GetMethodInfo(name)
                 : throw new InvalidOperationException("Compiled method is expected.");
         }
@@ -49,14 +47,7 @@ namespace ILLightenComparer.Shared
                 key => new Lazy<Type>(() => {
                     var info = DefineStaticMethod(key);
 
-                    var compiledComparerType = _buildType(info, key);
-
-                    foreach (var item in _interfaceMethods) {
-                        var method = compiledComparerType.GetMethod(item.Name, BindingFlags.Public | BindingFlags.Static);
-                        info.SetCompiledMethod(method);
-                    }
-
-                    return compiledComparerType;
+                    return _typeBuilder.Build(info);
                 }));
 
             var comparerType = lazy.Value;
@@ -68,7 +59,7 @@ namespace ILLightenComparer.Shared
 
         private StaticMethodsInfo DefineStaticMethod(Type objectType)
         {
-            var lazy = _methods.GetOrAdd(objectType,
+            var lazy = _methodsInfo.GetOrAdd(objectType,
                 key => new Lazy<StaticMethodsInfo>(() => {
                     var typedInterface = _genericInterface.MakeGenericType(key);
 
@@ -81,7 +72,7 @@ namespace ILLightenComparer.Shared
                         .Select(method => {
                             var parameterTypes = method.GetParameters().Select(x => x.ParameterType).ToArray();
 
-                            var staticMethodParameterTypes = new[] { typeof(IContex) }
+                            var staticMethodParameterTypes = new[] { typeof(IContext) }
                                 .Concat(parameterTypes)
                                 .Concat(parameterTypes.Select(_ => typeof(CycleDetectionSet)))
                                 .ToArray();
@@ -93,7 +84,7 @@ namespace ILLightenComparer.Shared
                         })
                         .ToArray();
 
-                    return new StaticMethodsInfo(methodBuilders);
+                    return new StaticMethodsInfo(key, typedInterface, typeBuilder, methodBuilders);
                 }));
 
             return lazy.Value;
@@ -101,7 +92,7 @@ namespace ILLightenComparer.Shared
 
         private void FinalizeStartedBuilds()
         {
-            foreach (var item in _methods.ToDictionary(x => x.Key, x => x.Value.Value)) {
+            foreach (var item in _methodsInfo.ToDictionary(x => x.Key, x => x.Value.Value)) {
                 if (item.Value.AllCompiled()) {
                     continue;
                 }

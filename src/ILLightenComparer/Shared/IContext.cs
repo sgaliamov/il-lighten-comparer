@@ -1,4 +1,4 @@
 ﻿namespace ILLightenComparer.Shared
 {
-    internal interface IContex { }
+    internal interface IContext { }
 }

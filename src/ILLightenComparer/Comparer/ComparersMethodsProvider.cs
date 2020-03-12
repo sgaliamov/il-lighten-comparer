@@ -5,11 +5,11 @@ using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Comparer
 {
-    internal sealed class ComparerMethodProvider
+    internal sealed class ComparersMethodsProvider
     {
         private readonly GenericProvider _genericProvider;
 
-        public ComparerMethodProvider(GenericProvider genericProvider) => _genericProvider = genericProvider;
+        public ComparersMethodsProvider(GenericProvider genericProvider) => _genericProvider = genericProvider;
 
         public MethodInfo GetStaticCompareMethodInfo(Type type) =>
             _genericProvider.GetStaticMethodInfo(type, MethodName.Compare);
