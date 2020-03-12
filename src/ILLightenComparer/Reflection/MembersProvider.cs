@@ -23,9 +23,10 @@ namespace ILLightenComparer.Reflection
         }
 
         private IEnumerable<MemberInfo> Filter(IReflect type) =>
-            type.GetMembers(BindingFlags.Instance
-                            | BindingFlags.FlattenHierarchy
-                            | BindingFlags.Public)
+            type.GetMembers(
+                    BindingFlags.Instance
+                    | BindingFlags.FlattenHierarchy
+                    | BindingFlags.Public)
                 .Where(IncludeFields)
                 .Where(IgnoredMembers);
 

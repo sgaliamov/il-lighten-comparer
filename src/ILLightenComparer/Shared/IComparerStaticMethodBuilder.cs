@@ -1,9 +1,10 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection.Emit;
 
 namespace ILLightenComparer.Shared
 {
     internal interface IComparerStaticMethodEmitter
     {
-        void Build(MethodBuilder staticMethodBuilder);
+        void Build(Type objectType, MethodBuilder staticMethodBuilder);
     }
 }

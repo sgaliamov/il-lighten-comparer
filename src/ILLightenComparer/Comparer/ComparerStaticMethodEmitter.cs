@@ -23,10 +23,8 @@ namespace ILLightenComparer.Comparer
             _resolver = resolver;
         }
 
-        public void Build(MethodBuilder staticMethodBuilder)
+        public void Build(Type objectType, MethodBuilder staticMethodBuilder)
         {
-            var objectType = staticMethodBuilder.DeclaringType;
-
             using var il = staticMethodBuilder.CreateILEmitter();
 
             var needReferenceComparison =

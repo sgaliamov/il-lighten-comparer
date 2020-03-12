@@ -39,7 +39,7 @@ namespace ILLightenComparer.Shared
             var names = methodsInfo
                 .GetAllMethodBuilders()
                 .Select(staticMethodBuilder => {
-                    _staticMethodEmitter.Build(staticMethodBuilder);
+                    _staticMethodEmitter.Build(methodsInfo.ObjectType, staticMethodBuilder);
 
                     BuildInstanceMethod(
                         methodsInfo.TypedComparerInterface,
