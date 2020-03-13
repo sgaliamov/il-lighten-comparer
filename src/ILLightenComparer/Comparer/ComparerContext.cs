@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
@@ -12,17 +13,15 @@ namespace ILLightenComparer.Comparer
         private readonly GenericProvider _genericProvider;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly IConfigurationProvider _configurations;
-        private readonly ComparersMethodsProvider _provider;
 
         public ComparerContext(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _provider = new ComparersMethodsProvider(_genericProvider);
-            var resolver = new ComparisonResolver(_provider, _configurations);
-            var staticMethodEmitter = new ComparerStaticMethodEmitter(resolver, _configurations);
             _genericProvider = new GenericProvider(
                 typeof(IComparer<>),
-                new GenericTypeBuilder(_configurations, staticMethodEmitter));
+                new GenericTypeBuilder(_configurations,
+                new ComparerStaticMethodEmitter(
+                new ComparisonResolver(this, _configurations), _configurations)));
         }
 
         public IComparer<T> GetComparer<T>() =>
@@ -48,10 +47,16 @@ namespace ILLightenComparer.Comparer
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
-            var compareMethod = _provider.GetCompiledStaticCompareMethod(xType);
+            var compareMethod = GetCompiledStaticCompareMethod(xType);
 
             return compareMethod.InvokeCompare<IComparerContext, T, int>(xType, this, x, y, xSet, ySet);
         }
+
+         public MethodInfo GetStaticCompareMethodInfo(Type type) =>
+            _genericProvider.GetStaticMethodInfo(type, MethodName.Compare);
+
+        public MethodInfo GetCompiledStaticCompareMethod(Type type) =>
+            _genericProvider.GetCompiledStaticMethod(type, MethodName.Compare);
 
         private IComparer<T> CreateInstance<T>(Type key) => _genericProvider
             .EnsureComparerType(key)

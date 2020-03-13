@@ -13,9 +13,7 @@ namespace ILLightenComparer.Comparer
         private readonly IReadOnlyCollection<Func<IVariable, IComparison>> _converters;
         private readonly IConfigurationProvider _configurations;
 
-        public ComparisonResolver(
-            ComparersMethodsProvider provider,
-            IConfigurationProvider configurations)
+        public ComparisonResolver(ComparerContext context, IConfigurationProvider configurations)
         {
             _configurations = configurations;
             _converters = new Func<IVariable, IComparison>[] {
@@ -24,7 +22,7 @@ namespace ILLightenComparer.Comparer
                 (IVariable variable) => StringsComparison.Create(_configurations, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, _configurations, variable),
-                (IVariable variable) => IndirectComparison.Create(provider, variable),
+                (IVariable variable) => IndirectComparison.Create(context, variable),
                 (IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
                 (IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
             };
