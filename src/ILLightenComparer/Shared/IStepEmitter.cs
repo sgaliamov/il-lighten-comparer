@@ -3,19 +3,21 @@ using Illuminator;
 
 namespace ILLightenComparer.Shared
 {
-    internal interface IComparison
+    internal interface IStepEmitter
     {
-        // does the comparison puts a result into the stack.
-        // comparisons with many items does not do it.
+        /// <summary>
+        ///     Does the comparison puts a result into the stack.
+        ///     Comparisons with many items does not do it.
+        /// </summary>
         bool PutsResultInStack { get; }
 
         /// <summary>
-        /// Compare and leave a result in the stack.
+        ///     Compare and leave a result in the stack.
         /// </summary>
         ILEmitter Emit(ILEmitter il, Label gotoNext);
 
         /// <summary>
-        /// Compare and return.
+        ///     Compare and return.
         /// </summary>
         ILEmitter Emit(ILEmitter il);
     }

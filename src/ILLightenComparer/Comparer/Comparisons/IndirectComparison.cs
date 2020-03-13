@@ -11,7 +11,7 @@ namespace ILLightenComparer.Comparer.Comparisons
     /// <summary>
     /// Delegates comparison to static method or delayed compare in context.
     /// </summary>
-    internal sealed class IndirectComparison : IComparison
+    internal sealed class IndirectComparison : IStepEmitter
     {
         private readonly IVariable _variable;
         private readonly MethodInfo _delayedCompare;

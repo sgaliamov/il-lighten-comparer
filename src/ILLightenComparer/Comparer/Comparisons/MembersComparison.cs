@@ -11,7 +11,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
-    internal sealed class MembersComparison : IComparison
+    internal sealed class MembersComparison : IStepEmitter
     {
         private readonly MembersProvider _membersProvider;
         private readonly ComparisonResolver _comparisons;

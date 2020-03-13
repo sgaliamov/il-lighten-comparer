@@ -12,13 +12,13 @@ namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparisonResolver
     {
-        private readonly IReadOnlyCollection<Func<IVariable, IComparison>> _converters;
+        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _converters;
         private readonly IConfigurationProvider _configurations;
 
         public ComparisonResolver(ComparerContext context, IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _converters = new Func<IVariable, IComparison>[] {
+            _converters = new Func<IVariable, IStepEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),
                 IntegralsComparison.Create,
                 (IVariable variable) => StringsComparison.Create(_configurations, variable),
@@ -30,7 +30,7 @@ namespace ILLightenComparer.Comparer
             };
         }
 
-        public IComparison GetComparison(IVariable variable)
+        public IStepEmitter GetComparison(IVariable variable)
         {
             var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {

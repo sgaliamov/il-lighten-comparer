@@ -14,7 +14,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
-    internal sealed class EnumerablesComparison : IComparison
+    internal sealed class EnumerablesComparison : IStepEmitter
     {
         private readonly Type _elementType;
         private readonly Type _enumeratorType;

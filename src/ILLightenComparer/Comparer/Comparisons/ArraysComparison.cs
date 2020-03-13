@@ -8,7 +8,7 @@ using Illuminator;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
-    internal sealed class ArraysComparison : IComparison
+    internal sealed class ArraysComparison : IStepEmitter
     {
         private readonly IVariable _variable;
         private readonly ArrayComparer _arrayComparer;

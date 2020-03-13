@@ -7,7 +7,7 @@ using Illuminator;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
-    internal sealed class StringsComparison : IComparison
+    internal sealed class StringsComparison : IStepEmitter
     {
         private readonly IConfigurationProvider _configurations;
         private readonly IVariable _variable;

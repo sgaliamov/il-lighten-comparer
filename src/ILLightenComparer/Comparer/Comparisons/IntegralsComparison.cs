@@ -8,7 +8,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
-    internal sealed class IntegralsComparison : IComparison
+    internal sealed class IntegralsComparison : IStepEmitter
     {
         private readonly IVariable _variable;
 
