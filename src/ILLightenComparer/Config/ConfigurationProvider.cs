@@ -147,20 +147,24 @@ namespace ILLightenComparer.Config
             return proxy;
         }
 
-        public IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance) => SetCustomComparer(typeof(T), instance);
+        public IConfigurationBuilder SetCustomComparer<T>(IComparer<T> instance) =>
+            SetCustomComparer(_customComparers, typeof(T), instance);
 
         public IConfigurationBuilder SetCustomComparer<TComparer>()
         {
-            var genericType = typeof(TComparer);
-            var genericInterface = genericType.FindGenericInterface(typeof(IComparer<>));
-            if (genericInterface == null) {
-                throw new ArgumentException($"{nameof(TComparer)} is not generic {typeof(IComparer<>)}");
-            }
+            var (type, comparer) = CreateCustomComparer<TComparer>(typeof(IComparer<>));
 
-            var type = genericInterface.GenericTypeArguments[0];
-            var comparer = genericType.Create<TComparer>();
+            return SetCustomComparer(_customComparers, type, comparer);
+        }
 
-            return SetCustomComparer(type, comparer);
+        public IConfigurationBuilder SetCustomEqualityComparer<T>(IEqualityComparer<T> instance) =>
+            SetCustomComparer(_customEqualityComparers, typeof(T), instance);
+
+        public IConfigurationBuilder SetCustomEqualityComparer<TComparer>()
+        {
+            var (type, comparer) = CreateCustomComparer<TComparer>(typeof(IEqualityComparer<>));
+
+            return SetCustomComparer(_customEqualityComparers, type, comparer);
         }
 
         public Configuration Get(Type type) =>
@@ -176,20 +180,34 @@ namespace ILLightenComparer.Config
 
         public bool HasCustomComparer(Type type) => _customComparers.ContainsKey(type);
 
-        public bool HasCustomEqualityComparer(Type type)=> _customEqualityComparers.ContainsKey(type);
+        public bool HasCustomEqualityComparer(Type type) => _customEqualityComparers.ContainsKey(type);
 
-        private ConfigurationProvider SetCustomComparer(Type type, object instance)
+        private ConfigurationProvider SetCustomComparer(ComparersCollection customComparers, Type objectType, object instance)
         {
             if (instance == null) {
-                _customComparers.TryRemove(type, out _);
+                customComparers.TryRemove(objectType, out _);
             } else {
-                _customComparers.AddOrUpdate(type, key => instance, (key, _) => instance);
+                customComparers.AddOrUpdate(objectType, _ => instance, (__, _) => instance);
             }
 
             return this;
         }
 
         private Configuration GetOrCreate(Type type) => _configurations.GetOrAdd(type, _ => new Configuration(_default));
+
+        private static (Type, TComparer) CreateCustomComparer<TComparer>(Type genericInterface)
+        {
+            var comparerType = typeof(TComparer);
+            var typedGenericInterface = comparerType.FindGenericInterface(genericInterface);
+            if (genericInterface == null) {
+                throw new ArgumentException($"{nameof(TComparer)} is not generic {genericInterface}");
+            }
+
+            var objectType = typedGenericInterface.GenericTypeArguments[0];
+            var comparer = comparerType.Create<TComparer>();
+
+            return (objectType, comparer);
+        }
 
         private static string[] GetMembers<T, TMember>(IEnumerable<Expression<Func<T, TMember>>> memberSelectors) => memberSelectors?.Select(GetMemberName).ToArray();
 
