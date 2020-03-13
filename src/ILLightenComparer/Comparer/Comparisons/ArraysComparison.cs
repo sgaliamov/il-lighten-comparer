@@ -2,6 +2,7 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Comparer.Comparisons.Collection;
 using ILLightenComparer.Config;
+using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 

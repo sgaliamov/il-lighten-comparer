@@ -4,7 +4,7 @@ using ILLightenComparer.Variables;
 using ILLightenComparer.Reflection;
 using Illuminator;
 
-namespace ILLightenComparer.Comparer.Comparisons
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class CustomComparison : IComparison
     {

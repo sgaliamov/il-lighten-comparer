@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
+using ILLightenComparer.Shared;
+using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
 using Illuminator.Extensions;
 
