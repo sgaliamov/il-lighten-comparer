@@ -18,11 +18,17 @@ namespace ILLightenComparer.Extensions
             typeof(ushort)
         });
 
+        /// <summary>
+        ///     Creates instance using static method.
+        /// </summary>
         public static TReturnType CreateInstance<T, TReturnType>(this Type type, T arg) =>
             // todo: cache delegates?
             type.GetMethod(MethodName.CreateInstance)
                 .CreateDelegate<Func<T, TReturnType>>()(arg);
 
+        /// <summary>
+        ///     Creates instance using default constructor.
+        /// </summary>
         public static TResult Create<TResult>(this Type type)
         {
             // todo: benchmark creation
