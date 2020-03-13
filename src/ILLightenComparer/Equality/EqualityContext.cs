@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
@@ -12,7 +11,6 @@ namespace ILLightenComparer.Equality
 {
     internal sealed class EqualityContext : IEqualityComparerContext
     {
-        private readonly EqualityMethodsProvider _provider;
         private readonly IConfigurationProvider _configurations;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly GenericProvider _genericProvider;
@@ -20,14 +18,14 @@ namespace ILLightenComparer.Equality
         public EqualityContext(IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _configurations = configurations;
-            _provider = new EqualityMethodsProvider(_genericProvider);
             _genericProvider = new GenericProvider(
                 typeof(IEqualityComparer<>),
-                new GenericTypeBuilder(_configurations, null));
+                new GenericTypeBuilder(_configurations,
+                new EqualityStaticMethodsEmitter(
+                new EqualityResolver(this, _configurations), _configurations)));
         }
 
-        public bool DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
+        public bool DelayedEquals<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
         {
             var comparer = _configurations.GetCustomEqualityComparer<T>();
             if (comparer != null) {
@@ -35,8 +33,8 @@ namespace ILLightenComparer.Equality
             }
 
             if (!typeof(T).IsValueType) {
-                if (x == null && y == null) { return true; }
-                if (y == null || y == null) { return false; }
+                if (x is null && y is null) { return true; }
+                if (y is null || y is null) { return false; }
             }
 
             var xType = x.GetType();
@@ -45,7 +43,7 @@ namespace ILLightenComparer.Equality
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
-            var compareMethod = _provider.GetCompiledStaticEqualsMethod(xType);
+            var compareMethod = GetCompiledStaticEqualsMethod(xType);
 
             return compareMethod.InvokeCompare<IEqualityComparerContext, T, bool>(xType, this, x, y, xSet, ySet);
         }
@@ -57,16 +55,28 @@ namespace ILLightenComparer.Equality
                 return comparer.GetHashCode(comparable);
             }
 
-            if (!typeof(T).IsValueType && comparable == null) {
+            if (!typeof(T).IsValueType && comparable is null) {
                 return 0;
             }
 
             var actualType = comparable.GetType();
 
-            var hashMethod = _provider.GetCompiledStaticHashMethod(actualType);
+            var hashMethod = GetCompiledStaticHashMethod(actualType);
 
             return GetHash(hashMethod, actualType, comparable, cycleDetectionSet);
         }
+
+        public MethodInfo GetStaticEqualsMethodInfo(Type type) =>
+            _genericProvider.GetStaticMethodInfo(type, nameof(Equals));
+
+        public MethodInfo GetCompiledStaticEqualsMethod(Type type) =>
+            _genericProvider.GetCompiledStaticMethod(type, nameof(Equals));
+
+        public MethodInfo GetStaticHashMethodInfo(Type type) =>
+             _genericProvider.GetStaticMethodInfo(type, nameof(GetHashCode));
+
+        public MethodInfo GetCompiledStaticHashMethod(Type type) =>
+            _genericProvider.GetCompiledStaticMethod(type, nameof(GetHashCode));
 
         public IEqualityComparer<T> GetEqualityComparer<T>() =>
             _configurations.GetCustomEqualityComparer<T>()
@@ -98,7 +108,7 @@ namespace ILLightenComparer.Equality
 
     internal interface IEqualityComparerContext : IEqualityComparerProvider, IContext
     {
-        bool DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
+        bool DelayedEquals<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
 
         int DelayedHash<T>(T x, CycleDetectionSet xSet);
     }
