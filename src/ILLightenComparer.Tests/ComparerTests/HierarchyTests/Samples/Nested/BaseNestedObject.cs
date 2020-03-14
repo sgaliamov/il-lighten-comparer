@@ -9,7 +9,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 
         public override int CompareTo(object obj)
         {
-            if (ReferenceEquals(null, obj)) {
+            if (obj is null) {
                 return 1;
             }
 
@@ -28,7 +28,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
                 return 0;
             }
 
-            if (ReferenceEquals(null, other)) {
+            if (other is null) {
                 return 1;
             }
 

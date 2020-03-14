@@ -76,11 +76,11 @@ namespace ILLightenComparer.Tests.ComparerTests
                         return 0;
                     }
 
-                    if (ReferenceEquals(null, b)) {
+                    if (b is null) {
                         return 1;
                     }
 
-                    if (ReferenceEquals(null, a)) {
+                    if (a is null) {
                         return -1;
                     }
 

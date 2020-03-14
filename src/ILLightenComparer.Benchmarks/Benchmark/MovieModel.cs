@@ -14,7 +14,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
         public int CompareTo(ActorsCollection other)
         {
-            if (ReferenceEquals(null, other)) {
+            if (other is null) {
                 return 1;
             }
 
@@ -80,11 +80,11 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y)) {
+                if (y is null) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x)) {
+                if (x is null) {
                     return -1;
                 }
 

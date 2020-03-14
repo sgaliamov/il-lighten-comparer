@@ -18,7 +18,7 @@ namespace ILLightenComparer.Tests.Samples
                 return 0;
             }
 
-            if (ReferenceEquals(null, other)) {
+            if (other is null) {
                 return 1;
             }
 

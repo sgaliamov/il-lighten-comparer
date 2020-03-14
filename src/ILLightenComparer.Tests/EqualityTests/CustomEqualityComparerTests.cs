@@ -24,9 +24,10 @@ namespace ILLightenComparer.Tests.ComparerTests
                     new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)));
                 var comparer1 = builder.GetComparer<Tuple<int, string>>();
                 var comparer2 = builder
-                                .Configure(c => c.SetCustomEqualityComparer<string>(null)
-                                                 .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
-                                .GetComparer<Tuple<int, string>>();
+                    .Configure(c => c
+                    .SetCustomEqualityComparer<string>(null)
+                    .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
+                    .GetComparer<Tuple<int, string>>();
 
                 comparer1.Compare(x, y).Normalize().Should().Be(expected1.Normalize());
                 comparer2.Compare(x, y).Normalize().Should().Be(expected2.Normalize());
@@ -77,11 +78,11 @@ namespace ILLightenComparer.Tests.ComparerTests
                         return 0;
                     }
 
-                    if (ReferenceEquals(null, b)) {
+                    if (b is null) {
                         return 1;
                     }
 
-                    if (ReferenceEquals(null, a)) {
+                    if (a is null) {
                         return -1;
                     }
 
