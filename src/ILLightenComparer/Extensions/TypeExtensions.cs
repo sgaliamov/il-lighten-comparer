@@ -22,7 +22,7 @@ namespace ILLightenComparer.Extensions
         ///     Creates instance using static method.
         /// </summary>
         public static TReturnType CreateInstance<T, TReturnType>(this Type type, T arg) =>
-            // todo: cache delegates?
+            // todo: 1. cache delegates?
             type.GetMethod(MethodName.CreateInstance)
                 .CreateDelegate<Func<T, TReturnType>>()(arg);
 
@@ -31,7 +31,7 @@ namespace ILLightenComparer.Extensions
         /// </summary>
         public static TResult Create<TResult>(this Type type)
         {
-            // todo: benchmark creation
+            // todo: 2. benchmark creation
             var ctor = type.GetConstructor(Type.EmptyTypes)
                        ?? throw new ArgumentException(
                            $"Type {type.DisplayName()} should has default constructor.",

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.Samples.Comparers
+namespace ILLightenComparer.Tests.Samples.EqualityComparers
 {
     internal class CustomizableEqualityComparer<T> : IEqualityComparer<T>
     {

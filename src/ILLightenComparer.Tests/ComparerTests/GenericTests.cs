@@ -173,7 +173,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
 
             if (type.IsArray && result is IList list) {
-                return (T)AppendNulls(list); // todo: test
+                return (T)AppendNulls(list); // todo: 1. test
             }
 
             var genericInterface = type.GetGenericInterface(typeof(IEnumerable<>));

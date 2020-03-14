@@ -86,7 +86,7 @@ namespace ILLightenComparer.Config
 
         public IConfigurationBuilder DetectCycles(Type type, bool? value)
         {
-            // todo: use default values from _default field, because it can be redefined.
+            // todo: 1. use default values from _default field, because it can be redefined.
             GetOrCreate(type).DetectCycles = value ?? DetectCyclesDefault;
 
             return this;

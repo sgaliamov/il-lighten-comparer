@@ -94,7 +94,7 @@ namespace ILLightenComparer.Equality
         {
             var isDeclaringTypeMatchedActualMemberType = typeof(TComparable) == actualType;
             if (!isDeclaringTypeMatchedActualMemberType) {
-                // todo: refactor after Method.InvokeCompare
+                // todo: 3. refactor after Method.InvokeCompare
                 return (int)method.Invoke(
                     null,
                     new object[] { this, comparable, cycleDetectionSet });

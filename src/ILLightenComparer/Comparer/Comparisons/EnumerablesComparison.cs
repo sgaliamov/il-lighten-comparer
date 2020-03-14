@@ -41,7 +41,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                           .SingleOrDefault()
                           ?? throw new ArgumentException(nameof(variable));
 
-            // todo: use read enumerator, not virtual
+            // todo: 2. use read enumerator, not virtual
             _enumeratorType = typeof(IEnumerator<>).MakeGenericType(_elementType);
 
             _getEnumeratorMethod = typeof(IEnumerable<>)
@@ -77,7 +77,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             var (xEnumerator, yEnumerator) = EmitLoadEnumerators(x, y, il);
 
-            // todo: think how to use try/finally block
+            // todo: 1. think how to use try/finally block
             // the problem now with the inner `return` statements, it has to be `leave` instruction
             //il.BeginExceptionBlock(); 
 

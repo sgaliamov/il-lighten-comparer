@@ -78,7 +78,7 @@ namespace ILLightenComparer.Reflection
         {
             var isDeclaringTypeMatchedActualMemberType = typeof(TComparable) == actualType;
             if (!isDeclaringTypeMatchedActualMemberType) {
-                // todo: cache delegates and benchmark ways:
+                // todo: 1. cache delegates and benchmark ways:
                 // - direct Invoke;
                 // - DynamicInvoke;
                 // var genericType = typeof(Method.StaticMethodDelegate<>).MakeGenericType(type);

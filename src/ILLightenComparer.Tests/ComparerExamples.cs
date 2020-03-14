@@ -6,7 +6,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests
 {
-    public sealed class Examples
+    public sealed class ComparerExamples
     {
         [Fact]
         public void Basic_usage()

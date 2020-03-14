@@ -64,7 +64,7 @@ namespace ILLightenComparer
             {
                 _subject._configurationProvider.ConfigureFor(config);
 
-                _subject.InitContext(); // todo: test init order
+                _subject.InitContext(); // todo: 3. test init order
 
                 return this;
             }

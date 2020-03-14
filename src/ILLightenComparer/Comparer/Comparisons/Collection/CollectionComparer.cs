@@ -27,7 +27,7 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
 
         public void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
         {
-            // todo: compare default sorting and sorting with generated comparer - TrySZSort can work faster
+            // todo: 2. compare default sorting and sorting with generated comparer - TrySZSort can work faster
             var useSimpleSorting = !_configurations.HasCustomComparer(elementType)
                                    && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
             if (useSimpleSorting) {

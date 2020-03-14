@@ -3,7 +3,6 @@ using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Samples.EqualityComparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
