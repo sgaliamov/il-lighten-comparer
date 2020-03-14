@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ILLightenComparer.Config;
+using ILLightenComparer.Equality.Comparisons;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
@@ -18,13 +19,14 @@ namespace ILLightenComparer.Equality
         {
             _configurations = configurations;
             _converters = new Func<IVariable, IStepEmitter>[] {
-
+                CeqComparison.Create,
+                OperatorComparison.Create
             };
         }
 
         public IStepEmitter GetComparison(IVariable variable)
         {
-            var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
+            var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
                 return new CustomComparison(variable);
             }

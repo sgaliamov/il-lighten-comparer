@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +17,12 @@ namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class EnumerablesComparison : IStepEmitter
     {
+        private static readonly MethodInfo MoveNextMethod = typeof(IEnumerator)
+          .GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
+
+        private static readonly MethodInfo DisposeMethod = typeof(IDisposable)
+            .GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
+
         private readonly Type _elementType;
         private readonly Type _enumeratorType;
         private readonly MethodInfo _getEnumeratorMethod;
@@ -181,10 +188,10 @@ namespace ILLightenComparer.Comparer.Comparisons
             LocalBuilder yEnumerator,
             ILEmitter il)
         {
-            il.AreSame(il => il.LoadLocal(xEnumerator).Call(Method.MoveNext),
+            il.AreSame(il => il.LoadLocal(xEnumerator).Call(MoveNextMethod),
                        il => il.LoadInteger(0),
                        out var xDone)
-              .AreSame(il => il.LoadLocal(yEnumerator).Call(Method.MoveNext),
+              .AreSame(il => il.LoadLocal(yEnumerator).Call(MoveNextMethod),
                        il => il.LoadInteger(0),
                        out var yDone);
 
@@ -200,12 +207,12 @@ namespace ILLightenComparer.Comparer.Comparisons
             il.LoadLocal(xEnumerator)
               .Branch(OpCodes.Brfalse_S, out var check)
               .LoadLocal(xEnumerator)
-              .Call(Method.Dispose)
+              .Call(DisposeMethod)
               .MarkLabel(check)
               .LoadLocal(yEnumerator)
               .Branch(OpCodes.Brfalse, gotoNext)
               .LoadLocal(yEnumerator)
-              .Call(Method.Dispose);
+              .Call(DisposeMethod);
         }
     }
 }

@@ -62,14 +62,14 @@ namespace ILLightenComparer.Comparer
                 Or(LoadArgument(Arg.SetX)
                    | LoadArgument(Arg.X)
                    | LoadInteger(0)
-                   | Call(Method.ConcurrentSetAddMethod),
+                   | Call(CycleDetectionSet.TryAddMethod),
                    LoadArgument(Arg.SetY)
                    | LoadArgument(Arg.Y)
                    | LoadInteger(0)
-                   | Call(Method.ConcurrentSetAddMethod)))
+                   | Call(CycleDetectionSet.TryAddMethod)))
             .Branch(OpCodes.Brfalse_S, out var next)
-            .Sub(LoadArgument(Arg.SetX) | Call(Method.ConcurrentSetGetCountProperty),
-                 LoadArgument(Arg.SetY) | Call(Method.ConcurrentSetGetCountProperty))
+            .Sub(LoadArgument(Arg.SetX) | Call(CycleDetectionSet.GetCountProperty),
+                 LoadArgument(Arg.SetY) | Call(CycleDetectionSet.GetCountProperty))
             .Return()
             .MarkLabel(next);
         }

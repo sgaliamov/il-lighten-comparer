@@ -1,4 +1,6 @@
-﻿using System.Reflection.Emit;
+﻿using System;
+using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
@@ -9,6 +11,10 @@ namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class StringsComparison : IStepEmitter
     {
+        private static readonly MethodInfo StringCompare = typeof(string).GetMethod(
+           nameof(string.Compare),
+           new[] { typeof(string), typeof(string), typeof(StringComparison) });
+
         private readonly IConfigurationProvider _configurations;
         private readonly IVariable _variable;
 
@@ -36,7 +42,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             var stringComparisonType = _configurations.Get(_variable.OwnerType).StringComparisonType;
 
-            return il.LoadInteger((int)stringComparisonType).Call(Method.StringCompare);
+            return il.LoadInteger((int)stringComparisonType).Call(StringCompare);
         }
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();

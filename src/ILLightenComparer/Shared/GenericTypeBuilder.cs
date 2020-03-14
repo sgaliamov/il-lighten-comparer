@@ -95,7 +95,7 @@ namespace ILLightenComparer.Shared
             }
 
             Enumerable.Range(0, parametersCount)
-                .Aggregate(il, (il, _) => il.New(Method.ConcurrentSetConstructor))
+                .Aggregate(il, (il, _) => il.New(CycleDetectionSet.DefaultConstructor))
                 .Call(staticMethod)
                 .Return();
         }

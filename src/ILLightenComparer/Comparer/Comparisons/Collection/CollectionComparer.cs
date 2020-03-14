@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
@@ -11,6 +14,11 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
 {
     internal sealed class CollectionComparer
     {
+        private static readonly MethodInfo ToArrayMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray));
+
+        private static readonly MethodInfo GetComparerMethod =
+           typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
+
         private readonly IConfigurationProvider _configurations;
 
         public CollectionComparer(IConfigurationProvider configurations) => _configurations = configurations;
@@ -34,7 +42,7 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
                 EmitSortArray(il, elementType, xArray);
                 EmitSortArray(il, elementType, yArray);
             } else {
-                var getComparerMethod = Method.GetComparer.MakeGenericMethod(elementType);
+                var getComparerMethod = GetComparerMethod.MakeGenericMethod(elementType);
 
                 il.LoadArgument(Arg.Context)
                   .Call(getComparerMethod)
@@ -47,8 +55,8 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
         {
-            var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
-            var sortMethod = Method.GetArraySortWithComparer(elementType);
+            var copyMethod = ToArrayMethod.MakeGenericMethod(elementType);
+            var sortMethod = GetArraySortWithComparer(elementType);
 
             il.LoadLocal(array)
               .Call(copyMethod)
@@ -60,14 +68,43 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array)
         {
-            var copyMethod = Method.ToArray.MakeGenericMethod(elementType);
-            var sortMethod = Method.GetArraySort(elementType);
+            var copyMethod = ToArrayMethod.MakeGenericMethod(elementType);
+            var sortMethod = GetArraySortMethod(elementType);
 
             il.LoadLocal(array)
               .Call(copyMethod)
               .Store(array)
               .LoadLocal(array)
               .Call(sortMethod);
+        }
+
+        private static MethodInfo GetArraySortWithComparer(Type elementType)
+        {
+            return typeof(Array)
+                   .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                   .Where(x => x.Name == nameof(Array.Sort)
+                            && x.IsGenericMethodDefinition)
+                   .Single(x => {
+                       var parameters = x.GetParameters();
+
+                       return parameters.Length == 2
+                              && parameters[0].ParameterType.IsArray
+                              && parameters[1].ParameterType.IsGenericType
+                              && parameters[1].ParameterType.GetGenericTypeDefinition() == typeof(IComparer<>);
+                   })
+                   .MakeGenericMethod(elementType);
+        }
+
+        private static MethodInfo GetArraySortMethod(Type elementType)
+        {
+            return typeof(Array)
+                   .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                   .Where(x => x.Name == nameof(Array.Sort) && x.IsGenericMethodDefinition)
+                   .Single(x => {
+                       var parameters = x.GetParameters();
+                       return parameters.Length == 1 && parameters[0].ParameterType.IsArray;
+                   })
+                   .MakeGenericMethod(elementType);
         }
     }
 }
