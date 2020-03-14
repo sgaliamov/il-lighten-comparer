@@ -2,8 +2,8 @@
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
+using ILLightenComparer.Tests.ComparerTests.Comparers;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 

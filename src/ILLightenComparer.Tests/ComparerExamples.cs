@@ -1,7 +1,7 @@
 ﻿using System;
 using AutoFixture;
 using FluentAssertions;
-using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.ComparerTests.Comparers;
 using Xunit;
 
 namespace ILLightenComparer.Tests

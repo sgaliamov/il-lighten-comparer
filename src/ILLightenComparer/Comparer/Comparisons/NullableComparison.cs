@@ -28,7 +28,7 @@ namespace ILLightenComparer.Comparer.Comparisons
             return null;
         }
 
-        public bool PutsResultInStack => true;
+        public bool PutsResultInStack { get; } = true;
 
         public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {

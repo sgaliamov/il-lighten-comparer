@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ILLightenComparer.Tests.Samples.Comparers
+namespace ILLightenComparer.Tests.ComparerTests.Comparers
 {
     public sealed class CollectionComparer<TItem> : IComparer<IEnumerable<TItem>>, IComparer
     {

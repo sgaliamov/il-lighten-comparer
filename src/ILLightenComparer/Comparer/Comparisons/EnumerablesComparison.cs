@@ -65,7 +65,7 @@ namespace ILLightenComparer.Comparer.Comparisons
             return null;
         }
 
-        public bool PutsResultInStack => false;
+        public bool PutsResultInStack { get; }
 
         public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {

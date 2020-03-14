@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.Samples.EqualityComparers
+namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
 {
     internal sealed class SampleStructEqualityComparer<TMember> : IEqualityComparer<SampleStruct<TMember>>, IEqualityComparer
     {

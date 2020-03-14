@@ -17,7 +17,7 @@ namespace ILLightenComparer.Shared.Comparisons
             _delayedCompare = Method.DelayedCompare.MakeGenericMethod(_variable.VariableType);
         }
 
-        public bool PutsResultInStack => true;
+        public bool PutsResultInStack { get; } = true;
 
         public ILEmitter Emit(ILEmitter il, Label _)
         {

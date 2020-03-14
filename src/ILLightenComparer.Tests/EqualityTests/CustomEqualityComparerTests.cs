@@ -2,12 +2,12 @@
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
+using ILLightenComparer.Tests.EqualityTests.EqualityComparers;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.EqualityComparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
-namespace ILLightenComparer.Tests.ComparerTests
+namespace ILLightenComparer.Tests.EqualityTests
 {
     public sealed class CustomEqualityComparerTests
     {
