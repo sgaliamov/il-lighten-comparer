@@ -76,15 +76,15 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
             il.AreSame(il => il.LoadLocal(index), il => il.LoadLocal(countX), out var isDoneX)
               .AreSame(il => il.LoadLocal(index), il => il.LoadLocal(countY), out var isDoneY)
               .LoadLocal(isDoneX)
-              .Branch(OpCodes.Brfalse_S, out var checkIsDoneY)
+              .IfFalse_S(out var checkIsDoneY)
               .LoadLocal(isDoneY)
-              .Branch(OpCodes.Brfalse_S, out var returnM1)
+              .IfFalse_S(out var returnM1)
               .GoTo(afterLoop)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkIsDoneY)
               .LoadLocal(isDoneY)
-              .Branch(OpCodes.Brfalse_S, out var loadValues)
+              .IfFalse_S(out var loadValues)
               .Return(1)
               .MarkLabel(loadValues);
         }

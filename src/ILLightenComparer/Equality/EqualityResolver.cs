@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Comparisons;
+using ILLightenComparer.Equality.Hashers;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;

@@ -170,15 +170,15 @@ namespace ILLightenComparer.Comparer.Comparisons
             Label gotoNext)
         {
             il.LoadLocal(xDone)
-              .Branch(OpCodes.Brfalse_S, out var checkY)
+              .IfFalse_S(out var checkY)
               .LoadLocal(yDone)
-              .Branch(OpCodes.Brfalse_S, out var returnM1)
+              .IfFalse_S(out var returnM1)
               .GoTo(gotoNext)
               .MarkLabel(returnM1)
               .Return(-1)
               .MarkLabel(checkY)
               .LoadLocal(yDone)
-              .Branch(OpCodes.Brfalse_S, out var compare)
+              .IfFalse_S(out var compare)
               .Return(1)
               .MarkLabel(compare);
         }
@@ -205,12 +205,12 @@ namespace ILLightenComparer.Comparer.Comparisons
             Label gotoNext)
         {
             il.LoadLocal(xEnumerator)
-              .Branch(OpCodes.Brfalse_S, out var check)
+              .IfFalse_S(out var check)
               .LoadLocal(xEnumerator)
               .Call(DisposeMethod)
               .MarkLabel(check)
               .LoadLocal(yEnumerator)
-              .Branch(OpCodes.Brfalse, gotoNext)
+              .IfFalse(gotoNext)
               .LoadLocal(yEnumerator)
               .Call(DisposeMethod);
         }

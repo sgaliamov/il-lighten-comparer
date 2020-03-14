@@ -12,22 +12,22 @@ namespace ILLightenComparer.Extensions
         public static ILEmitter EmitReturnNotZero(this ILEmitter il, Label next) =>
             il.Store(typeof(int), out var result)
               .LoadLocal(result)
-              .Branch(OpCodes.Brfalse, next)
+              .IfFalse(next)
               .LoadLocal(result)
               .Return();
 
         public static ILEmitter EmitArgumentsReferenceComparison(this ILEmitter il) =>
             il.LoadArgument(Arg.X)
               .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Bne_Un_S, out var checkY)
+              .IfNotEqual_Un_S(out var checkY)
               .Return(0)
               .MarkLabel(checkY)
               .LoadArgument(Arg.Y)
-              .Branch(OpCodes.Brtrue_S, out var checkX)
+              .IfTrue_S(out var checkX)
               .Return(1)
               .MarkLabel(checkX)
               .LoadArgument(Arg.X)
-              .Branch(OpCodes.Brtrue_S, out var next)
+              .IfTrue_S(out var next)
               .Return(-1)
               .MarkLabel(next);
 
@@ -45,13 +45,13 @@ namespace ILLightenComparer.Extensions
                      .Store(typeof(bool), out var secondHasValue)
                      .LoadAddress(nullableX)
                      .Call(hasValueMethod)
-                     .Branch(OpCodes.Brtrue_S, out var ifFirstHasValue)
+                     .IfTrue_S(out var ifFirstHasValue)
                      .LoadLocal(secondHasValue)
-                     .Branch(OpCodes.Brfalse_S, ifBothNull)
+                     .IfFalse_S(ifBothNull)
                      .Return(-1)
                      .MarkLabel(ifFirstHasValue)
                      .LoadLocal(secondHasValue)
-                     .Branch(OpCodes.Brtrue_S, out var next)
+                     .IfTrue_S(out var next)
                      .Return(1)
                      .MarkLabel(next);
         }
@@ -63,15 +63,15 @@ namespace ILLightenComparer.Extensions
             Label ifEqual) =>
             il.LoadLocal(x)
               .LoadLocal(y)
-              .Branch(OpCodes.Bne_Un_S, out var checkX)
+              .IfNotEqual_Un_S(out var checkX)
               .GoTo(ifEqual)
               .MarkLabel(checkX)
               .LoadLocal(x)
-              .Branch(OpCodes.Brtrue_S, out var checkY)
+              .IfTrue_S(out var checkY)
               .Return(-1)
               .MarkLabel(checkY)
               .LoadLocal(y)
-              .Branch(OpCodes.Brtrue_S, out var next)
+              .IfTrue_S(out var next)
               .Return(1)
               .MarkLabel(next);
     }

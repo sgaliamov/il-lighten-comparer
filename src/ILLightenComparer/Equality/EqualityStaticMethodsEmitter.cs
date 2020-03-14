@@ -58,20 +58,13 @@ namespace ILLightenComparer.Equality
         {
             il.AreSame(
                 LoadInteger(0),
-                Or(LoadArgument(Arg.SetX)
-                   | LoadArgument(Arg.X)
-                   | LoadInteger(0)
-                   | Call(CycleDetectionSet.TryAddMethod),
-                   LoadArgument(Arg.SetY)
-                   | LoadArgument(Arg.Y)
-                   | LoadInteger(0)
-                   | Call(CycleDetectionSet.TryAddMethod)))
-            .Branch(OpCodes.Brfalse_S, out var next)
-            .Sub(LoadArgument(Arg.SetX) | Call(CycleDetectionSet.GetCountProperty),
-                 LoadArgument(Arg.SetY) | Call(CycleDetectionSet.GetCountProperty))
-            .Return()
+                Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
+                   Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
+            .IfFalse_S(out var next)
+            .Return(Sub(
+                Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetX)),
+                Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetY))))
             .MarkLabel(next);
         }
-
     }
 }
