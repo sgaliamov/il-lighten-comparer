@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
@@ -24,15 +25,39 @@ namespace ILLightenComparer.Equality
 
         public void Build(Type objectType, MethodBuilder staticMethodBuilder)
         {
+            switch (staticMethodBuilder.Name) {
+                case nameof(Equals):
+                    BuildEquals(objectType, staticMethodBuilder);
+                    break;
+
+                case nameof(GetHashCode):
+                    BuildGetHashCode(objectType, staticMethodBuilder);
+                    break;
+
+                default:
+                    throw new InvalidOperationException(
+                        $"{nameof(IEqualityComparer)} does not have method {staticMethodBuilder.Name}.");
+            }
+        }
+
+        public bool IsCreateCycleDetectionSets(Type objectType) =>
+            _configuration.Get(objectType).DetectCycles
+            && !objectType.GetUnderlyingType().IsPrimitive()
+            && !objectType.IsSealedEquatable(); // rely on provided implementation
+
+        private void BuildGetHashCode(Type objectType, MethodBuilder staticMethodBuilder) => throw new NotImplementedException();
+
+        private void BuildEquals(Type objectType, MethodBuilder staticMethodBuilder)
+        {
             using var il = staticMethodBuilder.CreateILEmitter();
 
             var needReferenceComparison =
                  !objectType.IsValueType
-                 && !objectType.IsSealedComparable() // rely on provided implementation
+                 && !objectType.IsSealedEquatable() // rely on provided implementation
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
-                il.EmitArgumentsReferenceComparison();
+                EmitArgumentsReferenceComparison(il);
             }
 
             if (IsDetectCycles(objectType)) {
@@ -43,11 +68,6 @@ namespace ILLightenComparer.Equality
                 .GetComparison(new ArgumentVariable(objectType))
                 .Emit(il);
         }
-
-        private bool IsCreateCycleDetectionSets(Type objectType) =>
-            _configuration.Get(objectType).DetectCycles
-            && !objectType.GetUnderlyingType().IsPrimitive()
-            && !objectType.IsSealedComparable();
 
         private bool IsDetectCycles(Type objectType) =>
             objectType.IsClass
@@ -61,10 +81,23 @@ namespace ILLightenComparer.Equality
                 Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
                    Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
             .IfFalse_S(out var next)
-            .Return(Sub(
-                Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetX)),
-                Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetY))))
+            .Return(0)
             .MarkLabel(next);
         }
+
+        private static ILEmitter EmitArgumentsReferenceComparison(ILEmitter il) =>
+            il.LoadArgument(Arg.X)
+              .LoadArgument(Arg.Y)
+              .IfNotEqual_Un_S(out var checkX)
+              .Return(1)
+              .MarkLabel(checkX)
+              .LoadArgument(Arg.X)
+              .IfTrue_S(out var checkY)
+              .Return(0)
+              .MarkLabel(checkY)
+              .LoadArgument(Arg.Y)
+              .IfTrue_S(out var next)
+              .Return(0)
+              .MarkLabel(next);
     }
 }

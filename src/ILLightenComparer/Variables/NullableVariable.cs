@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Reflection;
 using Illuminator;
 using Illuminator.Extensions;
 
@@ -29,7 +28,7 @@ namespace ILLightenComparer.Variables
                 { Arg.Y, y ?? throw new ArgumentNullException(nameof(y)) }
             };
 
-            _getValueMethod = variableType.GetPropertyGetter(MethodName.Value);
+            _getValueMethod = variableType.GetPropertyGetter("Value");
         }
 
         // Underlying type of Nullable.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Comparer;
 using ILLightenComparer.Extensions;
@@ -36,7 +37,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
             _variable.Load(il, Arg.X).Store(variableType, out var nullableX);
             _variable.Load(il, Arg.Y).Store(variableType, out var nullableY);
-            il.EmitCheckNullablesForValue(nullableX, nullableY, variableType, gotoNext);
+            EmitCheckNullablesForValue(il, nullableX, nullableY, variableType, gotoNext);
 
             var nullableVariable = new NullableVariable(variableType, _variable.OwnerType, nullableX, nullableY);
 
@@ -53,6 +54,31 @@ namespace ILLightenComparer.Shared.Comparisons
                 .EmitReturnNotZero(exit)
                 .MarkLabel(exit)
                 .Return(0);
+        }
+
+        private static ILEmitter EmitCheckNullablesForValue(
+            ILEmitter il,
+            LocalVariableInfo nullableX,
+            LocalVariableInfo nullableY,
+            Type nullableType,
+            Label ifBothNull)
+        {
+            var hasValueMethod = nullableType.GetPropertyGetter("HasValue");
+
+            return il.LoadAddress(nullableY)
+                     .Call(hasValueMethod)
+                     .Store(typeof(bool), out var secondHasValue)
+                     .LoadAddress(nullableX)
+                     .Call(hasValueMethod)
+                     .IfTrue_S(out var ifFirstHasValue)
+                     .LoadLocal(secondHasValue)
+                     .IfFalse_S(ifBothNull)
+                     .Return(-1)
+                     .MarkLabel(ifFirstHasValue)
+                     .LoadLocal(secondHasValue)
+                     .IfTrue_S(out var next)
+                     .Return(1)
+                     .MarkLabel(next);
         }
     }
 }

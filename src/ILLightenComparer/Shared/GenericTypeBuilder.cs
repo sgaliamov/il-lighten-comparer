@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -85,7 +83,7 @@ namespace ILLightenComparer.Shared
 
         private void EmitStaticMethodCall(ILEmitter il, Type objectType, MethodBuilder staticMethod, int parametersCount)
         {
-            if (!IsCreateCycleDetectionSets(objectType)) {
+            if (!_staticMethodEmitter.IsCreateCycleDetectionSets(objectType)) {
                 Enumerable.Range(0, parametersCount)
                     .Aggregate(il, (il, _) => il.LoadNull())
                     .Call(staticMethod)
@@ -100,14 +98,9 @@ namespace ILLightenComparer.Shared
                 .Return();
         }
 
-        private bool IsCreateCycleDetectionSets(Type objectType) =>
-            _configuration.Get(objectType).DetectCycles
-            && !objectType.GetUnderlyingType().IsPrimitive()
-            && !objectType.IsSealedComparable();
-
         private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)
         {
-            var parameters = new[] { typeof(IComparerContext) };
+            var parameters = new[] { typeof(IContext) };
 
             var constructorInfo = typeBuilder.DefineConstructor(
                 MethodAttributes.Public,
@@ -117,9 +110,7 @@ namespace ILLightenComparer.Shared
             using (var il = constructorInfo.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
                   .Call(typeof(object).GetConstructor(Type.EmptyTypes))
-                  .SetField(LoadArgument(Arg.This),
-                            LoadArgument(1),
-                            contextField)
+                  .SetField(LoadArgument(Arg.This), LoadArgument(1), contextField)
                   .Return();
             }
 

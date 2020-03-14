@@ -7,9 +7,6 @@ namespace ILLightenComparer.Reflection
     {
         public const string CreateInstance = nameof(CreateInstance);
 
-        public const string HasValue = nameof(Nullable<byte>.HasValue);
-        public const string Value = nameof(Nullable<byte>.Value);
-
         public const string Get = nameof(Get);
         public const string Length = nameof(Array.Length);
 

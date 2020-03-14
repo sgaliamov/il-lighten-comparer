@@ -32,7 +32,7 @@ namespace ILLightenComparer.Comparer
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
-                il.EmitArgumentsReferenceComparison();
+                EmitArgumentsReferenceComparison(il);
             }
 
             if (IsDetectCycles(objectType)) {
@@ -44,10 +44,10 @@ namespace ILLightenComparer.Comparer
                 .Emit(il);
         }
 
-        private bool IsCreateCycleDetectionSets(Type objectType) =>
+        public bool IsCreateCycleDetectionSets(Type objectType) =>
             _configuration.Get(objectType).DetectCycles
             && !objectType.GetUnderlyingType().IsPrimitive()
-            && !objectType.IsSealedComparable();
+            && !objectType.IsSealedComparable(); // rely on provided implementation
 
         private bool IsDetectCycles(Type objectType) =>
             objectType.IsClass
@@ -66,5 +66,20 @@ namespace ILLightenComparer.Comparer
                 Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetY))))
             .MarkLabel(next);
         }
+
+        private static ILEmitter EmitArgumentsReferenceComparison(ILEmitter il) =>
+            il.LoadArgument(Arg.X)
+              .LoadArgument(Arg.Y)
+              .IfNotEqual_Un_S(out var checkY)
+              .Return(0)
+              .MarkLabel(checkY)
+              .LoadArgument(Arg.Y)
+              .IfTrue_S(out var checkX)
+              .Return(1)
+              .MarkLabel(checkX)
+              .LoadArgument(Arg.X)
+              .IfTrue_S(out var next)
+              .Return(-1)
+              .MarkLabel(next);
     }
 }

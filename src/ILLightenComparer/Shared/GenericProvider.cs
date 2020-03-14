@@ -22,7 +22,7 @@ namespace ILLightenComparer.Shared
             _typeBuilder = typeBuilder;
             _genericInterface = genericInterface;
             _moduleBuilder = AssemblyBuilder
-                .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer"), AssemblyBuilderAccess.RunAndCollect)
+                .DefineDynamicAssembly(new AssemblyName("IL-Lighten-Comparer.dll"), AssemblyBuilderAccess.RunAndCollect)
                 .DefineDynamicModule("IL-Lighten-Comparer.module");
         }
 
