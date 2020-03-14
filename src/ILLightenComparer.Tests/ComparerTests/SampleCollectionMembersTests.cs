@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
+using ILLightenComparer.Tests.ComparerTests.Samples;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;

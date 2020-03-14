@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.Samples
+namespace ILLightenComparer.Tests.ComparerTests.Samples
 {
     public class SampleComparableBaseObject<TMember> : IComparable<SampleComparableBaseObject<TMember>>
     {
         public static IComparer<TMember> Comparer = Comparer<TMember>.Default;
-
-        // ReSharper disable once StaticMemberInGenericType
         public static bool UsedCompareTo;
 
         public TMember Field;

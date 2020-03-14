@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 
-namespace ILLightenComparer.Tests.Samples
+namespace ILLightenComparer.Tests.ComparerTests.Samples
 {
     internal static class SampleTypes
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.Samples
+namespace ILLightenComparer.Tests.ComparerTests.Samples
 {
     public struct SampleComparableStruct<TMember> : IComparable<SampleComparableStruct<TMember>>
     {
