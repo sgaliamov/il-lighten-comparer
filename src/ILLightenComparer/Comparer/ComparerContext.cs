@@ -37,7 +37,6 @@ namespace ILLightenComparer.Comparer
 
             if (!typeof(T).IsValueType) {
                 if (x == null) { return y == null ? 0 : -1; }
-
                 if (y == null) { return 1; }
             }
 

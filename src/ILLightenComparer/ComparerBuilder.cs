@@ -6,7 +6,7 @@ using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality;
 
-[assembly: InternalsVisibleTo("IL-Lighten-Comparer")]
+[assembly: InternalsVisibleTo("IL-Lighten-Comparer.dll")]
 
 namespace ILLightenComparer
 {

@@ -45,7 +45,16 @@ namespace ILLightenComparer.Equality
             && !objectType.GetUnderlyingType().IsPrimitive()
             && !objectType.IsSealedEquatable(); // rely on provided implementation
 
-        private void BuildGetHashCode(Type objectType, MethodBuilder staticMethodBuilder) => throw new NotImplementedException();
+        private void BuildGetHashCode(Type objectType, MethodBuilder staticMethodBuilder)
+        {
+            using var il = staticMethodBuilder.CreateILEmitter();
+
+            if (IsDetectCycles(objectType)) {
+                EmitCycleDetectionForHasher(il);
+            }
+
+            _resolver.GetHasher(new ArgumentVariable(objectType)).Emit(il);
+        }
 
         private void BuildEquals(Type objectType, MethodBuilder staticMethodBuilder)
         {
@@ -61,12 +70,10 @@ namespace ILLightenComparer.Equality
             }
 
             if (IsDetectCycles(objectType)) {
-                EmitCycleDetection(il);
+                EmitCycleDetectionForComparison(il);
             }
 
-            _resolver
-                .GetComparison(new ArgumentVariable(objectType))
-                .Emit(il);
+            _resolver.GetComparison(new ArgumentVariable(objectType)).Emit(il);
         }
 
         private bool IsDetectCycles(Type objectType) =>
@@ -74,13 +81,22 @@ namespace ILLightenComparer.Equality
             && IsCreateCycleDetectionSets(objectType)
             && !objectType.ImplementsGeneric(typeof(IEnumerable<>));
 
-        private static void EmitCycleDetection(ILEmitter il)
+        private static void EmitCycleDetectionForComparison(ILEmitter il)
         {
             il.AreSame(
                 LoadInteger(0),
                 Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
                    Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
             .IfFalse_S(out var next)
+            .Return(0)
+            .MarkLabel(next);
+        }
+
+        private static void EmitCycleDetectionForHasher(ILEmitter il)
+        {
+            il.IfTrue_S(
+                Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.Y), LoadArgument(Arg.X), LoadInteger(0)),
+                out var next)
             .Return(0)
             .MarkLabel(next);
         }

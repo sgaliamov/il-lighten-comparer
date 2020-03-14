@@ -33,8 +33,8 @@ namespace ILLightenComparer.Equality
             }
 
             if (!typeof(T).IsValueType) {
-                if (x is null && y is null) { return true; }
-                if (y is null || y is null) { return false; }
+                if (x == null) { return y == null; }
+                if (y == null) { return false; }
             }
 
             var xType = x.GetType();

@@ -39,9 +39,7 @@ namespace ILLightenComparer.Comparer
                 EmitCycleDetection(il);
             }
 
-            _resolver
-                .GetComparison(new ArgumentVariable(objectType))
-                .Emit(il);
+            _resolver.GetComparison(new ArgumentVariable(objectType)).Emit(il);
         }
 
         public bool IsCreateCycleDetectionSets(Type objectType) =>
