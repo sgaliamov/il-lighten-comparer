@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Variables;
-using ILLightenComparer.Reflection;
 using Illuminator;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -11,24 +11,21 @@ namespace ILLightenComparer.Shared.Comparisons
         private readonly IVariable _variable;
         private readonly MethodInfo _delayedCompare;
 
-        public CustomComparison(IVariable variable)
+        public CustomComparison(IVariable variable, MethodInfo compareMethod)
         {
             _variable = variable;
-            _delayedCompare = Method.DelayedCompare.MakeGenericMethod(_variable.VariableType);
+            _delayedCompare = compareMethod.MakeGenericMethod(_variable.VariableType);
         }
 
         public bool PutsResultInStack { get; } = true;
 
-        public ILEmitter Emit(ILEmitter il, Label _)
-        {
-            il.LoadArgument(Arg.Context);
-            _variable.Load(il, Arg.X);
-            _variable.Load(il, Arg.Y);
-
-            return il.LoadArgument(Arg.SetX)
-                     .LoadArgument(Arg.SetY)
-                     .Call(_delayedCompare);
-        }
+        public ILEmitter Emit(ILEmitter il, Label _) => il.Call(
+            _delayedCompare,
+            LoadArgument(Arg.Context),
+            _variable.Load(Arg.X),
+            _variable.Load(Arg.Y),
+            LoadArgument(Arg.SetX),
+            LoadArgument(Arg.SetY));
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
     }

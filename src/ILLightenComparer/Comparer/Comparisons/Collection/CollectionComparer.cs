@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;

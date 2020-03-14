@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Comparisons;
+using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
@@ -12,15 +13,18 @@ namespace ILLightenComparer.Equality
 {
     internal sealed class EqualityResolver
     {
-        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _converters;
+        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _comparisonFactories;
+        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _hashersFactories;
         private readonly IConfigurationProvider _configurations;
 
         public EqualityResolver(EqualityContext context, IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _converters = new Func<IVariable, IStepEmitter>[] {
+            _comparisonFactories = new Func<IVariable, IStepEmitter>[] {
                 CeqComparison.Create,
                 OperatorComparison.Create
+            };
+            _hashersFactories = new Func<IVariable, IStepEmitter>[] {
             };
         }
 
@@ -28,10 +32,10 @@ namespace ILLightenComparer.Equality
         {
             var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return new CustomComparison(variable);
+                return new CustomComparison(variable, Method.DelayedEquals);
             }
 
-            var comparison = _converters
+            var comparison = _comparisonFactories
                 .Select(factory => factory(variable))
                 .FirstOrDefault(x => x != null);
 
@@ -40,6 +44,24 @@ namespace ILLightenComparer.Equality
             }
 
             return comparison;
+        }
+
+        public IStepEmitter GetHasher(IVariable variable)
+        {
+            var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
+            if (hasCustomComparer) {
+                return new CustomHasher(variable, Method.DelayedHash);
+            }
+
+            var hasher = _hashersFactories
+                .Select(factory => factory(variable))
+                .FirstOrDefault(x => x != null);
+
+            if (hasher == null) {
+                throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not supported.");
+            }
+
+            return hasher;
         }
     }
 }

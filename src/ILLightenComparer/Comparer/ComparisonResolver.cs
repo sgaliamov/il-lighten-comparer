@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
+using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
@@ -12,13 +13,13 @@ namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparisonResolver
     {
-        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _converters;
+        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _comparisonFactories;
         private readonly IConfigurationProvider _configurations;
 
         public ComparisonResolver(ComparerContext context, IConfigurationProvider configurations)
         {
             _configurations = configurations;
-            _converters = new Func<IVariable, IStepEmitter>[] {
+            _comparisonFactories = new Func<IVariable, IStepEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),
                 IntegralsComparison.Create,
                 (IVariable variable) => StringsComparison.Create(_configurations, variable),
@@ -34,10 +35,10 @@ namespace ILLightenComparer.Comparer
         {
             var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return new CustomComparison(variable);
+                return new CustomComparison(variable, Method.DelayedCompare);
             }
 
-            var comparison = _converters
+            var comparison = _comparisonFactories
                 .Select(factory => factory(variable))
                 .FirstOrDefault(x => x != null);
 
