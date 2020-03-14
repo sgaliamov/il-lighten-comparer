@@ -7,7 +7,7 @@ namespace ILLightenComparer
     /// <summary>
     ///     Interface provides methods to build an instance of a comparer based on defined type and configuration.
     /// </summary>
-    public interface IComparerBuilder : IComparerProvider
+    public interface IComparerBuilder : IComparerProvider, IEqualityComparerProvider
     {
         /// <summary>
         ///     Converts the common builder to typed version.
@@ -39,7 +39,7 @@ namespace ILLightenComparer
     ///     Interface to build an instance of a comparer based for provided type <typeparamref name="T" />.
     /// </summary>
     /// <typeparam name="T">The type whose instances need to compare.</typeparam>
-    public interface IComparerBuilder<T> : IComparerProvider<T>
+    public interface IComparerBuilder<T> : IComparerProvider<T>, IEqualityComparerProvider<T>
     {
         /// <summary>
         ///     Self.
@@ -309,7 +309,7 @@ namespace ILLightenComparer
     public interface IComparerProvider
     {
         /// <summary>
-        ///     Returns instance of a comparer.
+        ///     Returns an instance of comparer.
         /// </summary>
         /// <typeparam name="T">The type whose instances need to compare.</typeparam>
         /// <returns>Instance of <see cref="IComparer{T}" />.</returns>
@@ -322,7 +322,7 @@ namespace ILLightenComparer
     public interface IEqualityComparerProvider
     {
         /// <summary>
-        ///     Returns instance of a equality comparer.
+        ///     Returns an instance of equality comparer.
         /// </summary>
         /// <typeparam name="T">The type whose instances need to compare.</typeparam>
         /// <returns>Instance of <see cref="IEqualityComparer{T}" />.</returns>
@@ -335,17 +335,37 @@ namespace ILLightenComparer
     public interface IComparerProvider<in T>
     {
         /// <summary>
-        ///     Returns instance of a comparer.
+        ///     Returns an instance of comparer.
         /// </summary>
         /// <typeparam name="T">The type whose instances need to compare.</typeparam>
         /// <returns>Instance of <see cref="IComparer{T}" />.</returns>
         IComparer<T> GetComparer();
 
         /// <summary>
-        ///     Returns instance of a comparer.
+        ///     Returns an instance of comparer.
         /// </summary>
         /// <typeparam name="TOther">The type whose instances need to compare.</typeparam>
         /// <returns>Instance of <see cref="IComparer{TOther}" />.</returns>
         IComparer<TOther> GetComparer<TOther>();
+    }
+
+    /// <summary>
+    ///     Provides access to generated equality comparers.
+    /// </summary>
+    public interface IEqualityComparerProvider<in T>
+    {
+        /// <summary>
+        ///     Returns an instance of equality comparer.
+        /// </summary>
+        /// <typeparam name="T">The type whose instances need to compare.</typeparam>
+        /// <returns>Instance of <see cref="IEqualityComparer{T}" />.</returns>
+        IEqualityComparer<T> GetEqualityComparer();
+
+        /// <summary>
+        ///     Returns an instance of equality comparer.
+        /// </summary>
+        /// <typeparam name="TOther">The type whose instances need to compare.</typeparam>
+        /// <returns>Instance of <see cref="IEqualityComparer{TOther}" />.</returns>
+        IEqualityComparer<TOther> GetEqualityComparer<TOther>();
     }
 }

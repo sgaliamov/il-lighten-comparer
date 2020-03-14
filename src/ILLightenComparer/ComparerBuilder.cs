@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
+using ILLightenComparer.Equality;
 
 [assembly: InternalsVisibleTo("IL-Lighten-Comparer")]
 
@@ -15,13 +16,15 @@ namespace ILLightenComparer
     public sealed class ComparerBuilder : IComparerBuilder
     {
         private readonly ConfigurationProvider _configurationProvider = new ConfigurationProvider();
-        private Lazy<ComparerContext> _context;
+        private Lazy<(ComparerContext, EqualityContext)> _contexts;
 
         public ComparerBuilder() => InitContext();
 
         public ComparerBuilder(Action<IConfigurationBuilder> config) : this() => Configure(config);
 
-        public IComparer<T> GetComparer<T>() => _context.Value.GetComparer<T>();
+        public IComparer<T> GetComparer<T>() => _contexts.Value.Item1.GetComparer<T>();
+
+        public IEqualityComparer<T> GetEqualityComparer<T>() => _contexts.Value.Item2.GetEqualityComparer<T>();
 
         public IComparerBuilder<T> For<T>() => new Proxy<T>(this);
 
@@ -36,14 +39,16 @@ namespace ILLightenComparer
             return this;
         }
 
-        private void InitContext() =>
-            _context = new Lazy<ComparerContext>(
-                () => {
-                    var contextConfiguration = new ConfigurationProvider(_configurationProvider);
-
-                    return new ComparerContext(contextConfiguration);
-                },
-                LazyThreadSafetyMode.PublicationOnly);
+        private void InitContext()
+        {
+            _contexts = new Lazy<(ComparerContext, EqualityContext)>(() => {
+                var copyConfiguration = new ConfigurationProvider(_configurationProvider);
+                return (
+                    new ComparerContext(copyConfiguration),
+                    new EqualityContext(copyConfiguration)
+                );
+            }, LazyThreadSafetyMode.PublicationOnly);
+        }
 
         private sealed class Proxy<T> : IComparerBuilder<T>
         {
@@ -69,6 +74,10 @@ namespace ILLightenComparer
             public IComparer<T> GetComparer() => _subject.GetComparer<T>();
 
             public IComparer<TOther> GetComparer<TOther>() => _subject.GetComparer<TOther>();
+
+            public IEqualityComparer<T> GetEqualityComparer() => _subject.GetEqualityComparer<T>();
+
+            public IEqualityComparer<TOther> GetEqualityComparer<TOther>() => _subject.GetEqualityComparer<TOther>();
         }
     }
 }

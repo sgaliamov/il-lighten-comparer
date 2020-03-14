@@ -4,6 +4,7 @@ using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.Samples.EqualityComparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -17,20 +18,24 @@ namespace ILLightenComparer.Tests.ComparerTests
             Test(() => {
                 var x = _fixture.Create<Tuple<int, string>>();
                 var y = _fixture.Create<Tuple<int, string>>();
-                var expected1 = x.Item1.CompareTo(y.Item1);
-                var expected2 = x.Item2?.CompareTo(y.Item2) ?? _fixture.Create<int>();
+                var expectedEqualsInt = x.Item1.Equals(y.Item1);
+                var expectedEqualsString = x.Item2?.Equals(y.Item2) ?? y.Item2 == null;
+                var expectedHashInt = x.Item1.GetHashCode();
+                var expectedHashString = x.Item2?.GetHashCode() ?? 0;
 
                 var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer(
                     new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)));
-                var comparer1 = builder.GetComparer<Tuple<int, string>>();
-                var comparer2 = builder
+                var comparerForIntOnly = builder.GetEqualityComparer<Tuple<int, string>>();
+                var comparerForStringOnly = builder
                     .Configure(c => c
                     .SetCustomEqualityComparer<string>(null)
                     .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
-                    .GetComparer<Tuple<int, string>>();
+                    .GetEqualityComparer<Tuple<int, string>>();
 
-                comparer1.Compare(x, y).Normalize().Should().Be(expected1.Normalize());
-                comparer2.Compare(x, y).Normalize().Should().Be(expected2.Normalize());
+                comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "Comparison is based on int field.");
+                comparerForStringOnly.Equals(x, y).Should().Be(expectedEqualsString, "Comparison is based on string field.");
+                comparerForIntOnly.GetHashCode(x).Should().Be(expectedHashInt);
+                comparerForStringOnly.GetHashCode(x).Should().Be(expectedHashString);
             });
         }
 
@@ -40,16 +45,20 @@ namespace ILLightenComparer.Tests.ComparerTests
             var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
             var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
 
-            var reference = new SampleObjectComparer<SampleStruct<string>>(new SampleStructComparer<string>());
-            var expected = reference.Compare(x, y);
+            var reference = new SampleObjectEqualityComparer<SampleStruct<string>>(new SampleStructEqualityComparer<string>());
+            var expectedEquals = reference.Equals(x, y);
+            var expectedHash = reference.GetHashCode(x);
 
-            var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomComparer>());
-            var comparer1 = builder.GetComparer<SampleObject<SampleStruct<string>>>();
-            var comparer2 = builder.Configure(c => c.SetCustomEqualityComparer<SampleStruct<string>>(null))
-                                   .GetComparer<SampleObject<SampleStruct<string>>>();
+            var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomEqualityComparer>());
+            var comparer1 = builder.GetEqualityComparer<SampleObject<SampleStruct<string>>>();
+            var comparer2 = builder.Configure(c => c
+                .SetCustomEqualityComparer<SampleStruct<string>>(null))
+                .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
 
-            comparer1.Compare(x, y).Should().Be(0);
-            comparer2.Compare(x, y).Normalize().Should().Be(expected.Normalize());
+            comparer1.Equals(x, y).Should().BeTrue();
+            comparer1.GetHashCode(x).Should().Be(0);
+            comparer2.Equals(x, y).Should().Be(expectedEquals);
+            comparer2.GetHashCode(x).Should().Be(expectedHash);
         }
 
         [Fact]
@@ -59,10 +68,12 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
                 var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
 
-                var comparer = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomComparer>())
-                    .GetComparer<SampleObject<SampleStruct<string>>>();
+                var comparer = new ComparerBuilder(c => c
+                    .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
+                    .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
 
-                comparer.Compare(x, y).Should().Be(0);
+                comparer.Equals(x, y).Should().BeTrue();
+                comparer.GetHashCode(x).Should().Be(0);
             });
         }
 
@@ -73,68 +84,47 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var x = _fixture.Create<SampleObject<int[]>>();
                 var y = _fixture.Create<SampleObject<int[]>>();
 
-                var referenceComparer = new SampleObjectComparer<int[]>(new CustomizableComparer<int[]>((a, b) => {
-                    if (a == b) {
-                        return 0;
-                    }
+                var referenceComparer = new SampleObjectEqualityComparer<int[]>(
+                    new CustomizableEqualityComparer<int[]>(
+                        (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
+                var expected = referenceComparer.Equals(x, y);
 
-                    if (b is null) {
-                        return 1;
-                    }
+                var comparer = new ComparerBuilder(c => c
+                    .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())
+                    .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
+                    .GetEqualityComparer<SampleObject<int[]>>();
 
-                    if (a is null) {
-                        return -1;
-                    }
+                var actualEquals = comparer.Equals(x, y);
+                var actualHash = comparer.GetHashCode(x);
 
-                    return 0;
-                }));
-                var expected = referenceComparer.Compare(x, y);
-
-                var comparer = new ComparerBuilder(c => c.SetDefaultCollectionsOrderIgnoring(true)
-                                                         .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
-                    .GetComparer<SampleObject<int[]>>();
-
-                var actual = comparer.Compare(x, y);
-
-                actual.Should().Be(expected);
+                actualEquals.Should().Be(expected);
+                actualHash.Should().Be(0);
             });
         }
 
         [Fact]
-        public void Custom_comparer_should_be_used_for_itself()
+        public void Custom_comparer_should_be_used_for_structs()
         {
             Test(() => {
                 var x = _fixture.Create<SampleStruct<string>>();
                 var y = _fixture.Create<SampleStruct<string>>();
 
-                var comparer = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomComparer>())
-                    .GetComparer<SampleStruct<string>>();
+                var comparer = new ComparerBuilder(c => c
+                    .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
+                    .GetEqualityComparer<SampleStruct<string>>();
 
-                comparer.Compare(x, y).Should().Be(0);
+                comparer.Equals(x, y).Should().BeTrue();
+                comparer.GetHashCode(x).Should().Be(0);
             });
         }
 
-        [Fact]
-        public void Custom_instance_comparer_for_primitive_member_should_be_used()
-        {
-            var x = _fixture.Create<Tuple<int, string>>();
-            var y = _fixture.Create<Tuple<int, string>>();
-            var expected = x.Item1.CompareTo(y.Item1);
-
-            var comparer = new ComparerBuilder(c => c.SetCustomEqualityComparer(
-                new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)))
-                .GetComparer<Tuple<int, string>>();
-
-            comparer.Compare(x, y).Should().Be(expected);
-        }
-
-        private static void Test(Action action) => Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
+        private static void Test(Action action) => Enumerable.Range(0, 4).AsParallel().ForAll(_ => action());
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 
-        private sealed class SampleStructCustomComparer : CustomizableEqualityComparer<SampleStruct<string>>
+        private sealed class SampleStructCustomEqualityComparer : CustomizableEqualityComparer<SampleStruct<string>>
         {
-            public SampleStructCustomComparer() : base((__, _) => true, _ => 0) { }
+            public SampleStructCustomEqualityComparer() : base((__, _) => true, _ => 0) { }
         }
     }
 }

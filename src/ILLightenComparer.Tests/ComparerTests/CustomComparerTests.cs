@@ -18,7 +18,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var x = _fixture.Create<Tuple<int, string>>();
                 var y = _fixture.Create<Tuple<int, string>>();
                 var expected1 = x.Item1.CompareTo(y.Item1);
-                var expected2 = x.Item2?.CompareTo(y.Item2) ?? _fixture.Create<int>();
+                var expected2 = x.Item2?.CompareTo(y.Item2) ?? -y.Item2?.CompareTo(null) ?? 0;
 
                 var builder = new ComparerBuilder(c => c.SetCustomComparer(new CustomizableComparer<string>((__, _) => 0)));
                 var comparer1 = builder.GetComparer<Tuple<int, string>>();
@@ -88,8 +88,9 @@ namespace ILLightenComparer.Tests.ComparerTests
                 }));
                 var expected = referenceComparer.Compare(x, y);
 
-                var comparer = new ComparerBuilder(c => c.SetDefaultCollectionsOrderIgnoring(true)
-                                                         .SetCustomComparer(new CustomizableComparer<int>((__, _) => 0)))
+                var comparer = new ComparerBuilder(c => c
+                    .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())
+                    .SetCustomComparer(new CustomizableComparer<int>((__, _) => 0)))
                     .GetComparer<SampleObject<int[]>>();
 
                 var actual = comparer.Compare(x, y);
@@ -110,19 +111,6 @@ namespace ILLightenComparer.Tests.ComparerTests
 
                 comparer.Compare(x, y).Should().Be(0);
             });
-        }
-
-        [Fact]
-        public void Custom_instance_comparer_for_primitive_member_should_be_used()
-        {
-            var x = _fixture.Create<Tuple<int, string>>();
-            var y = _fixture.Create<Tuple<int, string>>();
-            var expected = x.Item1.CompareTo(y.Item1);
-
-            var comparer = new ComparerBuilder(c => c.SetCustomComparer(new CustomizableComparer<string>((__, _) => 0)))
-                .GetComparer<Tuple<int, string>>();
-
-            comparer.Compare(x, y).Should().Be(expected);
         }
 
         private static void Test(Action action) => Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
