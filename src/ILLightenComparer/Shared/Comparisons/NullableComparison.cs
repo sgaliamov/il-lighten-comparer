@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Comparer;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Comparer.Comparisons
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class NullableComparison : IStepEmitter
     {
@@ -41,8 +41,8 @@ namespace ILLightenComparer.Comparer.Comparisons
             var nullableVariable = new NullableVariable(variableType, _variable.OwnerType, nullableX, nullableY);
 
             return _comparisons
-                   .GetComparison(nullableVariable)
-                   .Emit(il, gotoNext);
+                .GetComparison(nullableVariable)
+                .Emit(il, gotoNext);
         }
 
         public ILEmitter Emit(ILEmitter il)

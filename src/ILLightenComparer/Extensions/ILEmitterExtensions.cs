@@ -9,6 +9,12 @@ namespace ILLightenComparer.Extensions
 {
     internal static class ILEmitterExtensions
     {
+        public static Action<ILEmitter> Load(this IVariable variable, ushort arg) => 
+            (ILEmitter il) => variable.Load(il, arg);
+
+        public static Action<ILEmitter> LoadAddress(this IVariable variable, ushort arg) => 
+            (ILEmitter il) => variable.LoadAddress(il, arg);
+
         public static ILEmitter EmitReturnNotZero(this ILEmitter il, Label next) =>
             il.Store(typeof(int), out var result)
               .LoadLocal(result)

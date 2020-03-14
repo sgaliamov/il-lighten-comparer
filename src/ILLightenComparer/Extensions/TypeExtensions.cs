@@ -18,6 +18,20 @@ namespace ILLightenComparer.Extensions
             typeof(ushort)
         });
 
+        private static readonly HashSet<Type> BasicEquitableTypes = new HashSet<Type>(new[] {
+            typeof(sbyte),
+            typeof(byte),
+            typeof(char),
+            typeof(short),
+            typeof(ushort),
+            typeof(int),
+            typeof(long),
+            typeof(ulong),
+            typeof(float),
+            typeof(double),
+            typeof(decimal)
+        });
+
         /// <summary>
         ///     Creates instance using static method.
         /// </summary>
@@ -56,6 +70,8 @@ namespace ILLightenComparer.Extensions
                 $"{type.DisplayName()} does not have {name} property.");
 
         public static bool IsIntegral(this Type type) => SmallIntegralTypes.Contains(type);
+
+        public static bool IsBasicEquitable(this Type type) => BasicEquitableTypes.Contains(type);
 
         public static bool IsSealedComparable(this Type type) =>
             type.ImplementsGeneric(typeof(IComparable<>))
