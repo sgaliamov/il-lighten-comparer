@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
@@ -17,9 +18,8 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         private readonly byte[] _one = new byte[N];
         private readonly byte[] _other = new byte[N];
 
-        // ReSharper disable NotAccessedField.Local
+        [SuppressMessage("Code Quality", "IDE0052:Remove unread private members", Justification = "<Pending>")]
         private int _out;
-        // ReSharper restore NotAccessedField.Local
 
         [GlobalSetup]
         public void Setup()
