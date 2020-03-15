@@ -61,8 +61,8 @@ namespace ILLightenComparer.Equality
             using var il = staticMethodBuilder.CreateILEmitter();
 
             var needReferenceComparison =
-                 !objectType.IsValueType
-                 && !objectType.IsSealedEquatable() // rely on provided implementation
+                 !objectType.IsPrimitive()
+                 && !objectType.IsSealedEquatable()
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {

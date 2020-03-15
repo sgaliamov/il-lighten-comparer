@@ -27,8 +27,8 @@ namespace ILLightenComparer.Comparer
             using var il = staticMethodBuilder.CreateILEmitter();
 
             var needReferenceComparison =
-                 !objectType.IsValueType
-                 && !objectType.IsSealedComparable() // rely on provided implementation
+                 !objectType.IsPrimitive()
+                 && !objectType.IsSealedComparable() // ComparablesComparison do this check
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
@@ -44,7 +44,7 @@ namespace ILLightenComparer.Comparer
 
         public bool IsCreateCycleDetectionSets(Type objectType) =>
             _configuration.Get(objectType).DetectCycles
-            && !objectType.GetUnderlyingType().IsPrimitive()
+            && !objectType.IsPrimitive()
             && !objectType.IsSealedComparable(); // no need detect cycle as flow goes outside context
 
         private bool IsDetectCycles(Type objectType) =>

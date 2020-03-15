@@ -46,15 +46,15 @@ namespace ILLightenComparer.Comparer.Comparisons
             } else {
                 _variable.Load(il, Arg.X).Store(variableType, out var x);
                 _variable.Load(il, Arg.Y)
-                        .Store(variableType, out var y)
-                        .LoadLocal(x)
-                        .IfTrue_S(out var call)
-                        .LoadLocal(y)
-                        .IfFalse_S(gotoNext)
-                        .Return(-1)
-                        .MarkLabel(call)
-                        .LoadLocal(x)
-                        .LoadLocal(y);
+                         .Store(variableType, out var y)
+                         .LoadLocal(x)
+                         .IfTrue_S(out var call)
+                         .LoadLocal(y)
+                         .IfFalse_S(gotoNext)
+                         .Return(-1)
+                         .MarkLabel(call)
+                         .LoadLocal(x)
+                         .LoadLocal(y);
             }
 
             return il.Call(_compareToMethod);
