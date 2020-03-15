@@ -27,7 +27,7 @@ namespace ILLightenComparer.Comparer
             using var il = staticMethodBuilder.CreateILEmitter();
 
             var needReferenceComparison =
-                 !objectType.IsPrimitive()
+                 !objectType.IsValueType
                  && !objectType.IsSealedComparable() // ComparablesComparison do this check
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
