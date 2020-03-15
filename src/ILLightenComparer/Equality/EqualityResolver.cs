@@ -21,10 +21,12 @@ namespace ILLightenComparer.Equality
         public EqualityResolver(EqualityContext context, IConfigurationProvider configurations)
         {
             _configurations = configurations;
+
             _comparisonFactories = new Func<IVariable, IStepEmitter>[] {
                 CeqComparison.Create,
                 OperatorComparison.Create
             };
+
             _hashersFactories = new Func<IVariable, IStepEmitter>[] {
             };
         }

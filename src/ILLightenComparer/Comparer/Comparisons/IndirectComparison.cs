@@ -45,9 +45,7 @@ namespace ILLightenComparer.Comparer.Comparisons
             il.LoadArgument(Arg.SetX)
               .LoadArgument(Arg.SetY);
 
-            var typeOfVariableCanBeChangedOnRuntime =
-                !variableType.IsValueType && !variableType.IsSealed;
-
+            var typeOfVariableCanBeChangedOnRuntime = !variableType.IsSealedType();
             if (typeOfVariableCanBeChangedOnRuntime) {
                 return il.Call(_delayedCompare);
             }

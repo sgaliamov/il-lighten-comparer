@@ -40,7 +40,7 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
                 itemComparison.Emit(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {
-                    il.EmitReturnNotZero(continueLoop);
+                    il.EmitReturnIfNonZero(continueLoop);
                 }
 
                 return il.MarkLabel(continueLoop)

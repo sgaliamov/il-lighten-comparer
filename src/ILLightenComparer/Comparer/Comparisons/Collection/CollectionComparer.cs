@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -27,7 +26,7 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
             variable.Load(il, Arg.X).Store(variable.VariableType, out var collectionX);
             variable.Load(il, Arg.Y).Store(variable.VariableType, out var collectionY);
 
-            il.EmitReferenceComparison(collectionX, collectionY, gotoNext);
+            EmitReferenceComparison(il, collectionX, collectionY, gotoNext);
 
             return (collectionX, collectionY);
         }
@@ -105,5 +104,24 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
                    })
                    .MakeGenericMethod(elementType);
         }
+
+        private static ILEmitter EmitReferenceComparison(
+          ILEmitter il,
+          LocalVariableInfo x,
+          LocalVariableInfo y,
+          Label ifEqual) =>
+          il.LoadLocal(x)
+            .LoadLocal(y)
+            .IfNotEqual_Un_S(out var checkX)
+            .GoTo(ifEqual)
+            .MarkLabel(checkX)
+            .LoadLocal(x)
+            .IfTrue_S(out var checkY)
+            .Return(-1)
+            .MarkLabel(checkY)
+            .LoadLocal(y)
+            .IfTrue_S(out var next)
+            .Return(1)
+            .MarkLabel(next);
     }
 }
