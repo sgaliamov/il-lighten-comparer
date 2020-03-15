@@ -26,7 +26,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public static ComparablesComparison Create(IVariable variable)
         {
-            // todo: 1. if object implements IComparable, then it should be used anyway?
+            // todo: 1. if object implements IComparable, then it should be used anyway, create setting to enable it
             if (variable.VariableType.GetUnderlyingType().IsSealedComparable()) {
                 return new ComparablesComparison(variable);
             }

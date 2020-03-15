@@ -4,6 +4,7 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Variables;
 using Illuminator;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Comparer.Comparisons.Collection
 {
@@ -44,7 +45,7 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
                 }
 
                 return il.MarkLabel(continueLoop)
-                         .Add(il => il.LoadLocal(index), il => il.LoadInteger(1))
+                         .Add(LoadLocal(index), LoadInteger(1))
                          .Store(index)
                          .GoTo(loopStart);
             }
@@ -73,8 +74,8 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
             ILEmitter il,
             Label afterLoop)
         {
-            il.AreSame(il => il.LoadLocal(index), il => il.LoadLocal(countX), out var isDoneX)
-              .AreSame(il => il.LoadLocal(index), il => il.LoadLocal(countY), out var isDoneY)
+            il.AreSame(LoadLocal(index), LoadLocal(countX), out var isDoneX)
+              .AreSame(LoadLocal(index), LoadLocal(countY), out var isDoneY)
               .LoadLocal(isDoneX)
               .IfFalse_S(out var checkIsDoneY)
               .LoadLocal(isDoneY)

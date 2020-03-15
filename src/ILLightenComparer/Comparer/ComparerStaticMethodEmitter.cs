@@ -45,7 +45,7 @@ namespace ILLightenComparer.Comparer
         public bool IsCreateCycleDetectionSets(Type objectType) =>
             _configuration.Get(objectType).DetectCycles
             && !objectType.GetUnderlyingType().IsPrimitive()
-            && !objectType.IsSealedComparable(); // rely on provided implementation
+            && !objectType.IsSealedComparable(); // no need detect cycle as flow goes outside context
 
         private bool IsDetectCycles(Type objectType) =>
             objectType.IsClass
