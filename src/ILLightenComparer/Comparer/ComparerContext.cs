@@ -14,14 +14,14 @@ namespace ILLightenComparer.Comparer
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly IConfigurationProvider _configurations;
 
-        public ComparerContext(IConfigurationProvider configurations)
+        public ComparerContext(MembersProvider membersProvider, IConfigurationProvider configurations)
         {
             _configurations = configurations;
             _genericProvider = new GenericProvider(
                 typeof(IComparer<>),
                 new GenericTypeBuilder(_configurations,
                 new ComparerStaticMethodEmitter(
-                new ComparisonResolver(this, _configurations), _configurations)));
+                new ComparisonResolver(this, membersProvider, _configurations), _configurations)));
         }
 
         public IComparer<T> GetComparer<T>() =>

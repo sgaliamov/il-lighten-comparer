@@ -5,6 +5,7 @@ using System.Reflection;
 using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
+using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
@@ -14,21 +15,23 @@ namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparisonResolver
     {
-        private static readonly MethodInfo DelayedCompare =
-            typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
-
+        private static readonly MethodInfo DelayedCompare = typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
         private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _comparisonFactories;
         private readonly IConfigurationProvider _configurations;
 
-        public ComparisonResolver(ComparerContext context, IConfigurationProvider configurations)
+        public ComparisonResolver(
+            ComparerContext context,
+            MembersProvider membersProvider,
+            IConfigurationProvider configurations)
         {
             _configurations = configurations;
+
             _comparisonFactories = new Func<IVariable, IStepEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),
                 IntegralsComparison.Create,
                 (IVariable variable) => StringsComparison.Create(_configurations, variable),
                 ComparablesComparison.Create,
-                (IVariable variable) => MembersComparison.Create(this, _configurations, variable),
+                (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
                 (IVariable variable) => CreateIndirectComparison(context, variable),
                 (IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
                 (IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
@@ -65,7 +68,5 @@ namespace ILLightenComparer.Comparer
 
             return null;
         }
-
-
     }
 }

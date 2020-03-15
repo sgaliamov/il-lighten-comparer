@@ -5,6 +5,7 @@ using System.Threading;
 using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality;
+using ILLightenComparer.Reflection;
 
 [assembly: InternalsVisibleTo("IL-Lighten-Comparer.dll")]
 
@@ -42,10 +43,12 @@ namespace ILLightenComparer
         private void InitContext()
         {
             _contexts = new Lazy<(ComparerContext, EqualityContext)>(() => {
-                var copyConfiguration = new ConfigurationProvider(_configurationProvider);
+                var configurationCopy = new ConfigurationProvider(_configurationProvider);
+                var membersProvider = new MembersProvider(configurationCopy);
+
                 return (
-                    new ComparerContext(copyConfiguration),
-                    new EqualityContext(copyConfiguration)
+                    new ComparerContext(membersProvider, configurationCopy),
+                    new EqualityContext(membersProvider, configurationCopy)
                 );
             }, LazyThreadSafetyMode.PublicationOnly);
         }

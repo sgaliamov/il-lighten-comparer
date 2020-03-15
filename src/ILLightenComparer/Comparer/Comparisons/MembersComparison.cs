@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
-using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
@@ -14,26 +13,26 @@ namespace ILLightenComparer.Comparer.Comparisons
     internal sealed class MembersComparison : IStepEmitter
     {
         private readonly MembersProvider _membersProvider;
-        private readonly ComparisonResolver _comparisons;
+        private readonly ComparisonResolver _resolver;
         private readonly IVariable _variable;
 
         private MembersComparison(
-            ComparisonResolver comparisons,
-            IConfigurationProvider configurations,
+            ComparisonResolver resolver,
+            MembersProvider membersProvider,
             IVariable variable)
         {
             _variable = variable;
-            _comparisons = comparisons;
-            _membersProvider = new MembersProvider(configurations);
+            _resolver = resolver;
+            _membersProvider = membersProvider;
         }
 
         public static MembersComparison Create(
-            ComparisonResolver comparisons,
-            IConfigurationProvider configurations,
+            ComparisonResolver resolver,
+            MembersProvider membersProvider,
             IVariable variable)
         {
             if (variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
-                return new MembersComparison(comparisons, configurations, variable);
+                return new MembersComparison(resolver, membersProvider, variable);
             }
 
             return null;
@@ -48,7 +47,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             var comparisons = _membersProvider
                 .GetMembers(variableType)
-                .Select(_comparisons.GetComparison);
+                .Select(_resolver.GetComparison);
 
             foreach (var item in comparisons) {
                 using (il.LocalsScope()) {

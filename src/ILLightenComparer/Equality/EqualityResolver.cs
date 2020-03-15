@@ -18,7 +18,10 @@ namespace ILLightenComparer.Equality
         private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _hashersFactories;
         private readonly IConfigurationProvider _configurations;
 
-        public EqualityResolver(EqualityContext context, IConfigurationProvider configurations)
+        public EqualityResolver(
+            EqualityContext context,
+            MembersProvider membersProvider,
+            IConfigurationProvider configurations)
         {
             _configurations = configurations;
 

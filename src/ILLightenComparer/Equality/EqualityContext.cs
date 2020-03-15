@@ -15,14 +15,14 @@ namespace ILLightenComparer.Equality
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly GenericProvider _genericProvider;
 
-        public EqualityContext(IConfigurationProvider configurations)
+        public EqualityContext(MembersProvider membersProvider, IConfigurationProvider configurations)
         {
             _configurations = configurations;
             _genericProvider = new GenericProvider(
                 typeof(IEqualityComparer<>),
                 new GenericTypeBuilder(_configurations,
                 new EqualityStaticMethodsEmitter(
-                new EqualityResolver(this, _configurations), _configurations)));
+                new EqualityResolver(this, membersProvider, _configurations), _configurations)));
         }
 
         public bool DelayedEquals<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
@@ -109,7 +109,6 @@ namespace ILLightenComparer.Equality
     internal interface IEqualityComparerContext : IEqualityComparerProvider, IContext
     {
         bool DelayedEquals<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
-
         int DelayedHash<T>(T x, CycleDetectionSet xSet);
     }
 }
