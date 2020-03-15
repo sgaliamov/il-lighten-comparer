@@ -45,7 +45,7 @@ namespace ILLightenComparer.Equality
             };
         }
 
-        public IStepEmitter GetComparison(IVariable variable)
+        public IStepEmitter GetEqualityComparison(IVariable variable)
         {
             var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
