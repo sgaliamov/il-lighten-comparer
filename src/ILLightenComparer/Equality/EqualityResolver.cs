@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Comparisons;
 using ILLightenComparer.Equality.Hashers;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
@@ -14,6 +16,9 @@ namespace ILLightenComparer.Equality
 {
     internal sealed class EqualityResolver
     {
+        private static readonly MethodInfo DelayedEquals = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedEquals));
+        private static readonly MethodInfo DelayedHash = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedHash));
+
         private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _comparisonFactories;
         private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _hashersFactories;
         private readonly IConfigurationProvider _configurations;
@@ -26,8 +31,14 @@ namespace ILLightenComparer.Equality
             _configurations = configurations;
 
             _comparisonFactories = new Func<IVariable, IStepEmitter>[] {
+                //(IVariable variable) => NullableComparison.Create(this, variable),
                 CeqComparison.Create,
-                OperatorComparison.Create
+                OperatorComparison.Create,
+                //ComparablesComparison.Create,
+                (IVariable variable) => MembersEqualityComparison.Create(this, membersProvider, variable),
+                (IVariable variable) => CreateIndirectComparison(context, variable)
+                //(IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
+                //(IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
             };
 
             _hashersFactories = new Func<IVariable, IStepEmitter>[] {
@@ -68,6 +79,19 @@ namespace ILLightenComparer.Equality
             }
 
             return hasher;
+        }
+
+        internal static IndirectComparison CreateIndirectComparison(EqualityContext context, IVariable variable)
+        {
+            var variableType = variable.VariableType;
+            if (variableType.IsHierarchical() && !(variable is ArgumentVariable)) {
+                var delayedCompare = DelayedEquals.MakeGenericMethod(variableType);
+                var staticCompareMethod = context.GetStaticEqualsMethodInfo(variableType);
+
+                return new IndirectComparison(staticCompareMethod, delayedCompare, variable);
+            }
+
+            return null;
         }
     }
 }

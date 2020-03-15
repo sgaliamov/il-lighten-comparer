@@ -83,6 +83,7 @@ namespace ILLightenComparer.Shared
 
         private void EmitStaticMethodCall(ILEmitter il, Type objectType, MethodBuilder staticMethod, int parametersCount)
         {
+            // todo: 1. need other implementation for hasher.
             if (!_staticMethodEmitter.IsCreateCycleDetectionSets(objectType)) {
                 Enumerable.Range(0, parametersCount)
                     .Aggregate(il, (il, _) => il.LoadNull())
