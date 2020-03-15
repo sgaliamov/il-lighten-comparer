@@ -17,11 +17,16 @@ namespace ILLightenComparer.Comparer
         public ComparerContext(MembersProvider membersProvider, IConfigurationProvider configurations)
         {
             _configurations = configurations;
+
+            var resolver = new ComparisonResolver(this, membersProvider, _configurations);
+
+            var methodEmitters = new Dictionary<string, IStaticMethodEmitter>{
+                { MethodName.Compare, new CompareStaticMethodEmitter(resolver) }
+            };
+
             _genericProvider = new GenericProvider(
                 typeof(IComparer<>),
-                new GenericTypeBuilder(_configurations,
-                new CompareStaticMethodEmitter(
-                new ComparisonResolver(this, membersProvider, _configurations), _configurations)));
+                new GenericTypeBuilder(methodEmitters, _configurations));
         }
 
         public IComparer<T> GetComparer<T>() =>

@@ -27,7 +27,7 @@ namespace ILLightenComparer.Shared
         }
 
         // method info is enough to emit compare on sealed type in IndirectComparison
-        public MethodInfo GetStaticMethodInfo(Type type, string name) => DefineStaticMethod(type).GetMethodInfo(name);
+        public MethodInfo GetStaticMethodInfo(Type type, string name) => DefineStaticMethods(type).GetMethodInfo(name);
 
         // is used for delayed calls in context
         public MethodInfo GetCompiledStaticMethod(Type type, string name)
@@ -45,7 +45,7 @@ namespace ILLightenComparer.Shared
             var lazy = _comparerTypes.GetOrAdd(
                 objectType,
                 key => new Lazy<Type>(() => {
-                    var info = DefineStaticMethod(key);
+                    var info = DefineStaticMethods(key);
 
                     return _typeBuilder.Build(info);
                 }));
@@ -57,7 +57,7 @@ namespace ILLightenComparer.Shared
             return comparerType;
         }
 
-        private StaticMethodsInfo DefineStaticMethod(Type objectType)
+        private StaticMethodsInfo DefineStaticMethods(Type objectType)
         {
             var lazy = _methodsInfo.GetOrAdd(objectType,
                 key => new Lazy<StaticMethodsInfo>(() => {

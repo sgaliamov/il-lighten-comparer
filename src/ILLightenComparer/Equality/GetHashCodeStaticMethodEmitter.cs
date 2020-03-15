@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using ILLightenComparer.Config;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -10,44 +8,30 @@ using static Illuminator.Functional;
 
 namespace ILLightenComparer.Equality
 {
-    internal sealed class GetHashCodeStaticMethodEmitter : IComparerStaticMethodEmitter
+    internal sealed class GetHashCodeStaticMethodEmitter : IStaticMethodEmitter
     {
-        private readonly IConfigurationProvider _configuration;
         private readonly EqualityResolver _resolver;
 
-        public GetHashCodeStaticMethodEmitter(EqualityResolver resolver, IConfigurationProvider configuration)
-        {
-            _configuration = configuration;
-            _resolver = resolver;
-        }
+        public GetHashCodeStaticMethodEmitter(EqualityResolver resolver) => _resolver = resolver;
 
-        public void Build(Type objectType, MethodBuilder staticMethodBuilder)
+        public void Build(Type objectType, bool detecCycles, MethodBuilder staticMethodBuilder)
         {
             using var il = staticMethodBuilder.CreateILEmitter();
 
-            if (IsDetectCycles(objectType)) {
+            if (detecCycles) {
                 EmitCycleDetection(il);
             }
 
             _resolver.GetHasher(new ArgumentVariable(objectType)).Emit(il);
         }
 
-        public bool IsCreateCycleDetectionSets(Type objectType) =>
-            _configuration.Get(objectType).DetectCycles
-            && !objectType.IsPrimitive();
+        public bool NeedCreateCycleDetectionSets(Type objectType) => true;
 
-        private bool IsDetectCycles(Type objectType) =>
-            objectType.IsClass
-            && IsCreateCycleDetectionSets(objectType)
-            && !objectType.ImplementsGeneric(typeof(IEnumerable<>));
-
-        private static void EmitCycleDetection(ILEmitter il)
-        {
-            il.IfTrue_S(
+        private static void EmitCycleDetection(ILEmitter il) => il
+            .IfTrue_S(
                 Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.Y), LoadArgument(Arg.X), LoadInteger(0)),
                 out var next)
-              .Return(0)
-              .MarkLabel(next);
-        }
+            .Return(0)
+            .MarkLabel(next);
     }
 }

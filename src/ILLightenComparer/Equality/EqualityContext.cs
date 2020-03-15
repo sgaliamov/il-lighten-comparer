@@ -18,11 +18,17 @@ namespace ILLightenComparer.Equality
         public EqualityContext(MembersProvider membersProvider, IConfigurationProvider configurations)
         {
             _configurations = configurations;
+
+            var resolver = new EqualityResolver(this, membersProvider, _configurations);
+
+            var methodEmitters = new Dictionary<string, IStaticMethodEmitter>{
+                { nameof(Equals), new EqualsStaticMethodEmitter(resolver) },
+                { nameof(GetHashCode), new GetHashCodeStaticMethodEmitter(resolver) }
+            };
+
             _genericProvider = new GenericProvider(
                 typeof(IEqualityComparer<>),
-                new GenericTypeBuilder(_configurations,
-                new EqualsStaticMethodEmitter(
-                new EqualityResolver(this, membersProvider, _configurations), _configurations)));
+                new GenericTypeBuilder(methodEmitters, _configurations));
         }
 
         public bool DelayedEquals<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)

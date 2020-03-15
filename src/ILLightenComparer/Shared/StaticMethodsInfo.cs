@@ -10,10 +10,6 @@ namespace ILLightenComparer.Shared
     {
         private readonly IDictionary<string, (MethodInfo, bool)> _methods;
 
-        public Type ObjectType { get; }
-        public Type TypedComparerInterface { get; }
-        public TypeBuilder ComparerTypeBuilder { get; }
-
         public StaticMethodsInfo(
             Type objectType,
             Type typedComparerInterface,
@@ -25,6 +21,10 @@ namespace ILLightenComparer.Shared
             TypedComparerInterface = typedComparerInterface;
             _methods = methods.ToDictionary(x => x.Name, x => ((MethodInfo)x, false));
         }
+
+        public Type ObjectType { get; }
+        public Type TypedComparerInterface { get; }
+        public TypeBuilder ComparerTypeBuilder { get; }
 
         public bool IsCompiled(string name) => _methods.TryGetValue(name, out var info) && info.Item2;
 
