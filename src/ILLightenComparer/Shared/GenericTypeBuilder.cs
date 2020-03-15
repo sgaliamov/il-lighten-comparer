@@ -84,9 +84,9 @@ namespace ILLightenComparer.Shared
         private void EmitStaticMethodCall(ILEmitter il, Type objectType, MethodBuilder staticMethod, int parametersCount)
         {
             // todo: 1. need other implementation for hasher.
-            if (!_staticMethodEmitter.IsCreateCycleDetectionSets(objectType)) {
+            if (_staticMethodEmitter.IsCreateCycleDetectionSets(objectType)) {
                 Enumerable.Range(0, parametersCount)
-                    .Aggregate(il, (il, _) => il.LoadNull())
+                    .Aggregate(il, (il, _) => il.New(CycleDetectionSet.DefaultConstructor))
                     .Call(staticMethod)
                     .Return();
 
@@ -94,9 +94,9 @@ namespace ILLightenComparer.Shared
             }
 
             Enumerable.Range(0, parametersCount)
-                .Aggregate(il, (il, _) => il.New(CycleDetectionSet.DefaultConstructor))
-                .Call(staticMethod)
-                .Return();
+               .Aggregate(il, (il, _) => il.LoadNull())
+               .Call(staticMethod)
+               .Return();
         }
 
         private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)

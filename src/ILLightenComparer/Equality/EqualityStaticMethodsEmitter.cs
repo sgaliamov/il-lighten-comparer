@@ -97,8 +97,8 @@ namespace ILLightenComparer.Equality
             il.IfTrue_S(
                 Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.Y), LoadArgument(Arg.X), LoadInteger(0)),
                 out var next)
-            .Return(0)
-            .MarkLabel(next);
+              .Return(0)
+              .MarkLabel(next);
         }
 
         private static ILEmitter EmitArgumentsReferenceComparison(ILEmitter il) =>
