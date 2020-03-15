@@ -21,7 +21,7 @@ namespace ILLightenComparer.Equality
             _genericProvider = new GenericProvider(
                 typeof(IEqualityComparer<>),
                 new GenericTypeBuilder(_configurations,
-                new EqualityStaticMethodsEmitter(
+                new EqualsStaticMethodEmitter(
                 new EqualityResolver(this, membersProvider, _configurations), _configurations)));
         }
 

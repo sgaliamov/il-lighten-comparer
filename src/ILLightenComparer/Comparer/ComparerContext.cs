@@ -20,7 +20,7 @@ namespace ILLightenComparer.Comparer
             _genericProvider = new GenericProvider(
                 typeof(IComparer<>),
                 new GenericTypeBuilder(_configurations,
-                new ComparerStaticMethodEmitter(
+                new CompareStaticMethodEmitter(
                 new ComparisonResolver(this, membersProvider, _configurations), _configurations)));
         }
 

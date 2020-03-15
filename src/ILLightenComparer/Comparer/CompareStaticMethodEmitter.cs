@@ -11,12 +11,12 @@ using static Illuminator.Functional;
 
 namespace ILLightenComparer.Comparer
 {
-    internal sealed class ComparerStaticMethodEmitter : IComparerStaticMethodEmitter
+    internal sealed class CompareStaticMethodEmitter : IComparerStaticMethodEmitter
     {
         private readonly IConfigurationProvider _configuration;
         private readonly ComparisonResolver _resolver;
 
-        public ComparerStaticMethodEmitter(ComparisonResolver resolver, IConfigurationProvider configuration)
+        public CompareStaticMethodEmitter(ComparisonResolver resolver, IConfigurationProvider configuration)
         {
             _configuration = configuration;
             _resolver = resolver;

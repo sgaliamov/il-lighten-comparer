@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Config;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -13,16 +12,9 @@ namespace ILLightenComparer.Shared
 {
     internal sealed class GenericTypeBuilder
     {
-        private readonly IConfigurationProvider _configuration;
         private readonly IComparerStaticMethodEmitter _staticMethodEmitter;
 
-        public GenericTypeBuilder(
-            IConfigurationProvider configuration,
-            IComparerStaticMethodEmitter staticMethodBuilder)
-        {
-            _configuration = configuration;
-            _staticMethodEmitter = staticMethodBuilder;
-        }
+        public GenericTypeBuilder(IComparerStaticMethodEmitter staticMethodBuilder) => _staticMethodEmitter = staticMethodBuilder;
 
         public Type Build(StaticMethodsInfo methodsInfo)
         {
