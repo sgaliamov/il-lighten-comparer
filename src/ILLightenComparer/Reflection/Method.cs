@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using ILLightenComparer.Comparer;
 using ILLightenComparer.Equality;
 using ILLightenComparer.Shared;
 using Illuminator.Extensions;
@@ -9,9 +8,6 @@ namespace ILLightenComparer.Reflection
 {
     internal static class Method
     {
-        public static MethodInfo DelayedCompare =
-            typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
-
         public static MethodInfo DelayedEquals =
            typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedEquals));
 

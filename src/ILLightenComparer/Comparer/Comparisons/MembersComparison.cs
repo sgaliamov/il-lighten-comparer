@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
@@ -44,9 +44,7 @@ namespace ILLightenComparer.Comparer.Comparisons
         public ILEmitter Emit(ILEmitter il, Label _)
         {
             var variableType = _variable.VariableType;
-            if (variableType.IsPrimitive()) {
-                throw new InvalidOperationException($"{variableType.DisplayName()} is not expected.");
-            }
+            Debug.Assert(!variableType.IsPrimitive(), $"{variableType.DisplayName()} is not expected.");
 
             var comparisons = _membersProvider
                 .GetMembers(variableType)

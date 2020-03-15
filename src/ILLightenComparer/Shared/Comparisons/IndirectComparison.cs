@@ -1,36 +1,25 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Reflection;
-using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 
-namespace ILLightenComparer.Comparer.Comparisons
+namespace ILLightenComparer.Shared.Comparisons
 {
     /// <summary>
-    /// Delegates comparison to static method or delayed compare in context.
+    ///     Delegates comparison to static method or delayed compare in context.
     /// </summary>
     internal sealed class IndirectComparison : IStepEmitter
     {
+        private readonly MethodInfo _staticCompareMethod;
         private readonly IVariable _variable;
         private readonly MethodInfo _delayedCompare;
-        private readonly ComparerContext _context;
 
-        private IndirectComparison(ComparerContext context, IVariable variable)
+        public IndirectComparison(MethodInfo staticCompareMethod, MethodInfo delayedCompare, IVariable variable)
         {
-            _context = context;
+            _staticCompareMethod = staticCompareMethod;
+            _delayedCompare = delayedCompare;
             _variable = variable;
-            _delayedCompare = Method.DelayedCompare.MakeGenericMethod(_variable.VariableType);
-        }
-
-        public static IndirectComparison Create(ComparerContext context, IVariable variable)
-        {
-            if (variable.VariableType.IsHierarchical() && !(variable is ArgumentVariable)) {
-                return new IndirectComparison(context, variable);
-            }
-
-            return null;
         }
 
         public bool PutsResultInStack { get; } = true;
@@ -50,9 +39,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                 return il.Call(_delayedCompare);
             }
 
-            var compareMethod = _context.GetStaticCompareMethodInfo(variableType);
-
-            return il.Call(compareMethod);
+            return il.Call(_staticCompareMethod);
         }
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();

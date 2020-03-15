@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
-using ILLightenComparer.Reflection;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
@@ -13,6 +14,9 @@ namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparisonResolver
     {
+        private static readonly MethodInfo DelayedCompare =
+            typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
+
         private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _comparisonFactories;
         private readonly IConfigurationProvider _configurations;
 
@@ -25,7 +29,7 @@ namespace ILLightenComparer.Comparer
                 (IVariable variable) => StringsComparison.Create(_configurations, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, _configurations, variable),
-                (IVariable variable) => IndirectComparison.Create(context, variable),
+                (IVariable variable) => CreateIndirectComparison(context, variable),
                 (IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
                 (IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
             };
@@ -35,7 +39,7 @@ namespace ILLightenComparer.Comparer
         {
             var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return new CustomComparison(variable, Method.DelayedCompare);
+                return new CustomComparison(variable, DelayedCompare);
             }
 
             var comparison = _comparisonFactories
@@ -48,5 +52,20 @@ namespace ILLightenComparer.Comparer
 
             return comparison;
         }
+
+        internal static IndirectComparison CreateIndirectComparison(ComparerContext context, IVariable variable)
+        {
+            var variableType = variable.VariableType;
+            if (variableType.IsHierarchical() && !(variable is ArgumentVariable)) {
+                var delayedCompare = DelayedCompare.MakeGenericMethod(variableType);
+                var staticCompareMethod = context.GetStaticCompareMethodInfo(variableType);
+
+                return new IndirectComparison(staticCompareMethod, delayedCompare, variable);
+            }
+
+            return null;
+        }
+
+
     }
 }
