@@ -158,7 +158,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                 itemComparison.Emit(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {
-                    il.EmitReturnIfNonZero(continueLoop);
+                    il.EmitReturnIfTruthy(continueLoop);
                 }
             }
         }

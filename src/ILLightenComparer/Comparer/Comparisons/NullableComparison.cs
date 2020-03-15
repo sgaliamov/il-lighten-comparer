@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Comparer;
 using ILLightenComparer.Extensions;
+using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Shared.Comparisons
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class NullableComparison : IStepEmitter
     {
@@ -51,7 +51,7 @@ namespace ILLightenComparer.Shared.Comparisons
             il.DefineLabel(out var exit);
 
             return Emit(il, exit)
-                .EmitReturnIfNonZero(exit)
+                .EmitReturnIfTruthy(exit)
                 .MarkLabel(exit)
                 .Return(0);
         }

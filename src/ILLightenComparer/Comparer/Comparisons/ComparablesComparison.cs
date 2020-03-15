@@ -65,7 +65,7 @@ namespace ILLightenComparer.Comparer.Comparisons
             il.DefineLabel(out var exit);
 
             return Emit(il, exit)
-                .EmitReturnIfNonZero(exit)
+                .EmitReturnIfTruthy(exit)
                 .MarkLabel(exit)
                 .Return(0);
         }
