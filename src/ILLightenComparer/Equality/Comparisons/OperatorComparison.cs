@@ -7,7 +7,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality.Comparisons
 {
-    internal sealed class OperatorComparison : IStepEmitter
+    internal sealed class OperatorComparison : IComparisonEmitter
     {
         private readonly IVariable _variable;
         private readonly MethodInfo _equalityMethod;

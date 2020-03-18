@@ -3,7 +3,7 @@ using Illuminator;
 
 namespace ILLightenComparer.Shared
 {
-    internal interface IStepEmitter
+    internal interface IComparisonEmitter
     {
         /// <summary>
         ///     Does the comparison puts a result into the stack.

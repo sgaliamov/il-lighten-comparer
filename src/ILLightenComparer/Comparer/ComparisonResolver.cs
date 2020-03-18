@@ -16,7 +16,7 @@ namespace ILLightenComparer.Comparer
     internal sealed class ComparisonResolver
     {
         private static readonly MethodInfo DelayedCompare = typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
-        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _comparisonFactories;
+        private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
         private readonly IConfigurationProvider _configurations;
 
         public ComparisonResolver(
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Comparer
         {
             _configurations = configurations;
 
-            _comparisonFactories = new Func<IVariable, IStepEmitter>[] {
+            _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),
                 IntegralsComparison.Create,
                 (IVariable variable) => StringsComparison.Create(_configurations, variable),
@@ -38,7 +38,7 @@ namespace ILLightenComparer.Comparer
             };
         }
 
-        public IStepEmitter GetComparison(IVariable variable)
+        public IComparisonEmitter GetComparison(IVariable variable)
         {
             var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {

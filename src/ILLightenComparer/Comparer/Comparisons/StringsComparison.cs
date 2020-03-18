@@ -8,7 +8,7 @@ using Illuminator;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
-    internal sealed class StringsComparison : IStepEmitter
+    internal sealed class StringsComparison : IComparisonEmitter
     {
         private static readonly MethodInfo StringCompare = typeof(string).GetMethod(
            nameof(string.Compare),

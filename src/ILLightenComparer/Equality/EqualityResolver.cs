@@ -19,8 +19,8 @@ namespace ILLightenComparer.Equality
         private static readonly MethodInfo DelayedEquals = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedEquals));
         private static readonly MethodInfo DelayedHash = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedHash));
 
-        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _comparisonFactories;
-        private readonly IReadOnlyCollection<Func<IVariable, IStepEmitter>> _hashersFactories;
+        private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
+        private readonly IReadOnlyCollection<Func<IVariable, IHasherEmitter>> _hashersFactories;
         private readonly IConfigurationProvider _configurations;
 
         public EqualityResolver(
@@ -30,7 +30,7 @@ namespace ILLightenComparer.Equality
         {
             _configurations = configurations;
 
-            _comparisonFactories = new Func<IVariable, IStepEmitter>[] {
+            _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 //(IVariable variable) => NullableComparison.Create(this, variable),
                 CeqComparison.Create,
                 OperatorComparison.Create,
@@ -41,11 +41,12 @@ namespace ILLightenComparer.Equality
                 //(IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
             };
 
-            _hashersFactories = new Func<IVariable, IStepEmitter>[] {
+            _hashersFactories = new Func<IVariable, IHasherEmitter>[] {
+                (IVariable variable) => MembersHasher.Create(this, membersProvider, variable)
             };
         }
 
-        public IStepEmitter GetEqualityComparison(IVariable variable)
+        public IComparisonEmitter GetEqualityComparison(IVariable variable)
         {
             var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
@@ -63,7 +64,7 @@ namespace ILLightenComparer.Equality
             return comparison;
         }
 
-        public IStepEmitter GetHasher(IVariable variable)
+        public IComparisonEmitter GetHasher(IVariable variable)
         {
             var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {

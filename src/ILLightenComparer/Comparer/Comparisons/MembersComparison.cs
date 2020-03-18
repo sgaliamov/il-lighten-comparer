@@ -10,7 +10,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
-    internal sealed class MembersComparison : IStepEmitter
+    internal sealed class MembersComparison : IComparisonEmitter
     {
         private readonly MembersProvider _membersProvider;
         private readonly ComparisonResolver _resolver;

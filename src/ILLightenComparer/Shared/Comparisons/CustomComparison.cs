@@ -6,7 +6,7 @@ using static Illuminator.Functional;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
-    internal sealed class CustomComparison : IStepEmitter
+    internal sealed class CustomComparison : IComparisonEmitter
     {
         private readonly IVariable _variable;
         private readonly MethodInfo _delayedCompare;

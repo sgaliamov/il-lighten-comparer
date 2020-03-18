@@ -10,7 +10,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality.Comparisons
 {
-    internal sealed class MembersEqualityComparison : IStepEmitter
+    internal sealed class MembersEqualityComparison : IComparisonEmitter
     {
         private readonly MembersProvider _membersProvider;
         private readonly EqualityResolver _resolver;

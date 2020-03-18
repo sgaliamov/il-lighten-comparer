@@ -7,7 +7,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality.Comparisons
 {
-    internal sealed class CeqComparison : IStepEmitter
+    internal sealed class CeqComparison : IComparisonEmitter
     {
         private readonly IVariable _variable;
 

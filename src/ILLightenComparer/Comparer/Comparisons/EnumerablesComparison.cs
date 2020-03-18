@@ -15,7 +15,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
-    internal sealed class EnumerablesComparison : IStepEmitter
+    internal sealed class EnumerablesComparison : IComparisonEmitter
     {
         private static readonly MethodInfo MoveNextMethod = typeof(IEnumerator)
           .GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
