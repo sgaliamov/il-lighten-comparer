@@ -51,9 +51,9 @@ namespace ILLightenComparer.Comparer.Comparisons
             il.DefineLabel(out var exit);
 
             return Emit(il, exit)
-                .EmitReturnIfTruthy(exit)
-                .MarkLabel(exit)
-                .Return(0);
+                  .EmitReturnIfTruthy(exit)
+                  .MarkLabel(exit)
+                  .Return(0);
         }
 
         private static ILEmitter EmitCheckNullablesForValue(
