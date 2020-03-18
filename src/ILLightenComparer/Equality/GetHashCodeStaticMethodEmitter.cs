@@ -10,9 +10,9 @@ namespace ILLightenComparer.Equality
 {
     internal sealed class GetHashCodeStaticMethodEmitter : IStaticMethodEmitter
     {
-        private readonly EqualityResolver _resolver;
+        private readonly HasherResolver _resolver;
 
-        public GetHashCodeStaticMethodEmitter(EqualityResolver resolver) => _resolver = resolver;
+        public GetHashCodeStaticMethodEmitter(HasherResolver resolver) => _resolver = resolver;
 
         public void Build(Type objectType, bool detecCycles, MethodBuilder staticMethodBuilder)
         {
@@ -22,10 +22,13 @@ namespace ILLightenComparer.Equality
                 EmitCycleDetection(il);
             }
 
-            _resolver.GetHasher(new ArgumentVariable(objectType)).Emit(il);
+            _resolver
+                .GetHasher(new ArgumentVariable(objectType))
+                .Emit(il)
+                .Return();
         }
 
-        public bool NeedCreateCycleDetectionSets(Type objectType) => true;
+        public bool NeedCreateCycleDetectionSets(Type _) => true;
 
         private static void EmitCycleDetection(ILEmitter il) => il
             .IfTrue_S(

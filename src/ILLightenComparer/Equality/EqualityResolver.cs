@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Comparisons;
-using ILLightenComparer.Equality.Hashers;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
@@ -17,10 +16,8 @@ namespace ILLightenComparer.Equality
     internal sealed class EqualityResolver
     {
         private static readonly MethodInfo DelayedEquals = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedEquals));
-        private static readonly MethodInfo DelayedHash = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedHash));
 
         private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
-        private readonly IReadOnlyCollection<Func<IVariable, IHasherEmitter>> _hashersFactories;
         private readonly IConfigurationProvider _configurations;
 
         public EqualityResolver(
@@ -40,10 +37,6 @@ namespace ILLightenComparer.Equality
                 //(IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
                 //(IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
             };
-
-            _hashersFactories = new Func<IVariable, IHasherEmitter>[] {
-                (IVariable variable) => MembersHasher.Create(this, membersProvider, variable)
-            };
         }
 
         public IComparisonEmitter GetEqualityComparison(IVariable variable)
@@ -62,24 +55,6 @@ namespace ILLightenComparer.Equality
             }
 
             return comparison;
-        }
-
-        public IComparisonEmitter GetHasher(IVariable variable)
-        {
-            var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
-            if (hasCustomComparer) {
-                return new CustomHasher(variable, Method.DelayedHash);
-            }
-
-            var hasher = _hashersFactories
-                .Select(factory => factory(variable))
-                .FirstOrDefault(x => x != null);
-
-            if (hasher == null) {
-                throw new NotSupportedException($"{variable.VariableType.DisplayName()} is not supported.");
-            }
-
-            return hasher;
         }
 
         internal static IndirectComparison CreateIndirectComparison(EqualityContext context, IVariable variable)
