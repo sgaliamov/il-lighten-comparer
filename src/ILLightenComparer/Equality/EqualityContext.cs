@@ -19,11 +19,12 @@ namespace ILLightenComparer.Equality
         {
             _configurations = configurations;
 
-            var resolver = new EqualityResolver(this, membersProvider, _configurations);
+            var equalityResolver = new EqualityResolver(this, membersProvider, _configurations);
+            var hasherResolver = new HasherResolver(this, membersProvider, _configurations);
 
-            var methodEmitters = new Dictionary<string, IStaticMethodEmitter>{
-                { nameof(Equals), new EqualsStaticMethodEmitter(resolver) },
-                { nameof(GetHashCode), new GetHashCodeStaticMethodEmitter(resolver) }
+            var methodEmitters = new Dictionary<string, IStaticMethodEmitter> {
+                [nameof(Equals)] = new EqualsStaticMethodEmitter(equalityResolver),
+                [nameof(GetHashCode)] = new GetHashCodeStaticMethodEmitter(hasherResolver)
             };
 
             _genericProvider = new GenericProvider(
