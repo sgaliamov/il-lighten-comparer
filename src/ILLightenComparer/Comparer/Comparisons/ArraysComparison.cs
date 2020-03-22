@@ -13,27 +13,27 @@ namespace ILLightenComparer.Comparer.Comparisons
         private readonly IVariable _variable;
         private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
 
         private ArraysComparison(
             ComparisonResolver comparisons,
-            IConfigurationProvider configurations,
+            IConfigurationProvider configuration,
             IVariable variable)
         {
-            _configurations = configurations;
+            _configuration = configuration;
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
             _arrayComparer = new ArrayComparer(comparisons);
-            _collectionComparer = new CollectionComparer(configurations);
+            _collectionComparer = new CollectionComparer(configuration);
         }
 
         public static ArraysComparison Create(
            ComparisonResolver comparisons,
-           IConfigurationProvider configurations,
+           IConfigurationProvider configuration,
            IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.IsArray && variableType.GetArrayRank() == 1) {
-                return new ArraysComparison(comparisons, configurations, variable);
+                return new ArraysComparison(comparisons, configuration, variable);
             }
 
             return null;
@@ -48,7 +48,7 @@ namespace ILLightenComparer.Comparer.Comparisons
             var (x, y) = _collectionComparer.EmitLoad(_variable, il, gotoNext);
             var (countX, countY) = _arrayComparer.EmitLoadCounts(variableType, x, y, il);
 
-            if (_configurations.Get(_variable.OwnerType).IgnoreCollectionOrder) {
+            if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
                 _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 

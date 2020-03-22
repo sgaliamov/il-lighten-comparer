@@ -17,9 +17,9 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
         private static readonly MethodInfo GetComparerMethod =
            typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
 
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
 
-        public CollectionComparer(IConfigurationProvider configurations) => _configurations = configurations;
+        public CollectionComparer(IConfigurationProvider configuration) => _configuration = configuration;
 
         public (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IVariable variable, ILEmitter il, Label gotoNext)
         {
@@ -34,7 +34,7 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
         public void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
         {
             // todo: 2. compare default sorting and sorting with generated comparer - TrySZSort can work faster
-            var useSimpleSorting = !_configurations.HasCustomComparer(elementType)
+            var useSimpleSorting = !_configuration.HasCustomComparer(elementType)
                                    && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
             if (useSimpleSorting) {
                 EmitSortArray(il, elementType, xArray);

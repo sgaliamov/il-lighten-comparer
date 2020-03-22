@@ -14,19 +14,19 @@ namespace ILLightenComparer.Comparer.Comparisons
            nameof(string.Compare),
            new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
         private readonly IVariable _variable;
 
-        private StringsComparison(IConfigurationProvider configurations, IVariable variable)
+        private StringsComparison(IConfigurationProvider configuration, IVariable variable)
         {
-            _configurations = configurations;
+            _configuration = configuration;
             _variable = variable;
         }
 
-        public static StringsComparison Create(IConfigurationProvider configurations, IVariable variable)
+        public static StringsComparison Create(IConfigurationProvider configuration, IVariable variable)
         {
             if (variable.VariableType == typeof(string)) {
-                return new StringsComparison(configurations, variable);
+                return new StringsComparison(configuration, variable);
             }
 
             return null;
@@ -39,7 +39,7 @@ namespace ILLightenComparer.Comparer.Comparisons
             _variable.Load(il, Arg.X);
             _variable.Load(il, Arg.Y);
 
-            var stringComparisonType = _configurations.Get(_variable.OwnerType).StringComparisonType;
+            var stringComparisonType = _configuration.Get(_variable.OwnerType).StringComparisonType;
 
             return il.LoadInteger((int)stringComparisonType).Call(StringCompare);
         }

@@ -17,30 +17,30 @@ namespace ILLightenComparer.Comparer
     {
         private static readonly MethodInfo DelayedCompare = typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
         private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
 
         public ComparisonResolver(
             ComparerContext context,
             MembersProvider membersProvider,
-            IConfigurationProvider configurations)
+            IConfigurationProvider configuration)
         {
-            _configurations = configurations;
+            _configuration = configuration;
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),
                 IntegralsComparison.Create,
-                (IVariable variable) => StringsComparison.Create(_configurations, variable),
+                (IVariable variable) => StringsComparison.Create(_configuration, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
                 (IVariable variable) => CreateIndirectComparison(context, variable),
-                (IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
-                (IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
+                (IVariable variable) => ArraysComparison.Create(this, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, _configuration, variable)
             };
         }
 
         public IComparisonEmitter GetComparison(IVariable variable)
         {
-            var hasCustomComparer = _configurations.HasCustomComparer(variable.VariableType);
+            var hasCustomComparer = _configuration.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {
                 return new CustomComparison(variable, DelayedCompare);
             }

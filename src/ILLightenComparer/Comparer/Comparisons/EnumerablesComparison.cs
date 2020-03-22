@@ -30,15 +30,15 @@ namespace ILLightenComparer.Comparer.Comparisons
         private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
         private readonly ComparisonResolver _comparisons;
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
 
         private EnumerablesComparison(
             ComparisonResolver comparisons,
-            IConfigurationProvider configurations,
+            IConfigurationProvider configuration,
             IVariable variable)
         {
             _comparisons = comparisons;
-            _configurations = configurations;
+            _configuration = configuration;
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
 
             _elementType = variable
@@ -56,17 +56,17 @@ namespace ILLightenComparer.Comparer.Comparisons
                                   .GetMethod(MethodName.GetEnumerator, Type.EmptyTypes);
 
             _arrayComparer = new ArrayComparer(comparisons);
-            _collectionComparer = new CollectionComparer(configurations);
+            _collectionComparer = new CollectionComparer(configuration);
         }
 
         public static EnumerablesComparison Create(
             ComparisonResolver comparisons,
-            IConfigurationProvider configurations,
+            IConfigurationProvider configuration,
             IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, configurations, variable);
+                return new EnumerablesComparison(comparisons, configuration, variable);
             }
 
             return null;
@@ -78,7 +78,7 @@ namespace ILLightenComparer.Comparer.Comparisons
         {
             var (x, y) = _collectionComparer.EmitLoad(_variable, il, gotoNext);
 
-            if (_configurations.Get(_variable.OwnerType).IgnoreCollectionOrder) {
+            if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
                 return EmitCompareAsSortedArrays(il, gotoNext, x, y);
             }
 

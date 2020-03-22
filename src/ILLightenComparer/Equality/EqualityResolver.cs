@@ -18,14 +18,14 @@ namespace ILLightenComparer.Equality
         private static readonly MethodInfo DelayedEquals = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedEquals));
 
         private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
 
         public EqualityResolver(
             EqualityContext context,
             MembersProvider membersProvider,
-            IConfigurationProvider configurations)
+            IConfigurationProvider configuration)
         {
-            _configurations = configurations;
+            _configuration = configuration;
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 //(IVariable variable) => NullableComparison.Create(this, variable),
@@ -34,14 +34,14 @@ namespace ILLightenComparer.Equality
                 //ComparablesComparison.Create,
                 (IVariable variable) => CreateIndirectComparison(context, variable),
                 (IVariable variable) => MembersEqualityComparison.Create(this, membersProvider, variable)
-                //(IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
-                //(IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
+                //(IVariable variable) => ArraysComparison.Create(this, _configuration, variable),
+                //(IVariable variable) => EnumerablesComparison.Create(this, _configuration, variable)
             };
         }
 
         public IComparisonEmitter GetEqualityComparison(IVariable variable)
         {
-            var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
+            var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
                 return new CustomComparison(variable, Method.DelayedEquals);
             }

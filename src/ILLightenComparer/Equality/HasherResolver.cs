@@ -13,25 +13,25 @@ namespace ILLightenComparer.Equality
     internal sealed class HasherResolver
     {
         private readonly IReadOnlyCollection<Func<IVariable, IHasherEmitter>> _hashersFactories;
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
 
         public HasherResolver(
             EqualityContext context,
             MembersProvider membersProvider,
-            IConfigurationProvider configurations)
+            IConfigurationProvider configuration)
         {
-            _configurations = configurations;
+            _configuration = configuration;
 
             _hashersFactories = new Func<IVariable, IHasherEmitter>[] {
                 PrimitiveHasher.Create,
                 (IVariable variable) => IndirectHasher.Create(context, variable),
-                (IVariable variable) => MembersHasher.Create(this, membersProvider, variable)
+                (IVariable variable) => MembersHasher.Create(this, membersProvider, configuration, variable)
             };
         }
 
         public IHasherEmitter GetHasher(IVariable variable)
         {
-            var hasCustomComparer = _configurations.HasCustomEqualityComparer(variable.VariableType);
+            var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
                 return new CustomHasher(variable, Method.DelayedHash);
             }

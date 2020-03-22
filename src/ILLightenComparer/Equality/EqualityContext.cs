@@ -11,16 +11,16 @@ namespace ILLightenComparer.Equality
 {
     internal sealed class EqualityContext : IEqualityComparerContext
     {
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly GenericProvider _genericProvider;
 
-        public EqualityContext(MembersProvider membersProvider, IConfigurationProvider configurations)
+        public EqualityContext(MembersProvider membersProvider, IConfigurationProvider configuration)
         {
-            _configurations = configurations;
+            _configuration = configuration;
 
-            var equalityResolver = new EqualityResolver(this, membersProvider, _configurations);
-            var hasherResolver = new HasherResolver(this, membersProvider, _configurations);
+            var equalityResolver = new EqualityResolver(this, membersProvider, _configuration);
+            var hasherResolver = new HasherResolver(this, membersProvider, _configuration);
 
             var methodEmitters = new Dictionary<string, IStaticMethodEmitter> {
                 [nameof(Equals)] = new EqualsStaticMethodEmitter(equalityResolver),
@@ -29,12 +29,12 @@ namespace ILLightenComparer.Equality
 
             _genericProvider = new GenericProvider(
                 typeof(IEqualityComparer<>),
-                new GenericTypeBuilder(methodEmitters, _configurations));
+                new GenericTypeBuilder(methodEmitters, _configuration));
         }
 
         public bool DelayedEquals<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
         {
-            var comparer = _configurations.GetCustomEqualityComparer<T>();
+            var comparer = _configuration.GetCustomEqualityComparer<T>();
             if (comparer != null) {
                 return comparer.Equals(x, y);
             }
@@ -57,7 +57,7 @@ namespace ILLightenComparer.Equality
 
         public int DelayedHash<T>(T comparable, CycleDetectionSet cycleDetectionSet)
         {
-            var comparer = _configurations.GetCustomEqualityComparer<T>();
+            var comparer = _configuration.GetCustomEqualityComparer<T>();
             if (comparer != null) {
                 return comparer.GetHashCode(comparable);
             }
@@ -86,7 +86,7 @@ namespace ILLightenComparer.Equality
             _genericProvider.GetCompiledStaticMethod(type, nameof(GetHashCode));
 
         public IEqualityComparer<T> GetEqualityComparer<T>() =>
-            _configurations.GetCustomEqualityComparer<T>()
+            _configuration.GetCustomEqualityComparer<T>()
              ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T), key => CreateInstance<T>(key));
 
         private IEqualityComparer<T> CreateInstance<T>(Type key) => _genericProvider

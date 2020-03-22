@@ -12,13 +12,13 @@ namespace ILLightenComparer.Comparer
     {
         private readonly GenericProvider _genericProvider;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
-        private readonly IConfigurationProvider _configurations;
+        private readonly IConfigurationProvider _configuration;
 
-        public ComparerContext(MembersProvider membersProvider, IConfigurationProvider configurations)
+        public ComparerContext(MembersProvider membersProvider, IConfigurationProvider configuration)
         {
-            _configurations = configurations;
+            _configuration = configuration;
 
-            var resolver = new ComparisonResolver(this, membersProvider, _configurations);
+            var resolver = new ComparisonResolver(this, membersProvider, _configuration);
 
             var methodEmitters = new Dictionary<string, IStaticMethodEmitter>{
                 { MethodName.Compare, new CompareStaticMethodEmitter(resolver) }
@@ -26,16 +26,16 @@ namespace ILLightenComparer.Comparer
 
             _genericProvider = new GenericProvider(
                 typeof(IComparer<>),
-                new GenericTypeBuilder(methodEmitters, _configurations));
+                new GenericTypeBuilder(methodEmitters, _configuration));
         }
 
         public IComparer<T> GetComparer<T>() =>
-            _configurations.GetCustomComparer<T>()
+            _configuration.GetCustomComparer<T>()
            ?? (IComparer<T>)_emittedComparers.GetOrAdd(typeof(T), key => CreateInstance<T>(key));
 
         public int DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
         {
-            var comparer = _configurations.GetCustomComparer<T>();
+            var comparer = _configuration.GetCustomComparer<T>();
             if (comparer != null) {
                 return comparer.Compare(x, y);
             }
