@@ -65,7 +65,7 @@ namespace ILLightenComparer.Equality.Hashers
                 }
             }
 
-            return il;
+            return il.LoadLocal(hash);
         }
     }
 }

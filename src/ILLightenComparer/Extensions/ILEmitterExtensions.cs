@@ -14,11 +14,5 @@ namespace ILLightenComparer.Extensions
               .IfFalse(next)
               .LoadLocal(result)
               .Return();
-
-        // todo: 3. inline
-        /// <summary>
-        ///     Returns value from stack if it's zero, non null or true.
-        /// </summary>
-        public static ILEmitter EmitReturnIfFalsy(this ILEmitter il, Label next) => il.IfTrue(next).Return();
     }
 }
