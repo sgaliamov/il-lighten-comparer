@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 
 namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparerContext : IComparerContext
     {
+        private const string CompareMethodName = nameof(IComparer.Compare);
         private readonly GenericProvider _genericProvider;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly IConfigurationProvider _configuration;
@@ -21,7 +22,7 @@ namespace ILLightenComparer.Comparer
             var resolver = new ComparisonResolver(this, membersProvider, _configuration);
 
             var methodEmitters = new Dictionary<string, IStaticMethodEmitter>{
-                { MethodName.Compare, new CompareStaticMethodEmitter(resolver) }
+                { CompareMethodName, new CompareStaticMethodEmitter(resolver) }
             };
 
             _genericProvider = new GenericProvider(
@@ -57,10 +58,10 @@ namespace ILLightenComparer.Comparer
         }
 
         public MethodInfo GetStaticCompareMethodInfo(Type type) =>
-           _genericProvider.GetStaticMethodInfo(type, MethodName.Compare);
+           _genericProvider.GetStaticMethodInfo(type, CompareMethodName);
 
         public MethodInfo GetCompiledStaticCompareMethod(Type type) =>
-            _genericProvider.GetCompiledStaticMethod(type, MethodName.Compare);
+            _genericProvider.GetCompiledStaticMethod(type, CompareMethodName);
 
         private IComparer<T> CreateInstance<T>(Type key) => _genericProvider
             .EnsureComparerType(key)

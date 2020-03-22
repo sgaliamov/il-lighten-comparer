@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functional;
@@ -10,6 +9,7 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
 {
     internal sealed class ArrayComparer
     {
+        private const string LengthMethodName = nameof(Array.Length);
         private readonly ComparisonResolver _comparisons;
 
         public ArrayComparer(ComparisonResolver comparisons) => _comparisons = comparisons;
@@ -58,10 +58,10 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
             ILEmitter il)
         {
             il.LoadLocal(arrayX)
-              .Call(arrayType.GetPropertyGetter(MethodName.Length))
+              .Call(arrayType.GetPropertyGetter(LengthMethodName))
               .Store(typeof(int), out var countX)
               .LoadLocal(arrayY)
-              .Call(arrayType.GetPropertyGetter(MethodName.Length))
+              .Call(arrayType.GetPropertyGetter(LengthMethodName))
               .Store(typeof(int), out var countY);
 
             return (countX, countY);

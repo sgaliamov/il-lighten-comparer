@@ -7,7 +7,6 @@ using System.Reflection.Emit;
 using ILLightenComparer.Comparer.Comparisons.Collection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -53,7 +52,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             _getEnumeratorMethod = typeof(IEnumerable<>)
                                   .MakeGenericType(_elementType)
-                                  .GetMethod(MethodName.GetEnumerator, Type.EmptyTypes);
+                                  .GetMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
 
             _arrayComparer = new ArrayComparer(comparisons);
             _collectionComparer = new CollectionComparer(configuration);

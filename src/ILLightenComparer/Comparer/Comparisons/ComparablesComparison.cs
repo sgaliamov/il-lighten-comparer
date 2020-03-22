@@ -1,8 +1,6 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -18,10 +16,7 @@ namespace ILLightenComparer.Comparer.Comparisons
         private ComparablesComparison(IVariable variable)
         {
             _variable = variable;
-
-            _compareToMethod = variable.VariableType.GetUnderlyingCompareToMethod()
-                              ?? throw new ArgumentException(
-                                  $"{variable.VariableType.DisplayName()} does not have {MethodName.CompareTo} method.");
+            _compareToMethod = _variable.VariableType.GetUnderlyingCompareToMethod();
         }
 
         public static ComparablesComparison Create(IVariable variable)

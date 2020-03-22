@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Config;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -128,7 +127,7 @@ namespace ILLightenComparer.Shared
             }
 
             var methodBuilder = typeBuilder.DefineStaticMethod(
-                MethodName.CreateInstance,
+                nameof(Extensions.TypeExtensions.CreateInstance),
                 typeBuilder,
                 parameters);
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;

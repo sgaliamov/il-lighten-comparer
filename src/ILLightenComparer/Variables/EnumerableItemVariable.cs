@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Reflection;
 using Illuminator;
 using Illuminator.Extensions;
 
@@ -36,7 +36,7 @@ namespace ILLightenComparer.Variables
             VariableType = enumeratorType?.GetGenericArguments().SingleOrDefault()
                            ?? throw new ArgumentException(nameof(enumeratorType));
 
-            _getCurrentMethod = enumeratorType.GetPropertyGetter(MethodName.Current);
+            _getCurrentMethod = enumeratorType.GetPropertyGetter(nameof(IEnumerator.Current));
         }
 
         public Type VariableType { get; }
