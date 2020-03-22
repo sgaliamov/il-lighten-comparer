@@ -166,13 +166,17 @@ dotnet_naming_rule.types_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.types_should_be_pascal_case.symbols = types
 dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case
 
+dotnet_naming_rule.static_readonly_field_should_be_pascal_case.severity = warning
+dotnet_naming_rule.static_readonly_field_should_be_pascal_case.symbols = static_readonly_field
+dotnet_naming_rule.static_readonly_field_should_be_pascal_case.style = pascal_case
+
 dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
-dotnet_naming_rule.private_or_internal_field_should_be_private_fields_naming.severity = suggestion
-dotnet_naming_rule.private_or_internal_field_should_be_private_fields_naming.symbols = private_or_internal_field
-dotnet_naming_rule.private_or_internal_field_should_be_private_fields_naming.style = private_fields_naming
+dotnet_naming_rule.private_or_internal_field_should_be__field.severity = suggestion
+dotnet_naming_rule.private_or_internal_field_should_be__field.symbols = private_or_internal_field
+dotnet_naming_rule.private_or_internal_field_should_be__field.style = _field
 
 # Symbol specifications
 
@@ -183,6 +187,10 @@ dotnet_naming_symbols.interface.required_modifiers =
 dotnet_naming_symbols.private_or_internal_field.applicable_kinds = field
 dotnet_naming_symbols.private_or_internal_field.applicable_accessibilities = internal, private, private_protected
 dotnet_naming_symbols.private_or_internal_field.required_modifiers = 
+
+dotnet_naming_symbols.static_readonly_field.applicable_kinds = field
+dotnet_naming_symbols.static_readonly_field.applicable_accessibilities = *
+dotnet_naming_symbols.static_readonly_field.required_modifiers = readonly, static
 
 dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
 dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
@@ -204,10 +212,10 @@ dotnet_naming_style.begins_with_i.required_suffix =
 dotnet_naming_style.begins_with_i.word_separator = 
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
-dotnet_naming_style.private_fields_naming.required_prefix = _
-dotnet_naming_style.private_fields_naming.required_suffix = 
-dotnet_naming_style.private_fields_naming.word_separator = 
-dotnet_naming_style.private_fields_naming.capitalization = camel_case
+dotnet_naming_style._field.required_prefix = _
+dotnet_naming_style._field.required_suffix = 
+dotnet_naming_style._field.word_separator = 
+dotnet_naming_style._field.capitalization = camel_case
 
 # RCS1057: Add empty line between declarations.
 dotnet_diagnostic.RCS1057.severity = silent
