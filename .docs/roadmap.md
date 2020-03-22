@@ -87,12 +87,9 @@
 - [x] support for .net core 3
 - [x] create reusable traversing
 - [ ] implement `GetHashCode`
-
-## Phase 7 Equals
-
 - [ ] implement `Equals`
 
-## Phase 8 Improvements
+## Phase 7 Improvements
 
 - [x] move checks to member classes to make constructors safe, it's possible to create invalid member instances now
 - [x] reuse local variables for same types
@@ -100,9 +97,11 @@
 - [x] use short versions of opt codes when possible
 - [x] use call instead callvirt when possible
 - [x] cache instances by type and **configuration** in `Context.GetComparerType`
+- [x] ~~create unified interface `IComparer<>: IComparer<>, IComparer`~~
+- [x] ~~possible to merge `MembersComparison` and `HierarchicalsComparison` but need to create `LocalVariable` class~~
+- [ ] fix *todo* list
 - [ ] ignore existing `IComparable` implementation
 - [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need to have deal with addresses?
-- [ ] create unified interface `IComparer<>: IComparer<>, IComparer`
 - [ ] add `IgnoreAll()` method to be able simplify comparison setup on specific fields or props only
 - [ ] add `Include(string member)` method in pair with `IgnoreAll`
 - [ ] custom comparison expression for a member to simplify comparison setup
@@ -125,4 +124,3 @@
 - [ ] `checked` subs
 - [ ] compare references and the end?
 - [ ] automatic cycle detection when needed
-- [ ] possible to merge `MembersComparison` and `HierarchicalsComparison` but need to create `LocalVariable` class

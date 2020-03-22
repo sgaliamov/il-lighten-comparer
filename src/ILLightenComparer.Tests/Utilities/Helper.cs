@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
-using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.ComparerTests.Comparers;
 
 namespace ILLightenComparer.Tests.Utilities
 {
-    public sealed class ConcurrentSet<T> : ConcurrentDictionary<T, byte> { }
+    public sealed class CycleDetectionSet : ConcurrentDictionary<object, byte> { }
 
     internal static class Helper
     {
@@ -33,8 +33,7 @@ namespace ILLightenComparer.Tests.Utilities
         {
             if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
                 x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
-            }
-            else {
+            } else {
                 x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>().WithStrictOrdering());
             }
         }

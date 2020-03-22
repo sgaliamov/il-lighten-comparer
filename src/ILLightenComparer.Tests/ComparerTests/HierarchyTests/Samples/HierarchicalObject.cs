@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
+using ILLightenComparer.Tests.ComparerTests.Samples;
 using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
@@ -30,11 +31,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y)) {
+                if (y is null) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x)) {
+                if (x is null) {
                     return -1;
                 }
 

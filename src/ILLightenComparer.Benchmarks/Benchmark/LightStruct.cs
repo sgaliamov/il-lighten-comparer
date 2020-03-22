@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.ComparerTests.Comparers;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {

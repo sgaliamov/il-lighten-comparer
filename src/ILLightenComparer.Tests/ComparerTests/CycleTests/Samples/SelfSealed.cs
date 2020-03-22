@@ -20,23 +20,23 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         {
             public int Compare(SelfSealed x, SelfSealed y)
             {
-                var setX = new ConcurrentSet<object>();
-                var setY = new ConcurrentSet<object>();
+                var setX = new CycleDetectionSet();
+                var setY = new CycleDetectionSet();
 
                 return Compare(x, y, setX, setY);
             }
 
-            private static int Compare(SelfSealed x, SelfSealed y, ConcurrentSet<object> setX, ConcurrentSet<object> setY)
+            private static int Compare(SelfSealed x, SelfSealed y, CycleDetectionSet setX, CycleDetectionSet setY)
             {
                 if (ReferenceEquals(x, y)) {
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y)) {
+                if (y is null) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x)) {
+                if (x is null) {
                     return -1;
                 }
 

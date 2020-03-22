@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
-using ILLightenComparer.Emitters;
+using ILLightenComparer.Equality;
+using ILLightenComparer.Shared;
+
+[assembly: InternalsVisibleTo("IL-Lighten-Comparer.dll")]
 
 namespace ILLightenComparer
 {
@@ -12,13 +17,15 @@ namespace ILLightenComparer
     public sealed class ComparerBuilder : IComparerBuilder
     {
         private readonly ConfigurationProvider _configurationProvider = new ConfigurationProvider();
-        private Lazy<Context> _context;
+        private Lazy<(ComparerContext, EqualityContext)> _contexts;
 
         public ComparerBuilder() => InitContext();
 
         public ComparerBuilder(Action<IConfigurationBuilder> config) : this() => Configure(config);
 
-        public IComparer<T> GetComparer<T>() => _context.Value.GetComparer<T>();
+        public IComparer<T> GetComparer<T>() => _contexts.Value.Item1.GetComparer<T>();
+
+        public IEqualityComparer<T> GetEqualityComparer<T>() => _contexts.Value.Item2.GetEqualityComparer<T>();
 
         public IComparerBuilder<T> For<T>() => new Proxy<T>(this);
 
@@ -33,14 +40,18 @@ namespace ILLightenComparer
             return this;
         }
 
-        private void InitContext() =>
-            _context = new Lazy<Context>(
-                () => {
-                    var contextConfiguration = new ConfigurationProvider(_configurationProvider);
+        private void InitContext()
+        {
+            _contexts = new Lazy<(ComparerContext, EqualityContext)>(() => {
+                var configurationCopy = new ConfigurationProvider(_configurationProvider);
+                var membersProvider = new MembersProvider(configurationCopy);
 
-                    return new Context(contextConfiguration);
-                },
-                LazyThreadSafetyMode.PublicationOnly);
+                return (
+                    new ComparerContext(membersProvider, configurationCopy),
+                    new EqualityContext(membersProvider, configurationCopy)
+                );
+            }, LazyThreadSafetyMode.PublicationOnly);
+        }
 
         private sealed class Proxy<T> : IComparerBuilder<T>
         {
@@ -56,7 +67,7 @@ namespace ILLightenComparer
             {
                 _subject._configurationProvider.ConfigureFor(config);
 
-                _subject.InitContext(); // todo: test init order
+                _subject.InitContext(); // todo: 3. test init order
 
                 return this;
             }
@@ -66,6 +77,10 @@ namespace ILLightenComparer
             public IComparer<T> GetComparer() => _subject.GetComparer<T>();
 
             public IComparer<TOther> GetComparer<TOther>() => _subject.GetComparer<TOther>();
+
+            public IEqualityComparer<T> GetEqualityComparer() => _subject.GetEqualityComparer<T>();
+
+            public IEqualityComparer<TOther> GetEqualityComparer<TOther>() => _subject.GetEqualityComparer<TOther>();
         }
     }
 }
