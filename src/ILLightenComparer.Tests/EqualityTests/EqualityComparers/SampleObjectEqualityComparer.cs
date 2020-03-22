@@ -21,7 +21,6 @@ namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
                 return false;
             }
 
-
             var compare = _memberComparer.Equals(x.Field, y.Field);
             if (!compare) {
                 return false;

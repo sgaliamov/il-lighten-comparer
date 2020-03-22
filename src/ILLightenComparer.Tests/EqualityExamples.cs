@@ -15,9 +15,12 @@ namespace ILLightenComparer.Tests
 
             var comparer = new ComparerBuilder().GetEqualityComparer<Tuple<int, string>>();
 
-            var result = comparer.Equals(x, y);
+            var equality = comparer.Equals(x, y);
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
 
-            result.Should().BeFalse();
+            equality.Should().BeFalse();
+            hashX.Should().NotBe(hashY);
         }
 
         [Fact]
@@ -32,11 +35,12 @@ namespace ILLightenComparer.Tests
                                             .IgnoreMember(o => o.Item3))
                            .GetEqualityComparer();
 
-            var result = comparer.Equals(x, y);
+            var equality = comparer.Equals(x, y);
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
 
-            result.Should().BeTrue();
-
-            comparer.GetHashCode(x).Should().Be(comparer.GetHashCode(y));
+            equality.Should().BeTrue();
+            hashX.Should().Be(hashY);
         }
 
         private readonly Fixture _fixture = new Fixture();

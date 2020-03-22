@@ -56,7 +56,7 @@ namespace ILLightenComparer.Equality.Comparisons
                     item.Emit(il, gotoNext);
 
                     if (item.PutsResultInStack) {
-                        il.EmitReturnIfTruthy(gotoNext);
+                        il.EmitReturnIfFalsy(gotoNext);
                     }
 
                     il.MarkLabel(gotoNext);

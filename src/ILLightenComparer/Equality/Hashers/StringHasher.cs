@@ -10,35 +10,37 @@ namespace ILLightenComparer.Equality.Hashers
 {
     internal sealed class StringHasher : IHasherEmitter
     {
-        private static readonly MethodInfo GetHashCodeMethod = typeof(string).GetMethod(nameof(string.GetHashCode), new[] { typeof(StringComparison) });
-        private readonly IConfigurationProvider _configuration;
-        private readonly IVariable _variable;
+        private static readonly MethodInfo GetHashCodeMethod = typeof(string).GetMethod(
+            nameof(string.GetHashCode),
+            new[] { typeof(StringComparison) });
 
-        private StringHasher(IConfigurationProvider configuration, IVariable variable)
+        private readonly IVariable _variable;
+        private readonly int _stringComparison;
+
+        private StringHasher(StringComparison stringComparison, IVariable variable)
         {
-            _configuration = configuration;
             _variable = variable;
+            _stringComparison = (int)stringComparison;
         }
 
         public static StringHasher Create(IConfigurationProvider configuration, IVariable variable)
         {
             if (variable.VariableType == typeof(string)) {
-                return new StringHasher(configuration, variable);
+                var stringComparisonType = configuration.Get(variable.OwnerType).StringComparisonType;
+                return new StringHasher(stringComparisonType, variable);
             }
 
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il)
-        {
-            var stringComparisonType = _configuration.Get(_variable.OwnerType).StringComparisonType;
-
-            return il.IfFalse_S(_variable.Load(Arg.X), out var zero)
-                     .Call(GetHashCodeMethod, _variable.Load(Arg.X), LoadInteger((int)stringComparisonType))
-                     .GoTo(out var next)
-                     .MarkLabel(zero)
-                     .LoadInteger(0)
-                     .MarkLabel(next);
-        }
+        public ILEmitter Emit(ILEmitter il) => _variable
+            .Load(il, Arg.X)
+            .Store(typeof(string), out var local)
+            .IfFalse_S(LoadLocal(local), out var zero)
+            .Call(GetHashCodeMethod, LoadLocal(local), LoadInteger(_stringComparison))
+            .GoTo(out var next)
+            .MarkLabel(zero)
+            .LoadInteger(0)
+            .MarkLabel(next);
     }
 }

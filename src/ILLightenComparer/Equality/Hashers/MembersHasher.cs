@@ -52,15 +52,16 @@ namespace ILLightenComparer.Equality.Hashers
             var config = _configuration.Get(variableType);
 
             il.LoadLong(config.HashSeed)
-              .Store(typeof(long), out var seed);
+              .Store(typeof(long), out var hash);
 
             foreach (var item in comparisons) {
                 using (il.LocalsScope()) {
                     var add = Add(
-                        ShiftLeft(LoadLocal(seed), LoadInteger(5)),
-                        LoadLong(config.HashSeed));
+                        ShiftLeft(LoadLocal(hash), LoadInteger(5)),
+                        LoadLocal(hash));
 
-                    Xor(add, Execute(item.Emit) + Cast(typeof(long)))(il);
+                    il.Xor(add, Execute(item.Emit) + Cast(typeof(long)))
+                      .Store(hash);
                 }
             }
 

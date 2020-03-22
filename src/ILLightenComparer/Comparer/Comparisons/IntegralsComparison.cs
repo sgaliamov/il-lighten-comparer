@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
@@ -25,16 +24,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public bool PutsResultInStack { get; } = true;
 
-        public ILEmitter Emit(ILEmitter il, Label _)
-        {
-            Debug.Assert(
-                _variable.VariableType.GetUnderlyingType().IsIntegral(),
-                $"Integral type is expected but: {_variable.VariableType.DisplayName()}.");
-
-            return il.Sub(
-                il => _variable.Load(il, Arg.X),
-                il => _variable.Load(il, Arg.Y));
-        }
+        public ILEmitter Emit(ILEmitter il, Label _) => il.Sub(_variable.Load(Arg.X), _variable.Load(Arg.Y));
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
     }

@@ -17,7 +17,7 @@ namespace ILLightenComparer.Equality
         public void Build(Type objectType, bool detecCycles, MethodBuilder staticMethodBuilder)
         {
             using var il = staticMethodBuilder.CreateILEmitter();
-
+            // todo: 1. null check
             if (detecCycles) {
                 EmitCycleDetection(il);
             }
