@@ -32,8 +32,8 @@ namespace ILLightenComparer.Equality
                 CeqComparison.Create,
                 OperatorComparison.Create,
                 //ComparablesComparison.Create,
-                (IVariable variable) => MembersEqualityComparison.Create(this, membersProvider, variable),
-                (IVariable variable) => CreateIndirectComparison(context, variable)
+                (IVariable variable) => CreateIndirectComparison(context, variable),
+                (IVariable variable) => MembersEqualityComparison.Create(this, membersProvider, variable)
                 //(IVariable variable) => ArraysComparison.Create(this, _configurations, variable),
                 //(IVariable variable) => EnumerablesComparison.Create(this, _configurations, variable)
             };

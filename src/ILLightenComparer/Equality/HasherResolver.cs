@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Hashers;
 using ILLightenComparer.Reflection;
@@ -13,8 +12,6 @@ namespace ILLightenComparer.Equality
 {
     internal sealed class HasherResolver
     {
-        private static readonly MethodInfo DelayedHash = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedHash));
-
         private readonly IReadOnlyCollection<Func<IVariable, IHasherEmitter>> _hashersFactories;
         private readonly IConfigurationProvider _configurations;
 
@@ -27,6 +24,7 @@ namespace ILLightenComparer.Equality
 
             _hashersFactories = new Func<IVariable, IHasherEmitter>[] {
                 PrimitiveHasher.Create,
+                (IVariable variable) => IndirectHasher.Create(context, variable),
                 (IVariable variable) => MembersHasher.Create(this, membersProvider, variable)
             };
         }
