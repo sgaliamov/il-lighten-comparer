@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
@@ -38,7 +37,7 @@ namespace ILLightenComparer.Comparer
                 (IVariable variable) => StringsComparison.Create(StringCompareMethod, _configuration, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
-                (IVariable variable) => CreateIndirectComparison(context, variable),
+                (IVariable variable) => IndirectComparison.Create(variableType => context.GetStaticCompareMethodInfo(variableType), DelayedCompare, variable),
                 (IVariable variable) => ArraysComparison.Create(this, _configuration, variable),
                 (IVariable variable) => EnumerablesComparison.Create(this, _configuration, variable)
             };
@@ -48,7 +47,7 @@ namespace ILLightenComparer.Comparer
         {
             var hasCustomComparer = _configuration.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return new CustomComparison(variable, DelayedCompare);
+                return IndirectComparison.Create(DelayedCompare, variable);
             }
 
             var comparison = _comparisonFactories
@@ -60,19 +59,6 @@ namespace ILLightenComparer.Comparer
             }
 
             return comparison;
-        }
-
-        internal static IndirectComparison CreateIndirectComparison(ComparerContext context, IVariable variable)
-        {
-            var variableType = variable.VariableType;
-            if (variableType.IsHierarchical() && !(variable is ArgumentVariable)) {
-                var delayedCompare = DelayedCompare.MakeGenericMethod(variableType);
-                var staticCompareMethod = context.GetStaticCompareMethodInfo(variableType);
-
-                return new IndirectComparison(staticCompareMethod, delayedCompare, variable);
-            }
-
-            return null;
         }
     }
 }

@@ -1,46 +1,64 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
     /// <summary>
-    ///     Delegates comparison to static method or delayed compare in context.
+    ///     Delegates comparison to static method or delayed compare method in context.
     /// </summary>
     internal sealed class IndirectComparison : IComparisonEmitter
     {
-        private readonly MethodInfo _staticCompareMethod;
+        private readonly MethodInfo _method;
         private readonly IVariable _variable;
-        private readonly MethodInfo _delayedCompare;
 
-        public IndirectComparison(MethodInfo staticCompareMethod, MethodInfo delayedCompare, IVariable variable)
+        private IndirectComparison(IVariable variable, MethodInfo method)
         {
-            _staticCompareMethod = staticCompareMethod;
-            _delayedCompare = delayedCompare;
             _variable = variable;
+            _method = method;
+        }
+
+        public static IndirectComparison Create(
+            Func<Type, MethodInfo> staticMethodFactory,
+            MethodInfo genericDelayedMethod,
+            IVariable variable)
+        {
+            var variableType = variable.VariableType;
+            if (!variableType.IsHierarchical() || (variable is ArgumentVariable)) {
+                return null;
+            }
+
+            var typeOfVariableCanBeChangedOnRuntime = !variableType.IsSealedType();
+            var compareMethod = typeOfVariableCanBeChangedOnRuntime
+                ? genericDelayedMethod.MakeGenericMethod(variableType)
+                : staticMethodFactory(variableType);
+
+            return new IndirectComparison(variable, compareMethod);
+        }
+
+        public static IndirectComparison Create(
+            MethodInfo genericDelayedMethod,
+            IVariable variable)
+        {
+            var variableType = variable.VariableType;
+            var compareMethod = genericDelayedMethod.MakeGenericMethod(variableType);
+
+            return new IndirectComparison(variable, compareMethod);
         }
 
         public bool PutsResultInStack { get; } = true;
 
-        public ILEmitter Emit(ILEmitter il, Label _)
-        {
-            var variableType = _variable.VariableType;
-
-            il.LoadArgument(Arg.Context);
-            _variable.Load(il, Arg.X);
-            _variable.Load(il, Arg.Y);
-            il.LoadArgument(Arg.SetX)
-              .LoadArgument(Arg.SetY);
-
-            var typeOfVariableCanBeChangedOnRuntime = !variableType.IsSealedType();
-            if (typeOfVariableCanBeChangedOnRuntime) {
-                return il.Call(_delayedCompare);
-            }
-
-            return il.Call(_staticCompareMethod);
-        }
+        public ILEmitter Emit(ILEmitter il, Label _) => il.Call(
+            _method,
+            LoadArgument(Arg.Context),
+            _variable.Load(Arg.X),
+            _variable.Load(Arg.Y),
+            LoadArgument(Arg.SetX),
+            LoadArgument(Arg.SetY));
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
     }

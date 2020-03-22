@@ -12,7 +12,9 @@ namespace ILLightenComparer.Equality.Hashers
     /// </summary>
     internal sealed class IndirectHasher : IHasherEmitter
     {
-        private static readonly MethodInfo DelayedHash = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedHash));
+        private static readonly MethodInfo DelayedHash = typeof(IEqualityComparerContext)
+            .GetMethod(nameof(IEqualityComparerContext.DelayedHash));
+
         private readonly MethodInfo _hashMethod;
         private readonly IVariable _variable;
 
