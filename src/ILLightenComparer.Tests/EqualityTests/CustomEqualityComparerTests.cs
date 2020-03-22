@@ -19,8 +19,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var y = _fixture.Create<Tuple<int, string>>();
                 var expectedEqualsInt = x.Item1.Equals(y.Item1);
                 var expectedEqualsString = x.Item2?.Equals(y.Item2) ?? y.Item2 == null;
-                var expectedHashInt = HashCodeCombiner.Start().Combine(x.Item1.GetHashCode(), 0);
-                var expectedHashString = HashCodeCombiner.Start().Combine(0, x.Item2?.GetHashCode() ?? 0);
+                var expectedHashInt = HashCodeCombiner.Combine(x.Item1.GetHashCode(), 0);
+                var expectedHashString = HashCodeCombiner.Combine(0, x.Item2?.GetHashCode() ?? 0);
 
                 var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer(
                     new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)));
@@ -47,7 +47,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var reference = new SampleObjectEqualityComparer<SampleStruct<string>>(new SampleStructEqualityComparer<string>());
             var expectedEquals = reference.Equals(x, y);
             var expectedHash = reference.GetHashCode(x);
-            var expectedCustomHash = HashCodeCombiner.Start().Combine(0, 0);
+            var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
             var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomEqualityComparer>());
             var comparerCustom = builder.GetEqualityComparer<SampleObject<SampleStruct<string>>>();
@@ -67,7 +67,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             Test(() => {
                 var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
                 var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
-                var expectedCustomHash = HashCodeCombiner.Start().Combine(0, 0);
+                var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
                 var comparer = new ComparerBuilder(c => c
                     .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())

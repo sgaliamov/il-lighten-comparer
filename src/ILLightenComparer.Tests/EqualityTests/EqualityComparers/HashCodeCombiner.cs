@@ -8,20 +8,20 @@
 
         private HashCodeCombiner(long seed) => _combinedHash64 = seed;
 
-        public HashCodeCombiner Combine(params object[] objects)
+        public static HashCodeCombiner Combine(params object[] objects)
         {
+            var combiner = new HashCodeCombiner(0x1505L);
+
             foreach (var o in objects) {
                 var hashCode = o?.GetHashCode() ?? 0;
-                Add(hashCode);
+                combiner.Add(hashCode);
             }
 
-            return this;
+            return combiner;
         }
 
         public static implicit operator int(HashCodeCombiner self) => self.CombinedHash;
 
-        public void Add(int i) => _combinedHash64 = ((_combinedHash64 << 5) + _combinedHash64) ^ i;
-
-        public static HashCodeCombiner Start() => new HashCodeCombiner(0x1505L);
+        private void Add(int i) => _combinedHash64 = ((_combinedHash64 << 5) + _combinedHash64) ^ i;
     }
 }

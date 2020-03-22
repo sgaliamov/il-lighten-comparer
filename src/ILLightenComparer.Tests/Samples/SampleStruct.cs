@@ -12,7 +12,7 @@ namespace ILLightenComparer.Tests.Samples
 
         public bool Equals(SampleStruct<TMember> other) => EqualityComparer<TMember>.Default.Equals(Field, other.Field) && EqualityComparer<TMember>.Default.Equals(Property, other.Property);
 
-        public override int GetHashCode() => HashCodeCombiner.Start().Combine(Field, Property);
+        public override int GetHashCode() => HashCodeCombiner.Combine(Field, Property);
 
         public static bool operator ==(SampleStruct<TMember> left, SampleStruct<TMember> right)
         {

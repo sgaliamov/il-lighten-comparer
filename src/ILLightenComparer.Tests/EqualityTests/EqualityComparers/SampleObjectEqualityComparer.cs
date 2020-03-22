@@ -31,7 +31,7 @@ namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
 
         bool IEqualityComparer.Equals(object x, object y) => Equals((SampleObject<TMember>)x, (SampleObject<TMember>)y);
 
-        public int GetHashCode(SampleObject<TMember> obj) => HashCodeCombiner.Start().Combine(obj.Field, obj.Property);
+        public int GetHashCode(SampleObject<TMember> obj) => HashCodeCombiner.Combine(obj.Field, obj.Property);
 
         public int GetHashCode(object obj) => GetHashCode((SampleObject<TMember>)obj);
     }
