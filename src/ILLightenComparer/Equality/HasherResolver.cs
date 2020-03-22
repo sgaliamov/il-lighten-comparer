@@ -23,10 +23,10 @@ namespace ILLightenComparer.Equality
             _configuration = configuration;
 
             _hashersFactories = new Func<IVariable, IHasherEmitter>[] {
-                (IVariable variable) => StringHasher.Create(configuration, variable),
+                (IVariable variable) => StringHasher.Create(_configuration, variable),
                 PrimitiveHasher.Create,
                 (IVariable variable) => IndirectHasher.Create(context, variable),
-                (IVariable variable) => MembersHasher.Create(this, membersProvider, configuration, variable)
+                (IVariable variable) => MembersHasher.Create(this, membersProvider, _configuration, variable)
             };
         }
 

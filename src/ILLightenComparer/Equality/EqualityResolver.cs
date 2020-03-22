@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Comparisons;
 using ILLightenComparer.Extensions;
@@ -15,7 +16,12 @@ namespace ILLightenComparer.Equality
 {
     internal sealed class EqualityResolver
     {
-        private static readonly MethodInfo DelayedEquals = typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedEquals));
+        private static readonly MethodInfo StringEqualsMethod = typeof(string).GetMethod(
+            nameof(string.Equals),
+            new[] { typeof(string), typeof(string), typeof(StringComparison) });
+
+        private static readonly MethodInfo DelayedEquals = typeof(IEqualityComparerContext)
+            .GetMethod(nameof(IEqualityComparerContext.DelayedEquals));
 
         private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
         private readonly IConfigurationProvider _configuration;
@@ -30,6 +36,7 @@ namespace ILLightenComparer.Equality
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 //(IVariable variable) => NullableComparison.Create(this, variable),
                 CeqComparison.Create,
+                (IVariable variable) => StringsComparison.Create(StringEqualsMethod, _configuration, variable),
                 OperatorComparison.Create,
                 //ComparablesComparison.Create,
                 (IVariable variable) => CreateIndirectComparison(context, variable),
