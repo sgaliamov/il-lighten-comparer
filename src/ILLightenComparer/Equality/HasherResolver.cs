@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Hashers;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator.Extensions;
@@ -34,7 +33,7 @@ namespace ILLightenComparer.Equality
         {
             var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return new CustomHasher(variable, Method.DelayedHash);
+                return IndirectHasher.Create(variable);
             }
 
             var hasher = _hashersFactories

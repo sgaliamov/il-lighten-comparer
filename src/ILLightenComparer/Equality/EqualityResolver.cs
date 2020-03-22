@@ -5,7 +5,6 @@ using System.Reflection;
 using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Comparisons;
-using ILLightenComparer.Reflection;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
@@ -49,7 +48,7 @@ namespace ILLightenComparer.Equality
         {
             var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return IndirectComparison.Create(Method.DelayedEquals, variable);
+                return IndirectComparison.Create(DelayedEquals, variable);
             }
 
             var comparison = _comparisonFactories

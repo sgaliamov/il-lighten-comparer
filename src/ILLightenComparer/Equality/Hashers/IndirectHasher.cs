@@ -24,6 +24,9 @@ namespace ILLightenComparer.Equality.Hashers
             _variable = variable;
         }
 
+        public static IndirectHasher Create(IVariable variable) =>
+            new IndirectHasher(DelayedHash.MakeGenericMethod(variable.VariableType), variable);
+
         public static IndirectHasher Create(EqualityContext context, IVariable variable)
         {
             var variableType = variable.VariableType;
@@ -34,7 +37,7 @@ namespace ILLightenComparer.Equality.Hashers
             var staticHashMethod = context.GetStaticHashMethodInfo(variableType);
             var typeOfVariableCanBeChangedOnRuntime = !variableType.IsSealedType();
             var hashMethod = typeOfVariableCanBeChangedOnRuntime
-                ? DelayedHash
+                ? DelayedHash.MakeGenericMethod(variableType)
                 : staticHashMethod;
 
             return new IndirectHasher(hashMethod, variable);

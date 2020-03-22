@@ -208,7 +208,7 @@ namespace ILLightenComparer
         /// <returns>Configuration builder.</returns>
         IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value);
 
-         /// <summary>
+        /// <summary>
         ///     Defines hash seed for the <paramref name="type"/>.
         /// </summary>
         /// <param name="type">The type whose instances need to be compared.</param>
