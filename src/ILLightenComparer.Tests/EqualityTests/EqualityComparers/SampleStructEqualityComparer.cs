@@ -34,7 +34,7 @@ namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
             return Equals((SampleStruct<TMember>)x, (SampleStruct<TMember>)y);
         }
 
-        public int GetHashCode(SampleStruct<TMember> obj) => HashCode.Combine(obj.Field, obj.Property);
+        public int GetHashCode(SampleStruct<TMember> obj) => HashCodeCombiner.Start().Combine(obj.Field, obj.Property);
 
         public int GetHashCode(object obj) => GetHashCode((SampleStruct<TMember>)obj);
     }

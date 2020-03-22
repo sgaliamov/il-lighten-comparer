@@ -19,8 +19,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var y = _fixture.Create<Tuple<int, string>>();
                 var expectedEqualsInt = x.Item1.Equals(y.Item1);
                 var expectedEqualsString = x.Item2?.Equals(y.Item2) ?? y.Item2 == null;
-                var expectedHashInt = x.Item1.GetHashCode();
-                var expectedHashString = x.Item2?.GetHashCode() ?? 0;
+                var expectedHashInt = HashCodeCombiner.Start().Combine(x.Item1.GetHashCode(), 0);
+                var expectedHashString = HashCodeCombiner.Start().Combine(0, x.Item2?.GetHashCode() ?? 0);
 
                 var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer(
                     new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)));
@@ -47,17 +47,18 @@ namespace ILLightenComparer.Tests.EqualityTests
             var reference = new SampleObjectEqualityComparer<SampleStruct<string>>(new SampleStructEqualityComparer<string>());
             var expectedEquals = reference.Equals(x, y);
             var expectedHash = reference.GetHashCode(x);
+            var expectedCustomHash = HashCodeCombiner.Start().Combine(0, 0);
 
             var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomEqualityComparer>());
-            var comparer1 = builder.GetEqualityComparer<SampleObject<SampleStruct<string>>>();
-            var comparer2 = builder.Configure(c => c
+            var comparerCustom = builder.GetEqualityComparer<SampleObject<SampleStruct<string>>>();
+            var comparerDefault = builder.Configure(c => c
                 .SetCustomEqualityComparer<SampleStruct<string>>(null))
                 .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
 
-            comparer1.Equals(x, y).Should().BeTrue();
-            comparer1.GetHashCode(x).Should().Be(0);
-            comparer2.Equals(x, y).Should().Be(expectedEquals);
-            comparer2.GetHashCode(x).Should().Be(expectedHash);
+            comparerCustom.Equals(x, y).Should().BeTrue();
+            comparerCustom.GetHashCode(x).Should().Be(expectedCustomHash);
+            comparerDefault.Equals(x, y).Should().Be(expectedEquals);
+            comparerDefault.GetHashCode(x).Should().Be(expectedHash);
         }
 
         [Fact]
@@ -66,13 +67,14 @@ namespace ILLightenComparer.Tests.EqualityTests
             Test(() => {
                 var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
                 var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
+                var expectedCustomHash = HashCodeCombiner.Start().Combine(0, 0);
 
                 var comparer = new ComparerBuilder(c => c
                     .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
                     .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
 
                 comparer.Equals(x, y).Should().BeTrue();
-                comparer.GetHashCode(x).Should().Be(0);
+                comparer.GetHashCode(x).Should().Be(expectedCustomHash);
             });
         }
 
