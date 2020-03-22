@@ -19,25 +19,14 @@ namespace ILLightenComparer.Equality.Hashers
 
         public static PrimitiveHasher Create(IVariable variable)
         {
-            if (variable.VariableType.IsPrimitive()) {
+            var variableType = variable.VariableType;
+            if (variable.VariableType.IsPrimitive() && !variableType.IsClass) {
                 return new PrimitiveHasher(variable);
             }
 
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il)
-        {
-            if (_variable.VariableType.IsClass) {
-                return il.IfFalse_S(_variable.Load(Arg.X), out var zero)
-                         .Call(_getHashMethod, _variable.Load(Arg.X))
-                         .GoTo(out var next)
-                         .MarkLabel(zero)
-                         .LoadInteger(0)
-                         .MarkLabel(next);
-            }
-
-            return il.Call(_getHashMethod, _variable.Load(Arg.X));
-        }
+        public ILEmitter Emit(ILEmitter il) => il.Call(_getHashMethod, _variable.LoadAddress(Arg.X));
     }
 }
