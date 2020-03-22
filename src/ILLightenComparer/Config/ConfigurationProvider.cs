@@ -9,7 +9,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Config
 {
-    using Configurations = ConcurrentDictionary<Type, Configuration>;
+    using ConfigurationsCollection = ConcurrentDictionary<Type, Configuration>;
 
     internal interface IConfigurationProvider
     {
@@ -22,14 +22,16 @@ namespace ILLightenComparer.Config
 
     internal sealed class ConfigurationProvider : IConfigurationBuilder, IConfigurationProvider
     {
+        private static readonly string[] IgnoredMembersDefault = Array.Empty<string>();
+        private static readonly string[] MembersOrderDefault = Array.Empty<string>();
+
         private const bool IncludeFieldsDefault = true;
         private const StringComparison StringComparisonTypeDefault = StringComparison.Ordinal;
         private const bool DetectCyclesDefault = true;
         private const bool IgnoreCollectionOrderDefault = false;
-        private static readonly string[] IgnoredMembersDefault = Array.Empty<string>();
-        private static readonly string[] MembersOrderDefault = Array.Empty<string>();
+        private const long HashSeedDefault = 0x1505L; // https://github.com/dotnet/runtime/blob/e3ffd343ad5bd3a999cb9515f59e6e7a777b2c34/src/libraries/Common/src/Extensions/HashCodeCombiner/HashCodeCombiner.cs
 
-        private readonly Configurations _configurations;
+        private readonly ConfigurationsCollection _configuration;
         private readonly ComparersCollection _customComparers;
         private readonly ComparersCollection _customEqualityComparers;
 
@@ -39,18 +41,19 @@ namespace ILLightenComparer.Config
             MembersOrderDefault,
             StringComparisonTypeDefault,
             DetectCyclesDefault,
-            IgnoreCollectionOrderDefault);
+            IgnoreCollectionOrderDefault,
+            HashSeedDefault);
 
         public ConfigurationProvider()
         {
-            _configurations = new Configurations();
+            _configuration = new ConfigurationsCollection();
             _customComparers = new ComparersCollection();
             _customEqualityComparers = new ComparersCollection();
         }
 
         public ConfigurationProvider(ConfigurationProvider provider)
         {
-            _configurations = new Configurations(provider._configurations.ToDictionary(x => x.Key, x => new Configuration(x.Value)));
+            _configuration = new ConfigurationsCollection(provider._configuration.ToDictionary(x => x.Key, x => new Configuration(x.Value)));
             _customComparers = new ComparersCollection(provider._customComparers);
             _customEqualityComparers = new ComparersCollection(provider._customEqualityComparers);
             _default = new Configuration(provider._default);
@@ -84,17 +87,30 @@ namespace ILLightenComparer.Config
             return this;
         }
 
+        public IConfigurationBuilder SetDefaultHashSeed(long? value)
+        {
+            _default.HashSeed = value ?? HashSeedDefault;
+
+            return this;
+        }
+
+        public IConfigurationBuilder SetHashSeed(Type type, long? value)
+        {
+            GetOrCreate(type).HashSeed = value ?? _default.HashSeed;
+
+            return this;
+        }
+
         public IConfigurationBuilder DetectCycles(Type type, bool? value)
         {
-            // todo: 1. use default values from _default field, because it can be redefined.
-            GetOrCreate(type).DetectCycles = value ?? DetectCyclesDefault;
+            GetOrCreate(type).DetectCycles = value ?? _default.DetectCycles;
 
             return this;
         }
 
         public IConfigurationBuilder IgnoreCollectionsOrder(Type type, bool? value)
         {
-            GetOrCreate(type).IgnoreCollectionOrder = value ?? IgnoreCollectionOrderDefault;
+            GetOrCreate(type).IgnoreCollectionOrder = value ?? _default.IgnoreCollectionOrder;
 
             return this;
         }
@@ -110,7 +126,7 @@ namespace ILLightenComparer.Config
 
         public IConfigurationBuilder IncludeFields(Type type, bool? value)
         {
-            GetOrCreate(type).IncludeFields = value ?? IncludeFieldsDefault;
+            GetOrCreate(type).IncludeFields = value ?? _default.IncludeFields;
 
             return this;
         }
@@ -118,7 +134,7 @@ namespace ILLightenComparer.Config
         public IConfigurationBuilder DefineMembersOrder<T>(Action<IMembersOrder<T>> order)
         {
             if (order == null) {
-                GetOrCreate(typeof(T)).SetMembersOrder(MembersOrderDefault);
+                GetOrCreate(typeof(T)).SetMembersOrder(_default.MembersOrder);
 
                 return this;
             }
@@ -134,7 +150,7 @@ namespace ILLightenComparer.Config
 
         public IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value)
         {
-            GetOrCreate(type).StringComparisonType = value ?? StringComparisonTypeDefault;
+            GetOrCreate(type).StringComparisonType = value ?? _default.StringComparisonType;
 
             return this;
         }
@@ -169,7 +185,7 @@ namespace ILLightenComparer.Config
         }
 
         public Configuration Get(Type type) =>
-            _configurations.TryGetValue(type, out var configuration)
+            _configuration.TryGetValue(type, out var configuration)
                 ? configuration
                 : _default;
 
@@ -194,7 +210,7 @@ namespace ILLightenComparer.Config
             return this;
         }
 
-        private Configuration GetOrCreate(Type type) => _configurations.GetOrAdd(type, _ => new Configuration(_default));
+        private Configuration GetOrCreate(Type type) => _configuration.GetOrAdd(type, _ => new Configuration(_default));
 
         private static (Type, TComparer) CreateCustomComparer<TComparer>(Type genericInterface)
         {
