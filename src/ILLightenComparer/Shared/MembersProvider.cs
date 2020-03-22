@@ -6,7 +6,7 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Variables;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Reflection
+namespace ILLightenComparer.Shared
 {
     internal sealed class MembersProvider
     {

@@ -5,7 +5,7 @@ using System.Threading;
 using ILLightenComparer.Comparer;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality;
-using ILLightenComparer.Reflection;
+using ILLightenComparer.Shared;
 
 [assembly: InternalsVisibleTo("IL-Lighten-Comparer.dll")]
 

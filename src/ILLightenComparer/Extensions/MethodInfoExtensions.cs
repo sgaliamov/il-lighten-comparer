@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Reflection;
-using ILLightenComparer.Equality;
 using ILLightenComparer.Shared;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Reflection
+namespace ILLightenComparer.Extensions
 {
-    internal static class Method
+    internal static class MethodInfoExtensions
     {
-        public static MethodInfo DelayedEquals =
-           typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedEquals));
-
-        public static MethodInfo DelayedHash =
-            typeof(IEqualityComparerContext).GetMethod(nameof(IEqualityComparerContext.DelayedHash));
-
         public static TResult InvokeCompare<TContext, TComparable, TResult>(
             this MethodInfo method,
             Type actualType,
