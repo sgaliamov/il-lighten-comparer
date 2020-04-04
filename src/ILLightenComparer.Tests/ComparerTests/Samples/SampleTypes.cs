@@ -38,10 +38,9 @@ namespace ILLightenComparer.Tests.ComparerTests.Samples
                 }
             };
 
-            NullableTypes = Types.Where(x => x.Key.IsValueType)
-                                 .ToDictionary(
-                                     x => x.Key.MakeNullable(),
-                                     x => Helper.CreateNullableComparer(x.Key, x.Value));
+            NullableTypes = Types
+                .Where(x => x.Key.IsValueType)
+                .ToDictionary(x => x.Key.MakeNullable(), x => Helper.CreateNullableComparer(x.Key, x.Value));
         }
 
         public static IDictionary<Type, IComparer> NullableTypes { get; }
