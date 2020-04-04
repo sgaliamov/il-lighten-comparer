@@ -9,11 +9,11 @@ namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
 
         public NullableEqualityComparer(IEqualityComparer<TValue> valueComparer = null) => _valueComparer = valueComparer ?? EqualityComparer<TValue>.Default;
 
-        public new bool Equals(object x, object y) => Equals((TValue?)x, (TValue?)y);
+        bool IEqualityComparer.Equals(object x, object y) => Equals(x as TValue?, y as TValue?);
 
         public bool Equals(TValue? x, TValue? y) => _valueComparer.Equals(x ?? default, y ?? default);
 
-        public int GetHashCode(object obj) => GetHashCode((TValue?)obj);
+        public int GetHashCode(object obj) => GetHashCode(obj as TValue?);
 
         public int GetHashCode(TValue? obj) => _valueComparer.GetHashCode(obj ?? default);
     }

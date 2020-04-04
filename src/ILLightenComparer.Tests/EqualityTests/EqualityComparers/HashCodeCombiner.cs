@@ -1,4 +1,6 @@
-﻿namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
+﻿using System.Collections;
+
+namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
 {
     internal struct HashCodeCombiner
     {
@@ -8,17 +10,19 @@
 
         private HashCodeCombiner(long seed) => _combinedHash64 = seed;
 
-        public static HashCodeCombiner Combine(params object[] objects)
+        public static HashCodeCombiner Combine(IEqualityComparer comparer, params object[] objects)
         {
             var combiner = new HashCodeCombiner(0x1505L);
 
             foreach (var o in objects) {
-                var hashCode = o?.GetHashCode() ?? 0;
+                var hashCode = comparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0;
                 combiner.Add(hashCode);
             }
 
             return combiner;
         }
+
+        public static HashCodeCombiner Combine(params object[] objects) => Combine(null, objects);
 
         public static implicit operator int(HashCodeCombiner self) => self.CombinedHash;
 
