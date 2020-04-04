@@ -153,7 +153,7 @@ namespace ILLightenComparer.Comparer.Comparisons
             using (il.LocalsScope()) {
                 var itemVariable = new EnumerableItemVariable(_variable.OwnerType, xEnumerator, yEnumerator);
 
-                var itemComparison = _comparisons.GetComparison(itemVariable);
+                var itemComparison = _comparisons.GetComparisonEmitter(itemVariable);
                 itemComparison.Emit(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {

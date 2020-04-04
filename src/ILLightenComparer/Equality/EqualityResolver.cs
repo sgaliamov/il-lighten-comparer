@@ -12,7 +12,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality
 {
-    internal sealed class EqualityResolver
+    internal sealed class EqualityResolver : IResolver
     {
         private static readonly MethodInfo StringEqualsMethod = typeof(string).GetMethod(
             nameof(string.Equals),
@@ -44,7 +44,7 @@ namespace ILLightenComparer.Equality
             };
         }
 
-        public IComparisonEmitter GetEqualityComparison(IVariable variable)
+        public IComparisonEmitter GetComparisonEmitter(IVariable variable)
         {
             var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {

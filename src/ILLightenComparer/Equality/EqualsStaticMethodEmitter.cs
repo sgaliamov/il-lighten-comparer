@@ -33,7 +33,7 @@ namespace ILLightenComparer.Equality
                 EmitCycleDetection(il);
             }
 
-            _resolver.GetEqualityComparison(new ArgumentVariable(objectType)).Emit(il);
+            _resolver.GetComparisonEmitter(new ArgumentVariable(objectType)).Emit(il);
         }
 
         public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsSealedEquatable();

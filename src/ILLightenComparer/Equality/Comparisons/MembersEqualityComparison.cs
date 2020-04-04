@@ -46,7 +46,7 @@ namespace ILLightenComparer.Equality.Comparisons
 
             var comparisons = _membersProvider
                 .GetMembers(variableType)
-                .Select(_resolver.GetEqualityComparison);
+                .Select(_resolver.GetComparisonEmitter);
 
             foreach (var item in comparisons) {
                 using (il.LocalsScope()) {

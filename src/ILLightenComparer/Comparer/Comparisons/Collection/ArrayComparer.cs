@@ -10,9 +10,9 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
     internal sealed class ArrayComparer
     {
         private const string LengthMethodName = nameof(Array.Length);
-        private readonly ComparisonResolver _comparisons;
+        private readonly ComparisonResolver _resolver;
 
-        public ArrayComparer(ComparisonResolver comparisons) => _comparisons = comparisons;
+        public ArrayComparer(ComparisonResolver resolver) => _resolver = resolver;
 
         public ILEmitter Compare(
             Type arrayType,
@@ -37,7 +37,7 @@ namespace ILLightenComparer.Comparer.Comparisons.Collection
             using (il.LocalsScope()) {
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
 
-                var itemComparison = _comparisons.GetComparison(itemVariable);
+                var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
                 itemComparison.Emit(il, continueLoop);
 
                 if (itemComparison.PutsResultInStack) {

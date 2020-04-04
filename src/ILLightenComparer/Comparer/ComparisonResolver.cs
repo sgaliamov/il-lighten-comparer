@@ -11,7 +11,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer
 {
-    internal sealed class ComparisonResolver
+    internal sealed class ComparisonResolver : IResolver
     {
         private static readonly MethodInfo StringCompareMethod = typeof(string).GetMethod(
             nameof(string.Compare),
@@ -42,7 +42,7 @@ namespace ILLightenComparer.Comparer
             };
         }
 
-        public IComparisonEmitter GetComparison(IVariable variable)
+        public IComparisonEmitter GetComparisonEmitter(IVariable variable)
         {
             var hasCustomComparer = _configuration.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {

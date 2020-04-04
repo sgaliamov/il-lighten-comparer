@@ -42,7 +42,7 @@ namespace ILLightenComparer.Comparer.Comparisons
             var nullableVariable = new NullableVariable(variableType, _variable.OwnerType, nullableX, nullableY);
 
             return _comparisons
-                .GetComparison(nullableVariable)
+                .GetComparisonEmitter(nullableVariable)
                 .Emit(il, gotoNext);
         }
 

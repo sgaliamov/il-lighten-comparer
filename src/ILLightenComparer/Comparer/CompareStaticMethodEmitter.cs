@@ -33,7 +33,7 @@ namespace ILLightenComparer.Comparer
                 EmitCycleDetection(il);
             }
 
-            _resolver.GetComparison(new ArgumentVariable(objectType)).Emit(il);
+            _resolver.GetComparisonEmitter(new ArgumentVariable(objectType)).Emit(il);
         }
 
         // no need detect cycle as flow goes outside context
