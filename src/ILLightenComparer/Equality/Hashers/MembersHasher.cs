@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;

@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
-using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functional;
 
-namespace ILLightenComparer.Comparer.Comparisons
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class StringsComparison : IComparisonEmitter
     {

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using Illuminator.Extensions;
 
 namespace ILLightenComparer.Shared

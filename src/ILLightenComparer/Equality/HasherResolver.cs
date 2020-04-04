@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Hashers;
 using ILLightenComparer.Shared;

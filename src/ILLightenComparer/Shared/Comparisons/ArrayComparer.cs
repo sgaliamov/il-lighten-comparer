@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functional;
 
-namespace ILLightenComparer.Comparer.Comparisons.Collection
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class ArrayComparer
     {
         private const string LengthMethodName = nameof(Array.Length);
-        private readonly ComparisonResolver _resolver;
+        private readonly IResolver _resolver;
 
-        public ArrayComparer(ComparisonResolver resolver) => _resolver = resolver;
+        public ArrayComparer(IResolver resolver) => _resolver = resolver;
 
         public ILEmitter Compare(
             Type arrayType,

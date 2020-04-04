@@ -1,6 +1,6 @@
 ﻿using ILLightenComparer.Variables;
 
-namespace ILLightenComparer.Shared
+namespace ILLightenComparer.Abstractions
 {
     internal interface IResolver
     {

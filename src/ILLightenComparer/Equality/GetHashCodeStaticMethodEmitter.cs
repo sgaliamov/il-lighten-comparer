@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;

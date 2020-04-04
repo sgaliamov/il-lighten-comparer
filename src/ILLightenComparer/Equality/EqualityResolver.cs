@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ILLightenComparer.Comparer.Comparisons;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Comparisons;
 using ILLightenComparer.Shared;

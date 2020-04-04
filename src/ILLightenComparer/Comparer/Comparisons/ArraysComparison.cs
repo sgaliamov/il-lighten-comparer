@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Comparer.Comparisons.Collection;
 using ILLightenComparer.Config;
-using ILLightenComparer.Shared;
+using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
 using Illuminator;
 

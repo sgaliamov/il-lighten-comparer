@@ -1,6 +1,6 @@
 ﻿using Illuminator;
 
-namespace ILLightenComparer.Shared
+namespace ILLightenComparer.Abstractions
 {
     internal interface IHasherEmitter
     {

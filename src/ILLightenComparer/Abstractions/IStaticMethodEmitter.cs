@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection.Emit;
 
-namespace ILLightenComparer.Shared
+namespace ILLightenComparer.Abstractions
 {
     internal interface IStaticMethodEmitter
     {
