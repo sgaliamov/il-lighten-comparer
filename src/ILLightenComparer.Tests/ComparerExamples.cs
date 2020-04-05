@@ -69,8 +69,9 @@ namespace ILLightenComparer.Tests
 
             // initially configuration defines case insensitive string comparison
             var builder = new ComparerBuilder()
-                .For<Tuple<int, string>>(c => c.SetStringComparisonType(StringComparison.CurrentCultureIgnoreCase)
-                                               .DetectCycles(false));
+                .For<Tuple<int, string>>(c => c
+                    .SetStringComparisonType(StringComparison.CurrentCultureIgnoreCase)
+                    .DetectCycles(false));
 
             // in addition, setup to ignore first member
             builder.Configure(c => c.IgnoreMember(o => o.Item1));
@@ -79,14 +80,15 @@ namespace ILLightenComparer.Tests
             var ignoreCaseComparer = builder.GetComparer();
 
             // override string comparison type with case sensitive value and build new comparer
-            var originalCaseComparer = builder.For<Tuple<int, string>>()
-                                              .Configure(c => c.SetStringComparisonType(StringComparison.Ordinal))
-                                              .GetComparer();
+            var originalCaseComparer = builder
+                .For<Tuple<int, string>>()
+                .Configure(c => c.SetStringComparisonType(StringComparison.Ordinal))
+                .GetComparer();
 
-            // first comparer still ignore case for strings
+            // first comparer ignores case for strings still
             ignoreCaseComparer.Compare(x, y).Should().Be(0);
 
-            // second comparer still ignore first member but uses new string comparison type
+            // second comparer ignores first member but uses new string comparison type still
             var result = originalCaseComparer.Compare(x, y);
             result.Should().Be(string.CompareOrdinal("text", "TEXT"));
         }

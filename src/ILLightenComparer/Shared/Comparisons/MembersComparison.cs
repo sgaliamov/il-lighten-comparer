@@ -48,7 +48,7 @@ namespace ILLightenComparer.Shared.Comparisons
                 .Select(_resolver.GetComparisonEmitter)
                 .ToArray();
 
-            for (var i = 0; i < comparisons.Length - 1; i++) {
+            for (var i = 0; i < comparisons.Length; i++) {
                 using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext);
                     comparisons[i].Emit(il, gotoNext);

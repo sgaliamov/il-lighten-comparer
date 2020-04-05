@@ -83,5 +83,16 @@ namespace ILLightenComparer.Tests.Utilities
 
             return (IEqualityComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
+
+        public static unsafe long GetAddress<T>(this T value)
+        {
+            if (value is null) {
+                return 0;
+            }
+
+            var reference = __makeref(value);
+
+            return (long)*(IntPtr*)(&reference);
+        }
     }
 }
