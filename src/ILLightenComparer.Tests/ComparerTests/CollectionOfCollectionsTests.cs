@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.ComparerTests.Comparers;
 using ILLightenComparer.Tests.ComparerTests.Samples;
 using ILLightenComparer.Tests.Samples;

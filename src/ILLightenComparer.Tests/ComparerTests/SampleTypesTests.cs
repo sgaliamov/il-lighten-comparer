@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ILLightenComparer.Tests.ComparerTests.Comparers;
+using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.ComparerTests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
@@ -11,6 +11,12 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class SampleTypesTests
     {
+        [Fact]
+        public void Empty_object_should_be_equal()
+        {
+            new 
+        }
+
         [Fact]
         public void Compare_arrays_directly() => TestCollection();
 
