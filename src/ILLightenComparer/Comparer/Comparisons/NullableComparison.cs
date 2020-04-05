@@ -29,8 +29,6 @@ namespace ILLightenComparer.Comparer.Comparisons
             return null;
         }
 
-        public bool PutsResultInStack { get; } = true;
-
         public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {
             var variableType = _variable.VariableType;
@@ -55,6 +53,8 @@ namespace ILLightenComparer.Comparer.Comparisons
                   .MarkLabel(exit)
                   .Return(0);
         }
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);
 
         private static ILEmitter EmitCheckNullablesForValue(
             ILEmitter il,

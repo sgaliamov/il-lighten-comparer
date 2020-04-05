@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Comparisons;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
+using Illuminator;
 using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality
@@ -33,22 +35,27 @@ namespace ILLightenComparer.Equality
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 //(IVariable variable) => NullableComparison.Create(this, variable),
-                CeqComparison.Create,
-                (IVariable variable) => StringsComparison.Create(StringEqualsMethod, _configuration, variable),
-                OperatorComparison.Create,
+                CeqEqualityComparison.Create,
+                (IVariable variable) => StringsComparison.Create(StringEqualsMethod, CustomEmiters.EmitReturnIfFalsy, _configuration, variable),
+                OperatorEqualityComparison.Create,
                 //ComparablesComparison.Create,
-                (IVariable variable) => IndirectComparison.Create(variableType => context.GetStaticEqualsMethodInfo(variableType), DelayedEquals, variable),
+                (IVariable variable) => IndirectComparison.Create(
+                    CustomEmiters.EmitReturnIfFalsy,
+                    variableType => context.GetStaticEqualsMethodInfo(variableType),
+                    DelayedEquals,
+                    variable),
                 (IVariable variable) => MembersEqualityComparison.Create(this, membersProvider, variable)
                 //(IVariable variable) => ArraysComparison.Create(this, _configuration, variable),
                 //(IVariable variable) => EnumerablesComparison.Create(this, _configuration, variable)
             };
         }
 
+        public void EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.IfTrue(next).Return(0);
+
         public IComparisonEmitter GetComparisonEmitter(IVariable variable)
         {
             var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return IndirectComparison.Create(DelayedEquals, variable);
             }
 
             var comparison = _comparisonFactories

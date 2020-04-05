@@ -16,14 +16,17 @@ namespace ILLightenComparer.Shared.Comparisons
     {
         private readonly MethodInfo _method;
         private readonly IVariable _variable;
+        private readonly Func<ILEmitter, Label, ILEmitter> _checkForIntermediateResultEmitter;
 
-        private IndirectComparison(IVariable variable, MethodInfo method)
+        private IndirectComparison(Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter, MethodInfo method, IVariable variable)
         {
+            _checkForIntermediateResultEmitter = checkForIntermediateResultEmitter;
             _variable = variable;
             _method = method;
         }
 
         public static IndirectComparison Create(
+            Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter,
             Func<Type, MethodInfo> staticMethodFactory,
             MethodInfo genericDelayedMethod,
             IVariable variable)
@@ -38,20 +41,19 @@ namespace ILLightenComparer.Shared.Comparisons
                 ? genericDelayedMethod.MakeGenericMethod(variableType)
                 : staticMethodFactory(variableType);
 
-            return new IndirectComparison(variable, compareMethod);
+            return new IndirectComparison(checkForIntermediateResultEmitter, compareMethod, variable);
         }
 
         public static IndirectComparison Create(
+            Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter,
             MethodInfo genericDelayedMethod,
             IVariable variable)
         {
             var variableType = variable.VariableType;
             var compareMethod = genericDelayedMethod.MakeGenericMethod(variableType);
 
-            return new IndirectComparison(variable, compareMethod);
+            return new IndirectComparison(checkForIntermediateResultEmitter, compareMethod, variable);
         }
-
-        public bool PutsResultInStack { get; } = true;
 
         public ILEmitter Emit(ILEmitter il, Label _) => il.Call(
             _method,
@@ -62,5 +64,7 @@ namespace ILLightenComparer.Shared.Comparisons
             LoadArgument(Arg.SetY));
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
     }
 }

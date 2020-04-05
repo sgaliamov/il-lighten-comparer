@@ -40,8 +40,6 @@
 //            return null;
 //        }
 
-//        public bool PutsResultInStack { get; }
-
 //        public ILEmitter Emit(ILEmitter il, Label gotoNext)
 //        {
 //            var variableType = _variable.VariableType;

@@ -8,7 +8,7 @@ using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Comparer.Comparisons.Collection
+namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class CollectionComparer
     {

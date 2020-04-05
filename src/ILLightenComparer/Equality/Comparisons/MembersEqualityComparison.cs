@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
@@ -13,11 +14,11 @@ namespace ILLightenComparer.Equality.Comparisons
     internal sealed class MembersEqualityComparison : IComparisonEmitter
     {
         private readonly MembersProvider _membersProvider;
-        private readonly EqualityResolver _resolver;
+        private readonly IResolver _resolver;
         private readonly IVariable _variable;
 
         private MembersEqualityComparison(
-            EqualityResolver resolver,
+            IResolver resolver,
             MembersProvider membersProvider,
             IVariable variable)
         {
@@ -27,7 +28,7 @@ namespace ILLightenComparer.Equality.Comparisons
         }
 
         public static MembersEqualityComparison Create(
-            EqualityResolver resolver,
+            IResolver resolver,
             MembersProvider membersProvider,
             IVariable variable)
         {
@@ -37,8 +38,6 @@ namespace ILLightenComparer.Equality.Comparisons
 
             return null;
         }
-
-        public bool PutsResultInStack { get; }
 
         public ILEmitter Emit(ILEmitter il, Label _)
         {
@@ -52,13 +51,8 @@ namespace ILLightenComparer.Equality.Comparisons
             foreach (var item in comparisons) {
                 using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext);
-
                     item.Emit(il, gotoNext);
-
-                    if (item.PutsResultInStack) {
-                        il.IfTrue(gotoNext).Return(0);
-                    }
-
+                    item.EmitCheckForIntermediateResult(il, gotoNext);
                     il.MarkLabel(gotoNext);
                 }
             }
@@ -67,5 +61,7 @@ namespace ILLightenComparer.Equality.Comparisons
         }
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter _, Label __) => throw new NotSupportedException();
     }
 }

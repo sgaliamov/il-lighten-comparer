@@ -22,10 +22,10 @@ namespace ILLightenComparer.Comparer.Comparisons
             return null;
         }
 
-        public bool PutsResultInStack { get; } = true;
-
         public ILEmitter Emit(ILEmitter il, Label _) => il.Sub(_variable.Load(Arg.X), _variable.Load(Arg.Y));
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);
     }
 }

@@ -34,20 +34,25 @@ namespace ILLightenComparer.Comparer
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),
                 IntegralsComparison.Create,
-                (IVariable variable) => StringsComparison.Create(StringCompareMethod, _configuration, variable),
+                (IVariable variable) => StringsComparison.Create(StringCompareMethod, CustomEmiters.EmitReturnIfTruthy, _configuration, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
-                (IVariable variable) => IndirectComparison.Create(variableType => context.GetStaticCompareMethodInfo(variableType), DelayedCompare, variable),
+                (IVariable variable) => IndirectComparison.Create(
+                    CustomEmiters.EmitReturnIfTruthy,
+                    variableType => context.GetStaticCompareMethodInfo(variableType),
+                    DelayedCompare,
+                    variable),
                 (IVariable variable) => ArraysComparison.Create(this, _configuration, variable),
                 (IVariable variable) => EnumerablesComparison.Create(this, _configuration, variable)
             };
         }
 
+
         public IComparisonEmitter GetComparisonEmitter(IVariable variable)
         {
             var hasCustomComparer = _configuration.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return IndirectComparison.Create(DelayedCompare, variable);
+                return IndirectComparison.Create(CustomEmiters.EmitReturnIfTruthy, DelayedCompare, variable);
             }
 
             var comparison = _comparisonFactories

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
@@ -11,20 +12,30 @@ namespace ILLightenComparer.Shared.Comparisons
     internal sealed class StringsComparison : IComparisonEmitter
     {
         private readonly MethodInfo _compareMethod;
+        private readonly Func<ILEmitter, Label, ILEmitter> _checkForIntermediateResultEmitter;
         private readonly IVariable _variable;
         private readonly int _stringComparisonType;
 
-        private StringsComparison(MethodInfo compareMethod, IConfigurationProvider configuration, IVariable variable)
+        private StringsComparison(
+            MethodInfo compareMethod,
+            Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter,
+            IConfigurationProvider configuration,
+            IVariable variable)
         {
             _compareMethod = compareMethod;
+            _checkForIntermediateResultEmitter = checkForIntermediateResultEmitter;
             _variable = variable;
             _stringComparisonType = (int)configuration.Get(_variable.OwnerType).StringComparisonType;
         }
 
-        public static StringsComparison Create(MethodInfo compareMethod, IConfigurationProvider configuration, IVariable variable)
+        public static StringsComparison Create(
+            MethodInfo compareMethod,
+            Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter,
+            IConfigurationProvider configuration,
+            IVariable variable)
         {
             if (variable.VariableType == typeof(string)) {
-                return new StringsComparison(compareMethod, configuration, variable);
+                return new StringsComparison(compareMethod, checkForIntermediateResultEmitter, configuration, variable);
             }
 
             return null;
@@ -39,5 +50,7 @@ namespace ILLightenComparer.Shared.Comparisons
             LoadInteger(_stringComparisonType));
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
     }
 }

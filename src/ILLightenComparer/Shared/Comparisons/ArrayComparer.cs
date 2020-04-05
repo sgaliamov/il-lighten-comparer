@@ -40,10 +40,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
                 itemComparison.Emit(il, continueLoop);
-
-                if (itemComparison.PutsResultInStack) {
-                    il.EmitReturnIfTruthy(continueLoop);
-                }
+                itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
 
                 return il.MarkLabel(continueLoop)
                          .Add(LoadLocal(index), LoadInteger(1))

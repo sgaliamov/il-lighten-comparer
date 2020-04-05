@@ -5,9 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
-using ILLightenComparer.Comparer.Comparisons.Collection;
 using ILLightenComparer.Config;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -72,8 +70,6 @@ namespace ILLightenComparer.Comparer.Comparisons
             return null;
         }
 
-        public bool PutsResultInStack { get; }
-
         public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {
             var (x, y) = _collectionComparer.EmitLoad(_variable, il, gotoNext);
@@ -106,6 +102,8 @@ namespace ILLightenComparer.Comparer.Comparisons
                 .MarkLabel(exit)
                 .Return(0);
         }
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter _, Label __) => throw new NotSupportedException();
 
         private ILEmitter EmitCompareAsSortedArrays(
             ILEmitter il,
@@ -156,10 +154,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
                 var itemComparison = _comparisons.GetComparisonEmitter(itemVariable);
                 itemComparison.Emit(il, continueLoop);
-
-                if (itemComparison.PutsResultInStack) {
-                    il.EmitReturnIfTruthy(continueLoop);
-                }
+                itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
             }
         }
 

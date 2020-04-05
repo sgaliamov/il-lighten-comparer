@@ -7,26 +7,25 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality.Comparisons
 {
-    internal sealed class CeqComparison : IComparisonEmitter
+    internal sealed class CeqEqualityComparison : IComparisonEmitter
     {
         private readonly IVariable _variable;
 
-        private CeqComparison(IVariable variable) => _variable = variable;
+        private CeqEqualityComparison(IVariable variable) => _variable = variable;
 
-        public static CeqComparison Create(IVariable variable)
+        public static CeqEqualityComparison Create(IVariable variable)
         {
             if (variable.VariableType.GetUnderlyingType().IsBasicEquitable()) {
-                return new CeqComparison(variable);
+                return new CeqEqualityComparison(variable);
             }
 
             return null;
         }
 
-        public bool PutsResultInStack { get; } = true;
-
-        public ILEmitter Emit(ILEmitter il, Label _) => il
-            .AreSame(_variable.Load(Arg.X), _variable.Load(Arg.Y));
+        public ILEmitter Emit(ILEmitter il, Label _) => il.AreSame(_variable.Load(Arg.X), _variable.Load(Arg.Y));
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.EmitReturnIfFalsy(next);
     }
 }

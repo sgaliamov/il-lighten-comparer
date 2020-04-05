@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
@@ -13,11 +14,11 @@ namespace ILLightenComparer.Comparer.Comparisons
     internal sealed class MembersComparison : IComparisonEmitter
     {
         private readonly MembersProvider _membersProvider;
-        private readonly ComparisonResolver _resolver;
+        private readonly IResolver _resolver;
         private readonly IVariable _variable;
 
         private MembersComparison(
-            ComparisonResolver resolver,
+            IResolver resolver,
             MembersProvider membersProvider,
             IVariable variable)
         {
@@ -38,8 +39,6 @@ namespace ILLightenComparer.Comparer.Comparisons
             return null;
         }
 
-        public bool PutsResultInStack { get; }
-
         public ILEmitter Emit(ILEmitter il, Label _)
         {
             var variableType = _variable.VariableType;
@@ -52,13 +51,8 @@ namespace ILLightenComparer.Comparer.Comparisons
             foreach (var item in comparisons) {
                 using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext);
-
                     item.Emit(il, gotoNext);
-
-                    if (item.PutsResultInStack) {
-                        il.EmitReturnIfTruthy(gotoNext);
-                    }
-
+                    item.EmitCheckForIntermediateResult(il, gotoNext);
                     il.MarkLabel(gotoNext);
                 }
             }
@@ -67,5 +61,7 @@ namespace ILLightenComparer.Comparer.Comparisons
         }
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter _, Label __) => throw new NotSupportedException();
     }
 }
