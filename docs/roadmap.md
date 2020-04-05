@@ -99,6 +99,7 @@
 - [x] cache instances by type and **configuration** in `Context.GetComparerType`
 - [x] ~~create unified interface `IComparer<>: IComparer<>, IComparer`~~
 - [x] ~~possible to merge `MembersComparison` and `HierarchicalsComparison` but need to create `LocalVariable` class~~
+- [x] ~~compare references and the end?~~ no, because objects are equal semantically
 - [ ] fix *todo* list
 - [ ] ignore existing `IComparable` implementation
 - [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need to have deal with addresses?
@@ -122,5 +123,4 @@
 - [ ] tests for different cultures
 - [ ] float, double, date time precision
 - [ ] `checked` subs
-- [ ] compare references and the end?
 - [ ] automatic cycle detection when needed

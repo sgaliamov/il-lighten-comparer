@@ -48,7 +48,7 @@ namespace ILLightenComparer.Shared.Comparisons
                 .Select(_resolver.GetComparisonEmitter)
                 .ToArray();
 
-            for (var i = 0; i < comparisons.Length; i++) {
+            for (var i = 0; i < comparisons.Length - 1; i++) {
                 using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext);
                     comparisons[i].Emit(il, gotoNext);
@@ -57,10 +57,17 @@ namespace ILLightenComparer.Shared.Comparisons
                 }
             }
 
-            return il.LoadInteger(0);
+            var last = comparisons.LastOrDefault();
+            if (last is null) {
+                il.Return(0);
+            } else {
+                last.Emit(il);
+            }
+
+            return il;
         }
 
-        public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
+        public ILEmitter Emit(ILEmitter il) => Emit(il, default);
 
         public ILEmitter EmitCheckForIntermediateResult(ILEmitter _, Label __) => throw new NotSupportedException($"{nameof(IndirectComparison)} should be used.");
     }
