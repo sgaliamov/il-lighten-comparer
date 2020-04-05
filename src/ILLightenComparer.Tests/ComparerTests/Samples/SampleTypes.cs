@@ -35,7 +35,9 @@ namespace ILLightenComparer.Tests.ComparerTests.Samples
                 }, {
                     typeof(SampleStruct<EnumSmall?>),
                     new SampleStructComparer<EnumSmall?>()
-                }
+                },
+                { typeof(DummyObject), null },
+                { typeof(DummyStruct), null }
             };
 
             NullableTypes = Types

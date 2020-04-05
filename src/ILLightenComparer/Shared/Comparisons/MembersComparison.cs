@@ -4,13 +4,11 @@ using System.Linq;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
-using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Comparer.Comparisons
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class MembersComparison : IComparisonEmitter
     {
@@ -29,7 +27,7 @@ namespace ILLightenComparer.Comparer.Comparisons
         }
 
         public static MembersComparison Create(
-            ComparisonResolver resolver,
+            IResolver resolver,
             MembersProvider membersProvider,
             IVariable variable)
         {
@@ -47,13 +45,14 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             var comparisons = _membersProvider
                 .GetMembers(variableType)
-                .Select(_resolver.GetComparisonEmitter);
+                .Select(_resolver.GetComparisonEmitter)
+                .ToArray();
 
-            foreach (var item in comparisons) {
+            for (var i = 0; i < comparisons.Length - 1; i++) {
                 using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext);
-                    item.Emit(il, gotoNext);
-                    item.EmitCheckForIntermediateResult(il, gotoNext);
+                    comparisons[i].Emit(il, gotoNext);
+                    comparisons[i].EmitCheckForIntermediateResult(il, gotoNext);
                     il.MarkLabel(gotoNext);
                 }
             }
