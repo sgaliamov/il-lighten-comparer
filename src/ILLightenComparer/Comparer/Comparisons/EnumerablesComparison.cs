@@ -103,7 +103,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                 .Return(0);
         }
 
-        public ILEmitter EmitCheckForIntermediateResult(ILEmitter _, Label __) => throw new NotSupportedException();
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label _) => il;
 
         private ILEmitter EmitCompareAsSortedArrays(
             ILEmitter il,

@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
+using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -62,6 +63,6 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
 
-        public ILEmitter EmitCheckForIntermediateResult(ILEmitter _, Label __) => throw new NotSupportedException();
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter _, Label __) => throw new NotSupportedException($"{nameof(IndirectComparison)} should be used.");
     }
 }

@@ -31,8 +31,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                     .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
                     .GetEqualityComparer<Tuple<int, string>>();
 
-                comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "Comparison is based on int field.");
-                comparerForStringOnly.Equals(x, y).Should().Be(expectedEqualsString, "Comparison is based on string field.");
+                comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "comparison is based on int field");
+                comparerForStringOnly.Equals(x, y).Should().Be(expectedEqualsString, "comparison is based on string field");
                 comparerForIntOnly.GetHashCode(x).Should().Be(expectedHashInt);
                 comparerForStringOnly.GetHashCode(x).Should().Be(expectedHashString);
             });
