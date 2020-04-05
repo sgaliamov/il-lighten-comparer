@@ -50,7 +50,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                     return setX.Count - setY.Count;
                 }
 
-                var compare = string.Compare(x.TextField, y.TextField, StringComparison.Ordinal);
+                var compare = string.CompareOrdinal(x.TextField, y.TextField);
                 if (compare != 0) {
                     return compare;
                 }

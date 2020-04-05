@@ -43,7 +43,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
                 var x = (T)(object)_fixture.Create<SealedNestedObject>();
                 var y = (T)(object)_fixture.Create<SealedNestedObject>();
 
-                var expected = string.Compare(x.Text, y.Text, StringComparison.Ordinal).Normalize();
+                var expected = string.CompareOrdinal(x.Text, y.Text).Normalize();
                 var actual = comparer.Compare(x, y).Normalize();
 
                 actual.Should().Be(expected, $"\nx: {x.ToJson()},\ny: {y.ToJson()}");

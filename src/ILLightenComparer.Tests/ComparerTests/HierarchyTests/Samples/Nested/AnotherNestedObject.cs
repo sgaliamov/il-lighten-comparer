@@ -23,7 +23,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 
         private int CompareTo(AnotherNestedObject other)
         {
-            var compare = string.Compare(Value, other.Value, StringComparison.Ordinal);
+            var compare = string.CompareOrdinal(Value, other.Value);
             if (compare != 0) {
                 return compare;
             }
