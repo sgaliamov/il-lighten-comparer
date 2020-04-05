@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.ComparerTests.Samples
+namespace ILLightenComparer.Tests.Samples
 {
     public class SampleComparableBaseObject<TMember> : IComparable<SampleComparableBaseObject<TMember>>
     {

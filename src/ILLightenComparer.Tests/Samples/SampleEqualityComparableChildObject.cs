@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ILLightenComparer.Tests.EqualityTests.EqualityComparers;
+using ILLightenComparer.Tests.EqualityComparers;
 
-namespace ILLightenComparer.Tests.EqualityTests.Samples
+namespace ILLightenComparer.Tests.Samples
 {
     public sealed class SampleEqualityComparableChildObject<TMember> : SampleEqualityComparableBaseObject<TMember>, IEquatable<SampleEqualityComparableChildObject<TMember>>
     {

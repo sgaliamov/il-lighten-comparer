@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
+namespace ILLightenComparer.Tests.EqualityComparers
 {
     internal sealed class NullableEqualityComparer<TValue> : IEqualityComparer<TValue?>, IEqualityComparer where TValue : struct
     {

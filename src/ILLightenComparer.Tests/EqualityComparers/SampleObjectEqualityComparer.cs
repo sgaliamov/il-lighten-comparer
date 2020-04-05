@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
+namespace ILLightenComparer.Tests.EqualityComparers
 {
     internal sealed class SampleObjectEqualityComparer<TMember> : IEqualityComparer<SampleObject<TMember>>, IEqualityComparer
     {

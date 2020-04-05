@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
-using ILLightenComparer.Tests.ComparerTests.Comparers;
-using ILLightenComparer.Tests.EqualityTests.EqualityComparers;
+using ILLightenComparer.Tests.Comparers;
+using ILLightenComparer.Tests.EqualityComparers;
 
 namespace ILLightenComparer.Tests.Utilities
 {

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ILLightenComparer.Tests.ComparerTests.Comparers
+namespace ILLightenComparer.Tests.Comparers
 {
     internal class CustomizableComparer<T> : IComparer<T>, IComparer
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ILLightenComparer.Tests.Samples;
 
-namespace ILLightenComparer.Tests.ComparerTests.Comparers
+namespace ILLightenComparer.Tests.Comparers
 {
     internal sealed class SampleStructComparer<TMember> : IComparer<SampleStruct<TMember>>, IComparer
     {

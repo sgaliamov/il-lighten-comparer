@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
-using ILLightenComparer.Tests.ComparerTests.Samples;
 using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples

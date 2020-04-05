@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ILLightenComparer.Tests.EqualityTests.EqualityComparers
+namespace ILLightenComparer.Tests.EqualityComparers
 {
     internal struct HashCodeCombiner
     {

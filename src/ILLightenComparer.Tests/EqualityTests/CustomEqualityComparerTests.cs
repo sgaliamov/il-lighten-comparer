@@ -2,7 +2,7 @@
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
-using ILLightenComparer.Tests.EqualityTests.EqualityComparers;
+using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;

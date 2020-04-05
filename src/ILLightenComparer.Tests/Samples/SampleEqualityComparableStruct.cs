@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using ILLightenComparer.Tests.EqualityTests.EqualityComparers;
+using ILLightenComparer.Tests.EqualityComparers;
 
-namespace ILLightenComparer.Tests.EqualityTests.Samples
+namespace ILLightenComparer.Tests.Samples
 {
     [SuppressMessage("Usage", "CA2231:Overload operator equals on overriding value type Equals", Justification = "<Pending>")]
     public struct SampleEqualityComparableStruct<TMember>

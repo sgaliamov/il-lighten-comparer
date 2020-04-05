@@ -8,8 +8,6 @@ using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Comparers;
-using ILLightenComparer.Tests.ComparerTests.Comparers;
-using ILLightenComparer.Tests.ComparerTests.Samples;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
