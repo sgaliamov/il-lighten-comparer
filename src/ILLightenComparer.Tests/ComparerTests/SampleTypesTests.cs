@@ -40,7 +40,6 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var fixture = FixtureBuilder.GetInstance();
 
-            setup nullabe test
             fixture.Create<DummyStruct>();
 
             var actual = comparer.Compare(new DummyStruct(), new DummyStruct());

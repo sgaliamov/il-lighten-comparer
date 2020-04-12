@@ -35,7 +35,7 @@ namespace ILLightenComparer.Equality
             .IfTrue_S(
                 Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.Y), LoadArgument(Arg.X), LoadInteger(0)),
                 out var next)
-            .Return(0)
+            .Return(0) // todo: 1. throw exception
             .MarkLabel(next);
     }
 }
