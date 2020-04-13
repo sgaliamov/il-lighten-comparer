@@ -101,8 +101,10 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var actualEquals = comparer.Equals(x, y);
                 var actualHash = comparer.GetHashCode(x);
 
-                actualEquals.Should().Be(expected);
-                actualHash.Should().Be(0);
+                using (new AssertionScope()) {
+                    actualEquals.Should().Be(expected);
+                    actualHash.Should().Be(0);
+                }
             });
         }
 
