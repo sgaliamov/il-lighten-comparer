@@ -22,7 +22,6 @@ namespace ILLightenComparer.Comparer.Comparisons
         private readonly Type _enumeratorType;
         private readonly MethodInfo _getEnumeratorMethod;
         private readonly IVariable _variable;
-        private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
         private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
         private readonly IResolver _resolver;
@@ -30,14 +29,16 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         private EnumerablesComparison(
             IResolver resolver,
+            CollectionComparer collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
         {
-            _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
             _resolver = resolver;
+            _collectionComparer = collectionComparer;
+            _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
             _configuration = configuration;
-            _variable = variable ?? throw new ArgumentNullException(nameof(variable));
+            _variable = variable;
 
             _elementType = variable
                 .VariableType
@@ -52,20 +53,18 @@ namespace ILLightenComparer.Comparer.Comparisons
             _getEnumeratorMethod = typeof(IEnumerable<>)
                 .MakeGenericType(_elementType)
                 .GetMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
-
-            _arrayComparer = new ArrayComparer(resolver, CustomEmitters.EmitCheckIfArrayLoopsAreDone);
-            _collectionComparer = new CollectionComparer(configuration, CustomEmitters.EmitReferenceComparison);
         }
 
         public static EnumerablesComparison Create(
             IResolver comparisons,
+            CollectionComparer collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, emitCheckIfLoopsAreDone, configuration, variable);
+                return new EnumerablesComparison(comparisons, collectionComparer, emitCheckIfLoopsAreDone, configuration, variable);
             }
 
             return null;
@@ -116,9 +115,9 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             var arrayType = _elementType.MakeArrayType();
 
-            var (countX, countY) = _arrayComparer.EmitLoadCounts(arrayType, x, y, il);
+            var (countX, countY) = _collectionComparer.EmitLoadCounts(arrayType, x, y, il);
 
-            return _arrayComparer.Compare(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
+            return _collectionComparer.Compare(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(

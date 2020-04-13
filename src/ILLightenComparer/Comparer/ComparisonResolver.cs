@@ -23,12 +23,11 @@ namespace ILLightenComparer.Comparer
         private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
         private readonly IConfigurationProvider _configuration;
 
-        public ComparisonResolver(
-            ComparerContext context,
-            MembersProvider membersProvider,
-            IConfigurationProvider configuration)
+        public ComparisonResolver(ComparerContext context, MembersProvider membersProvider, IConfigurationProvider configuration)
         {
             _configuration = configuration;
+
+            var collectionComparer = new CollectionComparer(this, _configuration, CustomEmitters.EmitCheckIfArrayLoopsAreDone, CustomEmitters.EmitReferenceComparison);
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),
@@ -41,8 +40,8 @@ namespace ILLightenComparer.Comparer
                     variableType => context.GetStaticCompareMethodInfo(variableType),
                     DelayedCompare,
                     variable),
-                (IVariable variable) => ArraysComparison.Create(this, _configuration, variable),
-                (IVariable variable) => EnumerablesComparison.Create(this, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
+                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
             };
         }
 

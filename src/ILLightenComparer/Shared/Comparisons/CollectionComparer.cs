@@ -5,22 +5,34 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
+using static Illuminator.Functional;
 
-namespace ILLightenComparer.Comparer.Comparisons
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class CollectionComparer
     {
+        private const string LengthMethodName = nameof(Array.Length);
         private static readonly MethodInfo ToArrayMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray));
         private static readonly MethodInfo GetComparerMethod = typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
+
+        private readonly IResolver _resolver;
         private readonly IConfigurationProvider _configuration;
         private readonly EmitReferenceComparisonDelegate _emitReferenceComparison;
+        private readonly EmitCheckIfArrayLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
 
-        public CollectionComparer(IConfigurationProvider configuration, EmitReferenceComparisonDelegate emitReferenceComparison)
+        public CollectionComparer(
+            IResolver resolver,
+            IConfigurationProvider configuration,
+            EmitCheckIfArrayLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
+            EmitReferenceComparisonDelegate emitReferenceComparison)
         {
+            _resolver = resolver;
             _configuration = configuration;
+            _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
             _emitReferenceComparison = emitReferenceComparison;
         }
 
@@ -52,6 +64,52 @@ namespace ILLightenComparer.Comparer.Comparisons
                 EmitSortArray(il, elementType, xArray, comparer);
                 EmitSortArray(il, elementType, yArray, comparer);
             }
+        }
+
+        public ILEmitter Compare(
+            Type arrayType,
+            Type ownerType,
+            LocalBuilder xArray,
+            LocalBuilder yArray,
+            LocalBuilder countX,
+            LocalBuilder countY,
+            ILEmitter il,
+            Label afterLoop)
+        {
+            il.LoadInteger(0)
+              .Store(typeof(int), out var index)
+              .DefineLabel(out var loopStart)
+              .DefineLabel(out var continueLoop)
+              .MarkLabel(loopStart);
+
+            using (il.LocalsScope()) {
+                _emitCheckIfLoopsAreDone(il, index, countX, countY, afterLoop);
+            }
+
+            using (il.LocalsScope()) {
+                var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
+
+                var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
+                itemComparison.Emit(il, continueLoop);
+                itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
+
+                return il.MarkLabel(continueLoop)
+                         .Add(LoadLocal(index), LoadInteger(1))
+                         .Store(index)
+                         .GoTo(loopStart);
+            }
+        }
+
+        public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(Type arrayType, LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)
+        {
+            il.LoadLocal(arrayX)
+              .Call(arrayType.GetPropertyGetter(LengthMethodName))
+              .Store(typeof(int), out var countX)
+              .LoadLocal(arrayY)
+              .Call(arrayType.GetPropertyGetter(LengthMethodName))
+              .Store(typeof(int), out var countY);
+
+            return (countX, countY);
         }
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
