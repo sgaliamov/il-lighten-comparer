@@ -53,7 +53,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                                   .MakeGenericType(_elementType)
                                   .GetMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
 
-            _arrayComparer = new ArrayComparer(comparisons);
+            _arrayComparer = new ArrayComparer(comparisons, CustomEmitters.EmitCheckIfLoopsAreDone);
             _collectionComparer = new CollectionComparer(configuration);
         }
 

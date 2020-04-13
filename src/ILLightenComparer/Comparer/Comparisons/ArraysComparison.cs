@@ -16,13 +16,13 @@ namespace ILLightenComparer.Comparer.Comparisons
         private readonly IConfigurationProvider _configuration;
 
         private ArraysComparison(
-            ComparisonResolver comparisons,
+            ComparisonResolver resolver,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             _configuration = configuration;
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
-            _arrayComparer = new ArrayComparer(comparisons);
+            _arrayComparer = new ArrayComparer(resolver, CustomEmitters.EmitCheckIfLoopsAreDone);
             _collectionComparer = new CollectionComparer(configuration);
         }
 

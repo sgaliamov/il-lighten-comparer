@@ -12,8 +12,13 @@ namespace ILLightenComparer.Shared.Comparisons
     {
         private const string LengthMethodName = nameof(Array.Length);
         private readonly IResolver _resolver;
+        private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
 
-        public ArrayComparer(IResolver resolver) => _resolver = resolver;
+        public ArrayComparer(IResolver resolver, EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone)
+        {
+            _resolver = resolver;
+            _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
+        }
 
         public ILEmitter Compare(
             Type arrayType,
@@ -32,7 +37,7 @@ namespace ILLightenComparer.Shared.Comparisons
               .MarkLabel(loopStart);
 
             using (il.LocalsScope()) {
-                EmitCheckIfLoopsAreDone(index, countX, countY, il, afterLoop);
+                _emitCheckIfLoopsAreDone(il, index, countX, countY, afterLoop);
             }
 
             using (il.LocalsScope()) {
@@ -63,29 +68,6 @@ namespace ILLightenComparer.Shared.Comparisons
               .Store(typeof(int), out var countY);
 
             return (countX, countY);
-        }
-
-        private static void EmitCheckIfLoopsAreDone(
-            LocalBuilder index,
-            LocalBuilder countX,
-            LocalBuilder countY,
-            ILEmitter il,
-            Label afterLoop)
-        {
-            il.AreSame(LoadLocal(index), LoadLocal(countX), out var isDoneX)
-              .AreSame(LoadLocal(index), LoadLocal(countY), out var isDoneY)
-              .LoadLocal(isDoneX)
-              .IfFalse_S(out var checkIsDoneY)
-              .LoadLocal(isDoneY)
-              .IfFalse_S(out var returnM1)
-              .GoTo(afterLoop)
-              .MarkLabel(returnM1)
-              .Return(-1)
-              .MarkLabel(checkIsDoneY)
-              .LoadLocal(isDoneY)
-              .IfFalse_S(out var loadValues)
-              .Return(1)
-              .MarkLabel(loadValues);
         }
     }
 }
