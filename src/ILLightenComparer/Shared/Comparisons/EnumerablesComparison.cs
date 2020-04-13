@@ -6,12 +6,12 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
-using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
+using static Illuminator.Functional;
 
-namespace ILLightenComparer.Comparer.Comparisons
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class EnumerablesComparison : IComparisonEmitter
     {
@@ -25,16 +25,19 @@ namespace ILLightenComparer.Comparer.Comparisons
         private readonly CollectionComparer _collectionComparer;
         private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
         private readonly IResolver _resolver;
+        private readonly int _defaultResult;
         private readonly IConfigurationProvider _configuration;
 
         private EnumerablesComparison(
             IResolver resolver,
+            int defaultResult,
             CollectionComparer collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             _resolver = resolver;
+            _defaultResult = defaultResult;
             _collectionComparer = collectionComparer;
             _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
             _configuration = configuration;
@@ -57,6 +60,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public static EnumerablesComparison Create(
             IResolver comparisons,
+            int defaultResult,
             CollectionComparer collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
@@ -64,7 +68,7 @@ namespace ILLightenComparer.Comparer.Comparisons
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, collectionComparer, emitCheckIfLoopsAreDone, configuration, variable);
+                return new EnumerablesComparison(comparisons, defaultResult, collectionComparer, emitCheckIfLoopsAreDone, configuration, variable);
             }
 
             return null;
@@ -94,22 +98,15 @@ namespace ILLightenComparer.Comparer.Comparisons
             return il;
         }
 
-        public ILEmitter Emit(ILEmitter il)
-        {
-            il.DefineLabel(out var exit);
-
-            return Emit(il, exit)
-                .MarkLabel(exit)
-                .Return(0);
-        }
+        public ILEmitter Emit(ILEmitter il) => il
+            .DefineLabel(out var exit)
+            .Execute(this.Emit(exit))
+            .MarkLabel(exit)
+            .Return(0);
 
         public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label _) => il;
 
-        private ILEmitter EmitCompareAsSortedArrays(
-            ILEmitter il,
-            Label gotoNext,
-            LocalBuilder x,
-            LocalBuilder y)
+        private ILEmitter EmitCompareAsSortedArrays(ILEmitter il, Label gotoNext, LocalBuilder x, LocalBuilder y)
         {
             _collectionComparer.EmitArraySorting(il, _elementType, x, y);
 
@@ -120,16 +117,11 @@ namespace ILLightenComparer.Comparer.Comparisons
             return _collectionComparer.CompareArrays(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
-        private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(
-            LocalBuilder xEnumerable,
-            LocalBuilder yEnumerable,
-            ILEmitter il)
+        private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(LocalBuilder xEnumerable, LocalBuilder yEnumerable, ILEmitter il)
         {
-            il.LoadLocal(xEnumerable)
-              .Call(_getEnumeratorMethod)
+            il.Call(_getEnumeratorMethod, LoadLocal(xEnumerable))
               .Store(_enumeratorType, out var xEnumerator)
-              .LoadLocal(yEnumerable)
-              .Call(_getEnumeratorMethod)
+              .Call(_getEnumeratorMethod, LoadLocal(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
 
             return (xEnumerator, yEnumerator);
@@ -147,43 +139,29 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             using (il.LocalsScope()) {
                 var itemVariable = new EnumerableItemVariable(_variable.OwnerType, xEnumerator, yEnumerator);
-
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
                 itemComparison.Emit(il, continueLoop);
                 itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
             }
         }
 
-        private static (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(
-            LocalBuilder xEnumerator,
-            LocalBuilder yEnumerator,
-            ILEmitter il)
+        private static (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
         {
-            il.AreSame(il => il.LoadLocal(xEnumerator).Call(MoveNextMethod),
-                       il => il.LoadInteger(0),
-                       out var xDone)
-              .AreSame(il => il.LoadLocal(yEnumerator).Call(MoveNextMethod),
-                       il => il.LoadInteger(0),
-                       out var yDone);
+            il.AreSame(Call(MoveNextMethod, LoadLocal(xEnumerator)), LoadInteger(0), out var xDone)
+              .AreSame(Call(MoveNextMethod, LoadLocal(yEnumerator)), LoadInteger(0), out var yDone);
 
             return (xDone, yDone);
         }
 
-        private static void EmitDisposeEnumerators(
-            LocalBuilder xEnumerator,
-            LocalBuilder yEnumerator,
-            ILEmitter il,
-            Label gotoNext)
-        {
-            il.LoadLocal(xEnumerator)
-              .IfFalse_S(out var check)
-              .LoadLocal(xEnumerator)
-              .Call(DisposeMethod)
-              .MarkLabel(check)
-              .LoadLocal(yEnumerator)
-              .IfFalse(gotoNext)
-              .LoadLocal(yEnumerator)
-              .Call(DisposeMethod);
-        }
+        private static void EmitDisposeEnumerators(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il, Label gotoNext) => il
+            .LoadLocal(xEnumerator)
+            .IfFalse_S(out var check)
+            .LoadLocal(xEnumerator)
+            .Call(DisposeMethod)
+            .MarkLabel(check)
+            .LoadLocal(yEnumerator)
+            .IfFalse(gotoNext)
+            .LoadLocal(yEnumerator)
+            .Call(DisposeMethod);
     }
 }

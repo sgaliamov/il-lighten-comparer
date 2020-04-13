@@ -49,8 +49,8 @@ namespace ILLightenComparer.Shared.Comparisons
         public void EmitArraySorting(ILEmitter il, Type elementType, LocalBuilder xArray, LocalBuilder yArray)
         {
             // todo: 2. compare default sorting and sorting with generated comparer - TrySZSort can work faster
-            var useSimpleSorting = !_configuration.HasCustomComparer(elementType)
-                                   && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
+            var useSimpleSorting = !_configuration.HasCustomComparer(elementType) && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
+
             if (useSimpleSorting) {
                 EmitSortArray(il, elementType, xArray);
                 EmitSortArray(il, elementType, yArray);
@@ -90,15 +90,16 @@ namespace ILLightenComparer.Shared.Comparisons
 
             using (il.LocalsScope()) {
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
-
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
-                itemComparison.Emit(il, continueLoop);
-                itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
 
-                return il.MarkLabel(continueLoop)
-                         .Add(LoadLocal(index), LoadInteger(1))
-                         .Store(index)
-                         .GoTo(loopStart);
+                return il
+                    .Execute(
+                        itemComparison.Emit(continueLoop),
+                        itemComparison.EmitCheckForIntermediateResult(continueLoop))
+                    .MarkLabel(continueLoop)
+                    .Add(LoadLocal(index), LoadInteger(1))
+                    .Store(index)
+                    .GoTo(loopStart);
             }
         }
 

@@ -40,8 +40,8 @@ namespace ILLightenComparer.Comparer
                     variableType => context.GetStaticCompareMethodInfo(variableType),
                     DelayedCompare,
                     variable),
-                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
-                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
+                (IVariable variable) => ArraysComparison.Create(0, collectionComparer, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, 0, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
             };
         }
 
