@@ -30,7 +30,7 @@ namespace ILLightenComparer.Comparer
             var collectionComparer = new CollectionComparer(this, _configuration, CustomEmitters.EmitCheckIfLoopsAreDone, CustomEmitters.EmitReferenceComparison);
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
-                (IVariable variable) => NullableComparison.Create(this, variable),
+                (IVariable variable) => NullableComparison.Create(this, CustomEmitters.EmitReturnIfTruthy, CustomEmitters.EmitCheckNullablesForValue, variable),
                 IntegralsComparison.Create,
                 (IVariable variable) => StringsComparison.Create(StringCompareMethod, CustomEmitters.EmitReturnIfTruthy, _configuration, variable),
                 ComparablesComparison.Create,
