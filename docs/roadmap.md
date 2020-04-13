@@ -86,8 +86,10 @@
 
 - [x] support for .net core 3
 - [x] create reusable traversing
-- [ ] implement `GetHashCode`
-- [ ] implement `Equals`
+- [x] implement `GetHashCode`
+- [x] implement `Equals`
+- [ ] implementation for `IEnumarable`
+- [ ] create tests
 
 ## Phase 7 Improvements
 

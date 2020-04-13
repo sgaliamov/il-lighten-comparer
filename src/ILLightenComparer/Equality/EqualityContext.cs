@@ -73,21 +73,16 @@ namespace ILLightenComparer.Equality
             return GetHash(hashMethod, actualType, comparable, cycleDetectionSet);
         }
 
-        public MethodInfo GetStaticEqualsMethodInfo(Type type) =>
-            _genericProvider.GetStaticMethodInfo(type, nameof(Equals));
+        public MethodInfo GetStaticEqualsMethodInfo(Type type) => _genericProvider.GetStaticMethodInfo(type, nameof(Equals));
 
-        public MethodInfo GetCompiledStaticEqualsMethod(Type type) =>
-            _genericProvider.GetCompiledStaticMethod(type, nameof(Equals));
+        public MethodInfo GetCompiledStaticEqualsMethod(Type type) => _genericProvider.GetCompiledStaticMethod(type, nameof(Equals));
 
-        public MethodInfo GetStaticHashMethodInfo(Type type) =>
-             _genericProvider.GetStaticMethodInfo(type, nameof(GetHashCode));
+        public MethodInfo GetStaticHashMethodInfo(Type type) => _genericProvider.GetStaticMethodInfo(type, nameof(GetHashCode));
 
-        public MethodInfo GetCompiledStaticHashMethod(Type type) =>
-            _genericProvider.GetCompiledStaticMethod(type, nameof(GetHashCode));
+        public MethodInfo GetCompiledStaticHashMethod(Type type) => _genericProvider.GetCompiledStaticMethod(type, nameof(GetHashCode));
 
-        public IEqualityComparer<T> GetEqualityComparer<T>() =>
-            _configuration.GetCustomEqualityComparer<T>()
-             ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T), key => CreateInstance<T>(key));
+        public IEqualityComparer<T> GetEqualityComparer<T>() => _configuration.GetCustomEqualityComparer<T>()
+            ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T), key => CreateInstance<T>(key));
 
         private IEqualityComparer<T> CreateInstance<T>(Type key) => _genericProvider
             .EnsureComparerType(key)

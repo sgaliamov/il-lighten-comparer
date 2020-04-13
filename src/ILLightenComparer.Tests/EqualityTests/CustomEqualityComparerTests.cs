@@ -91,7 +91,6 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var referenceComparer = new SampleObjectEqualityComparer<int[]>(new CustomizableEqualityComparer<int[]>(
                     (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
                 var expected = referenceComparer.Equals(x, y);
-                var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
                 var original = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
                 var comparer = new ComparerBuilder(c => c
@@ -100,11 +99,15 @@ namespace ILLightenComparer.Tests.EqualityTests
                     .GetEqualityComparer<SampleObject<int[]>>();
 
                 var actualEquals = comparer.Equals(x, y);
+                var hashX = comparer.GetHashCode(x);
+                var hashY = comparer.GetHashCode(y);
 
                 using (new AssertionScope()) {
-                    actualEquals.Should().BeTrue();
-                    comparer.GetHashCode(x).Should().NotBe(original.GetHashCode(x));
-                    comparer.GetHashCode(y).Should().NotBe(original.GetHashCode(y));
+                    actualEquals.Should().Be(expected);
+                    hashX.Should().NotBe(original.GetHashCode(x));
+                    hashY.Should().NotBe(original.GetHashCode(y));
+                    hashX.Should().NotBe(0);
+                    hashY.Should().NotBe(0);
                 }
             });
         }

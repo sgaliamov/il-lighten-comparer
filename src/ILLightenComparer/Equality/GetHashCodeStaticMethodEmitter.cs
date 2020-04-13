@@ -20,12 +20,13 @@ namespace ILLightenComparer.Equality
         {
             using var il = staticMethodBuilder.CreateILEmitter();
 
-            var needReferenceComparison =
+            var needNullCheck =
                  !objectType.IsValueType
-                 && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
+                 && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do null check anyway
 
-            if (needReferenceComparison) {
-                il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
+            if (needNullCheck) {
+                // todo: 1. check for null
+                //il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
             }
 
             if (detecCycles) {
