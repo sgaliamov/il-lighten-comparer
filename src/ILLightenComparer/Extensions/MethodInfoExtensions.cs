@@ -32,8 +32,7 @@ namespace ILLightenComparer.Extensions
                     new object[] { context, x, y, xSet, ySet });
             }
 
-            var compare = method.CreateDelegate<
-                Func<TContext, TComparable, TComparable, CycleDetectionSet, CycleDetectionSet, TResult>>();
+            var compare = method.CreateDelegate<Func<TContext, TComparable, TComparable, CycleDetectionSet, CycleDetectionSet, TResult>>();
 
             return compare(context, x, y, xSet, ySet);
         }

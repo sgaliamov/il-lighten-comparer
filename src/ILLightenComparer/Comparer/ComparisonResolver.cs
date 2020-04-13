@@ -18,8 +18,7 @@ namespace ILLightenComparer.Comparer
             nameof(string.Compare),
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
 
-        private static readonly MethodInfo DelayedCompare = typeof(IComparerContext)
-            .GetMethod(nameof(IComparerContext.DelayedCompare));
+        private static readonly MethodInfo DelayedCompare = typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
 
         private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
         private readonly IConfigurationProvider _configuration;
@@ -34,11 +33,11 @@ namespace ILLightenComparer.Comparer
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),
                 IntegralsComparison.Create,
-                (IVariable variable) => StringsComparison.Create(StringCompareMethod, CustomEmiters.EmitReturnIfTruthy, _configuration, variable),
+                (IVariable variable) => StringsComparison.Create(StringCompareMethod, CustomEmitters.EmitReturnIfTruthy, _configuration, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
                 (IVariable variable) => IndirectComparison.Create(
-                    CustomEmiters.EmitReturnIfTruthy,
+                    CustomEmitters.EmitReturnIfTruthy,
                     variableType => context.GetStaticCompareMethodInfo(variableType),
                     DelayedCompare,
                     variable),
@@ -47,12 +46,11 @@ namespace ILLightenComparer.Comparer
             };
         }
 
-
         public IComparisonEmitter GetComparisonEmitter(IVariable variable)
         {
             var hasCustomComparer = _configuration.HasCustomComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return IndirectComparison.Create(CustomEmiters.EmitReturnIfTruthy, DelayedCompare, variable);
+                return IndirectComparison.Create(CustomEmitters.EmitReturnIfTruthy, DelayedCompare, variable);
             }
 
             var comparison = _comparisonFactories

@@ -22,17 +22,14 @@ namespace ILLightenComparer.Comparer
 
             var resolver = new ComparisonResolver(this, membersProvider, _configuration);
 
-            var methodEmitters = new Dictionary<string, IStaticMethodEmitter>{
+            var methodEmitters = new Dictionary<string, IStaticMethodEmitter> {
                 { CompareMethodName, new CompareStaticMethodEmitter(resolver) }
             };
 
-            _genericProvider = new GenericProvider(
-                typeof(IComparer<>),
-                new GenericTypeBuilder(methodEmitters, _configuration));
+            _genericProvider = new GenericProvider(typeof(IComparer<>), new GenericTypeBuilder(methodEmitters, _configuration));
         }
 
-        public IComparer<T> GetComparer<T>() =>
-            _configuration.GetCustomComparer<T>()
+        public IComparer<T> GetComparer<T>() => _configuration.GetCustomComparer<T>()
            ?? (IComparer<T>)_emittedComparers.GetOrAdd(typeof(T), key => CreateInstance<T>(key));
 
         public int DelayedCompare<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet)
@@ -58,11 +55,9 @@ namespace ILLightenComparer.Comparer
             return compareMethod.InvokeCompare<IComparerContext, T, int>(xType, this, x, y, xSet, ySet);
         }
 
-        public MethodInfo GetStaticCompareMethodInfo(Type type) =>
-           _genericProvider.GetStaticMethodInfo(type, CompareMethodName);
+        public MethodInfo GetStaticCompareMethodInfo(Type type) => _genericProvider.GetStaticMethodInfo(type, CompareMethodName);
 
-        public MethodInfo GetCompiledStaticCompareMethod(Type type) =>
-            _genericProvider.GetCompiledStaticMethod(type, CompareMethodName);
+        public MethodInfo GetCompiledStaticCompareMethod(Type type) => _genericProvider.GetCompiledStaticMethod(type, CompareMethodName);
 
         private IComparer<T> CreateInstance<T>(Type key) => _genericProvider
             .EnsureComparerType(key)
