@@ -51,14 +51,9 @@ namespace ILLightenComparer.Equality.Hashers
             il.LoadLong(config.HashSeed)
               .Store(typeof(long), out var hash);
 
-            foreach (var item in comparisons) {
+            foreach (var hasher in hashers) {
                 using (il.LocalsScope()) {
-                    var add = Add(
-                        ShiftLeft(LoadLocal(hash), LoadInteger(5)),
-                        LoadLocal(hash));
-
-                    il.Xor(add, Execute(item.Emit, Cast(typeof(long))))
-                      .Store(hash);
+                    il.EmitHashing(hash, hasher.Emit);
                 }
             }
 

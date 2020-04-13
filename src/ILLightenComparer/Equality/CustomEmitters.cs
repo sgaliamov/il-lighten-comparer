@@ -35,5 +35,16 @@ namespace ILLightenComparer.Equality
             .IfTrue_S(out var next)
             .Return(0)
             .MarkLabel(next);
+
+        public static ILEmitter EmitHashing(this ILEmitter il, LocalBuilder hash, Func<ILEmitter, ILEmitter> hasher)
+        {
+            var add = Add(
+                ShiftLeft(LoadLocal(hash), LoadInteger(5)),
+                LoadLocal(hash));
+
+            return il
+                .Xor(add, Execute(hasher, Cast(typeof(long))))
+                .Store(hash);
+        }
     }
 }
