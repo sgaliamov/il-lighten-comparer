@@ -63,7 +63,7 @@ namespace ILLightenComparer.Equality.Hashers
                 }
             }
 
-            return il.LoadLocal(hash).Cast(typeof(int));
+            return il.LoadLocal(hash).Cast(typeof(int)); // todo: 1. test overflow
         }
     }
 }
