@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System.Reflection;
+using System.Reflection.Emit;
 using Illuminator;
 using static Illuminator.Functional;
 
@@ -28,5 +29,20 @@ namespace ILLightenComparer.Comparer
             .IfFalse_S(out var loadValues)
             .Return(1)
             .MarkLabel(loadValues);
+
+        public static ILEmitter EmitReferenceComparison(this ILEmitter il, LocalVariableInfo x, LocalVariableInfo y, Label ifEqual) => il
+            .LoadLocal(x)
+            .LoadLocal(y)
+            .IfNotEqual_Un_S(out var checkX)
+            .GoTo(ifEqual)
+            .MarkLabel(checkX)
+            .LoadLocal(x)
+            .IfTrue_S(out var checkY)
+            .Return(-1)
+            .MarkLabel(checkY)
+            .LoadLocal(y)
+            .IfTrue_S(out var next)
+            .Return(1)
+            .MarkLabel(next);
     }
 }

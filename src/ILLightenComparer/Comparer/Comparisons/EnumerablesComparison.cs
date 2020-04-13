@@ -15,11 +15,8 @@ namespace ILLightenComparer.Comparer.Comparisons
 {
     internal sealed class EnumerablesComparison : IComparisonEmitter
     {
-        private static readonly MethodInfo MoveNextMethod = typeof(IEnumerator)
-          .GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
-
-        private static readonly MethodInfo DisposeMethod = typeof(IDisposable)
-            .GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
+        private static readonly MethodInfo MoveNextMethod = typeof(IEnumerator).GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
+        private static readonly MethodInfo DisposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
 
         private readonly Type _elementType;
         private readonly Type _enumeratorType;
@@ -40,21 +37,21 @@ namespace ILLightenComparer.Comparer.Comparisons
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
 
             _elementType = variable
-                          .VariableType
-                          .FindGenericInterface(typeof(IEnumerable<>))
-                          .GetGenericArguments()
-                          .SingleOrDefault()
-                          ?? throw new ArgumentException(nameof(variable));
+                .VariableType
+                .FindGenericInterface(typeof(IEnumerable<>))
+                .GetGenericArguments()
+                .SingleOrDefault()
+                ?? throw new ArgumentException(nameof(variable));
 
             // todo: 2. use read enumerator, not virtual
             _enumeratorType = typeof(IEnumerator<>).MakeGenericType(_elementType);
 
             _getEnumeratorMethod = typeof(IEnumerable<>)
-                                  .MakeGenericType(_elementType)
-                                  .GetMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
+                .MakeGenericType(_elementType)
+                .GetMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
 
             _arrayComparer = new ArrayComparer(comparisons, CustomEmitters.EmitCheckIfLoopsAreDone);
-            _collectionComparer = new CollectionComparer(configuration);
+            _collectionComparer = new CollectionComparer(configuration, CustomEmitters.EmitReferenceComparison);
         }
 
         public static EnumerablesComparison Create(
