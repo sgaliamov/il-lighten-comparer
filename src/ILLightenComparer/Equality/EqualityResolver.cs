@@ -33,14 +33,13 @@ namespace ILLightenComparer.Equality
         {
             _configuration = configuration;
 
-            //var collectionComparer = new CollectionComparer(this, _configuration, CustomEmitters.EmitCheckIfLoopsAreDone, CustomEmitters.EmitReferenceComparison);
+            var collectionComparer = new CollectionComparer(this, _configuration, CustomEmitters.EmitCheckIfLoopsAreDone, CustomEmitters.EmitReferenceComparison);
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 //(IVariable variable) => NullableComparison.Create(this, variable),
                 CeqEqualityComparison.Create,
                 (IVariable variable) => StringsComparison.Create(StringEqualsMethod, CustomEmitters.EmitReturnIfFalsy, _configuration, variable),
                 OperatorEqualityComparison.Create,
-                //ComparablesComparison.Create,
                 (IVariable variable) => IndirectComparison.Create(
                     CustomEmitters.EmitReturnIfFalsy,
                     variableType => context.GetStaticEqualsMethodInfo(variableType),
