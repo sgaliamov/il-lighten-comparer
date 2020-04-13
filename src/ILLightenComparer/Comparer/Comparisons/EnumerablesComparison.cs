@@ -117,7 +117,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             var (countX, countY) = _collectionComparer.EmitLoadCounts(arrayType, x, y, il);
 
-            return _collectionComparer.Compare(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
+            return _collectionComparer.CompareArrays(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(

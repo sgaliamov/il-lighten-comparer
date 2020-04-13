@@ -66,7 +66,7 @@ namespace ILLightenComparer.Shared.Comparisons
             }
         }
 
-        public ILEmitter Compare(
+        public ILEmitter CompareArrays(
             Type arrayType,
             Type ownerType,
             LocalBuilder xArray,

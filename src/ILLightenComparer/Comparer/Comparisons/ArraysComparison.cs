@@ -42,7 +42,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                 _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
             }
 
-            return _collectionComparer.Compare(variableType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
+            return _collectionComparer.CompareArrays(variableType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
         public ILEmitter Emit(ILEmitter il)
