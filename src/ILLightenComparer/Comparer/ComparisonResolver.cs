@@ -27,7 +27,7 @@ namespace ILLightenComparer.Comparer
         {
             _configuration = configuration;
 
-            var collectionComparer = new CollectionComparer(this, _configuration, CustomEmitters.EmitCheckIfArrayLoopsAreDone, CustomEmitters.EmitReferenceComparison);
+            var collectionComparer = new CollectionComparer(this, _configuration, CustomEmitters.EmitCheckIfLoopsAreDone, CustomEmitters.EmitReferenceComparison);
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 (IVariable variable) => NullableComparison.Create(this, variable),

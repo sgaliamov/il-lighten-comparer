@@ -67,8 +67,7 @@ namespace ILLightenComparer.Extensions
 
         public static MethodInfo GetPropertyGetter(this Type type, string name) =>
             type.GetProperty(name)?.GetGetMethod()
-            ?? throw new ArgumentException(
-                $"{type.DisplayName()} does not have {name} property.");
+            ?? throw new ArgumentException($"{type.DisplayName()} does not have {name} property.");
 
         public static bool IsIntegral(this Type type) => SmallIntegralTypes.Contains(type);
 

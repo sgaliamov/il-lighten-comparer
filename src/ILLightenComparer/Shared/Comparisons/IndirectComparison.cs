@@ -10,7 +10,7 @@ using static Illuminator.Functional;
 namespace ILLightenComparer.Shared.Comparisons
 {
     /// <summary>
-    ///     Delegates comparison to static method or delayed compare method in context.
+    /// Delegates comparison to static method or delayed compare method in context.
     /// </summary>
     internal sealed class IndirectComparison : IComparisonEmitter
     {

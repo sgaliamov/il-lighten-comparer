@@ -33,14 +33,16 @@ namespace ILLightenComparer.Equality
         {
             _configuration = configuration;
 
+            var collectionComparer = new CollectionComparer(this, _configuration, CustomEmitters.EmitCheckIfLoopsAreDone, CustomEmitters.EmitReferenceComparison);
+
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
                 //(IVariable variable) => NullableComparison.Create(this, variable),
                 CeqEqualityComparison.Create,
-                (IVariable variable) => StringsComparison.Create(StringEqualsMethod, CustomEmiters.EmitReturnIfFalsy, _configuration, variable),
+                (IVariable variable) => StringsComparison.Create(StringEqualsMethod, CustomEmitters.EmitReturnIfFalsy, _configuration, variable),
                 OperatorEqualityComparison.Create,
                 //ComparablesComparison.Create,
                 (IVariable variable) => IndirectComparison.Create(
-                    CustomEmiters.EmitReturnIfFalsy,
+                    CustomEmitters.EmitReturnIfFalsy,
                     variableType => context.GetStaticEqualsMethodInfo(variableType),
                     DelayedEquals,
                     variable),
@@ -56,7 +58,7 @@ namespace ILLightenComparer.Equality
         {
             var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
-                return IndirectComparison.Create(CustomEmiters.EmitReturnIfFalsy, DelayedEquals, variable);
+                return IndirectComparison.Create(CustomEmitters.EmitReturnIfFalsy, DelayedEquals, variable);
             }
 
             var comparison = _comparisonFactories

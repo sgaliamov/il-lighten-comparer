@@ -22,12 +22,12 @@ namespace ILLightenComparer.Shared.Comparisons
         private readonly IResolver _resolver;
         private readonly IConfigurationProvider _configuration;
         private readonly EmitReferenceComparisonDelegate _emitReferenceComparison;
-        private readonly EmitCheckIfArrayLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
+        private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
 
         public CollectionComparer(
             IResolver resolver,
             IConfigurationProvider configuration,
-            EmitCheckIfArrayLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
+            EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             EmitReferenceComparisonDelegate emitReferenceComparison)
         {
             _resolver = resolver;
@@ -83,7 +83,9 @@ namespace ILLightenComparer.Shared.Comparisons
               .MarkLabel(loopStart);
 
             using (il.LocalsScope()) {
-                _emitCheckIfLoopsAreDone(il, index, countX, countY, afterLoop);
+                il.AreSame(LoadLocal(index), LoadLocal(countX), out var isDoneX)
+                  .AreSame(LoadLocal(index), LoadLocal(countY), out var isDoneY);
+                _emitCheckIfLoopsAreDone(il, isDoneX, isDoneY, afterLoop);
             }
 
             using (il.LocalsScope()) {

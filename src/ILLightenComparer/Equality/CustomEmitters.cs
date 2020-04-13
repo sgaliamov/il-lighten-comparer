@@ -2,30 +2,25 @@
 using System.Reflection.Emit;
 using Illuminator;
 
-namespace ILLightenComparer.Comparer
+namespace ILLightenComparer.Equality
 {
     internal static class CustomEmitters
     {
-        public static ILEmitter EmitReturnIfTruthy(this ILEmitter il, Label next) => il
-            .Store(typeof(int), out var result)
-            .LoadLocal(result)
-            .IfFalse(next)
-            .LoadLocal(result)
-            .Return();
+        public static ILEmitter EmitReturnIfFalsy(this ILEmitter il, Label next) => il.IfTrue(next).Return(0);
 
         public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder isDoneX, LocalBuilder isDoneY, Label gotoNext) => il
             .LoadLocal(isDoneX)
             .IfFalse_S(out var checkIsDoneY)
             .LoadLocal(isDoneY)
-            .IfFalse_S(out var returnM1)
+            .IfFalse_S(out var returnFalse)
             .GoTo(gotoNext)
-            .MarkLabel(returnM1)
-            .Return(-1)
+            .MarkLabel(returnFalse)
+            .Return(0)
             .MarkLabel(checkIsDoneY)
             .LoadLocal(isDoneY)
-            .IfFalse_S(out var compare)
-            .Return(1)
-            .MarkLabel(compare);
+            .IfFalse_S(out var next)
+            .Return(0)
+            .MarkLabel(next);
 
         public static ILEmitter EmitReferenceComparison(this ILEmitter il, LocalVariableInfo x, LocalVariableInfo y, Label ifEqual) => il
             .LoadLocal(x)
