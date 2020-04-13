@@ -1,5 +1,9 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
+using FluentAssertions;
+using FluentAssertions.Execution;
+using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.Samples;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.EqualityTests
@@ -17,8 +21,10 @@ namespace ILLightenComparer.Tests.EqualityTests
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
 
-            equality.Should().BeTrue();
-            hashX.Should().Be(hashY);
+            using (new AssertionScope()) {
+                equality.Should().BeTrue();
+                hashX.Should().Be(hashY);
+            }
         }
 
         [Fact]
@@ -28,13 +34,14 @@ namespace ILLightenComparer.Tests.EqualityTests
             var y = new DummyStruct();
 
             var comparer = new ComparerBuilder().GetEqualityComparer<DummyStruct>();
-
             var equality = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
 
-            equality.Should().BeTrue();
-            hashX.Should().Be(hashY);
+            using (new AssertionScope()) {
+                equality.Should().BeTrue();
+                hashX.Should().Be(hashY);
+            }
         }
 
         [Fact]
@@ -44,13 +51,49 @@ namespace ILLightenComparer.Tests.EqualityTests
             var y = new[] { 1, 2, 3 };
 
             var comparer = new ComparerBuilder().GetEqualityComparer<int[]>();
-
             var equality = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
 
-            equality.Should().BeTrue();
-            hashX.Should().Be(hashY);
+            using (new AssertionScope()) {
+                equality.Should().BeTrue();
+                hashX.Should().Be(hashY);
+            }
         }
+
+        [Fact]
+        public void Compare_with_null_object_should_be_not_equal()
+        {
+            var x = _fixture.Create<SampleObject<int[]>>();
+            var expectedCustomHash = HashCodeCombiner.Combine(0);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
+            var equality = comparer.Equals(x, null);
+            var hashY = comparer.GetHashCode(null);
+
+            using (new AssertionScope()) {
+                equality.Should().BeFalse();
+                hashY.Should().Be(expectedCustomHash);
+            }
+        }
+
+        [Fact]
+        public void Compare_with_null_members_should_be_not_equal()
+        {
+            var x = _fixture.Create<SampleObject<int[]>>();
+            var y = new SampleObject<int[]>();
+            var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
+            var equality = comparer.Equals(x, y);
+            var hashY = comparer.GetHashCode(y);
+
+            using (new AssertionScope()) {
+                equality.Should().BeFalse();
+                hashY.Should().Be(expectedCustomHash);
+            }
+        }
+
+        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
     }
 }

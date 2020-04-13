@@ -88,9 +88,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var x = _fixture.Create<SampleObject<int[]>>();
                 var y = _fixture.Create<SampleObject<int[]>>();
 
-                var referenceComparer = new SampleObjectEqualityComparer<int[]>(
-                    new CustomizableEqualityComparer<int[]>(
-                        (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
+                var referenceComparer = new SampleObjectEqualityComparer<int[]>(new CustomizableEqualityComparer<int[]>(
+                    (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
                 var expected = referenceComparer.Equals(x, y);
                 var expectedCustomHash = HashCodeCombiner.Combine(0, 0, 0, 0);
 
