@@ -24,7 +24,7 @@ namespace ILLightenComparer.Equality
             }
 
             _resolver
-                .GetHasher(new ArgumentVariable(objectType))
+                .GetHasherEmitter(new ArgumentVariable(objectType))
                 .Emit(il)
                 .Return();
         }

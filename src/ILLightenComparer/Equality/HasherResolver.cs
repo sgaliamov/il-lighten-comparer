@@ -30,7 +30,7 @@ namespace ILLightenComparer.Equality
             };
         }
 
-        public IHasherEmitter GetHasher(IVariable variable)
+        public IHasherEmitter GetHasherEmitter(IVariable variable)
         {
             var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {

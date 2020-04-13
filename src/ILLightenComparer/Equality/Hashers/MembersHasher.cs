@@ -44,9 +44,9 @@ namespace ILLightenComparer.Equality.Hashers
         public ILEmitter Emit(ILEmitter il)
         {
             var config = _configuration.Get(_variable.OwnerType);
-            var comparisons = _membersProvider
+            var hashers = _membersProvider
                 .GetMembers(_variable.VariableType)
-                .Select(_resolver.GetHasher);
+                .Select(_resolver.GetHasherEmitter);
 
             il.LoadLong(config.HashSeed)
               .Store(typeof(long), out var hash);
