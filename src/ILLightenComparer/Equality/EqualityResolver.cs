@@ -44,7 +44,7 @@ namespace ILLightenComparer.Equality
                     variableType => context.GetStaticEqualsMethodInfo(variableType),
                     DelayedEquals,
                     variable),
-                (IVariable variable) => MembersEqualityComparison.Create(this, membersProvider, variable)
+                (IVariable variable) => MembersComparison.Create(this, 1, membersProvider, variable)
                 //(IVariable variable) => ArraysComparison.Create(this, _configuration, variable),
                 //(IVariable variable) => EnumerablesComparison.Create(this, _configuration, variable)
             };

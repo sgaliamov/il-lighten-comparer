@@ -14,25 +14,29 @@ namespace ILLightenComparer.Shared.Comparisons
     {
         private readonly MembersProvider _membersProvider;
         private readonly IResolver _resolver;
+        private readonly int _defaultResult;
         private readonly IVariable _variable;
 
         private MembersComparison(
             IResolver resolver,
+            int defaultResult,
             MembersProvider membersProvider,
             IVariable variable)
         {
             _variable = variable;
             _resolver = resolver;
+            _defaultResult = defaultResult;
             _membersProvider = membersProvider;
         }
 
         public static MembersComparison Create(
             IResolver resolver,
+            int defaultResult,
             MembersProvider membersProvider,
             IVariable variable)
         {
             if (variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
-                return new MembersComparison(resolver, membersProvider, variable);
+                return new MembersComparison(resolver, defaultResult, membersProvider, variable);
             }
 
             return null;
@@ -59,7 +63,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
             var last = comparisons.LastOrDefault();
             if (last is null) {
-                il.Return(0);
+                il.Return(_defaultResult);
             } else {
                 last.Emit(il);
             }
