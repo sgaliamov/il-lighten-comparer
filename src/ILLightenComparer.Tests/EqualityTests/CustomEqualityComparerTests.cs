@@ -91,7 +91,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var referenceComparer = new SampleObjectEqualityComparer<int[]>(new CustomizableEqualityComparer<int[]>(
                     (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
                 var expected = referenceComparer.Equals(x, y);
-                var expectedCustomHash = HashCodeCombiner.Combine(0, 0, 0, 0);
+                var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
                 var comparer = new ComparerBuilder(c => c
                     .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Shared;
@@ -18,7 +19,15 @@ namespace ILLightenComparer.Equality
         public void Build(Type objectType, bool detecCycles, MethodBuilder staticMethodBuilder)
         {
             using var il = staticMethodBuilder.CreateILEmitter();
-            // todo: 1. null check
+
+            var needReferenceComparison =
+                 !objectType.IsValueType
+                 && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
+
+            if (needReferenceComparison) {
+                il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
+            }
+
             if (detecCycles) {
                 EmitCycleDetection(il);
             }

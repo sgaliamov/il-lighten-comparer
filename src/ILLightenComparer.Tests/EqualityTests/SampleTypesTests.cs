@@ -62,10 +62,24 @@ namespace ILLightenComparer.Tests.EqualityTests
         }
 
         [Fact]
+        public void Compare_with_null_array_should_be_not_equal()
+        {
+            var x = new[] { 1, 2, 3 };
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<int[]>();
+            var equality = comparer.Equals(null, x);
+            var hashY = comparer.GetHashCode(null);
+
+            using (new AssertionScope()) {
+                equality.Should().BeFalse();
+                hashY.Should().Be(0);
+            }
+        }
+
+        [Fact]
         public void Compare_with_null_object_should_be_not_equal()
         {
             var x = _fixture.Create<SampleObject<int[]>>();
-            var expectedCustomHash = HashCodeCombiner.Combine(0);
 
             var comparer = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
             var equality = comparer.Equals(x, null);
@@ -73,7 +87,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 equality.Should().BeFalse();
-                hashY.Should().Be(expectedCustomHash);
+                hashY.Should().Be(0);
             }
         }
 
