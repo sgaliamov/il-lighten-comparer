@@ -92,6 +92,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     new CustomizableEqualityComparer<int[]>(
                         (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
                 var expected = referenceComparer.Equals(x, y);
+                var expectedCustomHash = HashCodeCombiner.Combine(0, 0, 0, 0);
 
                 var comparer = new ComparerBuilder(c => c
                     .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())
@@ -103,7 +104,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
                 using (new AssertionScope()) {
                     actualEquals.Should().Be(expected);
-                    actualHash.Should().Be(0);
+                    actualHash.Should().Be(expectedCustomHash);
                 }
             });
         }
@@ -124,7 +125,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             });
         }
 
-        private static void Test(Action action) => Enumerable.Range(0, 1).AsParallel().ForAll(_ => action());
+        private static void Test(Action action) => Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 

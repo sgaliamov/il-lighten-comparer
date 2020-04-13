@@ -53,14 +53,15 @@ namespace ILLightenComparer.Equality.Hashers
               .LoadInteger(0) // start loop
               .Store(typeof(int), out var index)
               .EmitArrayLength(arrayType, array, out var count)
-              .DefineLabel(out var loopStart);
+              .DefineLabel(out var loopStart)
+              .DefineLabel(out var loopEnd);
 
             // todo: 1. sort when IgnoreCollectionOrder
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
                   .IfNotEqual_Un_S(LoadLocal(index), LoadLocal(count), out var next)
-                  .Return(hash)
+                  .GoTo(loopEnd)
                   .MarkLabel(next);
             }
 
@@ -76,7 +77,7 @@ namespace ILLightenComparer.Equality.Hashers
                     .GoTo(loopStart);
             }
 
-            return il;
+            return il.MarkLabel(loopEnd).LoadLocal(hash);
         }
     }
 }
