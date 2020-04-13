@@ -56,6 +56,7 @@ namespace ILLightenComparer.Equality
         {
             var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {
+                return IndirectComparison.Create(CustomEmiters.EmitReturnIfFalsy, DelayedEquals, variable);
             }
 
             var comparison = _comparisonFactories

@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
@@ -55,10 +56,12 @@ namespace ILLightenComparer.Tests.EqualityTests
                 .SetCustomEqualityComparer<SampleStruct<string>>(null))
                 .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
 
-            comparerCustom.Equals(x, y).Should().BeTrue();
-            comparerCustom.GetHashCode(x).Should().Be(expectedCustomHash);
-            comparerDefault.Equals(x, y).Should().Be(expectedEquals);
-            comparerDefault.GetHashCode(x).Should().Be(expectedHash);
+            using (new AssertionScope()) {
+                comparerCustom.Equals(x, y).Should().BeTrue();
+                comparerCustom.GetHashCode(x).Should().Be(expectedCustomHash);
+                comparerDefault.Equals(x, y).Should().Be(expectedEquals);
+                comparerDefault.GetHashCode(x).Should().Be(expectedHash);
+            }
         }
 
         [Fact]
