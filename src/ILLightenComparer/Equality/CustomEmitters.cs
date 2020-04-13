@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Extensions;
 using Illuminator;
 
 namespace ILLightenComparer.Equality
@@ -34,5 +36,25 @@ namespace ILLightenComparer.Equality
             .IfTrue_S(out var next)
             .Return(0)
             .MarkLabel(next);
+
+        public static ILEmitter EmitCheckNullablesForValue(ILEmitter il, LocalVariableInfo nullableX, LocalVariableInfo nullableY, Type nullableType, Label ifBothNull)
+        {
+            var hasValueMethod = nullableType.GetPropertyGetter("HasValue");
+
+            return il.LoadAddress(nullableY)
+                     .Call(hasValueMethod)
+                     .Store(typeof(bool), out var secondHasValue)
+                     .LoadAddress(nullableX)
+                     .Call(hasValueMethod)
+                     .IfTrue_S(out var ifFirstHasValue)
+                     .LoadLocal(secondHasValue)
+                     .IfFalse_S(ifBothNull)
+                     .Return(0)
+                     .MarkLabel(ifFirstHasValue)
+                     .LoadLocal(secondHasValue)
+                     .IfTrue_S(out var next)
+                     .Return(0)
+                     .MarkLabel(next);
+        }
     }
 }

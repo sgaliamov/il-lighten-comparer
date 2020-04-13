@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
-using ILLightenComparer.Comparer;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -10,13 +9,13 @@ namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class NullableComparison : IComparisonEmitter
     {
-        private readonly ComparisonResolver _resolver;
+        private readonly IResolver _resolver;
         private readonly EmitterDelegate _checkForIntermediateResultEmitter;
         private readonly EmitCheckNullablesForValueDelegate _emitCheckNullablesForValue;
         private readonly IVariable _variable;
 
         private NullableComparison(
-            ComparisonResolver resolver,
+            IResolver resolver,
             EmitterDelegate checkForIntermediateResultEmitter,
             EmitCheckNullablesForValueDelegate emitCheckNullablesForValue,
             IVariable variable)
@@ -28,7 +27,7 @@ namespace ILLightenComparer.Shared.Comparisons
         }
 
         public static NullableComparison Create(
-            ComparisonResolver resolver,
+            IResolver resolver,
             EmitterDelegate checkForIntermediateResultEmitter,
             EmitCheckNullablesForValueDelegate emitCheckNullablesForValue,
             IVariable variable)

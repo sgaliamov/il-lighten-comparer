@@ -36,7 +36,7 @@ namespace ILLightenComparer.Equality
             var collectionComparer = new CollectionComparer(this, _configuration, CustomEmitters.EmitCheckIfLoopsAreDone, CustomEmitters.EmitReferenceComparison);
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
-                //(IVariable variable) => NullableComparison.Create(this, variable),
+                (IVariable variable) => NullableComparison.Create(this, CustomEmitters.EmitReturnIfFalsy, CustomEmitters.EmitCheckNullablesForValue, variable),
                 CeqEqualityComparison.Create,
                 (IVariable variable) => StringsComparison.Create(StringEqualsMethod, CustomEmitters.EmitReturnIfFalsy, _configuration, variable),
                 OperatorEqualityComparison.Create,
