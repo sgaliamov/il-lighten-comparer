@@ -43,13 +43,10 @@ namespace ILLightenComparer.Equality.Hashers
 
         public ILEmitter Emit(ILEmitter il)
         {
-            var variableType = _variable.VariableType;
-
+            var config = _configuration.Get(_variable.OwnerType);
             var comparisons = _membersProvider
-                .GetMembers(variableType)
+                .GetMembers(_variable.VariableType)
                 .Select(_resolver.GetHasher);
-
-            var config = _configuration.Get(variableType);
 
             il.LoadLong(config.HashSeed)
               .Store(typeof(long), out var hash);
@@ -60,7 +57,7 @@ namespace ILLightenComparer.Equality.Hashers
                         ShiftLeft(LoadLocal(hash), LoadInteger(5)),
                         LoadLocal(hash));
 
-                    il.Xor(add, Execute(item.Emit) + Cast(typeof(long)))
+                    il.Xor(add, Execute(item.Emit, Cast(typeof(long))))
                       .Store(hash);
                 }
             }
