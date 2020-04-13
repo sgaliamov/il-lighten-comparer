@@ -4,6 +4,8 @@ namespace ILLightenComparer.Tests.EqualityComparers
 {
     internal struct HashCodeCombiner
     {
+        public const long Seed = 0x1505L;
+
         private long _combinedHash64;
 
         public int CombinedHash { get { return (int)_combinedHash64; } }
@@ -12,7 +14,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public static HashCodeCombiner Combine(IEqualityComparer comparer, params object[] objects)
         {
-            var combiner = new HashCodeCombiner(0x1505L);
+            var combiner = new HashCodeCombiner(Seed);
 
             foreach (var o in objects) {
                 var hashCode = comparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0;

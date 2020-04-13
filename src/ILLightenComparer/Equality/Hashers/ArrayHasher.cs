@@ -36,10 +36,10 @@ namespace ILLightenComparer.Equality.Hashers
         {
             var config = _configuration.Get(_variable.OwnerType);
 
-            il.LoadLong(config.HashSeed)
-              .Store(typeof(long), out var hash);
-
-            return Emit(il, hash);
+            return il
+                .LoadLong(config.HashSeed)
+                .Store(typeof(long), out var hash)
+                .Execute(this.Emit(hash));
         }
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
@@ -50,6 +50,10 @@ namespace ILLightenComparer.Equality.Hashers
 
             il.Execute(_variable.Load(Arg.Input)) // load array
               .Store(arrayType, out var array)
+              .IfTrue_S(LoadLocal(array), out var begin)
+              .LoadInteger(0)
+              .GoTo(out var end)
+              .MarkLabel(begin)
               .LoadInteger(0) // start loop
               .Store(typeof(int), out var index)
               .EmitArrayLength(arrayType, array, out var count)
@@ -77,7 +81,7 @@ namespace ILLightenComparer.Equality.Hashers
                     .GoTo(loopStart);
             }
 
-            return il.MarkLabel(loopEnd).LoadLocal(hash);
+            return il.MarkLabel(loopEnd).LoadLocal(hash).MarkLabel(end);
         }
     }
 }
