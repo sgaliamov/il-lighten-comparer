@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System;
 using System.Reflection.Emit;
 using Illuminator;
 
@@ -27,17 +27,17 @@ namespace ILLightenComparer.Comparer
             .Return(1)
             .MarkLabel(compare);
 
-        public static ILEmitter EmitReferenceComparison(this ILEmitter il, LocalVariableInfo x, LocalVariableInfo y, Label ifEqual) => il
-            .LoadLocal(x)
-            .LoadLocal(y)
+        public static ILEmitter EmitReferenceComparison(this ILEmitter il, Func<ILEmitter, ILEmitter> loadX, Func<ILEmitter, ILEmitter> loadY, Label ifEqual) => il
+            .Execute(loadX)
+            .Execute(loadY)
             .IfNotEqual_Un_S(out var checkX)
             .GoTo(ifEqual)
             .MarkLabel(checkX)
-            .LoadLocal(x)
+            .Execute(loadX)
             .IfTrue_S(out var checkY)
             .Return(-1)
             .MarkLabel(checkY)
-            .LoadLocal(y)
+            .Execute(loadY)
             .IfTrue_S(out var next)
             .Return(1)
             .MarkLabel(next);
