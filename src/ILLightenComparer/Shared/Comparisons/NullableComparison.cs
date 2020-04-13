@@ -2,28 +2,29 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Comparer;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 
-namespace ILLightenComparer.Comparer.Comparisons
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class NullableComparison : IComparisonEmitter
     {
-        private readonly ComparisonResolver _comparisons;
+        private readonly ComparisonResolver _resolver;
         private readonly IVariable _variable;
 
-        private NullableComparison(ComparisonResolver comparisons, IVariable variable)
+        private NullableComparison(ComparisonResolver resolver, IVariable variable)
         {
-            _comparisons = comparisons;
+            _resolver = resolver;
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
         }
 
-        public static NullableComparison Create(ComparisonResolver comparisons, IVariable variable)
+        public static NullableComparison Create(ComparisonResolver resolver, IVariable variable)
         {
             if (variable.VariableType.IsNullable()) {
-                return new NullableComparison(comparisons, variable);
+                return new NullableComparison(resolver, variable);
             }
 
             return null;
@@ -39,7 +40,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             var nullableVariable = new NullableVariable(variableType, _variable.OwnerType, nullableX, nullableY);
 
-            return _comparisons
+            return _resolver
                 .GetComparisonEmitter(nullableVariable)
                 .Emit(il, gotoNext);
         }
