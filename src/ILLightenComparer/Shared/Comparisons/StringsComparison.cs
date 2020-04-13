@@ -12,13 +12,13 @@ namespace ILLightenComparer.Shared.Comparisons
     internal sealed class StringsComparison : IComparisonEmitter
     {
         private readonly MethodInfo _compareMethod;
-        private readonly Func<ILEmitter, Label, ILEmitter> _checkForIntermediateResultEmitter;
+        private readonly EmitterDelegate _checkForIntermediateResultEmitter;
         private readonly IVariable _variable;
         private readonly int _stringComparisonType;
 
         private StringsComparison(
             MethodInfo compareMethod,
-            Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter,
+            EmitterDelegate checkForIntermediateResultEmitter,
             IConfigurationProvider configuration,
             IVariable variable)
         {
@@ -30,7 +30,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public static StringsComparison Create(
             MethodInfo compareMethod,
-            Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter,
+            EmitterDelegate checkForIntermediateResultEmitter,
             IConfigurationProvider configuration,
             IVariable variable)
         {

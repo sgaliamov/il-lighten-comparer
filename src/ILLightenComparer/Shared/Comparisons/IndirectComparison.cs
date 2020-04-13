@@ -16,9 +16,9 @@ namespace ILLightenComparer.Shared.Comparisons
     {
         private readonly MethodInfo _method;
         private readonly IVariable _variable;
-        private readonly Func<ILEmitter, Label, ILEmitter> _checkForIntermediateResultEmitter;
+        private readonly EmitterDelegate _checkForIntermediateResultEmitter;
 
-        private IndirectComparison(Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter, MethodInfo method, IVariable variable)
+        private IndirectComparison(EmitterDelegate checkForIntermediateResultEmitter, MethodInfo method, IVariable variable)
         {
             _checkForIntermediateResultEmitter = checkForIntermediateResultEmitter;
             _variable = variable;
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Shared.Comparisons
         }
 
         public static IndirectComparison Create(
-            Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter,
+            EmitterDelegate checkForIntermediateResultEmitter,
             Func<Type, MethodInfo> staticMethodFactory,
             MethodInfo genericDelayedMethod,
             IVariable variable)
@@ -45,7 +45,7 @@ namespace ILLightenComparer.Shared.Comparisons
         }
 
         public static IndirectComparison Create(
-            Func<ILEmitter, Label, ILEmitter> checkForIntermediateResultEmitter,
+            EmitterDelegate checkForIntermediateResultEmitter,
             MethodInfo genericDelayedMethod,
             IVariable variable)
         {
