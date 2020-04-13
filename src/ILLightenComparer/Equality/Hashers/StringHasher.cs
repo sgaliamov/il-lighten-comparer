@@ -34,7 +34,7 @@ namespace ILLightenComparer.Equality.Hashers
         }
 
         public ILEmitter Emit(ILEmitter il) => _variable
-            .Load(il, Arg.X)
+            .Load(il, Arg.Input)
             .Store(typeof(string), out var local)
             .IfFalse_S(LoadLocal(local), out var zero)
             .Call(GetHashCodeMethod, LoadLocal(local), LoadInteger(_stringComparison))

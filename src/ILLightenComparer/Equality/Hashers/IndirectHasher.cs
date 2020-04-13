@@ -46,7 +46,7 @@ namespace ILLightenComparer.Equality.Hashers
         public ILEmitter Emit(ILEmitter il) => il.Call(
             _hashMethod,
             LoadArgument(Arg.Context),
-            _variable.Load(Arg.X),
-            LoadArgument(Arg.Y));
+            _variable.Load(Arg.Input),
+            LoadArgument(Arg.CycleSet));
     }
 }

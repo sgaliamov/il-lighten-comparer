@@ -8,5 +8,7 @@
         public const int Y = 2;
         public const int SetX = 3;
         public const int SetY = 4;
+        public const int Input = 1;
+        public const int CycleSet = 2;
     }
 }

@@ -27,6 +27,6 @@ namespace ILLightenComparer.Equality.Hashers
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il) => il.Call(_getHashMethod, _variable.LoadAddress(Arg.X));
+        public ILEmitter Emit(ILEmitter il) => il.Call(_getHashMethod, _variable.LoadAddress(Arg.Input));
     }
 }
