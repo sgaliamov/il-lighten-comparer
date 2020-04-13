@@ -22,7 +22,7 @@ namespace ILLightenComparer.Comparer.Comparisons
         {
             _configuration = configuration;
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
-            _arrayComparer = new ArrayComparer(resolver, CustomEmitters.EmitCheckIfLoopsAreDone);
+            _arrayComparer = new ArrayComparer(resolver, CustomEmitters.EmitCheckIfArrayLoopsAreDone);
             _collectionComparer = new CollectionComparer(configuration, CustomEmitters.EmitReferenceComparison);
         }
 

@@ -24,15 +24,18 @@ namespace ILLightenComparer.Comparer.Comparisons
         private readonly IVariable _variable;
         private readonly ArrayComparer _arrayComparer;
         private readonly CollectionComparer _collectionComparer;
-        private readonly ComparisonResolver _comparisons;
+        private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
+        private readonly IResolver _resolver;
         private readonly IConfigurationProvider _configuration;
 
         private EnumerablesComparison(
-            ComparisonResolver comparisons,
+            IResolver resolver,
+            EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
         {
-            _comparisons = comparisons;
+            _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
+            _resolver = resolver;
             _configuration = configuration;
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
 
@@ -50,18 +53,19 @@ namespace ILLightenComparer.Comparer.Comparisons
                 .MakeGenericType(_elementType)
                 .GetMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
 
-            _arrayComparer = new ArrayComparer(comparisons, CustomEmitters.EmitCheckIfLoopsAreDone);
+            _arrayComparer = new ArrayComparer(resolver, CustomEmitters.EmitCheckIfArrayLoopsAreDone);
             _collectionComparer = new CollectionComparer(configuration, CustomEmitters.EmitReferenceComparison);
         }
 
         public static EnumerablesComparison Create(
-            ComparisonResolver comparisons,
+            IResolver comparisons,
+            EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, configuration, variable);
+                return new EnumerablesComparison(comparisons, emitCheckIfLoopsAreDone, configuration, variable);
             }
 
             return null;
@@ -132,47 +136,23 @@ namespace ILLightenComparer.Comparer.Comparisons
             return (xEnumerator, yEnumerator);
         }
 
-        private void Loop(
-            LocalBuilder xEnumerator,
-            LocalBuilder yEnumerator,
-            ILEmitter il,
-            Label gotoNext)
+        private void Loop(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il, Label gotoNext)
         {
             il.DefineLabel(out var continueLoop).MarkLabel(continueLoop);
 
             using (il.LocalsScope()) {
                 var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
 
-                EmitCheckIfLoopsAreDone(xDone, yDone, il, gotoNext);
+                _emitCheckIfLoopsAreDone(il, xDone, yDone, gotoNext);
             }
 
             using (il.LocalsScope()) {
                 var itemVariable = new EnumerableItemVariable(_variable.OwnerType, xEnumerator, yEnumerator);
 
-                var itemComparison = _comparisons.GetComparisonEmitter(itemVariable);
+                var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
                 itemComparison.Emit(il, continueLoop);
                 itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
             }
-        }
-
-        private static void EmitCheckIfLoopsAreDone(
-            LocalBuilder xDone,
-            LocalBuilder yDone,
-            ILEmitter il,
-            Label gotoNext)
-        {
-            il.LoadLocal(xDone)
-              .IfFalse_S(out var checkY)
-              .LoadLocal(yDone)
-              .IfFalse_S(out var returnM1)
-              .GoTo(gotoNext)
-              .MarkLabel(returnM1)
-              .Return(-1)
-              .MarkLabel(checkY)
-              .LoadLocal(yDone)
-              .IfFalse_S(out var compare)
-              .Return(1)
-              .MarkLabel(compare);
         }
 
         private static (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(

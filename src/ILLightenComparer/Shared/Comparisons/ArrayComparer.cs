@@ -12,9 +12,9 @@ namespace ILLightenComparer.Shared.Comparisons
     {
         private const string LengthMethodName = nameof(Array.Length);
         private readonly IResolver _resolver;
-        private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
+        private readonly EmitCheckIfArrayLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
 
-        public ArrayComparer(IResolver resolver, EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone)
+        public ArrayComparer(IResolver resolver, EmitCheckIfArrayLoopsAreDoneDelegate emitCheckIfLoopsAreDone)
         {
             _resolver = resolver;
             _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;

@@ -14,7 +14,7 @@ namespace ILLightenComparer.Comparer
             .LoadLocal(result)
             .Return();
 
-        public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder index, LocalBuilder countX, LocalBuilder countY, Label afterLoop) => il
+        public static ILEmitter EmitCheckIfArrayLoopsAreDone(this ILEmitter il, LocalBuilder index, LocalBuilder countX, LocalBuilder countY, Label afterLoop) => il
             .AreSame(LoadLocal(index), LoadLocal(countX), out var isDoneX)
             .AreSame(LoadLocal(index), LoadLocal(countY), out var isDoneY)
             .LoadLocal(isDoneX)
@@ -29,6 +29,20 @@ namespace ILLightenComparer.Comparer
             .IfFalse_S(out var loadValues)
             .Return(1)
             .MarkLabel(loadValues);
+
+        public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder xDone, LocalBuilder yDone, Label gotoNext) => il
+            .LoadLocal(xDone)
+            .IfFalse_S(out var checkY)
+            .LoadLocal(yDone)
+            .IfFalse_S(out var returnM1)
+            .GoTo(gotoNext)
+            .MarkLabel(returnM1)
+            .Return(-1)
+            .MarkLabel(checkY)
+            .LoadLocal(yDone)
+            .IfFalse_S(out var compare)
+            .Return(1)
+            .MarkLabel(compare);
 
         public static ILEmitter EmitReferenceComparison(this ILEmitter il, LocalVariableInfo x, LocalVariableInfo y, Label ifEqual) => il
             .LoadLocal(x)
