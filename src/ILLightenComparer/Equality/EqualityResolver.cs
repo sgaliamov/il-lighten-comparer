@@ -45,9 +45,9 @@ namespace ILLightenComparer.Equality
                     variableType => context.GetStaticEqualsMethodInfo(variableType),
                     DelayedEquals,
                     variable),
-                (IVariable variable) => MembersComparison.Create(this, 1, membersProvider, variable)
-                //(IVariable variable) => ArraysComparison.Create(this, _configuration, variable),
-                //(IVariable variable) => EnumerablesComparison.Create(this, _configuration, variable)
+                (IVariable variable) => MembersComparison.Create(this, 1, membersProvider, variable),
+                (IVariable variable) => ArraysComparison.Create(1, collectionComparer, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, 1, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
             };
         }
 
