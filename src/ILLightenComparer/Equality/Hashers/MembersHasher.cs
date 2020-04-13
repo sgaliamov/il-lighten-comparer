@@ -1,10 +1,11 @@
 ﻿using System.Linq;
+using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -42,29 +43,27 @@ namespace ILLightenComparer.Equality.Hashers
 
         public ILEmitter Emit(ILEmitter il)
         {
-            var variableType = _variable.VariableType;
-
-            var comparisons = _membersProvider
-                .GetMembers(variableType)
-                .Select(_resolver.GetHasher);
-
-            var config = _configuration.Get(variableType);
+            var config = _configuration.Get(_variable.OwnerType);
 
             il.LoadLong(config.HashSeed)
               .Store(typeof(long), out var hash);
 
-            foreach (var item in comparisons) {
-                using (il.LocalsScope()) {
-                    var add = Add(
-                        ShiftLeft(LoadLocal(hash), LoadInteger(5)),
-                        LoadLocal(hash));
+            return Emit(il, hash);
+        }
 
-                    il.Xor(add, Execute(item.Emit) + Cast(typeof(long)))
-                      .Store(hash);
+        public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
+        {
+            var hashers = _membersProvider
+               .GetMembers(_variable.VariableType)
+               .Select(_resolver.GetHasherEmitter);
+
+            foreach (var hasher in hashers) {
+                using (il.LocalsScope()) {
+                    hasher.EmitHashing(il, hash);
                 }
             }
 
-            return il.LoadLocal(hash);
+            return il.LoadLocal(hash).Cast(typeof(int)); // todo: 1. test overflow
         }
     }
 }

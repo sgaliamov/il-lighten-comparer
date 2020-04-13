@@ -52,7 +52,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                         return compare;
                     }
 
-                    compare = string.Compare(valueX, valueY, StringComparison.Ordinal);
+                    compare = string.CompareOrdinal(valueX, valueY);
                     if (compare != 0) {
                         return compare;
                     }
@@ -97,7 +97,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                     return -1;
                 }
 
-                var genreComparison = string.Compare(x.Genre, y.Genre, StringComparison.Ordinal);
+                var genreComparison = string.CompareOrdinal(x.Genre, y.Genre);
                 if (genreComparison != 0) {
                     return genreComparison;
                 }
@@ -117,7 +117,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
                     return releaseDateComparison;
                 }
 
-                return string.Compare(x.Title, y.Title, StringComparison.Ordinal);
+                return string.CompareOrdinal(x.Title, y.Title);
             }
         }
     }

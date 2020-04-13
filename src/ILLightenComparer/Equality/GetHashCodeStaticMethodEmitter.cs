@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -17,13 +19,22 @@ namespace ILLightenComparer.Equality
         public void Build(Type objectType, bool detecCycles, MethodBuilder staticMethodBuilder)
         {
             using var il = staticMethodBuilder.CreateILEmitter();
-            // todo: 1. null check
+
+            var needNullCheck =
+                 !objectType.IsValueType
+                 && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do null check anyway
+
+            if (needNullCheck) {
+                // todo: 1. check for null
+                //il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
+            }
+
             if (detecCycles) {
                 EmitCycleDetection(il);
             }
 
             _resolver
-                .GetHasher(new ArgumentVariable(objectType))
+                .GetHasherEmitter(new ArgumentVariable(objectType))
                 .Emit(il)
                 .Return();
         }
@@ -34,7 +45,7 @@ namespace ILLightenComparer.Equality
             .IfTrue_S(
                 Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.Y), LoadArgument(Arg.X), LoadInteger(0)),
                 out var next)
-            .Return(0)
+            .Return(0) // todo: 3. return collection size
             .MarkLabel(next);
     }
 }

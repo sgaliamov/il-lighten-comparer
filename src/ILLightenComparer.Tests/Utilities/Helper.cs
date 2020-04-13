@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
-using ILLightenComparer.Tests.ComparerTests.Comparers;
+using ILLightenComparer.Tests.Comparers;
+using ILLightenComparer.Tests.EqualityComparers;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -15,18 +16,18 @@ namespace ILLightenComparer.Tests.Utilities
     {
         public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
         {
-            using (var enumeratorOne = one.GetEnumerator())
-            using (var enumeratorOther = other.GetEnumerator()) {
-                while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext()) {
-                    var oneCurrent = enumeratorOne.Current;
-                    var otherCurrent = enumeratorOther.Current;
+            using var enumeratorOne = one.GetEnumerator();
+            using var enumeratorOther = other.GetEnumerator();
 
-                    oneCurrent.ShouldBeEquals(otherCurrent);
-                }
+            while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext()) {
+                var oneCurrent = enumeratorOne.Current;
+                var otherCurrent = enumeratorOther.Current;
 
-                enumeratorOne.MoveNext().Should().BeFalse();
-                enumeratorOther.MoveNext().Should().BeFalse();
+                oneCurrent.ShouldBeEquals(otherCurrent);
             }
+
+            enumeratorOne.MoveNext().Should().BeFalse();
+            enumeratorOther.MoveNext().Should().BeFalse();
         }
 
         public static void ShouldBeEquals<T>(this T x, T y)
@@ -57,7 +58,7 @@ namespace ILLightenComparer.Tests.Utilities
         {
             var threads = Enumerable
                           .Range(0, count)
-                          .Select(x => new Thread(action))
+                          .Select(_ => new Thread(action))
                           .ToArray();
 
             foreach (var thread in threads) {
@@ -74,6 +75,24 @@ namespace ILLightenComparer.Tests.Utilities
             var nullableComparerType = typeof(NullableComparer<>).MakeGenericType(type);
 
             return (IComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
+        }
+
+        public static IEqualityComparer CreateNullableEqualityComparer(Type type, IEqualityComparer valueComparer)
+        {
+            var nullableComparerType = typeof(NullableEqualityComparer<>).MakeGenericType(type);
+
+            return (IEqualityComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
+        }
+
+        public static unsafe long GetAddress<T>(this T value)
+        {
+            if (value is null) {
+                return 0;
+            }
+
+            var reference = __makeref(value);
+
+            return (long)*(IntPtr*)(&reference);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Hashers;
 using ILLightenComparer.Shared;
@@ -25,11 +26,12 @@ namespace ILLightenComparer.Equality
                 (IVariable variable) => StringHasher.Create(_configuration, variable),
                 PrimitiveHasher.Create,
                 (IVariable variable) => IndirectHasher.Create(context, variable),
-                (IVariable variable) => MembersHasher.Create(this, membersProvider, _configuration, variable)
+                (IVariable variable) => MembersHasher.Create(this, membersProvider, _configuration, variable),
+                (IVariable variable) => ArrayHasher.Create(this, _configuration, variable)
             };
         }
 
-        public IHasherEmitter GetHasher(IVariable variable)
+        public IHasherEmitter GetHasherEmitter(IVariable variable)
         {
             var hasCustomComparer = _configuration.HasCustomEqualityComparer(variable.VariableType);
             if (hasCustomComparer) {

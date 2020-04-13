@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -28,8 +28,6 @@ namespace ILLightenComparer.Comparer.Comparisons
 
             return null;
         }
-
-        public bool PutsResultInStack { get; } = true;
 
         public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {
@@ -64,5 +62,7 @@ namespace ILLightenComparer.Comparer.Comparisons
                 .MarkLabel(exit)
                 .Return(0);
         }
+
+        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);
     }
 }

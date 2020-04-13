@@ -2,7 +2,8 @@
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
-using ILLightenComparer.Tests.EqualityTests.EqualityComparers;
+using FluentAssertions.Execution;
+using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
@@ -31,8 +32,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                     .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
                     .GetEqualityComparer<Tuple<int, string>>();
 
-                comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "Comparison is based on int field.");
-                comparerForStringOnly.Equals(x, y).Should().Be(expectedEqualsString, "Comparison is based on string field.");
+                comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "comparison is based on int field");
+                comparerForStringOnly.Equals(x, y).Should().Be(expectedEqualsString, "comparison is based on string field");
                 comparerForIntOnly.GetHashCode(x).Should().Be(expectedHashInt);
                 comparerForStringOnly.GetHashCode(x).Should().Be(expectedHashString);
             });
@@ -55,10 +56,12 @@ namespace ILLightenComparer.Tests.EqualityTests
                 .SetCustomEqualityComparer<SampleStruct<string>>(null))
                 .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
 
-            comparerCustom.Equals(x, y).Should().BeTrue();
-            comparerCustom.GetHashCode(x).Should().Be(expectedCustomHash);
-            comparerDefault.Equals(x, y).Should().Be(expectedEquals);
-            comparerDefault.GetHashCode(x).Should().Be(expectedHash);
+            using (new AssertionScope()) {
+                comparerCustom.Equals(x, y).Should().BeTrue();
+                comparerCustom.GetHashCode(x).Should().Be(expectedCustomHash);
+                comparerDefault.Equals(x, y).Should().Be(expectedEquals);
+                comparerDefault.GetHashCode(x).Should().Be(expectedHash);
+            }
         }
 
         [Fact]
@@ -85,21 +88,27 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var x = _fixture.Create<SampleObject<int[]>>();
                 var y = _fixture.Create<SampleObject<int[]>>();
 
-                var referenceComparer = new SampleObjectEqualityComparer<int[]>(
-                    new CustomizableEqualityComparer<int[]>(
-                        (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
+                var referenceComparer = new SampleObjectEqualityComparer<int[]>(new CustomizableEqualityComparer<int[]>(
+                    (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
                 var expected = referenceComparer.Equals(x, y);
 
+                var original = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
                 var comparer = new ComparerBuilder(c => c
                     .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())
                     .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
                     .GetEqualityComparer<SampleObject<int[]>>();
 
                 var actualEquals = comparer.Equals(x, y);
-                var actualHash = comparer.GetHashCode(x);
+                var hashX = comparer.GetHashCode(x);
+                var hashY = comparer.GetHashCode(y);
 
-                actualEquals.Should().Be(expected);
-                actualHash.Should().Be(0);
+                using (new AssertionScope()) {
+                    actualEquals.Should().Be(expected);
+                    hashX.Should().NotBe(original.GetHashCode(x));
+                    hashY.Should().NotBe(original.GetHashCode(y));
+                    hashX.Should().NotBe(0);
+                    hashY.Should().NotBe(0);
+                }
             });
         }
 
@@ -119,7 +128,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             });
         }
 
-        private static void Test(Action action) => Enumerable.Range(0, 1).AsParallel().ForAll(_ => action());
+        private static void Test(Action action) => Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Reflection;
+using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
-using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functional;
@@ -34,7 +35,7 @@ namespace ILLightenComparer.Equality.Hashers
         }
 
         public ILEmitter Emit(ILEmitter il) => _variable
-            .Load(il, Arg.X)
+            .Load(il, Arg.Input)
             .Store(typeof(string), out var local)
             .IfFalse_S(LoadLocal(local), out var zero)
             .Call(GetHashCodeMethod, LoadLocal(local), LoadInteger(_stringComparison))
@@ -42,5 +43,7 @@ namespace ILLightenComparer.Equality.Hashers
             .MarkLabel(zero)
             .LoadInteger(0)
             .MarkLabel(next);
+
+        public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }
 }
