@@ -27,11 +27,11 @@ namespace ILLightenComparer.Comparer
             .Return(1)
             .MarkLabel(compare);
 
-        public static ILEmitter EmitReferenceComparison(this ILEmitter il, Func<ILEmitter, ILEmitter> loadX, Func<ILEmitter, ILEmitter> loadY, Label ifEqual) => il
+        public static ILEmitter EmitReferenceComparison(this ILEmitter il, Func<ILEmitter, ILEmitter> loadX, Func<ILEmitter, ILEmitter> loadY, Func<ILEmitter, ILEmitter> ifEqual) => il
             .Execute(loadX)
             .Execute(loadY)
             .IfNotEqual_Un_S(out var checkX)
-            .GoTo(ifEqual)
+            .Execute(ifEqual)
             .MarkLabel(checkX)
             .Execute(loadX)
             .IfTrue_S(out var checkY)

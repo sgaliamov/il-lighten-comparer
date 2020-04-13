@@ -27,7 +27,7 @@ namespace ILLightenComparer.Comparer
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
-                EmitArgumentsReferenceComparison(il);
+                il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
             }
 
             if (detecCycles) {
@@ -49,21 +49,6 @@ namespace ILLightenComparer.Comparer
             .Return(Sub(
                 Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetX)),
                 Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetY))))
-            .MarkLabel(next);
-
-        private static ILEmitter EmitArgumentsReferenceComparison(ILEmitter il) => il
-            .LoadArgument(Arg.X)
-            .LoadArgument(Arg.Y)
-            .IfNotEqual_Un_S(out var checkY)
-            .Return(0)
-            .MarkLabel(checkY)
-            .LoadArgument(Arg.Y)
-            .IfTrue_S(out var checkX)
-            .Return(1)
-            .MarkLabel(checkX)
-            .LoadArgument(Arg.X)
-            .IfTrue_S(out var next)
-            .Return(-1)
             .MarkLabel(next);
     }
 }

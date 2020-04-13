@@ -41,7 +41,7 @@ namespace ILLightenComparer.Shared.Comparisons
             variable.Load(il, Arg.X).Store(variable.VariableType, out var collectionX);
             variable.Load(il, Arg.Y).Store(variable.VariableType, out var collectionY);
 
-            _emitReferenceComparison(il, LoadLocal(collectionX), LoadLocal(collectionY), gotoNext);
+            _emitReferenceComparison(il, LoadLocal(collectionX), LoadLocal(collectionY), GoTo(gotoNext));
 
             return (collectionX, collectionY);
         }
