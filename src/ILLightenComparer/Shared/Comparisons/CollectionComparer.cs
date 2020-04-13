@@ -15,7 +15,6 @@ namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class CollectionComparer
     {
-        private const string LengthMethodName = nameof(Array.Length);
         private static readonly MethodInfo ToArrayMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray));
         private static readonly MethodInfo GetComparerMethod = typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
 
@@ -105,12 +104,8 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(Type arrayType, LocalBuilder arrayX, LocalBuilder arrayY, ILEmitter il)
         {
-            il.LoadLocal(arrayX)
-              .Call(arrayType.GetPropertyGetter(LengthMethodName))
-              .Store(typeof(int), out var countX)
-              .LoadLocal(arrayY)
-              .Call(arrayType.GetPropertyGetter(LengthMethodName))
-              .Store(typeof(int), out var countY);
+            il.EmitArrayLength(arrayType, arrayX, out var countX)
+              .EmitArrayLength(arrayType, arrayY, out var countY);
 
             return (countX, countY);
         }
