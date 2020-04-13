@@ -93,17 +93,18 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var expected = referenceComparer.Equals(x, y);
                 var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
+                var original = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
                 var comparer = new ComparerBuilder(c => c
                     .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())
                     .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
                     .GetEqualityComparer<SampleObject<int[]>>();
 
                 var actualEquals = comparer.Equals(x, y);
-                var actualHash = comparer.GetHashCode(x);
 
                 using (new AssertionScope()) {
-                    actualEquals.Should().Be(expected);
-                    actualHash.Should().Be(expectedCustomHash);
+                    actualEquals.Should().BeTrue();
+                    comparer.GetHashCode(x).Should().NotBe(original.GetHashCode(x));
+                    comparer.GetHashCode(y).Should().NotBe(original.GetHashCode(y));
                 }
             });
         }
