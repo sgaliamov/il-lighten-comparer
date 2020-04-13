@@ -26,7 +26,8 @@ namespace ILLightenComparer.Equality
                 (IVariable variable) => StringHasher.Create(_configuration, variable),
                 PrimitiveHasher.Create,
                 (IVariable variable) => IndirectHasher.Create(context, variable),
-                (IVariable variable) => MembersHasher.Create(this, membersProvider, _configuration, variable)
+                (IVariable variable) => MembersHasher.Create(this, membersProvider, _configuration, variable),
+                (IVariable variable) => ArrayHasher.Create(this, _configuration, variable)
             };
         }
 

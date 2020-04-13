@@ -88,7 +88,11 @@ namespace ILLightenComparer.Shared.Comparisons
             }
 
             using (il.LocalsScope()) {
-                var itemVariable = new ArrayItemVariable(arrayType, ownerType, xArray, yArray, index);
+                var arrays = new Dictionary<ushort, LocalBuilder>(2) {
+                    [Arg.X] = xArray,
+                    [Arg.Y] = yArray
+                };
+                var itemVariable = new ArrayItemVariable(arrayType, ownerType, arrays, index);
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
 
                 return il

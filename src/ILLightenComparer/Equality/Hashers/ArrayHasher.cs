@@ -1,31 +1,32 @@
-﻿using ILLightenComparer.Abstractions;
+﻿using System.Collections.Generic;
+using System.Reflection.Emit;
+using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
-using ILLightenComparer.Equality;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functional;
 
-namespace ILLightenComparer.Shared.Comparisons
+namespace ILLightenComparer.Equality.Hashers
 {
-    internal sealed class ArraysHasher : IHasherEmitter
+    internal sealed class ArrayHasher : IHasherEmitter
     {
         private readonly IConfigurationProvider _configuration;
         private readonly IVariable _variable;
         private readonly HasherResolver _resolver;
 
-        private ArraysHasher(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
+        private ArrayHasher(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
         {
             _resolver = resolver;
             _configuration = configuration;
             _variable = variable;
         }
 
-        public static ArraysHasher Create(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
+        public static ArrayHasher Create(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.IsArray && variableType.GetArrayRank() == 1) {
-                return new ArraysHasher(resolver, configuration, variable);
+                return new ArrayHasher(resolver, configuration, variable);
             }
 
             return null;
@@ -54,7 +55,8 @@ namespace ILLightenComparer.Shared.Comparisons
             }
 
             using (il.LocalsScope()) {
-                var itemVariable = new ArrayItemVariable(arrayType, ownerType, array, array, index); // todo: 2. refactor ArrayItemVariable
+                var arrays = new Dictionary<ushort, LocalBuilder>(2) { [Arg.X] = array };
+                var itemVariable = new ArrayItemVariable(arrayType, ownerType, arrays, index);
                 var itemHasher = _resolver.GetHasherEmitter(itemVariable);
 
                 il.EmitHashing(hash, itemHasher.Emit).GoTo(loopStart);
