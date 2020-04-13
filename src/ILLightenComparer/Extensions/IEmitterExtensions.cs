@@ -4,7 +4,7 @@ using Illuminator;
 
 namespace ILLightenComparer.Extensions
 {
-    internal static class LEmitterExtensions
+    internal static class IEmitterExtensions
     {
         private const string LengthMethodName = nameof(Array.Length);
 

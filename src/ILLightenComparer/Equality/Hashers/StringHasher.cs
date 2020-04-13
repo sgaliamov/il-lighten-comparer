@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Variables;
@@ -42,5 +43,7 @@ namespace ILLightenComparer.Equality.Hashers
             .MarkLabel(zero)
             .LoadInteger(0)
             .MarkLabel(next);
+
+        public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }
 }

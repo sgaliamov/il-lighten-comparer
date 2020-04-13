@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -28,5 +29,7 @@ namespace ILLightenComparer.Equality.Hashers
         }
 
         public ILEmitter Emit(ILEmitter il) => il.Call(_getHashMethod, _variable.LoadAddress(Arg.Input));
+
+        public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }
 }

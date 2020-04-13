@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
@@ -43,16 +44,22 @@ namespace ILLightenComparer.Equality.Hashers
         public ILEmitter Emit(ILEmitter il)
         {
             var config = _configuration.Get(_variable.OwnerType);
-            var hashers = _membersProvider
-                .GetMembers(_variable.VariableType)
-                .Select(_resolver.GetHasherEmitter);
 
             il.LoadLong(config.HashSeed)
               .Store(typeof(long), out var hash);
 
+            return Emit(il, hash);
+        }
+
+        public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
+        {
+            var hashers = _membersProvider
+               .GetMembers(_variable.VariableType)
+               .Select(_resolver.GetHasherEmitter);
+
             foreach (var hasher in hashers) {
                 using (il.LocalsScope()) {
-                    il.EmitHashing(hash, hasher.Emit);
+                    hasher.EmitHashing(il, hash);
                 }
             }
 

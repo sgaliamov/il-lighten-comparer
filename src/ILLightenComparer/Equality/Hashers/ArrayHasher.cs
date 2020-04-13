@@ -34,13 +34,21 @@ namespace ILLightenComparer.Equality.Hashers
 
         public ILEmitter Emit(ILEmitter il)
         {
+            var config = _configuration.Get(_variable.OwnerType);
+
+            il.LoadLong(config.HashSeed)
+              .Store(typeof(long), out var hash);
+
+            return Emit(il, hash);
+        }
+
+        public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
+        {
             var arrayType = _variable.VariableType;
             var ownerType = _variable.OwnerType;
             var config = _configuration.Get(ownerType);
 
-            il.LoadLong(config.HashSeed) // start hash
-              .Store(typeof(long), out var hash)
-              .Execute(_variable.Load(Arg.Input)) // load array
+            il.Execute(_variable.Load(Arg.Input)) // load array
               .Store(arrayType, out var array)
               .LoadInteger(0) // start loop
               .Store(typeof(int), out var index)
@@ -59,12 +67,13 @@ namespace ILLightenComparer.Equality.Hashers
             using (il.LocalsScope()) {
                 var arrays = new Dictionary<ushort, LocalBuilder>(2) { [Arg.X] = array };
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, arrays, index);
-                var itemHasher = _resolver.GetHasherEmitter(itemVariable);
 
-                il.EmitHashing(hash, itemHasher.Emit)
-                  .Add(LoadLocal(index), LoadInteger(1))
-                  .Store(index)
-                  .GoTo(loopStart);
+                _resolver
+                    .GetHasherEmitter(itemVariable)
+                    .EmitHashing(il, hash)
+                    .Add(LoadLocal(index), LoadInteger(1))
+                    .Store(index)
+                    .GoTo(loopStart);
             }
 
             return il;

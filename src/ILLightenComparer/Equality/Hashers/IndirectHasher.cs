@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
@@ -8,7 +9,7 @@ using static Illuminator.Functional;
 namespace ILLightenComparer.Equality.Hashers
 {
     /// <summary>
-    ///     Delegates hashing to static method or delayed hasher in context.
+    /// Delegates hashing to static method or delayed hasher in context.
     /// </summary>
     internal sealed class IndirectHasher : IHasherEmitter
     {
@@ -24,8 +25,7 @@ namespace ILLightenComparer.Equality.Hashers
             _variable = variable;
         }
 
-        public static IndirectHasher Create(IVariable variable) =>
-            new IndirectHasher(DelayedHash.MakeGenericMethod(variable.VariableType), variable);
+        public static IndirectHasher Create(IVariable variable) => new IndirectHasher(DelayedHash.MakeGenericMethod(variable.VariableType), variable);
 
         public static IndirectHasher Create(EqualityContext context, IVariable variable)
         {
@@ -48,5 +48,7 @@ namespace ILLightenComparer.Equality.Hashers
             LoadArgument(Arg.Context),
             _variable.Load(Arg.Input),
             LoadArgument(Arg.CycleSet));
+
+        public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }
 }
