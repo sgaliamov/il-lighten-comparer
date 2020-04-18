@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ILLightenComparer.Tests.EqualityTests
 {
-    public sealed class SampleTypesTests
+    public sealed class BasicTests
     {
         [Fact]
         public void Empty_object_should_be_equal()
@@ -108,6 +108,6 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }
