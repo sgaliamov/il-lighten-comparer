@@ -108,6 +108,28 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
+        [Fact]
+        public void Equality_on_Nullable_structs_works()
+        {
+            var x = _fixture.Create<SampleStruct<EnumBig>?>();
+            var y = _fixture.Create<SampleStruct<EnumBig>?>();
+
+            var referenceComparer = new NullableEqualityComparer<SampleStruct<EnumBig>>();
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleStruct<EnumBig>?>();
+
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+            var equals = comparer.Equals(x);
+
+            equals.Should().Be(expectedEquals);
+            hashX.Should().Be(expectedHashX);
+            hashY.Should().Be(expectedHashY);
+        }
+
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }
