@@ -7,7 +7,14 @@ namespace ILLightenComparer.Abstractions
 {
     internal interface IHasherEmitter
     {
+        /// <summary>
+        /// Hashing logic builder.
+        /// </summary>
         ILEmitter Emit(ILEmitter il);
+
+        /// <summary>
+        /// Hashing logic builder with variable to accumulate hash.
+        /// </summary>
         ILEmitter Emit(ILEmitter il, LocalBuilder hash);
     }
 

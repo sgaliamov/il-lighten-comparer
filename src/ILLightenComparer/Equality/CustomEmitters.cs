@@ -37,7 +37,7 @@ namespace ILLightenComparer.Equality
             .Return(0)
             .MarkLabel(next);
 
-        public static ILEmitter EmitCheckNullablesForValue(ILEmitter il, LocalVariableInfo nullableX, LocalVariableInfo nullableY, Type nullableType, Label ifBothNull)
+        public static ILEmitter EmitCheckNullablesForValue(this ILEmitter il, LocalVariableInfo nullableX, LocalVariableInfo nullableY, Type nullableType, Label ifBothNull)
         {
             var hasValueMethod = nullableType.GetPropertyGetter("HasValue");
 
