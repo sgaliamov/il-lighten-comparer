@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Variables;
@@ -47,10 +48,13 @@ namespace ILLightenComparer.Shared.Comparisons
             _variable.Load(il, Arg.Y).Store(variableType, out var nullableY);
             _emitCheckNullablesForValue(il, nullableX, nullableY, variableType, gotoNext);
 
-            var nullableVariable = new NullableVariable(variableType, _variable.OwnerType, nullableX, nullableY);
+            var nullableVariables = new NullableVariables(variableType, _variable.OwnerType, new Dictionary<ushort, LocalBuilder>(2) {
+                [Arg.X] = nullableX,
+                [Arg.Y] = nullableY
+            });
 
             return _resolver
-                .GetComparisonEmitter(nullableVariable)
+                .GetComparisonEmitter(nullableVariables)
                 .Emit(il, gotoNext);
         }
 
