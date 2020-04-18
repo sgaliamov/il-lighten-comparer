@@ -37,7 +37,7 @@ dotnet_csproj:
 
 build_script:
 - pwsh: |
-    dotnet build .\src -c $env:CONFIGURATION -v m
+    dotnet build . -c $env:CONFIGURATION -v m
     dotnet pack .\src\ILLightenComparer\ --include-source --include-symbols `
         --no-build --no-dependencies -c $env:CONFIGURATION -v m -o publish
 
