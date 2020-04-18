@@ -15,7 +15,7 @@ namespace ILLightenComparer.Equality.Hashers
         private PrimitiveHasher(IVariable variable)
         {
             _variable = variable;
-            _getHashMethod = _variable.VariableType.GetMethod(nameof(GetHashCode));
+            _getHashMethod = _variable.VariableType.GetUnderlyingType().GetMethod(nameof(GetHashCode));
         }
 
         public static PrimitiveHasher Create(IVariable variable)
