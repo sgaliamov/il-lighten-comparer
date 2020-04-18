@@ -130,6 +130,28 @@ namespace ILLightenComparer.Tests.EqualityTests
             hashY.Should().Be(expectedHashY);
         }
 
+        [Fact]
+        public void Equality_on_Nullable_arguments_works()
+        {
+            var x = _fixture.Create<EnumBig?>();
+            var y = _fixture.Create<EnumBig?>();
+
+            var referenceComparer = new NullableEqualityComparer<EnumBig>();
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumBig?>();
+
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+            var equals = comparer.Equals(x);
+
+            equals.Should().Be(expectedEquals);
+            hashX.Should().Be(expectedHashX);
+            hashY.Should().Be(expectedHashY);
+        }
+
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }
