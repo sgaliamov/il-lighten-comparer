@@ -25,8 +25,10 @@ namespace ILLightenComparer.Equality
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do null check anyway
 
             if (needNullCheck) {
-                // todo: 1. check for null
-                //il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
+                il.LoadArgument(Arg.Input)
+                  .IfTrue_S(out var next)
+                  .Return(0)
+                  .MarkLabel(next);
             }
 
             if (detecCycles) {
