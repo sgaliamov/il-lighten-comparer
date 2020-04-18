@@ -77,6 +77,8 @@ namespace ILLightenComparer.Tests.Utilities
             return (IComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
 
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> array) => array?.Any() != true;
+
         public static IEqualityComparer CreateNullableEqualityComparer(Type type, IEqualityComparer valueComparer)
         {
             var nullableComparerType = typeof(NullableEqualityComparer<>).MakeGenericType(type);
@@ -84,15 +86,15 @@ namespace ILLightenComparer.Tests.Utilities
             return (IEqualityComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
 
-        public static unsafe long GetAddress<T>(this T value)
-        {
-            if (value is null) {
-                return 0;
-            }
+        //public static unsafe long GetAddress<T>(this T value)
+        //{
+        //    if (value is null) {
+        //        return 0;
+        //    }
 
-            var reference = __makeref(value);
+        //    var reference = __makeref(value);
 
-            return (long)*(IntPtr*)(&reference);
-        }
+        //    return (long)*(IntPtr*)(&reference);
+        //}
     }
 }
