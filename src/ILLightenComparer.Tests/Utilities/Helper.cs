@@ -86,6 +86,13 @@ namespace ILLightenComparer.Tests.Utilities
             return (IEqualityComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
 
+        public static string ToStringEx<T>(this T value)
+        {
+            return value != null && value is IEnumerable enumerable
+                ? string.Join(", ", enumerable.Cast<object>().ToArray())
+                : value?.ToString() ?? "null";
+        }
+
         //public static unsafe long GetAddress<T>(this T value)
         //{
         //    if (value is null) {
