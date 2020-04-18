@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Linq;
+using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using ILLightenComparer.Tests.EqualityComparers;
@@ -103,13 +104,14 @@ namespace ILLightenComparer.Tests.EqualityTests
             var hashY = comparer.GetHashCode(y);
 
             using (new AssertionScope()) {
+                comparer.Equals(x, x).Should().BeTrue();
                 equality.Should().BeFalse();
                 hashY.Should().Be(expectedCustomHash);
             }
         }
 
         [Fact]
-        public void Equality_on_Nullable_structs_works()
+        public void Equality_on_nullable_structs_works()
         {
             var x = _fixture.Create<SampleStruct<EnumBig>?>();
             var y = _fixture.Create<SampleStruct<EnumBig>?>();
@@ -125,13 +127,16 @@ namespace ILLightenComparer.Tests.EqualityTests
             var hashY = comparer.GetHashCode(y);
             var equals = comparer.Equals(x);
 
-            equals.Should().Be(expectedEquals);
-            hashX.Should().Be(expectedHashX);
-            hashY.Should().Be(expectedHashY);
+            using (new AssertionScope()) {
+                comparer.Equals(x, x).Should().BeTrue();
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
         }
 
         [Fact]
-        public void Equality_on_Nullable_arguments_works()
+        public void Equality_on_nullable_arguments_works()
         {
             var x = _fixture.Create<EnumBig?>();
             var y = _fixture.Create<EnumBig?>();
@@ -147,9 +152,37 @@ namespace ILLightenComparer.Tests.EqualityTests
             var hashY = comparer.GetHashCode(y);
             var equals = comparer.Equals(x);
 
-            equals.Should().Be(expectedEquals);
-            hashX.Should().Be(expectedHashX);
-            hashY.Should().Be(expectedHashY);
+            using (new AssertionScope()) {
+                comparer.Equals(x, x).Should().BeTrue();
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
+        }
+
+        [Fact]
+        public void Equality_on_array_of_nullables_works()
+        {
+            var x = new EnumSmall?[] { EnumSmall.First, null };
+            var y = new EnumSmall?[] { EnumSmall.First, EnumSmall.One };
+
+            var referenceComparer = new CollectionEqualityComparer<EnumSmall?>(new NullableEqualityComparer<EnumSmall>());
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumSmall?[]>();
+
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+            var equals = comparer.Equals(x);
+
+            using (new AssertionScope()) {
+                comparer.Equals(x, x).Should().BeTrue();
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
         }
 
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
