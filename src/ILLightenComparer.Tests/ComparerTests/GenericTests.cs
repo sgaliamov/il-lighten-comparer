@@ -13,7 +13,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     internal sealed class GenericTests
     {
-        private static readonly Fixture Fixture = FixtureBuilder.GetInstance();
+        private static readonly IFixture Fixture = FixtureBuilder.GetInstance();
         private readonly IComparerBuilder _comparerBuilder;
 
         public GenericTests(IComparerBuilder comparerBuilder = null) => _comparerBuilder = comparerBuilder;

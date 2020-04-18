@@ -115,7 +115,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Action action) => Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
         // ReSharper disable once ClassNeverInstantiated.Local
         private sealed class SampleStructCustomComparer : CustomizableComparer<SampleStruct<string>>

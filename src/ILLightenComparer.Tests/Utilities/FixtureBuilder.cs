@@ -32,11 +32,11 @@ namespace ILLightenComparer.Tests.Utilities
             },
             LazyThreadSafetyMode.ExecutionAndPublication);
 
-        public static Fixture GetInstance() => Fixture.Value;
+        public static IFixture GetInstance() => Fixture.Value;
 
-        public static Fixture GetSimpleInstance() => SimpleFixture.Value;
+        public static IFixture GetSimpleInstance() => SimpleFixture.Value;
 
-        public static IEnumerable<T> CreateMutants<T>(this Fixture _, T prototype)
+        public static IEnumerable<T> CreateMutants<T>(this IFixture _, T prototype)
         {
             if (typeof(T).IsValueType) {
                 throw new ArgumentException("T should be a class.", nameof(T));

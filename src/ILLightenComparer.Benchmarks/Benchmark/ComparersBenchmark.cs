@@ -11,7 +11,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     {
         private const int N = 100000;
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
         private readonly IComparer<T> _il;
         private readonly IComparer<T> _manual;
         private readonly IComparer<T> _nito;

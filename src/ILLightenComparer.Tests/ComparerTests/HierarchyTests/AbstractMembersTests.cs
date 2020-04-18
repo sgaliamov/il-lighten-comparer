@@ -145,7 +145,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             original.ShouldBeSameOrder(clone);
         }
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
         private readonly IComparer<AbstractMembers> _comparer =
             new ComparerBuilder()

@@ -143,7 +143,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
         private static void Test(Action action) => Enumerable.Range(0, 8).AsParallel().ForAll(_ => action());
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
         private sealed class SampleStructCustomEqualityComparer : CustomizableEqualityComparer<SampleStruct<string>>
         {

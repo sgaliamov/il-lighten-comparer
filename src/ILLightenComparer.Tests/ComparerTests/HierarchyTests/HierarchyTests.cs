@@ -94,6 +94,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         private readonly IComparer<HierarchicalObject> _comparer;
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }
