@@ -92,10 +92,19 @@ namespace ILLightenComparer.Tests.EqualityTests
                     (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
                 var expected = referenceComparer.Equals(x, y);
 
-                var original = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
+                var equalsIsUsed = false;
+                var hashIsUsed = false;
                 var comparer = new ComparerBuilder(c => c
                     .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())
-                    .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
+                    .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>(
+                        (__, _) => {
+                            equalsIsUsed = true;
+                            return true;
+                        },
+                        _ => {
+                            hashIsUsed = true;
+                            return 0;
+                        })))
                     .GetEqualityComparer<SampleObject<int[]>>();
 
                 var actualEquals = comparer.Equals(x, y);
@@ -104,10 +113,14 @@ namespace ILLightenComparer.Tests.EqualityTests
 
                 using (new AssertionScope()) {
                     actualEquals.Should().Be(expected);
-                    hashX.Should().NotBe(original.GetHashCode(x));
-                    hashY.Should().NotBe(original.GetHashCode(y));
                     hashX.Should().NotBe(0);
                     hashY.Should().NotBe(0);
+                    var fieldIsNull = x.Field is null || y.Field is null;
+                    var propertyIsNull = x.Property is null || y.Property is null;
+                    var fieldsAreNulls = x.Field is null && y.Field is null;
+                    var propertiesAreNulls = x.Property is null && y.Property is null;
+                    equalsIsUsed.Should().Be(!fieldIsNull || (fieldsAreNulls && !propertyIsNull), $"null checks are used.\n{x}\n{y}");
+                    hashIsUsed.Should().Be(!fieldsAreNulls || !propertiesAreNulls, $"null checks are used.\n{x}\n{y}");
                 }
             });
         }
@@ -128,7 +141,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             });
         }
 
-        private static void Test(Action action) => Enumerable.Range(0, 5).AsParallel().ForAll(_ => action());
+        private static void Test(Action action) => Enumerable.Range(0, 8).AsParallel().ForAll(_ => action());
 
         private readonly Fixture _fixture = FixtureBuilder.GetInstance();
 
