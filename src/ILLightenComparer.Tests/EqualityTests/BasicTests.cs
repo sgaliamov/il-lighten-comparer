@@ -200,7 +200,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             y.Field = y.Field?.RandomNulls().ToArray();
             y.Property = y.Property?.RandomNulls().ToArray();
 
-            var referenceComparer = new SampleObjectEqualityComparer<EnumSmall?[]>();
+            var referenceComparer = new SampleObjectEqualityComparer<EnumSmall?[]>(new CollectionEqualityComparer<EnumSmall?>());
             var expectedHashX = referenceComparer.GetHashCode(x);
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);

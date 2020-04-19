@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
@@ -31,10 +30,21 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         bool IEqualityComparer.Equals(object x, object y) => Equals((SampleObject<TMember>)x, (SampleObject<TMember>)y);
 
-        public int GetHashCode(SampleObject<TMember> obj) => HashCodeCombiner
-            .Start()
-            .Combine(_memberComparer, obj.Field?.ObjectToArray())
-            .Combine(_memberComparer, obj.Property?.ObjectToArray());
+        public int GetHashCode(SampleObject<TMember> obj)
+        {
+            var setter = _memberComparer as IHashSeedSetter;
+            var combiner = HashCodeCombiner.Start();
+
+            setter?.Set(combiner.CombinedHash);
+            var fieldHash = _memberComparer.GetHashCode(obj.Field);
+
+            combiner.CombineObjects(fieldHash);
+
+            setter?.Set(combiner.CombinedHash);
+            var propertyHash = _memberComparer.GetHashCode(obj.Property);
+
+            return combiner.CombineObjects(propertyHash);
+        }
 
         public int GetHashCode(object obj) => GetHashCode((SampleObject<TMember>)obj);
     }

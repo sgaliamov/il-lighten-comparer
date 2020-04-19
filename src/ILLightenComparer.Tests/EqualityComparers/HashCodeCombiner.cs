@@ -17,7 +17,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public static HashCodeCombiner Start(long seed = Seed) => new HashCodeCombiner(seed);
 
-        public HashCodeCombiner Combine(IEqualityComparer comparer, object[] objects)
+        public HashCodeCombiner Combine(IEqualityComparer itemComparer, object[] objects)
         {
             if (objects is null) {
                 Add(() => 0);
@@ -25,11 +25,13 @@ namespace ILLightenComparer.Tests.EqualityComparers
             }
 
             foreach (var o in objects) {
-                Add(() => o is null ? 0 : comparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0);
+                Add(() => o is null ? 0 : itemComparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0);
             }
 
             return this;
         }
+
+        public HashCodeCombiner CombineObjects(params object[] objects) => Combine(null, objects.UnfoldArrays());
 
         public static HashCodeCombiner Combine(params object[] objects) => Start().Combine(null, objects.UnfoldArrays());
 
