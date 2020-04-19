@@ -2,6 +2,6 @@
 {
     internal interface IHashSeedSetter
     {
-        void Set(long seed);
+        void SetHashSeed(long seed);
     }
 }

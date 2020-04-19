@@ -69,6 +69,6 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public int GetHashCode(object obj) => GetHashCode(obj as IEnumerable<TItem>);
 
-        public void Set(long seed) => _seed = seed;
+        public void SetHashSeed(long seed) => _seed = seed;
     }
 }

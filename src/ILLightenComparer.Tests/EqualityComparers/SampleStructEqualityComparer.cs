@@ -38,10 +38,10 @@ namespace ILLightenComparer.Tests.EqualityComparers
             var setter = _memberComparer as IHashSeedSetter;
             var combiner = HashCodeCombiner.Start();
 
-            setter?.Set(combiner.CombinedHash);
+            setter?.SetHashSeed(combiner.CombinedHash);
             combiner.CombineObjects(obj.Field is null ? 0 : _memberComparer.GetHashCode(obj.Field));
 
-            setter?.Set(combiner.CombinedHash);
+            setter?.SetHashSeed(combiner.CombinedHash);
             return combiner.CombineObjects(obj.Property is null ? 0 : _memberComparer.GetHashCode(obj.Property));
         }
 
