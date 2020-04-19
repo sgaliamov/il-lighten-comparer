@@ -90,6 +90,7 @@ namespace ILLightenComparer.Tests
 
             // second comparer ignores first member but uses new string comparison type still
             var result = originalCaseComparer.Compare(x, y);
+
             result.Should().Be(string.CompareOrdinal("text", "TEXT"));
         }
 

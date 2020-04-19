@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.EqualityComparers;
 
@@ -26,8 +27,10 @@ namespace ILLightenComparer.Tests.Utilities
                 oneCurrent.ShouldBeEquals(otherCurrent);
             }
 
-            enumeratorOne.MoveNext().Should().BeFalse();
-            enumeratorOther.MoveNext().Should().BeFalse();
+            using (new AssertionScope()) {
+                enumeratorOne.MoveNext().Should().BeFalse();
+                enumeratorOther.MoveNext().Should().BeFalse();
+            }
         }
 
         public static void ShouldBeEquals<T>(this T x, T y)

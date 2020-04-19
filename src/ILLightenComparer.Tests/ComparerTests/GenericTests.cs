@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
 
@@ -67,8 +68,11 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
 
             var obj = Fixture.Create<T>();
-            referenceComparer.Compare(default, obj).Should().BeNegative();
-            typedComparer.Compare(default, obj).Should().BeNegative();
+
+            using (new AssertionScope()) {
+                referenceComparer.Compare(default, obj).Should().BeNegative();
+                typedComparer.Compare(default, obj).Should().BeNegative();
+            }
         }
 
         private static void Comparison_of_object_with_null_produces_positive_value<T>(
@@ -80,8 +84,11 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
 
             var obj = Fixture.Create<T>();
-            referenceComparer.Compare(obj, default).Should().BePositive();
-            typedComparer.Compare(obj, default).Should().BePositive();
+
+            using (new AssertionScope()) {
+                referenceComparer.Compare(obj, default).Should().BePositive();
+                typedComparer.Compare(obj, default).Should().BePositive();
+            }
         }
 
         private static void Comparison_when_both_null_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
@@ -90,16 +97,20 @@ namespace ILLightenComparer.Tests.ComparerTests
                 return;
             }
 
-            referenceComparer.Compare(default, default).Should().Be(0);
-            typedComparer.Compare(default, default).Should().Be(0);
+            using (new AssertionScope()) {
+                referenceComparer.Compare(default, default).Should().Be(0);
+                typedComparer.Compare(default, default).Should().Be(0);
+            }
         }
 
         private static void Comparison_with_itself_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
         {
             var obj = Fixture.Create<T>();
 
-            referenceComparer.Compare(obj, obj).Should().Be(0);
-            typedComparer.Compare(obj, obj).Should().Be(0);
+            using (new AssertionScope()) {
+                referenceComparer.Compare(obj, obj).Should().Be(0);
+                typedComparer.Compare(obj, obj).Should().Be(0);
+            }
         }
 
         private static void Comparison_with_same_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
@@ -107,8 +118,10 @@ namespace ILLightenComparer.Tests.ComparerTests
             var obj = Fixture.Create<T>();
             var clone = obj.DeepClone();
 
-            referenceComparer.Compare(obj, clone).Should().Be(0);
-            typedComparer.Compare(obj, clone).Should().Be(0);
+            using (new AssertionScope()) {
+                referenceComparer.Compare(obj, clone).Should().Be(0);
+                typedComparer.Compare(obj, clone).Should().Be(0);
+            }
         }
 
         private static void Mutate_class_members_and_test_comparison<T>(IComparer referenceComparer, IComparer<T> typedComparer)
@@ -119,8 +132,10 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             var original = Fixture.Create<T>();
             foreach (var mutant in Fixture.CreateMutants(original)) {
-                referenceComparer.Compare(mutant, original).Should().NotBe(0);
-                typedComparer.Compare(mutant, original).Should().NotBe(0);
+                using (new AssertionScope()) {
+                    referenceComparer.Compare(mutant, original).Should().NotBe(0);
+                    typedComparer.Compare(mutant, original).Should().NotBe(0);
+                }
             }
         }
 
@@ -137,8 +152,10 @@ namespace ILLightenComparer.Tests.ComparerTests
             Array.Sort(copy0, referenceComparer);
             Array.Sort(copy1, typedComparer);
 
-            copy1.ShouldBeSameOrder(copy0);
-            copy1.ShouldBeSameOrder(copy0);
+            using (new AssertionScope()) {
+                copy1.ShouldBeSameOrder(copy0);
+                copy1.ShouldBeSameOrder(copy0);
+            }
         }
 
         private static void Comparisons_work_identical<T>(IComparer referenceComparer, IComparer<T> typedComparer, int times)
@@ -154,6 +171,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var message = $"{type.DisplayName()} should be supported.\n"
                               + $"x: {x.ToJson()},\n"
                               + $"y: {y.ToJson()}";
+
                 actual.Should().Be(expected, message);
             }
         }

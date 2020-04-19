@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 
 namespace ILLightenComparer.Tests
@@ -19,8 +20,10 @@ namespace ILLightenComparer.Tests
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
 
-            equality.Should().BeFalse();
-            hashX.Should().NotBe(hashY);
+            using (new AssertionScope()) {
+                equality.Should().BeFalse();
+                hashX.Should().NotBe(hashY);
+            }
         }
 
         [Fact]
@@ -39,8 +42,10 @@ namespace ILLightenComparer.Tests
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
 
-            equality.Should().BeTrue();
-            hashX.Should().Be(hashY);
+            using (new AssertionScope()) {
+                equality.Should().BeTrue();
+                hashX.Should().Be(hashY);
+            }
         }
 
         private readonly Fixture _fixture = new Fixture();

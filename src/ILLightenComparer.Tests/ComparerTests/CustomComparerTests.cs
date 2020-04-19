@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
@@ -27,8 +28,10 @@ namespace ILLightenComparer.Tests.ComparerTests
                                                  .SetCustomComparer(new CustomizableComparer<int>((__, _) => 0)))
                                 .GetComparer<Tuple<int, string>>();
 
-                comparer1.Compare(x, y).Normalize().Should().Be(expected1.Normalize());
-                comparer2.Compare(x, y).Normalize().Should().Be(expected2.Normalize());
+                using (new AssertionScope()) {
+                    comparer1.Compare(x, y).Normalize().Should().Be(expected1.Normalize());
+                    comparer2.Compare(x, y).Normalize().Should().Be(expected2.Normalize());
+                }
             });
         }
 
@@ -46,8 +49,10 @@ namespace ILLightenComparer.Tests.ComparerTests
             var comparer2 = builder.Configure(c => c.SetCustomComparer<SampleStruct<string>>(null))
                                    .GetComparer<SampleObject<SampleStruct<string>>>();
 
-            comparer1.Compare(x, y).Should().Be(0);
-            comparer2.Compare(x, y).Normalize().Should().Be(expected.Normalize());
+            using (new AssertionScope()) {
+                comparer1.Compare(x, y).Should().Be(0);
+                comparer2.Compare(x, y).Normalize().Should().Be(expected.Normalize());
+            }
         }
 
         [Fact]
