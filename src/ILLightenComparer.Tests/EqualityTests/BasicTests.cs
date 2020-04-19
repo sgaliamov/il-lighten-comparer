@@ -107,7 +107,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
-                equality.Should().BeFalse();
+                equality.Should().Be(x.Field is null && x.Property is null);
                 hashY.Should().Be(expectedCustomHash);
             }
         }
@@ -200,7 +200,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             y.Field = y.Field?.RandomNulls().ToArray();
             y.Property = y.Property?.RandomNulls().ToArray();
 
-            var referenceComparer = new SampleObjectEqualityComparer<EnumSmall?[]>(new CollectionEqualityComparer<EnumSmall?>(new NullableEqualityComparer<EnumSmall>()));
+            var referenceComparer = new SampleObjectEqualityComparer<EnumSmall?[]>();
             var expectedHashX = referenceComparer.GetHashCode(x);
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
