@@ -93,6 +93,16 @@ namespace ILLightenComparer.Tests.Utilities
                 : value?.ToString() ?? "null";
         }
 
+        public static object[] UnfoldArrays(this object[] objects) => objects.SelectMany(ObjectToArray).ToArray();
+
+        public static object[] ObjectToArray(this object item) => item switch
+        {
+            object[] array => UnfoldArrays(array),
+            IEnumerable<object> enumerable => UnfoldArrays(enumerable.ToArray()),
+            IEnumerable enumerable => UnfoldArrays(enumerable.Cast<object>().ToArray()),
+            _ => new[] { item },
+        };
+
         //public static unsafe long GetAddress<T>(this T value)
         //{
         //    if (value is null) {

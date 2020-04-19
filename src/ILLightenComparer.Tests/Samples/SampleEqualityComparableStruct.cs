@@ -4,7 +4,8 @@ using ILLightenComparer.Tests.EqualityComparers;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    [SuppressMessage("Usage", "CA2231:Overload operator equals on overriding value type Equals", Justification = "<Pending>")]
+    [SuppressMessage("Usage", "CA2231:Overload operator equals on overriding value type Equals", Justification = "Test class")]
+    [SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "Test class")]
     public struct SampleEqualityComparableStruct<TMember>
     {
         public static IEqualityComparer<TMember> Comparer = EqualityComparer<TMember>.Default;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
@@ -12,7 +13,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         private HashCodeCombiner(long seed) => _combinedHash64 = seed;
 
-        public static HashCodeCombiner Combine(IEqualityComparer comparer, params object[] objects)
+        public static HashCodeCombiner Combine<T>(IEqualityComparer<T> comparer, T[] objects)
         {
             var combiner = new HashCodeCombiner(Seed);
 
@@ -24,7 +25,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
             return combiner;
         }
 
-        public static HashCodeCombiner Combine(params object[] objects) => Combine(null, objects);
+        public static HashCodeCombiner Combine(params object[] objects) => Combine(null, objects.UnfoldArrays());
 
         public static implicit operator int(HashCodeCombiner self) => self.CombinedHash;
 
