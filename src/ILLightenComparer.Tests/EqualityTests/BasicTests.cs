@@ -24,6 +24,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 equality.Should().BeTrue();
+                comparer.Equals(null, null).Should().BeTrue();
                 hashX.Should().Be(hashY);
             }
         }
@@ -58,6 +59,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 equality.Should().BeTrue();
+                comparer.Equals(null, null).Should().BeTrue();
                 hashX.Should().Be(hashY);
             }
         }
@@ -125,10 +127,11 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
-            var equals = comparer.Equals(x);
+            var equals = comparer.Equals(x, y);
 
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
+                comparer.Equals(null, null).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);
                 hashY.Should().Be(expectedHashY);
@@ -150,10 +153,11 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
-            var equals = comparer.Equals(x);
+            var equals = comparer.Equals(x, y);
 
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
+                comparer.Equals(null, null).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);
                 hashY.Should().Be(expectedHashY);
@@ -175,10 +179,11 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
-            var equals = comparer.Equals(x);
+            var equals = comparer.Equals(x, y);
 
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
+                comparer.Equals(null, null).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);
                 hashY.Should().Be(expectedHashY);

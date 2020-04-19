@@ -97,6 +97,7 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static object[] ObjectToArray(this object item) => item switch
         {
+            string str => new[] { str },
             object[] array => UnfoldArrays(array),
             IEnumerable<object> enumerable => UnfoldArrays(enumerable.ToArray()),
             IEnumerable enumerable => UnfoldArrays(enumerable.Cast<object>().ToArray()),
