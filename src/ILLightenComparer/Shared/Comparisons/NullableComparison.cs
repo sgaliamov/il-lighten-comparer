@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Variables;
@@ -10,17 +11,20 @@ namespace ILLightenComparer.Shared.Comparisons
     internal sealed class NullableComparison : IComparisonEmitter
     {
         private readonly IResolver _resolver;
+        private readonly int _defaultResult;
         private readonly EmitterDelegate _checkForIntermediateResultEmitter;
         private readonly EmitCheckNullablesForValueDelegate _emitCheckNullablesForValue;
         private readonly IVariable _variable;
 
         private NullableComparison(
             IResolver resolver,
+            int defaultResult,
             EmitterDelegate checkForIntermediateResultEmitter,
             EmitCheckNullablesForValueDelegate emitCheckNullablesForValue,
             IVariable variable)
         {
             _resolver = resolver;
+            _defaultResult = defaultResult;
             _checkForIntermediateResultEmitter = checkForIntermediateResultEmitter;
             _emitCheckNullablesForValue = emitCheckNullablesForValue;
             _variable = variable ?? throw new ArgumentNullException(nameof(variable));
@@ -28,12 +32,13 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public static NullableComparison Create(
             IResolver resolver,
+            int defaultResult,
             EmitterDelegate checkForIntermediateResultEmitter,
             EmitCheckNullablesForValueDelegate emitCheckNullablesForValue,
             IVariable variable)
         {
             if (variable.VariableType.IsNullable()) {
-                return new NullableComparison(resolver, checkForIntermediateResultEmitter, emitCheckNullablesForValue, variable);
+                return new NullableComparison(resolver, defaultResult, checkForIntermediateResultEmitter, emitCheckNullablesForValue, variable);
             }
 
             return null;
@@ -47,10 +52,13 @@ namespace ILLightenComparer.Shared.Comparisons
             _variable.Load(il, Arg.Y).Store(variableType, out var nullableY);
             _emitCheckNullablesForValue(il, nullableX, nullableY, variableType, gotoNext);
 
-            var nullableVariable = new NullableVariable(variableType, _variable.OwnerType, nullableX, nullableY);
+            var nullableVariables = new NullableVariables(variableType, _variable.OwnerType, new Dictionary<ushort, LocalBuilder>(2) {
+                [Arg.X] = nullableX,
+                [Arg.Y] = nullableY
+            });
 
             return _resolver
-                .GetComparisonEmitter(nullableVariable)
+                .GetComparisonEmitter(nullableVariables)
                 .Emit(il, gotoNext);
         }
 
@@ -59,7 +67,7 @@ namespace ILLightenComparer.Shared.Comparisons
             .Execute(this.Emit(exit))
             .Execute(this.EmitCheckForIntermediateResult(exit))
             .MarkLabel(exit)
-            .Return(0);
+            .Return(_defaultResult);
 
         public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
     }

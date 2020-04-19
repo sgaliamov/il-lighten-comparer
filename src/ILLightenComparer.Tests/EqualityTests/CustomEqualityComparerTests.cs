@@ -32,10 +32,12 @@ namespace ILLightenComparer.Tests.EqualityTests
                     .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
                     .GetEqualityComparer<Tuple<int, string>>();
 
-                comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "comparison is based on int field");
-                comparerForStringOnly.Equals(x, y).Should().Be(expectedEqualsString, "comparison is based on string field");
-                comparerForIntOnly.GetHashCode(x).Should().Be(expectedHashInt);
-                comparerForStringOnly.GetHashCode(x).Should().Be(expectedHashString);
+                using (new AssertionScope()) {
+                    comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "comparison is based on int field");
+                    comparerForStringOnly.Equals(x, y).Should().Be(expectedEqualsString, "comparison is based on string field");
+                    comparerForIntOnly.GetHashCode(x).Should().Be(expectedHashInt);
+                    comparerForStringOnly.GetHashCode(x).Should().Be(expectedHashString);
+                }
             });
         }
 
@@ -76,8 +78,10 @@ namespace ILLightenComparer.Tests.EqualityTests
                     .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
                     .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
 
-                comparer.Equals(x, y).Should().BeTrue();
-                comparer.GetHashCode(x).Should().Be(expectedCustomHash);
+                using (new AssertionScope()) {
+                    comparer.Equals(x, y).Should().BeTrue();
+                    comparer.GetHashCode(x).Should().Be(expectedCustomHash);
+                }
             });
         }
 
@@ -136,14 +140,16 @@ namespace ILLightenComparer.Tests.EqualityTests
                     .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
                     .GetEqualityComparer<SampleStruct<string>>();
 
-                comparer.Equals(x, y).Should().BeTrue();
-                comparer.GetHashCode(x).Should().Be(0);
+                using (new AssertionScope()) {
+                    comparer.Equals(x, y).Should().BeTrue();
+                    comparer.GetHashCode(x).Should().Be(0);
+                }
             });
         }
 
         private static void Test(Action action) => Enumerable.Range(0, 8).AsParallel().ForAll(_ => action());
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
         private sealed class SampleStructCustomEqualityComparer : CustomizableEqualityComparer<SampleStruct<string>>
         {

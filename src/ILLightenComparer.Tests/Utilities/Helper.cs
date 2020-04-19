@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.EqualityComparers;
 
@@ -26,8 +27,10 @@ namespace ILLightenComparer.Tests.Utilities
                 oneCurrent.ShouldBeEquals(otherCurrent);
             }
 
-            enumeratorOne.MoveNext().Should().BeFalse();
-            enumeratorOther.MoveNext().Should().BeFalse();
+            using (new AssertionScope()) {
+                enumeratorOne.MoveNext().Should().BeFalse();
+                enumeratorOther.MoveNext().Should().BeFalse();
+            }
         }
 
         public static void ShouldBeEquals<T>(this T x, T y)
@@ -57,9 +60,9 @@ namespace ILLightenComparer.Tests.Utilities
         public static void Parallel(ThreadStart action, int count)
         {
             var threads = Enumerable
-                          .Range(0, count)
-                          .Select(_ => new Thread(action))
-                          .ToArray();
+                .Range(0, count)
+                .Select(_ => new Thread(action))
+                .ToArray();
 
             foreach (var thread in threads) {
                 thread.Start();
@@ -77,7 +80,7 @@ namespace ILLightenComparer.Tests.Utilities
             return (IComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
 
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> array) => array?.Any() != true;
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection) => collection?.Any() != true;
 
         public static IEqualityComparer CreateNullableEqualityComparer(Type type, IEqualityComparer valueComparer)
         {
@@ -89,8 +92,26 @@ namespace ILLightenComparer.Tests.Utilities
         public static string ToStringEx<T>(this T value)
         {
             return value != null && value is IEnumerable enumerable
-                ? string.Join(", ", enumerable.Cast<object>().ToArray())
+                ? string.Join(", ", enumerable.ObjectToArray())
                 : value?.ToString() ?? "null";
+        }
+
+        public static object[] UnfoldArrays(this object[] objects) => objects.SelectMany(ObjectToArray).ToArray();
+
+        public static object[] ObjectToArray(this object item) => item switch
+        {
+            string str => new[] { str },
+            object[] array => UnfoldArrays(array),
+            IEnumerable<object> enumerable => UnfoldArrays(enumerable.ToArray()),
+            IEnumerable enumerable => UnfoldArrays(enumerable.Cast<object>().ToArray()),
+            _ => new[] { item },
+        };
+
+        public static IEnumerable<T> RandomNulls<T>(this IEnumerable<T> collection, double probability = .2)
+        {
+            foreach (var item in collection) {
+                yield return ThreadSafeRandom.NextDouble() < probability ? default : item;
+            }
         }
 
         //public static unsafe long GetAddress<T>(this T value)

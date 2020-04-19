@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
 using Xunit;
@@ -37,9 +38,11 @@ namespace ILLightenComparer.Tests.ComparerTests
                                    .Configure(c => c.IgnoreMember<SampleObject<int>, int>(null))
                                    .GetComparer<SampleObject<int>>();
 
-            comparer1.Compare(x, y).Should().Be(0);
-            comparer2.Compare(x, y).Should().Be(expected);
-            comparer3.Compare(x, y).Should().Be(expected);
+            using (new AssertionScope()) {
+                comparer1.Compare(x, y).Should().Be(0);
+                comparer2.Compare(x, y).Should().Be(expected);
+                comparer3.Compare(x, y).Should().Be(expected);
+            }
         }
 
         private readonly Fixture _fixture = new Fixture();

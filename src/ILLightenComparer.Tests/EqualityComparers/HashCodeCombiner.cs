@@ -1,8 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
-    internal struct HashCodeCombiner
+    [System.Diagnostics.DebuggerDisplay("{_combinedHash64}")]
+    internal sealed class HashCodeCombiner
     {
         public const long Seed = 0x1505L;
 
@@ -12,22 +15,28 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         private HashCodeCombiner(long seed) => _combinedHash64 = seed;
 
-        public static HashCodeCombiner Combine(IEqualityComparer comparer, params object[] objects)
-        {
-            var combiner = new HashCodeCombiner(Seed);
+        public static HashCodeCombiner Start(long seed = Seed) => new HashCodeCombiner(seed);
 
-            foreach (var o in objects) {
-                var hashCode = comparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0;
-                combiner.Add(hashCode);
+        public HashCodeCombiner Combine(IEqualityComparer itemComparer, object[] objects)
+        {
+            if (objects is null) {
+                Add(() => 0);
+                return this;
             }
 
-            return combiner;
+            foreach (var o in objects) {
+                Add(() => o is null ? 0 : itemComparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0);
+            }
+
+            return this;
         }
 
-        public static HashCodeCombiner Combine(params object[] objects) => Combine(null, objects);
+        public HashCodeCombiner CombineObjects(params object[] objects) => Combine(null, objects.UnfoldArrays());
+
+        public static HashCodeCombiner Combine(params object[] objects) => Start().Combine(null, objects.UnfoldArrays());
 
         public static implicit operator int(HashCodeCombiner self) => self.CombinedHash;
 
-        private void Add(int i) => _combinedHash64 = ((_combinedHash64 << 5) + _combinedHash64) ^ i;
+        private void Add(Func<int> hasher) => _combinedHash64 = ((_combinedHash64 << 5) + _combinedHash64) ^ hasher();
     }
 }

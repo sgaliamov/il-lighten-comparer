@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
 using Xunit;
 
@@ -35,8 +36,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = CycledStructObject.Comparer.Compare(one, other);
             var actual = ComparerObject.Compare(one, other);
 
-            expected.Should().Be(0);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(0);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -55,8 +58,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = CycledStruct.Comparer.Compare(one, other);
             var actual = ComparerStruct.Compare(one, other);
 
-            expected.Should().Be(0);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(0);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -86,8 +91,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = CycledStructObject.Comparer.Compare(one, other);
             var actual = ComparerObject.Compare(one, other);
 
-            expected.Should().Be(-1);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(-1);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -121,8 +128,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = CycledStruct.Comparer.Compare(one, other);
             var actual = ComparerStruct.Compare(one, other);
 
-            expected.Should().Be(1);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(1);
+                actual.Should().Be(expected);
+            }
         }
 
         public IComparer<CycledStruct> ComparerStruct => _builder.GetComparer<CycledStruct>();

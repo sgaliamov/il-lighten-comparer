@@ -45,10 +45,10 @@ namespace ILLightenComparer.Equality.Hashers
         {
             var config = _configuration.Get(_variable.OwnerType);
 
-            il.LoadLong(config.HashSeed)
-              .Store(typeof(long), out var hash);
-
-            return Emit(il, hash);
+            return il
+                .LoadLong(config.HashSeed)
+                .Store(typeof(long), out var hash)
+                .Execute(this.Emit(hash));
         }
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder hash)

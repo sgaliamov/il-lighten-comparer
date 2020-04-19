@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using AutoFixture.Kernel;
 
@@ -18,24 +19,37 @@ namespace ILLightenComparer.Tests.Utilities
         }
 
         public object Create(object request, ISpecimenContext context) => request is Type type
-            ? CreateRandom(type)
+            ? type.GetTypeInfo().IsEnum
+                ? CreateRandomEnum(type)
+                : CreateRandom(type)
             : new NoSpecimen();
 
-        private object CreateRandom(Type request) => (Type.GetTypeCode(request)) switch
+        private object CreateRandom(Type type) => (Type.GetTypeCode(type)) switch
         {
-            TypeCode.Byte => MinMax<byte>(request) ?? (byte)GetNextRandom(),
-            TypeCode.Decimal => MinMax<decimal>(request) ?? GetNextRandom(),
-            TypeCode.Double => MinMax<double>(request) ?? GetNextRandom(),
-            TypeCode.Int16 => MinMax<short>(request) ?? (short)GetNextRandom(),
-            TypeCode.Int32 => MinMax<int>(request) ?? (int)GetNextRandom(),
-            TypeCode.Int64 => MinMax<long>(request) ?? GetNextRandom(),
-            TypeCode.SByte => MinMax<sbyte>(request) ?? (sbyte)GetNextRandom(),
-            TypeCode.Single => MinMax<float>(request) ?? GetNextRandom(),
-            TypeCode.UInt16 => MinMax<ushort>(request) ?? (ushort)GetNextRandom(),
-            TypeCode.UInt32 => MinMax<uint>(request) ?? (uint)GetNextRandom(),
-            TypeCode.UInt64 => MinMax<ulong>(request) ?? (ulong)GetNextRandom(),
+            TypeCode.Byte => MinMax<byte>(type) ?? (byte)GetNextRandom(),
+            TypeCode.Decimal => MinMax<decimal>(type) ?? GetNextRandom(),
+            TypeCode.Double => MinMax<double>(type) ?? GetNextRandom(),
+            TypeCode.Int16 => MinMax<short>(type) ?? (short)GetNextRandom(),
+            TypeCode.Int32 => MinMax<int>(type) ?? (int)GetNextRandom(),
+            TypeCode.Int64 => MinMax<long>(type) ?? GetNextRandom(),
+            TypeCode.SByte => MinMax<sbyte>(type) ?? (sbyte)GetNextRandom(),
+            TypeCode.Single => MinMax<float>(type) ?? GetNextRandom(),
+            TypeCode.UInt16 => MinMax<ushort>(type) ?? (ushort)GetNextRandom(),
+            TypeCode.UInt32 => MinMax<uint>(type) ?? (uint)GetNextRandom(),
+            TypeCode.UInt64 => MinMax<ulong>(type) ?? (ulong)GetNextRandom(),
             _ => new NoSpecimen(),
         };
+
+        private object CreateRandomEnum(Type type)
+        {
+            var values = Enum.GetValues(type).Cast<object>().OrderBy(x => x).ToArray();
+
+            var index = ThreadSafeRandom.NextDouble() < _minMaxProbability
+                ? ThreadSafeRandom.NextDouble() < 0.5 ? 0 : values.Length - 1
+                : ThreadSafeRandom.Next(0, values.Length);
+
+            return values[index];
+        }
 
         private T? MinMax<T>(IReflect request) where T : struct
         {

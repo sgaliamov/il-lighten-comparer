@@ -50,6 +50,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             }
         }
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }

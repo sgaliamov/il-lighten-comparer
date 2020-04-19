@@ -20,8 +20,8 @@ namespace ILLightenComparer.Variables
             OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
 
             _enumerators = new Dictionary<ushort, LocalBuilder>(2) {
-                { Arg.X, xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)) },
-                { Arg.Y, yEnumerator ?? throw new ArgumentNullException(nameof(yEnumerator)) }
+                [Arg.X] = xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)),
+                [Arg.Y] = yEnumerator ?? throw new ArgumentNullException(nameof(yEnumerator))
             };
 
             if (yEnumerator.LocalType != xEnumerator.LocalType) {

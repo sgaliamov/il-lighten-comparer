@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
 using ILLightenComparer.Tests.Samples;
@@ -60,8 +61,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = SelfSealed.Comparer.Compare(one, other);
             var actual = ComparerSelfSealed.Compare(one, other);
 
-            expected.Should().Be(0);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(0);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -117,8 +120,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = SelfSealed.Comparer.Compare(one, other);
             var actual = ComparerSelfSealed.Compare(one, other);
 
-            expected.Should().Be(1);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(1);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -177,8 +182,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = ComparerForOneSealed.Compare(other, one);
             var actual = comparer.Compare(x, y);
 
-            actual.Should().Be(expected);
-            actual.Should().BePositive();
+            using (new AssertionScope()) {
+                actual.Should().Be(expected);
+                actual.Should().BePositive();
+            }
         }
 
         private IComparer<SelfSealed> ComparerSelfSealed => _builder.For<SelfSealed>(c => c.IgnoreMember(o => o.Id)).GetComparer();
