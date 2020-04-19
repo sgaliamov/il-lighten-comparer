@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
-    internal class CustomizableEqualityComparer<T> : IEqualityComparer<T>
+    internal class CustomizableEqualityComparer<T> : IEqualityComparer<T>, IEqualityComparer
     {
         private readonly Func<T, T, bool> _comparer;
         private readonly Func<T, int> _hasher;
@@ -16,6 +17,10 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public bool Equals(T x, T y) => _comparer(x, y);
 
+        public new bool Equals(object x, object y) => Equals((T)x, (T)y);
+
         public int GetHashCode(T obj) => _hasher(obj);
+
+        public int GetHashCode(object obj) => GetHashCode((T)obj);
     }
 }

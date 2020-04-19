@@ -2,6 +2,7 @@
 
 namespace ILLightenComparer.Tests.Samples
 {
+    [System.Diagnostics.DebuggerDisplay("{ToString()}")]
     public sealed class SampleObject<TMember>
     {
         public TMember Field;
@@ -12,7 +13,7 @@ namespace ILLightenComparer.Tests.Samples
             var field = Field.ToStringEx();
             var property = Property.ToStringEx();
 
-            return $"{{ Field: {field}, Property: {property} }}";
+            return $"Object: {{ Field: {field}, Property: {property} }}";
         }
     }
 }

@@ -3,7 +3,8 @@ using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
-    internal struct HashCodeCombiner
+    [System.Diagnostics.DebuggerDisplay("{_combinedHash64}")]
+    internal sealed class HashCodeCombiner
     {
         public const long Seed = 0x1505L;
 

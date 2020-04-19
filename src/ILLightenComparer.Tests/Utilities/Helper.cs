@@ -92,7 +92,7 @@ namespace ILLightenComparer.Tests.Utilities
         public static string ToStringEx<T>(this T value)
         {
             return value != null && value is IEnumerable enumerable
-                ? string.Join(", ", enumerable.Cast<object>().ToArray())
+                ? string.Join(", ", enumerable.ObjectToArray())
                 : value?.ToString() ?? "null";
         }
 
@@ -110,11 +110,7 @@ namespace ILLightenComparer.Tests.Utilities
         public static IEnumerable<T> RandomNulls<T>(this IEnumerable<T> collection, double probability = .2)
         {
             foreach (var item in collection) {
-                if (ThreadSafeRandom.NextDouble() < probability) {
-                    yield return default;
-                }
-
-                yield return item;
+                yield return ThreadSafeRandom.NextDouble() < probability ? default : item;
             }
         }
 
