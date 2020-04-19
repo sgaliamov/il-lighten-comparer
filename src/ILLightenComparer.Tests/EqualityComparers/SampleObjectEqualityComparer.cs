@@ -36,14 +36,10 @@ namespace ILLightenComparer.Tests.EqualityComparers
             var combiner = HashCodeCombiner.Start();
 
             setter?.Set(combiner.CombinedHash);
-            var fieldHash = _memberComparer.GetHashCode(obj.Field);
-
-            combiner.CombineObjects(fieldHash);
+            combiner.CombineObjects(obj.Field is null ? 0 : _memberComparer.GetHashCode(obj.Field));
 
             setter?.Set(combiner.CombinedHash);
-            var propertyHash = _memberComparer.GetHashCode(obj.Property);
-
-            return combiner.CombineObjects(propertyHash);
+            return combiner.CombineObjects(obj.Property is null ? 0 : _memberComparer.GetHashCode(obj.Property));
         }
 
         public int GetHashCode(object obj) => GetHashCode((SampleObject<TMember>)obj);

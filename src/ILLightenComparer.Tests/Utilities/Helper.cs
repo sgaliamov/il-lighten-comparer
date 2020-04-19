@@ -60,9 +60,9 @@ namespace ILLightenComparer.Tests.Utilities
         public static void Parallel(ThreadStart action, int count)
         {
             var threads = Enumerable
-                          .Range(0, count)
-                          .Select(_ => new Thread(action))
-                          .ToArray();
+                .Range(0, count)
+                .Select(_ => new Thread(action))
+                .ToArray();
 
             foreach (var thread in threads) {
                 thread.Start();

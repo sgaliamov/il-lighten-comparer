@@ -215,8 +215,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 comparer.Equals(x, x).Should().BeTrue();
                 comparer.Equals(null, null).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
-                hashX.Should().Be(expectedHashX);
-                hashY.Should().Be(expectedHashY);
+                hashX.Should().Be(expectedHashX, x.ToStringEx());
+                hashY.Should().Be(expectedHashY, y.ToStringEx());
             }
         }
 
