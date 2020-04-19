@@ -80,7 +80,7 @@ namespace ILLightenComparer.Tests.Utilities
             return (IComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
 
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> array) => array?.Any() != true;
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection) => collection?.Any() != true;
 
         public static IEqualityComparer CreateNullableEqualityComparer(Type type, IEqualityComparer valueComparer)
         {
@@ -106,6 +106,17 @@ namespace ILLightenComparer.Tests.Utilities
             IEnumerable enumerable => UnfoldArrays(enumerable.Cast<object>().ToArray()),
             _ => new[] { item },
         };
+
+        public static IEnumerable<T> RandomNulls<T>(this IEnumerable<T> collection, double probability = .2)
+        {
+            foreach (var item in collection) {
+                if (ThreadSafeRandom.NextDouble() < probability) {
+                    yield return default;
+                }
+
+                yield return item;
+            }
+        }
 
         //public static unsafe long GetAddress<T>(this T value)
         //{

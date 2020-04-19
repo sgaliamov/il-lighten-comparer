@@ -190,6 +190,36 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
+        [Fact]
+        public void Equality_on_member_array_of_nullables_works()
+        {
+            var x = _fixture.Create<SampleObject<EnumSmall?[]>>();
+            x.Field = x.Field?.RandomNulls().ToArray();
+            x.Property = x.Property?.RandomNulls().ToArray();
+            var y = _fixture.Create<SampleObject<EnumSmall?[]>>();
+            y.Field = y.Field?.RandomNulls().ToArray();
+            y.Property = y.Property?.RandomNulls().ToArray();
+
+            var referenceComparer = new SampleObjectEqualityComparer<EnumSmall?[]>(new CollectionEqualityComparer<EnumSmall?>(new NullableEqualityComparer<EnumSmall>()));
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleObject<EnumSmall?[]>>();
+
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+            var equals = comparer.Equals(x, y);
+
+            using (new AssertionScope()) {
+                comparer.Equals(x, x).Should().BeTrue();
+                comparer.Equals(null, null).Should().BeTrue();
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
+        }
+
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }
