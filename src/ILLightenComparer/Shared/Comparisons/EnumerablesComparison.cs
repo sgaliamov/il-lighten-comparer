@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -15,18 +16,19 @@ namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class EnumerablesComparison : IComparisonEmitter
     {
-        private static readonly MethodInfo MoveNextMethod = typeof(IEnumerator).GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
         private static readonly MethodInfo DisposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
 
         private readonly Type _elementType;
         private readonly Type _enumeratorType;
+        private readonly MethodInfo _moveNextMethod;
+        private readonly MethodInfo _getCurrentMethod;
         private readonly MethodInfo _getEnumeratorMethod;
-        private readonly IVariable _variable;
         private readonly CollectionComparer _collectionComparer;
-        private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
-        private readonly IResolver _resolver;
-        private readonly int _defaultResult;
+        private readonly IVariable _variable;
         private readonly IConfigurationProvider _configuration;
+        private readonly IResolver _resolver;
+        private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
+        private readonly int _defaultResult;
 
         private EnumerablesComparison(
             IResolver resolver,
@@ -43,19 +45,17 @@ namespace ILLightenComparer.Shared.Comparisons
             _configuration = configuration;
             _variable = variable;
 
-            _elementType = variable
-                .VariableType
+            var variableType = variable.VariableType;
+
+            _elementType = variableType
                 .FindGenericInterface(typeof(IEnumerable<>))
                 .GetGenericArguments()
-                .SingleOrDefault()
-                ?? throw new ArgumentException(nameof(variable));
+                .Single();
 
-            // todo: 2. use read enumerator, not virtual
-            _enumeratorType = typeof(IEnumerator<>).MakeGenericType(_elementType);
-
-            _getEnumeratorMethod = typeof(IEnumerable<>)
-                .MakeGenericType(_elementType)
-                .GetMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
+            _getEnumeratorMethod = variableType.FindMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
+            _enumeratorType = _getEnumeratorMethod.ReturnType;
+            _moveNextMethod = _enumeratorType.FindMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
+            _getCurrentMethod = _enumeratorType.GetPropertyGetter(nameof(IEnumerator.Current));
         }
 
         public static EnumerablesComparison Create(
@@ -138,17 +138,24 @@ namespace ILLightenComparer.Shared.Comparisons
             }
 
             using (il.LocalsScope()) {
-                var itemVariable = new EnumerableItemVariable(_variable.OwnerType, xEnumerator, yEnumerator);
+                var enumerators = new Dictionary<ushort, LocalBuilder>(2) {
+                    [Arg.X] = xEnumerator,
+                    [Arg.Y] = yEnumerator
+                };
+
+                var itemVariable = new EnumerableItemVariable(_enumeratorType, _elementType, _getCurrentMethod, enumerators);
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
                 itemComparison.Emit(il, continueLoop);
                 itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
             }
         }
 
-        private static (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
+        private (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
         {
-            il.AreSame(Call(MoveNextMethod, LoadLocal(xEnumerator)), LoadInteger(0), out var xDone)
-              .AreSame(Call(MoveNextMethod, LoadLocal(yEnumerator)), LoadInteger(0), out var yDone);
+            var load = _enumeratorType.IsValueType ? (Func<LocalVariableInfo, Func<ILEmitter, ILEmitter>>)LoadAddress : LoadLocal;
+
+            il.AreSame(Call(_moveNextMethod, load(xEnumerator)), LoadInteger(0), out var xDone)
+              .AreSame(Call(_moveNextMethod, load(yEnumerator)), LoadInteger(0), out var yDone);
 
             return (xDone, yDone);
         }

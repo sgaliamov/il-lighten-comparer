@@ -1,55 +1,48 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Extensions;
 using Illuminator;
-using Illuminator.Extensions;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Variables
 {
     internal sealed class EnumerableItemVariable : IVariable
     {
-        private readonly Dictionary<ushort, LocalBuilder> _enumerators;
+        private readonly IReadOnlyDictionary<ushort, LocalBuilder> _enumerators;
         private readonly MethodInfo _getCurrentMethod;
 
-        public EnumerableItemVariable(Type ownerType, LocalBuilder xEnumerator, LocalBuilder yEnumerator)
+        public EnumerableItemVariable(Type ownerType, Type elementType, MethodInfo getCurrentMethod, IReadOnlyDictionary<ushort, LocalBuilder> enumerators)
         {
-            OwnerType = ownerType ?? throw new ArgumentNullException(nameof(ownerType));
+            OwnerType = ownerType;
+            VariableType = elementType;
 
-            _enumerators = new Dictionary<ushort, LocalBuilder>(2) {
-                [Arg.X] = xEnumerator ?? throw new ArgumentNullException(nameof(xEnumerator)),
-                [Arg.Y] = yEnumerator ?? throw new ArgumentNullException(nameof(yEnumerator))
-            };
-
-            if (yEnumerator.LocalType != xEnumerator.LocalType) {
-                throw new ArgumentException($"Enumerator types are not matched: {xEnumerator}, {yEnumerator}.");
-            }
-
-            var enumeratorType = xEnumerator.LocalType;
-            if (!enumeratorType.ImplementsGeneric(typeof(IEnumerator<>))) {
-                throw new ArgumentException($"Unexpected type {enumeratorType}.", nameof(enumeratorType));
-            }
-
-            VariableType = enumeratorType?.GetGenericArguments().SingleOrDefault()
-                           ?? throw new ArgumentException(nameof(enumeratorType));
-
-            _getCurrentMethod = enumeratorType.GetPropertyGetter(nameof(IEnumerator.Current));
+            _enumerators = enumerators;
+            _getCurrentMethod = getCurrentMethod;
         }
 
+        /// <summary>
+        /// Element type.
+        /// </summary>
         public Type VariableType { get; }
+
+        /// <summary>
+        /// Enumerator type.
+        /// </summary>
         public Type OwnerType { get; }
 
-        public ILEmitter Load(ILEmitter il, ushort arg) =>
-            il.LoadLocal(_enumerators[arg])
-              .Call(_getCurrentMethod);
+        public ILEmitter Load(ILEmitter il, ushort arg) => il
+            .Execute(Load(arg))
+            .Call(_getCurrentMethod);
 
-        public ILEmitter LoadAddress(ILEmitter il, ushort arg) =>
-             il.LoadLocal(_enumerators[arg])
-               .Call(_getCurrentMethod)
-               .Store(VariableType, out var local)
-               .LoadAddress(local);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => il
+            .Execute(Load(arg))
+            .Call(_getCurrentMethod)
+            .Store(VariableType, out var local)
+            .LoadAddress(local);
+
+        private Func<ILEmitter, ILEmitter> Load(ushort arg) => OwnerType.IsValueType
+            ? Functional.LoadAddress(_enumerators[arg])
+            : LoadLocal(_enumerators[arg]);
     }
 }

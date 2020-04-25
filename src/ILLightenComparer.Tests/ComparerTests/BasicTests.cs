@@ -49,7 +49,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var x = new List<int>(new[] { 1, 2, 3 });
             var y = new List<int>(new[] { 2, 3, 1 });
 
-            var comparer = new ComparerBuilder().GetComparer<List<int>>();
+            var comparer = new ComparerBuilder().GetComparer<IEnumerable<int>>();
 
             var result = comparer.Compare(x, y);
 
