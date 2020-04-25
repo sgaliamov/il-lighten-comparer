@@ -73,10 +73,56 @@ namespace ILLightenComparer.Equality.Hashers
 
             il.Execute(_variable.Load(Arg.Input))
               .Store(_variable.VariableType, out var enumerable)
-              .Call(_getEnumeratorMethod, LoadLocal(enumerable))
+              .IfTrue_S(LoadLocal(enumerable), out var begin) // todo: 0. test if struct
+              .LoadInteger(0)
+              .GoTo(out var end)
+              .MarkLabel(begin)
+              .Call(_getEnumeratorMethod, LoadCaller(enumerable))
               .Store(_enumeratorType, out var enumerator);
 
-            return il;
+            // todo: 1. think how to use try/finally block
+            // the problem now with the inner `return` statements, it has to be `leave` instruction
+            //il.BeginExceptionBlock(); 
+
+            Loop(il, enumerator, hash);
+
+            //il.BeginFinallyBlock();
+            EmitDisposeEnumerator(il, enumerator);
+
+            //il.EndExceptionBlock();
+
+            return il.LoadLocal(hash).MarkLabel(end);
         }
+
+        private ILEmitter Loop(ILEmitter il, LocalBuilder enumerator, LocalBuilder hash)
+        {
+            il.DefineLabel(out var loopStart)
+              .DefineLabel(out var loopEnd);
+
+            using (il.LocalsScope()) {
+                il.MarkLabel(loopStart)
+                  .AreSame(Call(_moveNextMethod, LoadCaller(enumerator)), LoadInteger(0), out var done)
+                  .LoadLocal(done)
+                  .IfFalse_S(out var next)
+                  .GoTo(loopEnd)
+                  .MarkLabel(next);
+            }
+
+            using (il.LocalsScope()) {
+                var enumerators = new Dictionary<ushort, LocalBuilder>(1) { [Arg.Input] = enumerator };
+                var itemVariable = new EnumerableItemVariable(_enumeratorType, _elementType, _getCurrentMethod, enumerators);
+
+                _resolver
+                    .GetHasherEmitter(itemVariable)
+                    .EmitHashing(il, hash)
+                    .GoTo(loopStart);
+            }
+
+            return il.MarkLabel(loopEnd);
+        }
+
+        private static void EmitDisposeEnumerator(ILEmitter il, LocalBuilder enumerator) => il
+            .LoadCaller(enumerator)
+            .Call(Methods.DisposeMethod);
     }
 }

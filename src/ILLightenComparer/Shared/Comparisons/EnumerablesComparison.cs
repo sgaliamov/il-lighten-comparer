@@ -16,8 +16,6 @@ namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class EnumerablesComparison : IComparisonEmitter
     {
-        private static readonly MethodInfo DisposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
-
         private readonly Type _elementType;
         private readonly Type _enumeratorType;
         private readonly MethodInfo _moveNextMethod;
@@ -88,10 +86,10 @@ namespace ILLightenComparer.Shared.Comparisons
             // the problem now with the inner `return` statements, it has to be `leave` instruction
             //il.BeginExceptionBlock(); 
 
-            Loop(xEnumerator, yEnumerator, il, gotoNext);
+            Loop(il, xEnumerator, yEnumerator, gotoNext);
 
             //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(xEnumerator, yEnumerator, il, gotoNext);
+            EmitDisposeEnumerators(il, xEnumerator, yEnumerator, gotoNext);
 
             //il.EndExceptionBlock();
 
@@ -124,10 +122,12 @@ namespace ILLightenComparer.Shared.Comparisons
               .Call(_getEnumeratorMethod, LoadCaller(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
 
+            // todo: 3. verify that enumerators are not nulls
+
             return (xEnumerator, yEnumerator);
         }
 
-        private void Loop(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il, Label gotoNext)
+        private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label gotoNext)
         {
             il.DefineLabel(out var continueLoop).MarkLabel(continueLoop);
 
@@ -158,15 +158,15 @@ namespace ILLightenComparer.Shared.Comparisons
             return (xDone, yDone);
         }
 
-        private static void EmitDisposeEnumerators(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il, Label gotoNext) => il
-            .LoadLocal(xEnumerator)
-            .IfFalse_S(out var check)
-            .LoadLocal(xEnumerator)
-            .Call(DisposeMethod)
-            .MarkLabel(check)
-            .LoadLocal(yEnumerator)
-            .IfFalse(gotoNext)
-            .LoadLocal(yEnumerator)
-            .Call(DisposeMethod);
+        private static void EmitDisposeEnumerators(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label gotoNext) => il
+            //.LoadLocal(xEnumerator) // todo: 0. clean
+            //.IfFalse_S(out var check)
+            .LoadCaller(xEnumerator)
+            .Call(Methods.DisposeMethod)
+            //.MarkLabel(check)
+            //.LoadLocal(yEnumerator)
+            //.IfFalse(gotoNext)
+            .LoadCaller(yEnumerator)
+            .Call(Methods.DisposeMethod);
     }
 }
