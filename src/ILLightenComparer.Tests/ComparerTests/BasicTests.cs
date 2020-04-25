@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
+using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
@@ -9,6 +10,8 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class BasicTests
     {
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         [Fact]
         public void Empty_object_should_be_equal()
         {
@@ -34,9 +37,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             var comparer = new ComparerBuilder().GetComparer<DummyStruct?>();
 
-            var fixture = FixtureBuilder.GetInstance();
-
-            fixture.Create<DummyStruct>();
+            _fixture.Create<DummyStruct>();
 
             var actual = comparer.Compare(new DummyStruct(), new DummyStruct());
 
@@ -54,6 +55,21 @@ namespace ILLightenComparer.Tests.ComparerTests
             var result = comparer.Compare(x, y);
 
             result.Should().Be(-1);
+        }
+
+        [Fact]
+        public void Enumerable_structa_are_comparable()
+        {
+            var referenceComparer = new CollectionComparer<int>();
+            var x = _fixture.Create<EnumerableStruct<int>>();
+            var y = _fixture.Create<EnumerableStruct<int>>();
+            var expected = referenceComparer.Compare(x, y);
+
+            var comparer = new ComparerBuilder().GetComparer<EnumerableStruct<int>>();
+
+            var result = comparer.Compare(x, y);
+
+            result.Should().Be(expected);
         }
     }
 }

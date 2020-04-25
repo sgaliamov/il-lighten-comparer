@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -11,6 +12,8 @@ namespace ILLightenComparer.Tests.EqualityTests
 {
     public sealed class BasicTests
     {
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         [Fact]
         public void Empty_object_should_be_equal()
         {
@@ -220,6 +223,46 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+        [Fact]
+        public void Enumerables_are_not_equal()
+        {
+            var x = new List<int>(new[] { 1, 2, 3 });
+            var y = new List<int>(new[] { 2, 3, 1 });
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<IEnumerable<int>>();
+            var equals = comparer.Equals(x, y);
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+
+            using (new AssertionScope()) {
+                equals.Should().BeFalse();
+                hashX.Should().NotBe(hashY);
+            }
+        }
+
+        [Fact]
+        public void Enumerable_structa_are_comparable()
+        {
+            var x = _fixture.Create<EnumerableStruct<int>>();
+            var y = _fixture.Create<EnumerableStruct<int>>();
+
+            var referenceComparer = new CollectionEqualityComparer<int>();
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<int>>();
+            var equals = comparer.Equals(x, y);
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+
+            using (new AssertionScope()) {
+                comparer.Equals(x, x).Should().BeTrue();
+                comparer.Equals(default, default).Should().BeTrue();
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
+        }
     }
 }
