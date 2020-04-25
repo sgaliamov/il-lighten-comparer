@@ -74,7 +74,7 @@ namespace ILLightenComparer.Equality.Hashers
             il.Execute(_variable.Load(Arg.Input))
               .Store(_variable.VariableType, out var enumerable)
               .Call(_getEnumeratorMethod, LoadLocal(enumerable))
-              .Store(_enumeratorType, out var xEnumerator);
+              .Store(_enumeratorType, out var enumerator);
 
             return il;
         }

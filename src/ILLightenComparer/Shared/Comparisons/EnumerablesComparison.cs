@@ -119,11 +119,9 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(LocalBuilder xEnumerable, LocalBuilder yEnumerable, ILEmitter il)
         {
-            var load = _variable.VariableType.IsValueType ? (Func<LocalVariableInfo, Func<ILEmitter, ILEmitter>>)LoadAddress : LoadLocal;
-
-            il.Call(_getEnumeratorMethod, load(xEnumerable))
+            il.Call(_getEnumeratorMethod, LoadCaller(xEnumerable))
               .Store(_enumeratorType, out var xEnumerator)
-              .Call(_getEnumeratorMethod, load(yEnumerable))
+              .Call(_getEnumeratorMethod, LoadCaller(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
 
             return (xEnumerator, yEnumerator);
@@ -154,10 +152,8 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
         {
-            var load = _enumeratorType.IsValueType ? (Func<LocalVariableInfo, Func<ILEmitter, ILEmitter>>)LoadAddress : LoadLocal;
-
-            il.AreSame(Call(_moveNextMethod, load(xEnumerator)), LoadInteger(0), out var xDone)
-              .AreSame(Call(_moveNextMethod, load(yEnumerator)), LoadInteger(0), out var yDone);
+            il.AreSame(Call(_moveNextMethod, LoadCaller(xEnumerator)), LoadInteger(0), out var xDone)
+              .AreSame(Call(_moveNextMethod, LoadCaller(yEnumerator)), LoadInteger(0), out var yDone);
 
             return (xDone, yDone);
         }
