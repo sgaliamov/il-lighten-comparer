@@ -113,16 +113,5 @@ namespace ILLightenComparer.Tests.Utilities
                 yield return ThreadSafeRandom.NextDouble() < probability ? default : item;
             }
         }
-
-        //public static unsafe long GetAddress<T>(this T value)
-        //{
-        //    if (value is null) {
-        //        return 0;
-        //    }
-
-        //    var reference = __makeref(value);
-
-        //    return (long)*(IntPtr*)(&reference);
-        //}
     }
 }
