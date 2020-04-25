@@ -61,6 +61,9 @@ namespace ILLightenComparer.Equality.Hashers
               .DefineLabel(out var loopEnd);
 
             // todo: 1. sort when IgnoreCollectionOrder
+            //if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
+            //    return EmitCompareAsSortedArrays(il, gotoNext, x, y);
+            //}
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
