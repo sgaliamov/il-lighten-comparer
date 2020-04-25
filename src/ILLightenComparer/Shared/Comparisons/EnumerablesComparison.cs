@@ -89,7 +89,7 @@ namespace ILLightenComparer.Shared.Comparisons
             Loop(il, xEnumerator, yEnumerator, gotoNext);
 
             //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(il, xEnumerator, yEnumerator, gotoNext);
+            EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
 
             //il.EndExceptionBlock();
 
@@ -158,14 +158,9 @@ namespace ILLightenComparer.Shared.Comparisons
             return (xDone, yDone);
         }
 
-        private static void EmitDisposeEnumerators(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label gotoNext) => il
-            //.LoadLocal(xEnumerator) // todo: 0. clean
-            //.IfFalse_S(out var check)
+        private static void EmitDisposeEnumerators(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator) => il
             .LoadCaller(xEnumerator)
             .Call(Methods.DisposeMethod)
-            //.MarkLabel(check)
-            //.LoadLocal(yEnumerator)
-            //.IfFalse(gotoNext)
             .LoadCaller(yEnumerator)
             .Call(Methods.DisposeMethod);
     }
