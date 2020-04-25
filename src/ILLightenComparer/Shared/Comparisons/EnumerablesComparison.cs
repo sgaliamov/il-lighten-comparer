@@ -119,9 +119,11 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(LocalBuilder xEnumerable, LocalBuilder yEnumerable, ILEmitter il)
         {
-            il.Call(_getEnumeratorMethod, LoadLocal(xEnumerable))
+            var load = _variable.VariableType.IsValueType ? (Func<LocalVariableInfo, Func<ILEmitter, ILEmitter>>)LoadAddress : LoadLocal;
+
+            il.Call(_getEnumeratorMethod, load(xEnumerable))
               .Store(_enumeratorType, out var xEnumerator)
-              .Call(_getEnumeratorMethod, LoadLocal(yEnumerable))
+              .Call(_getEnumeratorMethod, load(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
 
             return (xEnumerator, yEnumerator);
