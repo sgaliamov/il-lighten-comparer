@@ -77,19 +77,21 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Enumerable_structs_with_nullables_are_comparable()
         {
-            var x = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
-            var y = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
-
             var referenceComparer = new CollectionComparer<SampleStruct<int?>?>(new NullableComparer<SampleStruct<int?>>(new SampleStructComparer<int?>()));
-            var expectedEquals = referenceComparer.Compare(x, y);
-
             var comparer = new ComparerBuilder().GetComparer<EnumerableStruct<SampleStruct<int?>?>>();
-            var equals = comparer.Compare(x, y);
 
-            using (new AssertionScope()) {
-                comparer.Compare(x, x).Should().Be(0);
-                equals.Should().Be(expectedEquals);
-            }
+            Helper.Parallel(() => {
+                var x = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+                var y = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+
+                var expectedEquals = referenceComparer.Compare(x, y);
+                var equals = comparer.Compare(x, y);
+
+                using (new AssertionScope()) {
+                    comparer.Compare(x, x).Should().Be(0);
+                    equals.Should().Be(expectedEquals);
+                }
+            });
         }
 
         [Fact]

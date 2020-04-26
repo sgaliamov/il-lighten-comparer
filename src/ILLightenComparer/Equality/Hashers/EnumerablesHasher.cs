@@ -76,7 +76,7 @@ namespace ILLightenComparer.Equality.Hashers
               .DefineLabel(out var end);
 
             if (!_variable.VariableType.IsValueType) {
-                il.IfTrue_S(LoadLocal(enumerable), out var begin) // todo: 0. test if struct
+                il.IfTrue_S(LoadLocal(enumerable), out var begin)
                   .LoadInteger(0)
                   .GoTo(end)
                   .MarkLabel(begin);

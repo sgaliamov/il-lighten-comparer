@@ -268,25 +268,28 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Enumerable_structs_with_nullables_are_comparable()
         {
-            var x = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
-            var y = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
-
             var referenceComparer = new CollectionEqualityComparer<SampleStruct<int?>?>(new NullableEqualityComparer<SampleStruct<int?>>(new SampleStructEqualityComparer<int?>()));
-            var expectedHashX = referenceComparer.GetHashCode(x);
-            var expectedHashY = referenceComparer.GetHashCode(y);
-            var expectedEquals = referenceComparer.Equals(x, y);
-
             var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<SampleStruct<int?>?>>();
-            var equals = comparer.Equals(x, y);
-            var hashX = comparer.GetHashCode(x);
-            var hashY = comparer.GetHashCode(y);
 
-            using (new AssertionScope()) {
-                comparer.Equals(x, x).Should().BeTrue();
-                equals.Should().Be(expectedEquals);
-                hashX.Should().Be(expectedHashX);
-                hashY.Should().Be(expectedHashY);
-            }
+            Helper.Parallel(() => {
+                var x = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+                var y = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+
+                var expectedHashX = referenceComparer.GetHashCode(x);
+                var expectedHashY = referenceComparer.GetHashCode(y);
+                var expectedEquals = referenceComparer.Equals(x, y);
+
+                var equals = comparer.Equals(x, y);
+                var hashX = comparer.GetHashCode(x);
+                var hashY = comparer.GetHashCode(y);
+
+                using (new AssertionScope()) {
+                    comparer.Equals(x, x).Should().BeTrue();
+                    equals.Should().Be(expectedEquals);
+                    hashX.Should().Be(expectedHashX);
+                    hashY.Should().Be(expectedHashY);
+                }
+            });
         }
 
         [Fact]
