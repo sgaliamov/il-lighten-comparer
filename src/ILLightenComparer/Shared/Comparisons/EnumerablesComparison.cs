@@ -90,7 +90,7 @@ namespace ILLightenComparer.Shared.Comparisons
             // the problem now with the inner `return` statements, it has to be `leave` instruction
             //il.BeginExceptionBlock(); 
 
-            Loop(il, xEnumerator, yEnumerator);
+            Loop(il, xEnumerator, yEnumerator, gotoNext);
 
             //il.BeginFinallyBlock();
             EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
@@ -126,21 +126,20 @@ namespace ILLightenComparer.Shared.Comparisons
               .Call(_getEnumeratorMethod, LoadCaller(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
 
-            _emitReferenceComparison(il, LoadLocal(xEnumerator), LoadLocal(yEnumerator), GoTo(gotoNext));
+            //_emitReferenceComparison(il, LoadLocal(xEnumerator), LoadLocal(yEnumerator), GoTo(gotoNext));
 
             return (xEnumerator, yEnumerator);
         }
 
-        private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator)
+        private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label gotoNext)
         {
-            il.DefineLabel(out var loopStart)
-              .DefineLabel(out var loopEnd);
+            il.DefineLabel(out var loopStart);
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart);
                 var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
 
-                _emitCheckIfLoopsAreDone(il, xDone, yDone, loopEnd);
+                _emitCheckIfLoopsAreDone(il, xDone, yDone, gotoNext);
             }
 
             using (il.LocalsScope()) {
@@ -153,8 +152,7 @@ namespace ILLightenComparer.Shared.Comparisons
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
 
                 il.Execute(itemComparison.Emit(loopStart))
-                  .Execute(itemComparison.EmitCheckForIntermediateResult(loopStart))
-                  .MarkLabel(loopEnd);
+                  .Execute(itemComparison.EmitCheckForIntermediateResult(loopStart));
             }
         }
 
