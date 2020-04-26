@@ -32,6 +32,9 @@ namespace ILLightenComparer.Tests.ComparerTests
                 [typeof(SampleComparableStruct<EnumSmall?>)] = null,
                 [typeof(SampleObject<EnumSmall?>)] = new SampleObjectComparer<EnumSmall?>(),
                 [typeof(SampleStruct<EnumSmall?>)] = new SampleStructComparer<EnumSmall?>()
+                // todo: 1. fix tests
+                //[typeof(EnumerableStruct<EnumBig>)] = new CollectionComparer<EnumBig>(),
+                //[typeof(EnumerableStruct<EnumBig?>)] = new CollectionComparer<EnumBig?>()
             };
 
             NullableTypes = Types

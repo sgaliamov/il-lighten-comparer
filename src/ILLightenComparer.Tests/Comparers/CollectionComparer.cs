@@ -38,27 +38,27 @@ namespace ILLightenComparer.Tests.Comparers
                 y = ay;
             }
 
-            using (var enumeratorX = x.GetEnumerator())
-            using (var enumeratorY = y.GetEnumerator()) {
-                while (true) {
-                    var xDone = !enumeratorX.MoveNext();
-                    var yDone = !enumeratorY.MoveNext();
+            using var enumeratorX = x.GetEnumerator();
+            using var enumeratorY = y.GetEnumerator();
 
-                    if (xDone) {
-                        return yDone ? 0 : -1;
-                    }
+            while (true) {
+                var xDone = !enumeratorX.MoveNext();
+                var yDone = !enumeratorY.MoveNext();
 
-                    if (yDone) {
-                        return 1;
-                    }
+                if (xDone) {
+                    return yDone ? 0 : -1;
+                }
 
-                    var xCurrent = enumeratorX.Current;
-                    var yCurrent = enumeratorY.Current;
+                if (yDone) {
+                    return 1;
+                }
 
-                    var compare = _itemComparer.Compare(xCurrent, yCurrent);
-                    if (compare != 0) {
-                        return compare;
-                    }
+                var xCurrent = enumeratorX.Current;
+                var yCurrent = enumeratorY.Current;
+
+                var compare = _itemComparer.Compare(xCurrent, yCurrent);
+                if (compare != 0) {
+                    return compare;
                 }
             }
         }
