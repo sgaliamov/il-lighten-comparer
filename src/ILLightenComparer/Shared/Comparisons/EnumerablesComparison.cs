@@ -26,7 +26,6 @@ namespace ILLightenComparer.Shared.Comparisons
         private readonly IConfigurationProvider _configuration;
         private readonly IResolver _resolver;
         private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
-        private readonly EmitReferenceComparisonDelegate _emitReferenceComparison;
         private readonly int _defaultResult;
 
         private EnumerablesComparison(
@@ -34,7 +33,6 @@ namespace ILLightenComparer.Shared.Comparisons
             int defaultResult,
             CollectionComparer collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
-            EmitReferenceComparisonDelegate emitReferenceComparison,
             IConfigurationProvider configuration,
             IVariable variable)
         {
@@ -42,7 +40,6 @@ namespace ILLightenComparer.Shared.Comparisons
             _defaultResult = defaultResult;
             _collectionComparer = collectionComparer;
             _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
-            _emitReferenceComparison = emitReferenceComparison;
             _configuration = configuration;
             _variable = variable;
 
@@ -64,13 +61,12 @@ namespace ILLightenComparer.Shared.Comparisons
             int defaultResult,
             CollectionComparer collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
-            EmitReferenceComparisonDelegate emitReferenceComparison,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, defaultResult, collectionComparer, emitCheckIfLoopsAreDone, emitReferenceComparison, configuration, variable);
+                return new EnumerablesComparison(comparisons, defaultResult, collectionComparer, emitCheckIfLoopsAreDone, configuration, variable);
             }
 
             return null;
@@ -125,8 +121,6 @@ namespace ILLightenComparer.Shared.Comparisons
               .Store(_enumeratorType, out var xEnumerator)
               .Call(_getEnumeratorMethod, LoadCaller(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
-
-            //_emitReferenceComparison(il, LoadLocal(xEnumerator), LoadLocal(yEnumerator), GoTo(gotoNext));
 
             return (xEnumerator, yEnumerator);
         }
