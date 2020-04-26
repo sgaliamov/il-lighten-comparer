@@ -82,13 +82,13 @@
 - [x] review reasoning
 - [x] publish
 
-## Phase 6 GetHashCode
+## Phase 6 IEqualityComparer
 
 - [x] support for .net core 3
 - [x] create reusable traversing
 - [x] implement `GetHashCode`
 - [x] implement `Equals`
-- [ ] implementation for `IEnumarable`
+- [x] implementation for `IEnumarable`
 - [ ] create tests
 
 ## Phase 7 Improvements
@@ -97,7 +97,7 @@
 - [x] reuse local variables for same types
 - [x] caching for assembly
 - [x] use short versions of opt codes when possible
-- [x] use call instead callvirt when possible
+- [x] use call instead `callvirt` when possible
 - [x] cache instances by type and **configuration** in `Context.GetComparerType`
 - [x] ~~create unified interface `IComparer<>: IComparer<>, IComparer`~~
 - [x] ~~possible to merge `MembersComparison` and `HierarchicalsComparison` but need to create `LocalVariable` class~~
