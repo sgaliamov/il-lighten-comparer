@@ -86,7 +86,7 @@ namespace ILLightenComparer.Shared.Comparisons
             // the problem now with the inner `return` statements, it has to be `leave` instruction
             //il.BeginExceptionBlock(); 
 
-            Loop(il, xEnumerator, yEnumerator, gotoNext);
+            Loop(il, xEnumerator, yEnumerator);
 
             //il.BeginFinallyBlock();
             EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
@@ -127,14 +127,16 @@ namespace ILLightenComparer.Shared.Comparisons
             return (xEnumerator, yEnumerator);
         }
 
-        private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label gotoNext)
+        private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator)
         {
-            il.DefineLabel(out var loopStart).MarkLabel(loopStart);
+            il.DefineLabel(out var loopStart)
+              .DefineLabel(out var loopEnd);
 
             using (il.LocalsScope()) {
+                il.MarkLabel(loopStart);
                 var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
 
-                _emitCheckIfLoopsAreDone(il, xDone, yDone, gotoNext);
+                _emitCheckIfLoopsAreDone(il, xDone, yDone, loopEnd);
             }
 
             using (il.LocalsScope()) {
@@ -145,8 +147,10 @@ namespace ILLightenComparer.Shared.Comparisons
 
                 var itemVariable = new EnumerableItemVariable(_enumeratorType, _elementType, _getCurrentMethod, enumerators);
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
-                itemComparison.Emit(il, loopStart);
-                itemComparison.EmitCheckForIntermediateResult(il, loopStart);
+
+                il.Execute(itemComparison.Emit(loopStart))
+                  .Execute(itemComparison.EmitCheckForIntermediateResult(loopStart))
+                  .MarkLabel(loopEnd);
             }
         }
 

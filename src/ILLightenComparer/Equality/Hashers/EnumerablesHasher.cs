@@ -99,7 +99,7 @@ namespace ILLightenComparer.Equality.Hashers
             return il.LoadLocal(hash).MarkLabel(end);
         }
 
-        private ILEmitter Loop(ILEmitter il, LocalBuilder enumerator, LocalBuilder hash)
+        private void Loop(ILEmitter il, LocalBuilder enumerator, LocalBuilder hash)
         {
             il.DefineLabel(out var loopStart)
               .DefineLabel(out var loopEnd);
@@ -118,10 +118,9 @@ namespace ILLightenComparer.Equality.Hashers
                 _resolver
                     .GetHasherEmitter(itemVariable)
                     .EmitHashing(il, hash)
-                    .GoTo(loopStart);
+                    .GoTo(loopStart)
+                    .MarkLabel(loopEnd);
             }
-
-            return il.MarkLabel(loopEnd);
         }
 
         private static void EmitDisposeEnumerator(ILEmitter il, LocalBuilder enumerator) => il
