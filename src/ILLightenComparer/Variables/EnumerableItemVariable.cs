@@ -31,13 +31,10 @@ namespace ILLightenComparer.Variables
         /// </summary>
         public Type OwnerType { get; }
 
-        public ILEmitter Load(ILEmitter il, ushort arg) => il
-            .Execute(LoadCaller(_enumerators[arg]))
-            .Call(_getCurrentMethod);
+        public ILEmitter Load(ILEmitter il, ushort arg) => il.Call(_getCurrentMethod, LoadCaller(_enumerators[arg]));
 
         public ILEmitter LoadAddress(ILEmitter il, ushort arg) => il
-            .Execute(LoadCaller(_enumerators[arg]))
-            .Call(_getCurrentMethod)
+            .Call(_getCurrentMethod, LoadCaller(_enumerators[arg]))
             .Store(VariableType, out var local)
             .LoadAddress(local);
     }
