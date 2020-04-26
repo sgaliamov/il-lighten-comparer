@@ -26,6 +26,7 @@ namespace ILLightenComparer.Shared.Comparisons
         private readonly IConfigurationProvider _configuration;
         private readonly IResolver _resolver;
         private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
+        private readonly EmitReferenceComparisonDelegate _emitReferenceComparison;
         private readonly int _defaultResult;
 
         private EnumerablesComparison(
@@ -33,6 +34,7 @@ namespace ILLightenComparer.Shared.Comparisons
             int defaultResult,
             CollectionComparer collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
+            EmitReferenceComparisonDelegate emitReferenceComparison,
             IConfigurationProvider configuration,
             IVariable variable)
         {
@@ -40,6 +42,7 @@ namespace ILLightenComparer.Shared.Comparisons
             _defaultResult = defaultResult;
             _collectionComparer = collectionComparer;
             _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
+            _emitReferenceComparison = emitReferenceComparison;
             _configuration = configuration;
             _variable = variable;
 
@@ -61,12 +64,13 @@ namespace ILLightenComparer.Shared.Comparisons
             int defaultResult,
             CollectionComparer collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
+            EmitReferenceComparisonDelegate emitReferenceComparison,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, defaultResult, collectionComparer, emitCheckIfLoopsAreDone, configuration, variable);
+                return new EnumerablesComparison(comparisons, defaultResult, collectionComparer, emitCheckIfLoopsAreDone, emitReferenceComparison, configuration, variable);
             }
 
             return null;
@@ -80,7 +84,7 @@ namespace ILLightenComparer.Shared.Comparisons
                 return EmitCompareAsSortedArrays(il, gotoNext, x, y);
             }
 
-            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(x, y, il);
+            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(il, x, y, gotoNext);
 
             // todo: 1. think how to use try/finally block
             // the problem now with the inner `return` statements, it has to be `leave` instruction
@@ -115,14 +119,14 @@ namespace ILLightenComparer.Shared.Comparisons
             return _collectionComparer.CompareArrays(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
-        private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(LocalBuilder xEnumerable, LocalBuilder yEnumerable, ILEmitter il)
+        private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable, Label gotoNext)
         {
             il.Call(_getEnumeratorMethod, LoadCaller(xEnumerable))
               .Store(_enumeratorType, out var xEnumerator)
               .Call(_getEnumeratorMethod, LoadCaller(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
 
-            // todo: 3. verify that enumerators are not nulls
+            _emitReferenceComparison(il, LoadLocal(xEnumerator), LoadLocal(yEnumerator), GoTo(gotoNext));
 
             return (xEnumerator, yEnumerator);
         }

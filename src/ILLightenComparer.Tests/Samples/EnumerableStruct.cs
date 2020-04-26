@@ -11,7 +11,7 @@ namespace ILLightenComparer.Tests.Samples
 
         public EnumerableStruct(IEnumerable<T> enumerable) => _enumerable = enumerable;
 
-        public IEnumerator<T> GetEnumerator() => _enumerable.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => _enumerable?.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

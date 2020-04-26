@@ -265,7 +265,6 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-
         [Fact]
         public void Enumerable_structs_with_nullables_are_comparable()
         {
