@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Illuminator.Extensions;
@@ -9,8 +10,6 @@ namespace ILLightenComparer.Extensions
 {
     internal static class TypeExtensions
     {
-        private const string CompareTo = nameof(IComparable.CompareTo);
-
         private static readonly HashSet<Type> SmallIntegralTypes = new HashSet<Type>(new[] {
             typeof(sbyte),
             typeof(byte),
@@ -62,7 +61,7 @@ namespace ILLightenComparer.Extensions
         {
             var underlyingType = type.GetUnderlyingType();
 
-            return underlyingType.GetMethod(CompareTo, new[] { underlyingType });
+            return underlyingType.FindMethod(nameof(IComparable.CompareTo), new[] { underlyingType });
         }
 
         public static MethodInfo GetPropertyGetter(this Type type, string name) =>
@@ -87,5 +86,18 @@ namespace ILLightenComparer.Extensions
             !type.IsPrimitive()
             && !type.IsNullable()
             && !typeof(IEnumerable).IsAssignableFrom(type);
+
+        public static MethodInfo FindMethod(this Type type, string name, Type[] types)
+        {
+            if (type.IsInterface) {
+                return type
+                    .GetMethod(name, types) ?? type
+                    .GetInterfaces()
+                    .Select(i => FindMethod(i, name, types))
+                    .FirstOrDefault(m => m != null);
+            }
+
+            return type.GetMethod(name, types);
+        }
     }
 }

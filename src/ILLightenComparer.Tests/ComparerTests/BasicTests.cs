@@ -1,5 +1,9 @@
-﻿using AutoFixture;
+﻿using System;
+using System.Collections.Generic;
+using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
+using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
@@ -8,6 +12,8 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class BasicTests
     {
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         [Fact]
         public void Empty_object_should_be_equal()
         {
@@ -33,13 +39,69 @@ namespace ILLightenComparer.Tests.ComparerTests
         {
             var comparer = new ComparerBuilder().GetComparer<DummyStruct?>();
 
-            var fixture = FixtureBuilder.GetInstance();
-
-            fixture.Create<DummyStruct>();
+            _fixture.Create<DummyStruct>();
 
             var actual = comparer.Compare(new DummyStruct(), new DummyStruct());
 
             actual.Should().Be(0);
+        }
+
+        [Fact]
+        public void Enumerables_are_not_equal()
+        {
+            var x = new List<int>(new[] { 1, 2, 3 });
+            var y = new List<int>(new[] { 2, 3, 1 });
+
+            var comparer = new ComparerBuilder().GetComparer<IEnumerable<int>>();
+
+            var result = comparer.Compare(x, y);
+
+            result.Should().Be(-1);
+        }
+
+        [Fact]
+        public void Enumerable_structs_are_comparable()
+        {
+            var referenceComparer = new CollectionComparer<int>();
+            var x = _fixture.Create<EnumerableStruct<int>>();
+            var y = _fixture.Create<EnumerableStruct<int>>();
+            var expected = referenceComparer.Compare(x, y);
+
+            var comparer = new ComparerBuilder().GetComparer<EnumerableStruct<int>>();
+
+            var result = comparer.Compare(x, y);
+
+            result.Should().Be(expected);
+        }
+
+        [Fact]
+        public void Enumerable_structs_with_nullables_are_comparable()
+        {
+            var referenceComparer = new CollectionComparer<SampleStruct<int?>?>(new NullableComparer<SampleStruct<int?>>(new SampleStructComparer<int?>()));
+            var comparer = new ComparerBuilder().GetComparer<EnumerableStruct<SampleStruct<int?>?>>();
+
+            Helper.Parallel(() => {
+                var x = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+                var y = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+
+                var expectedEquals = referenceComparer.Compare(x, y);
+                var equals = comparer.Compare(x, y);
+
+                using (new AssertionScope()) {
+                    comparer.Compare(x, x).Should().Be(0);
+                    equals.Should().Be(expectedEquals);
+                }
+            });
+        }
+
+        [Fact]
+        public void Null_enumerator_pass()
+        {
+            var x = new EnumerableStruct<int>(null);
+            var comparer = new ComparerBuilder().GetComparer<EnumerableStruct<int>>();
+
+            Assert.Throws<NullReferenceException>(() => comparer.Compare(x, x));
+            Assert.Throws<NullReferenceException>(() => comparer.Compare(default, default));
         }
     }
 }

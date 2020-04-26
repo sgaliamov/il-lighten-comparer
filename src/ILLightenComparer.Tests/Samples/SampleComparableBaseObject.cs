@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ILLightenComparer.Tests.Samples
 {
+    [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "Test class")]
     public class SampleComparableBaseObject<TMember> : IComparable<SampleComparableBaseObject<TMember>>
     {
-        public static IComparer<TMember> Comparer = Comparer<TMember>.Default;
+        [SuppressMessage("Design", "RCS1158:Static member in generic type should use a type parameter.", Justification = "Test class")]
         public static bool UsedCompareTo;
+        public static IComparer<TMember> Comparer = Comparer<TMember>.Default;
 
         public TMember Field;
         public TMember Property { get; set; }

@@ -33,21 +33,19 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Compare_types_directly()
         {
-            Parallel.ForEach(SampleTypes.Types,
-                item => {
-                    var (type, referenceComparer) = item;
-                    new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
-                });
+            Parallel.ForEach(SampleTypes.Types, item => {
+                var (type, referenceComparer) = item;
+                new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
+            });
         }
 
         private static void TestCollection(Type genericCollectionType = null)
         {
-            Parallel.ForEach(SampleTypes.Types,
-                item => {
-                    var (type, referenceComparer) = item;
-                    TestCollection(type, referenceComparer, genericCollectionType, false);
-                    TestCollection(type, referenceComparer, genericCollectionType, true);
-                });
+            Parallel.ForEach(SampleTypes.Types, item => {
+                var (type, referenceComparer) = item;
+                TestCollection(type, referenceComparer, genericCollectionType, false);
+                TestCollection(type, referenceComparer, genericCollectionType, true);
+            });
         }
 
         private static void TestNullableCollection(Type genericCollectionType = null)
@@ -58,15 +56,11 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void TestCollection(
-            Type objectType,
-            IComparer itemComparer,
-            Type genericCollectionType,
-            bool sort)
+        private static void TestCollection(Type objectType, IComparer itemComparer, Type genericCollectionType, bool sort)
         {
             var collectionType = genericCollectionType == null
-                                     ? objectType.MakeArrayType()
-                                     : genericCollectionType.MakeGenericType(objectType);
+                ? objectType.MakeArrayType()
+                : genericCollectionType.MakeGenericType(objectType);
 
             var comparerType = typeof(CollectionComparer<>).MakeGenericType(objectType);
             var constructor = comparerType.GetConstructor(new[] { typeof(IComparer<>).MakeGenericType(objectType), typeof(bool) });

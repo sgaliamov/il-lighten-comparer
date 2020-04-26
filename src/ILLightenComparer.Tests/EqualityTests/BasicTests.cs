@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -11,6 +13,8 @@ namespace ILLightenComparer.Tests.EqualityTests
 {
     public sealed class BasicTests
     {
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         [Fact]
         public void Empty_object_should_be_equal()
         {
@@ -220,6 +224,86 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+        [Fact]
+        public void Enumerables_are_not_equal()
+        {
+            var x = new List<int>(new[] { 1, 2, 3 });
+            var y = new List<int>(new[] { 2, 3, 1 });
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<IEnumerable<int>>();
+            var equals = comparer.Equals(x, y);
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+
+            using (new AssertionScope()) {
+                equals.Should().BeFalse();
+                hashX.Should().NotBe(hashY);
+            }
+        }
+
+        [Fact]
+        public void Enumerable_structs_are_comparable()
+        {
+            var x = _fixture.Create<EnumerableStruct<int>>();
+            var y = _fixture.Create<EnumerableStruct<int>>();
+
+            var referenceComparer = new CollectionEqualityComparer<int>();
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<int>>();
+            var equals = comparer.Equals(x, y);
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+
+            using (new AssertionScope()) {
+                comparer.Equals(x, x).Should().BeTrue();
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
+        }
+
+        [Fact]
+        public void Enumerable_structs_with_nullables_are_comparable()
+        {
+            var referenceComparer = new CollectionEqualityComparer<SampleStruct<int?>?>(new NullableEqualityComparer<SampleStruct<int?>>(new SampleStructEqualityComparer<int?>()));
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<SampleStruct<int?>?>>();
+
+            Helper.Parallel(() => {
+                var x = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+                var y = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+
+                var expectedHashX = referenceComparer.GetHashCode(x);
+                var expectedHashY = referenceComparer.GetHashCode(y);
+                var expectedEquals = referenceComparer.Equals(x, y);
+
+                var equals = comparer.Equals(x, y);
+                var hashX = comparer.GetHashCode(x);
+                var hashY = comparer.GetHashCode(y);
+
+                using (new AssertionScope()) {
+                    comparer.Equals(x, x).Should().BeTrue();
+                    equals.Should().Be(expectedEquals);
+                    hashX.Should().Be(expectedHashX);
+                    hashY.Should().Be(expectedHashY);
+                }
+            });
+        }
+
+        [Fact]
+        public void Null_enumerator_pass()
+        {
+            var x = new EnumerableStruct<int>(null);
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<int>>();
+            var hashX = comparer.GetHashCode(x);
+
+            using (new AssertionScope()) {
+                Assert.Throws<NullReferenceException>(() => comparer.Equals(x, x));
+                Assert.Throws<NullReferenceException>(() => comparer.Equals(default, default));
+                hashX.Should().Be(0);
+            }
+        }
     }
 }

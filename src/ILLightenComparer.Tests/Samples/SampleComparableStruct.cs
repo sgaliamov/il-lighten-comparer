@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ILLightenComparer.Tests.Samples
 {
+    [SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "Test class")]
+    [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "Test class")]
     public struct SampleComparableStruct<TMember> : IComparable<SampleComparableStruct<TMember>>
     {
         public static IComparer<TMember> Comparer = Comparer<TMember>.Default;

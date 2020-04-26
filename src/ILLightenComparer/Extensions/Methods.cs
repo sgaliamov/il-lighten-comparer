@@ -5,7 +5,7 @@ using Illuminator.Extensions;
 
 namespace ILLightenComparer.Extensions
 {
-    internal static class MethodInfoExtensions
+    internal static class Methods
     {
         public static TResult InvokeCompare<TContext, TComparable, TResult>(
             this MethodInfo method,
@@ -36,5 +36,7 @@ namespace ILLightenComparer.Extensions
 
             return compare(context, x, y, xSet, ySet);
         }
+
+        public static readonly MethodInfo DisposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
     }
 }

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -15,18 +16,17 @@ namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class EnumerablesComparison : IComparisonEmitter
     {
-        private static readonly MethodInfo MoveNextMethod = typeof(IEnumerator).GetMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
-        private static readonly MethodInfo DisposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
-
         private readonly Type _elementType;
         private readonly Type _enumeratorType;
+        private readonly MethodInfo _moveNextMethod;
+        private readonly MethodInfo _getCurrentMethod;
         private readonly MethodInfo _getEnumeratorMethod;
-        private readonly IVariable _variable;
         private readonly CollectionComparer _collectionComparer;
-        private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
-        private readonly IResolver _resolver;
-        private readonly int _defaultResult;
+        private readonly IVariable _variable;
         private readonly IConfigurationProvider _configuration;
+        private readonly IResolver _resolver;
+        private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
+        private readonly int _defaultResult;
 
         private EnumerablesComparison(
             IResolver resolver,
@@ -43,19 +43,17 @@ namespace ILLightenComparer.Shared.Comparisons
             _configuration = configuration;
             _variable = variable;
 
-            _elementType = variable
-                .VariableType
+            var variableType = variable.VariableType;
+
+            _elementType = variableType
                 .FindGenericInterface(typeof(IEnumerable<>))
                 .GetGenericArguments()
-                .SingleOrDefault()
-                ?? throw new ArgumentException(nameof(variable));
+                .Single();
 
-            // todo: 2. use read enumerator, not virtual
-            _enumeratorType = typeof(IEnumerator<>).MakeGenericType(_elementType);
-
-            _getEnumeratorMethod = typeof(IEnumerable<>)
-                .MakeGenericType(_elementType)
-                .GetMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
+            _getEnumeratorMethod = variableType.FindMethod(nameof(IEnumerable.GetEnumerator), Type.EmptyTypes);
+            _enumeratorType = _getEnumeratorMethod.ReturnType;
+            _moveNextMethod = _enumeratorType.FindMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
+            _getCurrentMethod = _enumeratorType.GetPropertyGetter(nameof(IEnumerator.Current));
         }
 
         public static EnumerablesComparison Create(
@@ -82,16 +80,16 @@ namespace ILLightenComparer.Shared.Comparisons
                 return EmitCompareAsSortedArrays(il, gotoNext, x, y);
             }
 
-            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(x, y, il);
+            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(il, x, y);
 
             // todo: 1. think how to use try/finally block
             // the problem now with the inner `return` statements, it has to be `leave` instruction
             //il.BeginExceptionBlock(); 
 
-            Loop(xEnumerator, yEnumerator, il, gotoNext);
+            Loop(il, xEnumerator, yEnumerator, gotoNext);
 
             //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(xEnumerator, yEnumerator, il, gotoNext);
+            EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
 
             //il.EndExceptionBlock();
 
@@ -102,7 +100,7 @@ namespace ILLightenComparer.Shared.Comparisons
             .DefineLabel(out var exit)
             .Execute(this.Emit(exit))
             .MarkLabel(exit)
-            .Return(0);
+            .Return(_defaultResult);
 
         public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label _) => il;
 
@@ -117,51 +115,56 @@ namespace ILLightenComparer.Shared.Comparisons
             return _collectionComparer.CompareArrays(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
-        private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(LocalBuilder xEnumerable, LocalBuilder yEnumerable, ILEmitter il)
+        private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable)
         {
-            il.Call(_getEnumeratorMethod, LoadLocal(xEnumerable))
+            il.Call(_getEnumeratorMethod, LoadCaller(xEnumerable))
               .Store(_enumeratorType, out var xEnumerator)
-              .Call(_getEnumeratorMethod, LoadLocal(yEnumerable))
+              .Call(_getEnumeratorMethod, LoadCaller(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
+
+            // todo: 3. check enumerators for null?
 
             return (xEnumerator, yEnumerator);
         }
 
-        private void Loop(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il, Label gotoNext)
+        private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label gotoNext)
         {
-            il.DefineLabel(out var continueLoop).MarkLabel(continueLoop);
+            il.DefineLabel(out var loopStart);
 
             using (il.LocalsScope()) {
+                il.MarkLabel(loopStart);
                 var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
 
                 _emitCheckIfLoopsAreDone(il, xDone, yDone, gotoNext);
             }
 
             using (il.LocalsScope()) {
-                var itemVariable = new EnumerableItemVariable(_variable.OwnerType, xEnumerator, yEnumerator);
+                var enumerators = new Dictionary<ushort, LocalBuilder>(2) {
+                    [Arg.X] = xEnumerator,
+                    [Arg.Y] = yEnumerator
+                };
+
+                var itemVariable = new EnumerableItemVariable(_enumeratorType, _elementType, _getCurrentMethod, enumerators);
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
-                itemComparison.Emit(il, continueLoop);
-                itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
+
+                il.Execute(itemComparison.Emit(loopStart))
+                  .Execute(itemComparison.EmitCheckForIntermediateResult(loopStart));
             }
         }
 
-        private static (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
+        private (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
         {
-            il.AreSame(Call(MoveNextMethod, LoadLocal(xEnumerator)), LoadInteger(0), out var xDone)
-              .AreSame(Call(MoveNextMethod, LoadLocal(yEnumerator)), LoadInteger(0), out var yDone);
+            // todo: 3. it's possible to use "not done" flag. it will simplify emitted code in _emitCheckIfLoopsAreDone.
+            il.AreSame(Call(_moveNextMethod, LoadCaller(xEnumerator)), LoadInteger(0), out var xDone)
+              .AreSame(Call(_moveNextMethod, LoadCaller(yEnumerator)), LoadInteger(0), out var yDone);
 
             return (xDone, yDone);
         }
 
-        private static void EmitDisposeEnumerators(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il, Label gotoNext) => il
-            .LoadLocal(xEnumerator)
-            .IfFalse_S(out var check)
-            .LoadLocal(xEnumerator)
-            .Call(DisposeMethod)
-            .MarkLabel(check)
-            .LoadLocal(yEnumerator)
-            .IfFalse(gotoNext)
-            .LoadLocal(yEnumerator)
-            .Call(DisposeMethod);
+        private static void EmitDisposeEnumerators(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator) => il
+            .LoadCaller(xEnumerator)
+            .Call(Methods.DisposeMethod)
+            .LoadCaller(yEnumerator)
+            .Call(Methods.DisposeMethod);
     }
 }

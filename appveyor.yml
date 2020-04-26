@@ -44,11 +44,11 @@ build_script:
 test_script:
 - pwsh: |
     if ($env:CONFIGURATION -eq 'debug') {
-      nuget install OpenCover -Verbosity quiet -Version 4.6.519
+      nuget install OpenCover -Verbosity quiet -Version 4.7.922
       Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
 
       Get-ChildItem .\**\*.Tests.csproj -Recurse | ForEach-Object {
-          .\OpenCover.4.6.519\tools\OpenCover.Console.exe `
+          .\OpenCover.4.7.922\tools\OpenCover.Console.exe `
               -register:user `
               -target:'C:\Program Files\dotnet\dotnet.exe' `
               -targetargs:"test $_ --no-build -c debug" `
