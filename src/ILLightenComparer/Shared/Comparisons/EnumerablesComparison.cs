@@ -80,7 +80,7 @@ namespace ILLightenComparer.Shared.Comparisons
                 return EmitCompareAsSortedArrays(il, gotoNext, x, y);
             }
 
-            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(il, x, y, gotoNext);
+            var (xEnumerator, yEnumerator) = EmitLoadEnumerators(il, x, y);
 
             // todo: 1. think how to use try/finally block
             // the problem now with the inner `return` statements, it has to be `leave` instruction
@@ -115,12 +115,14 @@ namespace ILLightenComparer.Shared.Comparisons
             return _collectionComparer.CompareArrays(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
-        private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable, Label gotoNext)
+        private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable)
         {
             il.Call(_getEnumeratorMethod, LoadCaller(xEnumerable))
               .Store(_enumeratorType, out var xEnumerator)
               .Call(_getEnumeratorMethod, LoadCaller(yEnumerable))
               .Store(_enumeratorType, out var yEnumerator);
+
+            // todo: 3. check enumerators for null?
 
             return (xEnumerator, yEnumerator);
         }

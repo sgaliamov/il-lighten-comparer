@@ -88,7 +88,6 @@ namespace ILLightenComparer.Tests.ComparerTests
 
             using (new AssertionScope()) {
                 comparer.Compare(x, x).Should().Be(0);
-                comparer.Compare(default, default).Should().Be(0);
                 equals.Should().Be(expectedEquals);
             }
         }
@@ -100,6 +99,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             var comparer = new ComparerBuilder().GetComparer<EnumerableStruct<int>>();
 
             Assert.Throws<NullReferenceException>(() => comparer.Compare(x, x));
+            Assert.Throws<NullReferenceException>(() => comparer.Compare(default, default));
         }
     }
 }

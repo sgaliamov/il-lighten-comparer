@@ -259,7 +259,6 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
-                comparer.Equals(default, default).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);
                 hashY.Should().Be(expectedHashY);
@@ -284,7 +283,6 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
-                comparer.Equals(default, default).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);
                 hashY.Should().Be(expectedHashY);
@@ -300,6 +298,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 Assert.Throws<NullReferenceException>(() => comparer.Equals(x, x));
+                Assert.Throws<NullReferenceException>(() => comparer.Equals(default, default));
                 hashX.Should().Be(0);
             }
         }
