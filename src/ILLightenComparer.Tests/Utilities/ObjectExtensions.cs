@@ -12,19 +12,17 @@ namespace ILLightenComparer.Tests.Utilities
     {
         private static int _counter;
 
-        private static readonly ConditionalWeakTable<object, object> ObjectIds =
-            new ConditionalWeakTable<object, object>();
+        private static readonly ConditionalWeakTable<object, object> ObjectIds = new ConditionalWeakTable<object, object>();
 
-        public static ConditionalWeakTable<object,
-            ConcurrentDictionary<string, object>> ObjectCache = new ConditionalWeakTable<object,
-            ConcurrentDictionary<string, object>>();
+        public static ConditionalWeakTable<object, ConcurrentDictionary<string, object>> ObjectCache =
+            new ConditionalWeakTable<object, ConcurrentDictionary<string, object>>();
 
         public static T GetOrAddProperty<T, TTarget>(this TTarget obj, string name, Func<T> value)
             where TTarget : class
         {
             var properties = ObjectCache.GetOrCreateValue(obj);
 
-            return (T)properties.GetOrAdd(name, (key, x) => x, value());
+            return (T)properties.GetOrAdd(name, (_, x) => x, value());
         }
 
         public static int GetObjectId<T>(this T target) where T : class => (int)ObjectIds.GetValue(target, _ => Interlocked.Increment(ref _counter));
@@ -41,14 +39,14 @@ namespace ILLightenComparer.Tests.Utilities
                 return type;
             }
 
-            return type.GetInterfaces().FirstOrDefault(t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
+            return Array.Find(type.GetInterfaces(), t => t.IsGenericType && generic == t.GetGenericTypeDefinition());
         }
 
         public static MethodInfo GetGenericMethod(this IReflect fromType, string name, BindingFlags bindingFlags)
         {
             return fromType
-                   .GetMethods(bindingFlags)
-                   .Single(x => x.Name == name && x.IsGenericMethodDefinition);
+                .GetMethods(bindingFlags)
+                .Single(x => x.Name == name && x.IsGenericMethodDefinition);
         }
     }
 }
