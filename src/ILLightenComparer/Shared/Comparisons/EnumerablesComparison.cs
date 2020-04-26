@@ -100,7 +100,7 @@ namespace ILLightenComparer.Shared.Comparisons
             .DefineLabel(out var exit)
             .Execute(this.Emit(exit))
             .MarkLabel(exit)
-            .Return(0);
+            .Return(_defaultResult);
 
         public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label _) => il;
 
@@ -154,6 +154,8 @@ namespace ILLightenComparer.Shared.Comparisons
         {
             il.AreSame(Call(_moveNextMethod, LoadCaller(xEnumerator)), LoadInteger(0), out var xDone)
               .AreSame(Call(_moveNextMethod, LoadCaller(yEnumerator)), LoadInteger(0), out var yDone);
+            //il.Call(_moveNextMethod, LoadCaller(xEnumerator)).Not().Store(typeof(bool), out var xDone)
+            //  .Call(_moveNextMethod, LoadCaller(yEnumerator)).Not().Store(typeof(bool), out var yDone);
 
             return (xDone, yDone);
         }

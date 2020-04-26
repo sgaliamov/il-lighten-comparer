@@ -73,11 +73,16 @@ namespace ILLightenComparer.Equality.Hashers
 
             il.Execute(_variable.Load(Arg.Input))
               .Store(_variable.VariableType, out var enumerable)
-              .IfTrue_S(LoadLocal(enumerable), out var begin) // todo: 0. test if struct
-              .LoadInteger(0)
-              .GoTo(out var end)
-              .MarkLabel(begin)
-              .Call(_getEnumeratorMethod, LoadCaller(enumerable))
+              .DefineLabel(out var end);
+
+            if (!_variable.VariableType.IsValueType) {
+                il.IfTrue_S(LoadLocal(enumerable), out var begin) // todo: 0. test if struct
+                  .LoadInteger(0)
+                  .GoTo(end)
+                  .MarkLabel(begin);
+            }
+
+            il.Call(_getEnumeratorMethod, LoadCaller(enumerable))
               .Store(_enumeratorType, out var enumerator);
 
             // todo: 1. think how to use try/finally block
@@ -101,8 +106,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
-                  .AreSame(Call(_moveNextMethod, LoadCaller(enumerator)), LoadInteger(0), out var done)
-                  .LoadLocal(done)
+                  .AreSame(Call(_moveNextMethod, LoadCaller(enumerator)), LoadInteger(0))
                   .IfFalse_S(out var next)
                   .GoTo(loopEnd)
                   .MarkLabel(next);
