@@ -3,14 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class CollectionOfCollectionsTests
     {
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         [Fact]
         public void Compare_array_of_array()
         {
@@ -23,6 +29,29 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
 
             CompareCollectionOfCollections(GetCollectionTypes);
+        }
+
+        [Fact]
+        public void Compare_enumerables_of_enumerables()
+        {
+            var collectionComparer = new CollectionComparer<List<int?>>(new CollectionComparer<int?>());
+            var referenceComparer = new CollectionComparer<EnumerableStruct<List<int?>>?>(
+                new NullableComparer<EnumerableStruct<List<int?>>>(
+                    new CustomizableComparer<EnumerableStruct<List<int?>>>((a, b) => collectionComparer.Compare(a, b))));
+            var comparer = new ComparerBuilder().GetComparer<IEnumerable<EnumerableStruct<List<int?>>?>>();
+
+            Helper.Parallel(() => {
+                var x = _fixture.CreateMany<EnumerableStruct<List<int?>>?>().RandomNulls().ToList();
+                var y = _fixture.CreateMany<EnumerableStruct<List<int?>>?>().RandomNulls().ToList();
+
+                var expectedEquals = referenceComparer.Compare(x, y);
+                var equals = comparer.Compare(x, y);
+
+                using (new AssertionScope()) {
+                    comparer.Compare(x, x).Should().Be(0);
+                    equals.Should().Be(expectedEquals);
+                }
+            });
         }
 
         [Fact]
