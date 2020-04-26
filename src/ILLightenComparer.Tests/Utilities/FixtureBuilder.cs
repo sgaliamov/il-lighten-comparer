@@ -69,7 +69,7 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static object Create(this Fixture fixture, Type type)
+        private static object Create(this Fixture fixture, Type type)
         {
             var context = fixture.GetOrAddProperty(nameof(SpecimenContext), () => new SpecimenContext(fixture));
 

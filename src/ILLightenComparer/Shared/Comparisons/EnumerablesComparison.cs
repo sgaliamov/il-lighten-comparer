@@ -160,6 +160,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
         {
+            // todo: 3. it's possible to use "not done" flag. it will simplify emitted code in _emitCheckIfLoopsAreDone.
             il.AreSame(Call(_moveNextMethod, LoadCaller(xEnumerator)), LoadInteger(0), out var xDone)
               .AreSame(Call(_moveNextMethod, LoadCaller(yEnumerator)), LoadInteger(0), out var yDone);
 
