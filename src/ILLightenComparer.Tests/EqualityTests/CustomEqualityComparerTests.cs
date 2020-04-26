@@ -147,7 +147,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             });
         }
 
-        private static void Test(Action action) => Enumerable.Range(0, 8).AsParallel().ForAll(_ => action());
+        private static void Test(Action action) => Enumerable.Range(0, Constants.SmallCount).AsParallel().ForAll(_ => action());
 
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
