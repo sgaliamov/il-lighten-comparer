@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
@@ -294,13 +295,11 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Null_enumerator_pass()
         {
             var x = new EnumerableStruct<int>(null);
-
             var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<int>>();
-            var equals = comparer.Equals(x, x);
             var hashX = comparer.GetHashCode(x);
 
             using (new AssertionScope()) {
-                equals.Should().BeTrue();
+                Assert.Throws<NullReferenceException>(() => comparer.Equals(x, x));
                 hashX.Should().Be(0);
             }
         }
