@@ -129,7 +129,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label gotoNext)
         {
-            il.DefineLabel(out var continueLoop).MarkLabel(continueLoop);
+            il.DefineLabel(out var loopStart).MarkLabel(loopStart);
 
             using (il.LocalsScope()) {
                 var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
@@ -145,8 +145,8 @@ namespace ILLightenComparer.Shared.Comparisons
 
                 var itemVariable = new EnumerableItemVariable(_enumeratorType, _elementType, _getCurrentMethod, enumerators);
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
-                itemComparison.Emit(il, continueLoop);
-                itemComparison.EmitCheckForIntermediateResult(il, continueLoop);
+                itemComparison.Emit(il, loopStart);
+                itemComparison.EmitCheckForIntermediateResult(il, loopStart);
             }
         }
 
@@ -154,8 +154,6 @@ namespace ILLightenComparer.Shared.Comparisons
         {
             il.AreSame(Call(_moveNextMethod, LoadCaller(xEnumerator)), LoadInteger(0), out var xDone)
               .AreSame(Call(_moveNextMethod, LoadCaller(yEnumerator)), LoadInteger(0), out var yDone);
-            //il.Call(_moveNextMethod, LoadCaller(xEnumerator)).Not().Store(typeof(bool), out var xDone)
-            //  .Call(_moveNextMethod, LoadCaller(yEnumerator)).Not().Store(typeof(bool), out var yDone);
 
             return (xDone, yDone);
         }

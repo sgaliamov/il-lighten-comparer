@@ -106,8 +106,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
-                  .AreSame(Call(_moveNextMethod, LoadCaller(enumerator)), LoadInteger(0))
-                  .IfFalse_S(out var next)
+                  .IfTrue_S(Call(_moveNextMethod, LoadCaller(enumerator)), out var next)
                   .GoTo(loopEnd)
                   .MarkLabel(next);
             }
