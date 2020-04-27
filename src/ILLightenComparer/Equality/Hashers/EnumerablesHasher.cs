@@ -24,6 +24,7 @@ namespace ILLightenComparer.Equality.Hashers
         private readonly MethodInfo _getEnumeratorMethod;
         private readonly MethodInfo _moveNextMethod;
         private readonly MethodInfo _getCurrentMethod;
+        private readonly ArrayHashEmitter _arrayHashEmitter;
 
         private EnumerablesHasher(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
         {
@@ -42,6 +43,7 @@ namespace ILLightenComparer.Equality.Hashers
             _enumeratorType = _getEnumeratorMethod.ReturnType;
             _moveNextMethod = _enumeratorType.FindMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
             _getCurrentMethod = _enumeratorType.GetPropertyGetter(nameof(IEnumerator.Current));
+            _arrayHashEmitter = new ArrayHashEmitter(resolver, variable);
         }
 
         public static EnumerablesHasher Create(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
@@ -78,7 +80,7 @@ namespace ILLightenComparer.Equality.Hashers
             }
 
             if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
-                return EmitHashAsSortedArray(il, hash);
+                return EmitHashAsSortedArray(il, enumerable, hash);
             }
 
             il.Call(_getEnumeratorMethod, LoadCaller(enumerable))
@@ -101,9 +103,13 @@ namespace ILLightenComparer.Equality.Hashers
             return il.LoadLocal(hash).MarkLabel(end);
         }
 
-        private ILEmitter EmitHashAsSortedArray(ILEmitter il, LocalBuilder hash)
+        private ILEmitter EmitHashAsSortedArray(ILEmitter il, LocalBuilder enumerable, LocalBuilder hash)
         {
-            throw new NotImplementedException();
+            var hasCustomComparer = _configuration.HasCustomComparer(_elementType);
+
+            il.EmitArraySorting(hasCustomComparer, _elementType, enumerable);
+
+            return _arrayHashEmitter.Emit(il, enumerable, hash);
         }
 
         private void Loop(ILEmitter il, LocalBuilder enumerator, Label loopStart, LocalBuilder hash)

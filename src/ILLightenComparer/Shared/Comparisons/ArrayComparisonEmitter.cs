@@ -37,13 +37,13 @@ namespace ILLightenComparer.Shared.Comparisons
         }
 
         public ILEmitter EmitCompareArrays(
+            ILEmitter il,
             Type arrayType,
             Type ownerType,
             LocalBuilder xArray,
             LocalBuilder yArray,
             LocalBuilder countX,
             LocalBuilder countY,
-            ILEmitter il,
             Label afterLoop)
         {
             il.LoadInteger(0)

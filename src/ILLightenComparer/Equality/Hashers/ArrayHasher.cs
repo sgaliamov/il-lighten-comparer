@@ -17,8 +17,9 @@ namespace ILLightenComparer.Equality.Hashers
 
         private ArrayHasher(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
         {
+            _variable = variable;
             _arrayHashEmitter = new ArrayHashEmitter(resolver, variable);
-            _configuration = configuration.Get(_variable.OwnerType);
+            _configuration = configuration.Get(variable.OwnerType);
             _hasCustomComparer = configuration.HasCustomComparer(variable.VariableType.GetElementType());
         }
 

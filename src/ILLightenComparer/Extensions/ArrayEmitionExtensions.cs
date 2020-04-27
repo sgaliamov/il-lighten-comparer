@@ -44,14 +44,6 @@ namespace ILLightenComparer.Extensions
             return il;
         }
 
-        public static (LocalBuilder countX, LocalBuilder countY) EmitLoadCounts(this ILEmitter il, Type arrayType, LocalBuilder arrayX, LocalBuilder arrayY)
-        {
-            il.EmitArrayLength(arrayType, arrayX, out var countX)
-              .EmitArrayLength(arrayType, arrayY, out var countY);
-
-            return (countX, countY);
-        }
-
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
         {
             var copyMethod = ToArrayMethod.MakeGenericMethod(elementType);

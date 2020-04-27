@@ -112,9 +112,10 @@ namespace ILLightenComparer.Shared.Comparisons
 
             var arrayType = _elementType.MakeArrayType();
 
-            var (countX, countY) = il.EmitLoadCounts(arrayType, x, y);
+            il.EmitArrayLength(arrayType, x, out var countX)
+              .EmitArrayLength(arrayType, y, out var countY);
 
-            return _collectionComparer.EmitCompareArrays(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
+            return _collectionComparer.EmitCompareArrays(il, arrayType, _variable.OwnerType, x, y, countX, countY, gotoNext);
         }
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable)
