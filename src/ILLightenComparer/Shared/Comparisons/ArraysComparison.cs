@@ -1,6 +1,7 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 
@@ -9,11 +10,11 @@ namespace ILLightenComparer.Shared.Comparisons
     internal sealed class ArraysComparison : IComparisonEmitter
     {
         private readonly int _defaultResult;
-        private readonly CollectionComparer _collectionComparer;
+        private readonly ArrayComparisonEmitter _collectionComparer;
         private readonly IConfigurationProvider _configuration;
         private readonly IVariable _variable;
 
-        private ArraysComparison(int defaultResult, CollectionComparer collectionComparer, IConfigurationProvider configuration, IVariable variable)
+        private ArraysComparison(int defaultResult, ArrayComparisonEmitter collectionComparer, IConfigurationProvider configuration, IVariable variable)
         {
             _configuration = configuration;
             _variable = variable;
@@ -21,7 +22,7 @@ namespace ILLightenComparer.Shared.Comparisons
             _collectionComparer = collectionComparer;
         }
 
-        public static ArraysComparison Create(int defaultResult, CollectionComparer collectionComparer, IConfigurationProvider configuration, IVariable variable)
+        public static ArraysComparison Create(int defaultResult, ArrayComparisonEmitter collectionComparer, IConfigurationProvider configuration, IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.IsArray && variableType.GetArrayRank() == 1) {
@@ -35,13 +36,13 @@ namespace ILLightenComparer.Shared.Comparisons
         {
             var variableType = _variable.VariableType;
             var (x, y) = _collectionComparer.EmitLoad(_variable, il, gotoNext);
-            var (countX, countY) = _collectionComparer.EmitLoadCounts(variableType, x, y, il);
+            var (countX, countY) = il.EmitLoadCounts(variableType, x, y);
 
             if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
-                _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
+                il.EmitArraySorting(_configuration, variableType.GetElementType(), x, y);
             }
 
-            return _collectionComparer.CompareArrays(variableType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
+            return _collectionComparer.EmitCompareArrays(variableType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
         public ILEmitter Emit(ILEmitter il) => il

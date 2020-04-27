@@ -21,7 +21,7 @@ namespace ILLightenComparer.Shared.Comparisons
         private readonly MethodInfo _moveNextMethod;
         private readonly MethodInfo _getCurrentMethod;
         private readonly MethodInfo _getEnumeratorMethod;
-        private readonly CollectionComparer _collectionComparer;
+        private readonly ArrayComparisonEmitter _collectionComparer;
         private readonly IVariable _variable;
         private readonly IConfigurationProvider _configuration;
         private readonly IResolver _resolver;
@@ -31,7 +31,7 @@ namespace ILLightenComparer.Shared.Comparisons
         private EnumerablesComparison(
             IResolver resolver,
             int defaultResult,
-            CollectionComparer collectionComparer,
+            ArrayComparisonEmitter collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
@@ -59,7 +59,7 @@ namespace ILLightenComparer.Shared.Comparisons
         public static EnumerablesComparison Create(
             IResolver comparisons,
             int defaultResult,
-            CollectionComparer collectionComparer,
+            ArrayComparisonEmitter collectionComparer,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
@@ -106,13 +106,13 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private ILEmitter EmitCompareAsSortedArrays(ILEmitter il, Label gotoNext, LocalBuilder x, LocalBuilder y)
         {
-            _collectionComparer.EmitArraySorting(il, _elementType, x, y);
+            il.EmitArraySorting(_configuration, _elementType, x, y);
 
             var arrayType = _elementType.MakeArrayType();
 
-            var (countX, countY) = _collectionComparer.EmitLoadCounts(arrayType, x, y, il);
+            var (countX, countY) = il.EmitLoadCounts(arrayType, x, y);
 
-            return _collectionComparer.CompareArrays(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
+            return _collectionComparer.EmitCompareArrays(arrayType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
         }
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable)
