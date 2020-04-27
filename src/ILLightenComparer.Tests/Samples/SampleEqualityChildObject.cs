@@ -3,7 +3,7 @@ using ILLightenComparer.Tests.EqualityComparers;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleEqualityChildObject<TMember> : SampleEqulaityBaseObject<TMember>
+    public sealed class SampleEqualityChildObject<TMember> : SampleEqualityBaseObject<TMember>
     {
         public static IEqualityComparer<TMember> ChildComparer = EqualityComparer<TMember>.Default;
 

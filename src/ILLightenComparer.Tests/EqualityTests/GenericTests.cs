@@ -52,7 +52,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     Comparison_with_same_produces_true(referenceComparer, typedComparer);
                 },
                 () => Comparisons_work_identical(referenceComparer, typedComparer, times),
-                () => Mutate_class_members_and_test_comparison(referenceComparer, typedComparer)
+                () => Mutate_class_members_and_test_comparison(referenceComparer, typedComparer, times)
             );
         }
 
@@ -121,19 +121,22 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-        private static void Mutate_class_members_and_test_comparison<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
+        private static void Mutate_class_members_and_test_comparison<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer, int times)
         {
             if (typeof(T).IsValueType) { return; }
 
             if (typeof(T).GetGenericInterface(typeof(IEnumerable<>)) != null) { return; }
 
-            var original = Fixture.Create<T>();
-            foreach (var mutant in Fixture.CreateMutants(original)) {
-                using (new AssertionScope()) {
-                    referenceComparer.Equals(mutant, original).Should().BeFalse();
-                    typedComparer.Equals(mutant, original).Should().BeFalse();
-                    typedComparer.GetHashCode(mutant).Should().Be(referenceComparer.GetHashCode(original));
-                    typedComparer.GetHashCode(original).Should().Be(referenceComparer.GetHashCode(mutant));
+            for (int i = 0; i < times; i++) {
+                var original = Fixture.Create<T>();
+                foreach (var mutant in Fixture.CreateMutants(original)) {
+                    var because = $":\n{typeof(T)}\n{original}\n{mutant}\n{referenceComparer.GetType()}\n";
+                    using (new AssertionScope()) {
+                        referenceComparer.Equals(mutant, original).Should().BeFalse(because);
+                        typedComparer.Equals(mutant, original).Should().BeFalse(because);
+                        typedComparer.GetHashCode(mutant).Should().Be(referenceComparer.GetHashCode(mutant), because);
+                        typedComparer.GetHashCode(original).Should().Be(referenceComparer.GetHashCode(original), because);
+                    }
                 }
             }
         }

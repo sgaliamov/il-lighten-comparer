@@ -117,6 +117,30 @@ namespace ILLightenComparer.Tests.EqualityTests
         }
 
         [Fact]
+        public void Basic_test()
+        {
+            var x = new SampleEqualityChildObject<EnumSmall?> { Field = null, Property = EnumSmall.First };
+            var y = new SampleEqualityChildObject<EnumSmall?> { Field = EnumSmall.One, Property = EnumSmall.First };
+
+            var referenceComparer = EqualityComparer<SampleEqualityChildObject<EnumSmall?>>.Default; // new CustomizableEqualityComparer<SampleEqualityBaseObject<int?>>((a, b) => a.Equals(b), x => x.GetHashCode());
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityChildObject<EnumSmall?>>();
+
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+            var equals = comparer.Equals(x, y);
+
+            using (new AssertionScope()) {
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
+        }
+
+        [Fact]
         public void Equality_on_nullable_equality_structs_works()
         {
             var x = _fixture.Create<SampleEqualityStruct<EnumBig?>?>();
