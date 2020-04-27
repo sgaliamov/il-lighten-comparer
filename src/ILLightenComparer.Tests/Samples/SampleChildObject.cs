@@ -4,16 +4,16 @@ using ILLightenComparer.Tests.EqualityComparers;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleEqualityComparableChildObject<TMember> : SampleEqualityComparableBaseObject<TMember>, IEquatable<SampleEqualityComparableChildObject<TMember>>
+    public sealed class SampleChildObject<TMember> : SampleBaseObject<TMember>
     {
         public static IEqualityComparer<TMember> ChildComparer = EqualityComparer<TMember>.Default;
 
         public TMember ChildField;
         public TMember ChildProperty { get; set; }
 
-        public override bool Equals(object obj) => Equals(obj as SampleEqualityComparableChildObject<TMember>);
+        public override bool Equals(object obj) => Equals(obj as SampleChildObject<TMember>);
 
-        public bool Equals(SampleEqualityComparableChildObject<TMember> other) =>
+        public bool Equals(SampleChildObject<TMember> other) =>
             other != null
             && base.Equals(other)
             && EqualityComparer<TMember>.Default.Equals(ChildField, other.ChildField)

@@ -3,14 +3,14 @@ using ILLightenComparer.Tests.EqualityComparers;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public class SampleEqualityComparableBaseObject<TMember>
+    public class SampleBaseObject<TMember>
     {
         public TMember Field;
         public TMember Property { get; set; }
 
-        public override bool Equals(object obj) => Equals(obj as SampleEqualityComparableBaseObject<TMember>);
+        public override bool Equals(object obj) => Equals(obj as SampleBaseObject<TMember>);
 
-        public bool Equals(SampleEqualityComparableBaseObject<TMember> other) =>
+        public bool Equals(SampleBaseObject<TMember> other) =>
             other != null
             && EqualityComparer<TMember>.Default.Equals(Field, other.Field)
             && EqualityComparer<TMember>.Default.Equals(Property, other.Property);

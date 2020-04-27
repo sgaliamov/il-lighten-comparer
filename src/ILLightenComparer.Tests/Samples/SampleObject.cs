@@ -1,8 +1,9 @@
-﻿using ILLightenComparer.Tests.Utilities;
+﻿using System.Diagnostics;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    [System.Diagnostics.DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("{ToString()}")]
     public sealed class SampleObject<TMember>
     {
         public TMember Field;
