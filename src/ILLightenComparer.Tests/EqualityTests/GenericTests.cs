@@ -25,22 +25,23 @@ namespace ILLightenComparer.Tests.EqualityTests
                 nameof(GenericTest),
                 () => {
                     var methodInfo = GetTestMethod(type);
+                    var equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(type);
+                    var delegateType = typeof(Action<,,>).MakeGenericType(typeof(IComparerBuilder), equalityComparerType, typeof(int));
 
-                    return (Action<IComparerBuilder, IEqualityComparer, int>)methodInfo.CreateDelegate(typeof(Action<IComparerBuilder, IEqualityComparer, int>));
+                    return methodInfo.CreateDelegate(delegateType);
                 });
 
             var builder = _comparerBuilder ?? new ComparerBuilder();
             builder.Configure(c => c.SetDefaultCollectionsOrderIgnoring(sort));
 
-            method(builder, referenceComparer, times);
+            method.DynamicInvoke(builder, referenceComparer, times);
         }
 
-        private static MethodInfo GetTestMethod(Type objType) =>
-            typeof(GenericTests)
-                .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
-                .MakeGenericMethod(objType);
+        private static MethodInfo GetTestMethod(Type objType) => typeof(GenericTests)
+            .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
+            .MakeGenericMethod(objType);
 
-        private static void Test<T>(IEqualityComparerProvider comparersBuilder, IEqualityComparer referenceComparer, int times)
+        private static void Test<T>(IEqualityComparerProvider comparersBuilder, IEqualityComparer<T> referenceComparer, int times)
         {
             if (referenceComparer == null) { referenceComparer = EqualityComparer<T>.Default; }
 
@@ -59,7 +60,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             );
         }
 
-        private static void Comparison_of_null_with_object_produces_false<T>(IEqualityComparer referenceComparer, IEqualityComparer<T> typedComparer)
+        private static void Comparison_of_null_with_object_produces_false<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
         {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
@@ -73,9 +74,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-        private static void Comparison_of_object_with_null_produces_false<T>(
-            IEqualityComparer referenceComparer,
-            IEqualityComparer<T> typedComparer)
+        private static void Comparison_of_object_with_null_produces_false<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
         {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
@@ -89,7 +88,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-        private static void Comparison_when_both_null_produces_true<T>(IEqualityComparer referenceComparer, IEqualityComparer<T> typedComparer)
+        private static void Comparison_when_both_null_produces_true<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
         {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
@@ -103,30 +102,30 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-        private static void Comparison_with_itself_produces_true<T>(IEqualityComparer referenceComparer, IEqualityComparer<T> typedComparer)
+        private static void Comparison_with_itself_produces_true<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
         {
             var obj = Fixture.Create<T>();
 
             using (new AssertionScope()) {
-                referenceComparer.Equals(obj, obj).Should().BeTrue();
-                typedComparer.Equals(obj, obj).Should().BeTrue();
-                typedComparer.GetHashCode(obj).Should().Be(referenceComparer.GetHashCode(obj));
+                referenceComparer.Equals(obj, obj).Should().BeTrue(obj.ToString());
+                typedComparer.Equals(obj, obj).Should().BeTrue(obj.ToString());
+                typedComparer.GetHashCode(obj).Should().Be(referenceComparer.GetHashCode(obj), obj.ToString());
             }
         }
 
-        private static void Comparison_with_same_produces_true<T>(IEqualityComparer referenceComparer, IEqualityComparer<T> typedComparer)
+        private static void Comparison_with_same_produces_true<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
         {
             var obj = Fixture.Create<T>();
             var clone = obj.DeepClone();
 
             using (new AssertionScope()) {
-                referenceComparer.Equals(obj, obj).Should().BeTrue();
-                typedComparer.Equals(obj, obj).Should().BeTrue();
-                typedComparer.GetHashCode(obj).Should().Be(referenceComparer.GetHashCode(obj));
+                referenceComparer.Equals(obj, clone).Should().BeTrue();
+                typedComparer.Equals(obj, clone).Should().BeTrue();
+                typedComparer.GetHashCode(obj).Should().Be(referenceComparer.GetHashCode(clone));
             }
         }
 
-        private static void Mutate_class_members_and_test_comparison<T>(IEqualityComparer referenceComparer, IEqualityComparer<T> typedComparer)
+        private static void Mutate_class_members_and_test_comparison<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
         {
             if (typeof(T).IsValueType) { return; }
 
@@ -136,14 +135,14 @@ namespace ILLightenComparer.Tests.EqualityTests
             foreach (var mutant in Fixture.CreateMutants(original)) {
                 using (new AssertionScope()) {
                     referenceComparer.Equals(mutant, original).Should().BeFalse();
-                    referenceComparer.GetHashCode(mutant).Should().NotBe(referenceComparer.GetHashCode(original));
                     typedComparer.Equals(mutant, original).Should().BeFalse();
-                    typedComparer.GetHashCode(mutant).Should().NotBe(typedComparer.GetHashCode(original));
+                    typedComparer.GetHashCode(mutant).Should().Be(referenceComparer.GetHashCode(original));
+                    typedComparer.GetHashCode(original).Should().Be(referenceComparer.GetHashCode(mutant));
                 }
             }
         }
 
-        private static void Comparisons_work_identical<T>(IEqualityComparer referenceComparer, IEqualityComparer<T> typedComparer, int times)
+        private static void Comparisons_work_identical<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer, int times)
         {
             var type = typeof(T);
             for (var i = 0; i < times; i++) {
