@@ -21,19 +21,15 @@ namespace ILLightenComparer.Tests.EqualityTests
 
         public void GenericTest(Type type, IEqualityComparer referenceComparer, bool sort, int times)
         {
-            var method = type.GetOrAddProperty(
-                nameof(GenericTest),
-                () => {
-                    var methodInfo = GetTestMethod(type);
-                    var equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(type);
-                    var delegateType = typeof(Action<,,>).MakeGenericType(typeof(IComparerBuilder), equalityComparerType, typeof(int));
-
-                    return methodInfo.CreateDelegate(delegateType);
-                });
+            var method = type.GetOrAddProperty($"Equality_{nameof(GenericTest)}", () => {
+                var methodInfo = GetTestMethod(type);
+                var equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(type);
+                var delegateType = typeof(Action<,,>).MakeGenericType(typeof(IComparerBuilder), equalityComparerType, typeof(int));
+                return methodInfo.CreateDelegate(delegateType);
+            });
 
             var builder = _comparerBuilder ?? new ComparerBuilder();
             builder.Configure(c => c.SetDefaultCollectionsOrderIgnoring(sort));
-
             method.DynamicInvoke(builder, referenceComparer, times);
         }
 
