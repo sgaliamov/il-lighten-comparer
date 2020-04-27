@@ -9,12 +9,6 @@ namespace ILLightenComparer.Tests.Samples
         public TMember Field;
         public TMember Property { get; set; }
 
-        public override string ToString()
-        {
-            var field = Field.ToStringEx();
-            var property = Property.ToStringEx();
-
-            return $"Object: {{ Field: {field}, Property: {property} }}";
-        }
+        public override string ToString() => $"Object: {this.ToJson()}";
     }
 }

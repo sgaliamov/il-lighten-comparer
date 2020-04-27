@@ -32,6 +32,10 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public int GetHashCode(SampleObject<TMember> obj)
         {
+            if (obj is null) {
+                return 0;
+            }
+
             var setter = _memberComparer as IHashSeedSetter;
             var combiner = HashCodeCombiner.Start();
 

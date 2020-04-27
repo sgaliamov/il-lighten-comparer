@@ -117,17 +117,17 @@ namespace ILLightenComparer.Tests.EqualityTests
         }
 
         [Fact]
-        public void Equality_on_nullable_structs_works()
+        public void Equality_on_nullable_equality_structs_works()
         {
-            var x = _fixture.Create<SampleStruct<EnumBig>?>();
-            var y = _fixture.Create<SampleStruct<EnumBig>?>();
+            var x = _fixture.Create<SampleEqualityStruct<EnumBig>?>();
+            var y = _fixture.Create<SampleEqualityStruct<EnumBig>?>();
 
-            var referenceComparer = new NullableEqualityComparer<SampleStruct<EnumBig>>();
+            var referenceComparer = new NullableEqualityComparer<SampleEqualityStruct<EnumBig>>();
             var expectedHashX = referenceComparer.GetHashCode(x);
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleStruct<EnumBig>?>();
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityStruct<EnumBig>?>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -219,8 +219,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 comparer.Equals(x, x).Should().BeTrue();
                 comparer.Equals(null, null).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
-                hashX.Should().Be(expectedHashX, x.ToStringEx());
-                hashY.Should().Be(expectedHashY, y.ToStringEx());
+                hashX.Should().Be(expectedHashX, x.ToJson());
+                hashY.Should().Be(expectedHashY, y.ToJson());
             }
         }
 

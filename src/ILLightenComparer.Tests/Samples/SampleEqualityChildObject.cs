@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ILLightenComparer.Tests.EqualityComparers;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleChildObject<TMember> : SampleBaseObject<TMember>
+    public sealed class SampleEqualityChildObject<TMember> : SampleEqulaityBaseObject<TMember>
     {
         public static IEqualityComparer<TMember> ChildComparer = EqualityComparer<TMember>.Default;
 
         public TMember ChildField;
         public TMember ChildProperty { get; set; }
 
-        public override bool Equals(object obj) => Equals(obj as SampleChildObject<TMember>);
+        public override bool Equals(object obj) => Equals(obj as SampleEqualityChildObject<TMember>);
 
-        public bool Equals(SampleChildObject<TMember> other) =>
+        public bool Equals(SampleEqualityChildObject<TMember> other) =>
             other != null
             && base.Equals(other)
             && EqualityComparer<TMember>.Default.Equals(ChildField, other.ChildField)
