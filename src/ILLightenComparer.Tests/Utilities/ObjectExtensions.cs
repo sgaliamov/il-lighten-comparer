@@ -51,7 +51,7 @@ namespace ILLightenComparer.Tests.Utilities
                 .Single(x => x.Name == name && x.IsGenericMethodDefinition);
         }
 
-        public static object[] UnfoldArrays(this object[] objects) => objects.SelectMany(ObjectToArray).ToArray();
+        public static TItem[] UnfoldArrays<TItem>(this TItem[] objects) => objects.SelectMany(x => ObjectToArray(x)).Cast<TItem>().ToArray();
 
         public static object[] ObjectToArray(this object item) => item switch
         {

@@ -8,11 +8,11 @@ namespace ILLightenComparer.Tests.EqualityComparers
 {
     internal sealed class CollectionEqualityComparer<TItem> : IEqualityComparer<IEnumerable<TItem>>, IEqualityComparer, IHashSeedSetter
     {
-        private readonly IEqualityComparer _itemComparer;
+        private readonly IEqualityComparer<TItem> _itemComparer;
         private readonly bool _sort;
         private long _seed = HashCodeCombiner.Seed;
 
-        public CollectionEqualityComparer(IEqualityComparer itemComparer = null, bool sort = false)
+        public CollectionEqualityComparer(IEqualityComparer<TItem> itemComparer = null, bool sort = false)
         {
             _sort = sort;
             _itemComparer = itemComparer ?? EqualityComparer<TItem>.Default;
@@ -65,7 +65,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         bool IEqualityComparer.Equals(object x, object y) => Equals(x as IEnumerable<TItem>, y as IEnumerable<TItem>);
 
-        public int GetHashCode(IEnumerable<TItem> obj) => HashCodeCombiner.Start(_seed).Combine(_itemComparer, obj.ObjectToArray());
+        public int GetHashCode(IEnumerable<TItem> obj) => HashCodeCombiner.Start(_seed).Combine<TItem>(_itemComparer, obj.ObjectToArray().Cast<TItem>().ToArray());
 
         public int GetHashCode(object obj) => GetHashCode(obj as IEnumerable<TItem>);
 
