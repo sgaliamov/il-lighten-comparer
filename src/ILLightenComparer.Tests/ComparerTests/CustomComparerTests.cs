@@ -122,10 +122,8 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
-        // ReSharper disable once ClassNeverInstantiated.Local
         private sealed class SampleStructCustomComparer : CustomizableComparer<SampleStruct<string>>
         {
-            // ReSharper disable once UnusedMember.Local UnusedMember.Global
             public SampleStructCustomComparer() : base((_, __) => 0) { }
         }
     }

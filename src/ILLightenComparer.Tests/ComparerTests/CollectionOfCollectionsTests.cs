@@ -145,10 +145,10 @@ namespace ILLightenComparer.Tests.ComparerTests
                     var (type, referenceComparer) = item;
                     var collections = getCollectionTypes(type);
                     var comparerTypes = collections
-                                        .Prepend(type)
-                                        .Take(collections.Length)
-                                        .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
-                                        .ToArray();
+                        .Prepend(type)
+                        .Take(collections.Length)
+                        .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
+                        .ToArray();
                     var comparer = comparerTypes.Aggregate(
                         referenceComparer,
                         (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
