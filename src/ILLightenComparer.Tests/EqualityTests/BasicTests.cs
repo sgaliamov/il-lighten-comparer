@@ -119,15 +119,15 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Equality_on_nullable_equality_structs_works()
         {
-            var x = _fixture.Create<SampleEqualityStruct<EnumBig>?>();
-            var y = _fixture.Create<SampleEqualityStruct<EnumBig>?>();
+            var x = _fixture.Create<SampleEqualityStruct<EnumBig?>?>();
+            var y = _fixture.Create<SampleEqualityStruct<EnumBig?>?>();
 
-            var referenceComparer = new NullableEqualityComparer<SampleEqualityStruct<EnumBig>>();
+            var referenceComparer = new NullableEqualityComparer<SampleEqualityStruct<EnumBig?>>();
             var expectedHashX = referenceComparer.GetHashCode(x);
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityStruct<EnumBig>?>();
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityStruct<EnumBig?>?>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -136,6 +136,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
                 comparer.Equals(null, null).Should().BeTrue();
+                referenceComparer.Equals(y, y).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);
                 hashY.Should().Be(expectedHashY);
@@ -187,6 +188,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
+                referenceComparer.Equals(y, y).Should().BeTrue();
                 comparer.Equals(null, null).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);

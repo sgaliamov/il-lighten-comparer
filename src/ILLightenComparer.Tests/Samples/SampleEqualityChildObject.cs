@@ -18,7 +18,7 @@ namespace ILLightenComparer.Tests.Samples
             && EqualityComparer<TMember>.Default.Equals(ChildField, other.ChildField)
             && EqualityComparer<TMember>.Default.Equals(ChildProperty, other.ChildProperty);
 
-        public override int GetHashCode() => HashCodeCombiner.Combine(base.GetHashCode(), ChildField, ChildProperty);
+        public override int GetHashCode() => HashCodeCombiner.Combine(ChildField, ChildProperty, Field, Property);
 
         public override string ToString() => $"{{ {Field}, {Property}, {ChildField}, {ChildProperty} }}";
     }

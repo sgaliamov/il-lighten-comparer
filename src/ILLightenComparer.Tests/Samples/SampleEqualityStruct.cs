@@ -16,11 +16,11 @@ namespace ILLightenComparer.Tests.Samples
         public TMember Field;
         public TMember Property { get; set; }
 
-        public override bool Equals(object obj) => obj is SampleStruct<TMember> @struct && Equals(@struct);
+        public override bool Equals(object obj) => Equals((SampleEqualityStruct<TMember>)obj);
 
-        public bool Equals(SampleStruct<TMember> other) =>
-            EqualityComparer<TMember>.Default.Equals(Field, other.Field)
-            && EqualityComparer<TMember>.Default.Equals(Property, other.Property);
+        public bool Equals(SampleEqualityStruct<TMember> other) =>
+            Comparer.Equals(Field, other.Field)
+            && Comparer.Equals(Property, other.Property);
 
         public override int GetHashCode() => HashCodeCombiner.Combine(Field, Property);
 
