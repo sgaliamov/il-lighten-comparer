@@ -106,7 +106,9 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private ILEmitter EmitCompareAsSortedArrays(ILEmitter il, Label gotoNext, LocalBuilder x, LocalBuilder y)
         {
-            il.EmitArraySorting(_configuration, _elementType, x, y);
+            var hasCustomComparer = _configuration.HasCustomComparer(_elementType);
+
+            il.EmitArraySorting(hasCustomComparer, _elementType, x, y);
 
             var arrayType = _elementType.MakeArrayType();
 

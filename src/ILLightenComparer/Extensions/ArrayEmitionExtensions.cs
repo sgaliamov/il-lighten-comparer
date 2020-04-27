@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILLightenComparer.Config;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -21,13 +20,13 @@ namespace ILLightenComparer.Extensions
             .Call(arrayType.GetPropertyGetter(LengthMethodName))
             .Store(typeof(int), out count);
 
-        public static ILEmitter EmitArraySorting(this ILEmitter il, IConfigurationProvider configuration, Type elementType, params LocalBuilder[] arrays)
+        public static ILEmitter EmitArraySorting(this ILEmitter il, bool hasCustomComparer, Type elementType, params LocalBuilder[] arrays)
         {
-            // todo: 2. compare default sorting and sorting with generated comparer - TrySZSort can work faster
-            var useSimpleSorting = !configuration.HasCustomComparer(elementType) && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
+            var useSimpleSorting = !hasCustomComparer && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
 
             if (useSimpleSorting) {
                 foreach (var array in arrays) {
+                    // todo: 2. compare default sorting and sorting with generated comparer - TrySZSort can work faster
                     EmitSortArray(il, elementType, array);
                 }
             } else {

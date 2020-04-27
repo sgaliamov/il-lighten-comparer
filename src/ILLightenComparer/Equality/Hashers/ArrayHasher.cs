@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
@@ -11,15 +10,16 @@ namespace ILLightenComparer.Equality.Hashers
 {
     internal sealed class ArrayHasher : IHasherEmitter
     {
-        private readonly IConfigurationProvider _configuration;
         private readonly IVariable _variable;
-        private readonly HasherResolver _resolver;
+        private readonly bool _hasCustomComparer;
+        private readonly Configuration _configuration;
+        private readonly ArrayHashEmitter _arrayHashEmitter;
 
         private ArrayHasher(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
         {
-            _resolver = resolver;
-            _configuration = configuration;
-            _variable = variable;
+            _arrayHashEmitter = new ArrayHashEmitter(resolver, variable);
+            _configuration = configuration.Get(_variable.OwnerType);
+            _hasCustomComparer = configuration.HasCustomComparer(variable.VariableType.GetElementType());
         }
 
         public static ArrayHasher Create(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
@@ -32,59 +32,28 @@ namespace ILLightenComparer.Equality.Hashers
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il)
-        {
-            var config = _configuration.Get(_variable.OwnerType);
-
-            return il
-                .LoadLong(config.HashSeed)
-                .Store(typeof(long), out var hash)
-                .Execute(this.Emit(hash));
-        }
+        public ILEmitter Emit(ILEmitter il) => il
+            .LoadLong(_configuration.HashSeed)
+            .Store(typeof(long), out var hash)
+            .Execute(this.Emit(hash));
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
         {
             var arrayType = _variable.VariableType;
-            var ownerType = _variable.OwnerType;
-            var config = _configuration.Get(ownerType);
 
             il.Execute(_variable.Load(Arg.Input)) // load array
               .Store(arrayType, out var array)
               .IfTrue_S(LoadLocal(array), out var begin)
               .LoadInteger(0)
-              .GoTo(out var end)
-              .MarkLabel(begin)
-              .LoadInteger(0) // start loop
-              .Store(typeof(int), out var index)
-              .EmitArrayLength(arrayType, array, out var count)
-              .DefineLabel(out var loopStart)
-              .DefineLabel(out var loopEnd);
+              .GoTo(out var end);
 
-            // todo: 1. sort when IgnoreCollectionOrder
-            //if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
-            //    return EmitCompareAsSortedArrays(il, gotoNext, x, y);
-            //}
-
-            using (il.LocalsScope()) {
-                il.MarkLabel(loopStart)
-                  .IfNotEqual_Un_S(LoadLocal(index), LoadLocal(count), out var next)
-                  .GoTo(loopEnd)
-                  .MarkLabel(next);
+            if (_configuration.IgnoreCollectionOrder) {
+                il.EmitArraySorting(_hasCustomComparer, arrayType.GetElementType(), array);
             }
 
-            using (il.LocalsScope()) {
-                var arrays = new Dictionary<ushort, LocalBuilder>(2) { [Arg.X] = array };
-                var itemVariable = new ArrayItemVariable(arrayType, ownerType, arrays, index);
+            il.MarkLabel(begin);
 
-                _resolver
-                    .GetHasherEmitter(itemVariable)
-                    .EmitHashing(il, hash)
-                    .Add(LoadLocal(index), LoadInteger(1))
-                    .Store(index)
-                    .GoTo(loopStart);
-            }
-
-            return il.MarkLabel(loopEnd).LoadLocal(hash).MarkLabel(end);
+            return _arrayHashEmitter.Emit(il, array, hash).MarkLabel(end);
         }
     }
 }

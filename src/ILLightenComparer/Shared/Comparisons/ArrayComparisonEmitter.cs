@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functional;
 
-namespace ILLightenComparer.Shared
+namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class ArrayComparisonEmitter
     {

@@ -66,11 +66,6 @@ namespace ILLightenComparer.Equality.Hashers
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
         {
-            // todo: 2.
-            //if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
-            //    return EmitCompareAsSortedArrays(il, gotoNext, x, y);
-            //}
-
             il.Execute(_variable.Load(Arg.Input))
               .Store(_variable.VariableType, out var enumerable)
               .DefineLabel(out var end);
@@ -80,6 +75,10 @@ namespace ILLightenComparer.Equality.Hashers
                   .LoadInteger(0)
                   .GoTo(end)
                   .MarkLabel(begin);
+            }
+
+            if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
+                return EmitHashAsSortedArray(il, hash);
             }
 
             il.Call(_getEnumeratorMethod, LoadCaller(enumerable))
@@ -100,6 +99,11 @@ namespace ILLightenComparer.Equality.Hashers
             //il.EndExceptionBlock();
 
             return il.LoadLocal(hash).MarkLabel(end);
+        }
+
+        private ILEmitter EmitHashAsSortedArray(ILEmitter il, LocalBuilder hash)
+        {
+            throw new NotImplementedException();
         }
 
         private void Loop(ILEmitter il, LocalBuilder enumerator, Label loopStart, LocalBuilder hash)

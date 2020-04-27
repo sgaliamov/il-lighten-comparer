@@ -39,7 +39,9 @@ namespace ILLightenComparer.Shared.Comparisons
             var (countX, countY) = il.EmitLoadCounts(variableType, x, y);
 
             if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
-                il.EmitArraySorting(_configuration, variableType.GetElementType(), x, y);
+                var elementType = variableType.GetElementType();
+                var hasCustomComparer = _configuration.HasCustomComparer(elementType);
+                il.EmitArraySorting(hasCustomComparer, elementType, x, y);
             }
 
             return _collectionComparer.EmitCompareArrays(variableType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
