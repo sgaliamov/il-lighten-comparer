@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -48,5 +50,16 @@ namespace ILLightenComparer.Tests.Utilities
                 .GetMethods(bindingFlags)
                 .Single(x => x.Name == name && x.IsGenericMethodDefinition);
         }
+
+        public static object[] UnfoldArrays(this object[] objects) => objects.SelectMany(ObjectToArray).ToArray();
+
+        public static object[] ObjectToArray(this object item) => item switch
+        {
+            string str => new[] { str },
+            object[] array => UnfoldArrays(array),
+            IEnumerable<object> enumerable => UnfoldArrays(enumerable.ToArray()),
+            IEnumerable enumerable => UnfoldArrays(enumerable.Cast<object>().ToArray()),
+            _ => new[] { item },
+        };
     }
 }

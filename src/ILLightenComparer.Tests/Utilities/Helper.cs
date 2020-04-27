@@ -89,24 +89,6 @@ namespace ILLightenComparer.Tests.Utilities
             return (IEqualityComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
 
-        public static string ToStringEx<T>(this T value)
-        {
-            return value != null && value is IEnumerable enumerable
-                ? string.Join(", ", enumerable.ObjectToArray())
-                : value?.ToString() ?? "null";
-        }
-
-        public static object[] UnfoldArrays(this object[] objects) => objects.SelectMany(ObjectToArray).ToArray();
-
-        public static object[] ObjectToArray(this object item) => item switch
-        {
-            string str => new[] { str },
-            object[] array => UnfoldArrays(array),
-            IEnumerable<object> enumerable => UnfoldArrays(enumerable.ToArray()),
-            IEnumerable enumerable => UnfoldArrays(enumerable.Cast<object>().ToArray()),
-            _ => new[] { item },
-        };
-
         public static IEnumerable<T> RandomNulls<T>(this IEnumerable<T> collection, double probability = .2)
         {
             foreach (var item in collection) {
