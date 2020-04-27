@@ -22,13 +22,12 @@ namespace ILLightenComparer.Shared
             return Convert(sorted);
         }
 
-        private IEnumerable<MemberInfo> Filter(IReflect type) =>
-            type.GetMembers(
-                    BindingFlags.Instance
-                    | BindingFlags.FlattenHierarchy
-                    | BindingFlags.Public)
-                .Where(IncludeFields)
-                .Where(IgnoredMembers);
+        private IEnumerable<MemberInfo> Filter(IReflect type) => type
+            .GetMembers(BindingFlags.Instance
+                | BindingFlags.FlattenHierarchy
+                | BindingFlags.Public)
+            .Where(IncludeFields)
+            .Where(IgnoredMembers);
 
         private IEnumerable<MemberInfo> Sort(Type ownerType, IEnumerable<MemberInfo> members)
         {
@@ -88,12 +87,9 @@ namespace ILLightenComparer.Shared
 
         private static IVariable[] Convert(IEnumerable<MemberInfo> members) => members.Select(Create).ToArray();
 
-        private static IEnumerable<MemberInfo> DefaultOrder(IEnumerable<MemberInfo> members)
-        {
-            return members
-                   .OrderBy(x => x.DeclaringType?.FullName ?? string.Empty)
-                   .ThenBy(x => x.MemberType)
-                   .ThenBy(x => x.Name);
-        }
+        private static IEnumerable<MemberInfo> DefaultOrder(IEnumerable<MemberInfo> members) => members
+            .OrderBy(x => x.DeclaringType?.FullName ?? string.Empty)
+            .ThenBy(x => x.MemberType)
+            .ThenBy(x => x.Name);
     }
 }
