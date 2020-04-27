@@ -20,11 +20,6 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public HashCodeCombiner Combine<TItem>(IEqualityComparer<TItem> itemComparer, TItem[] objects)
         {
-            if (objects is null) {
-                Add(() => 0);
-                return this;
-            }
-
             foreach (var o in objects) {
                 Add(() => o is null ? 0 : itemComparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0);
             }
