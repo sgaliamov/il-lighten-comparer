@@ -28,8 +28,7 @@ namespace ILLightenComparer.Extensions
             typeof(long),
             typeof(ulong),
             typeof(float),
-            typeof(double),
-            typeof(decimal)
+            typeof(double)
         });
 
         /// <summary>
