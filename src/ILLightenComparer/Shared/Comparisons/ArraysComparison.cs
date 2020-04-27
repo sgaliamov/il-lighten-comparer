@@ -37,16 +37,13 @@ namespace ILLightenComparer.Shared.Comparisons
             var arrayType = _variable.VariableType;
             var (arrayX, arrayY) = _arrayComparisonEmitter.EmitLoad(_variable, il, gotoNext);
 
-            il.EmitArrayLength(arrayType, arrayX, out var countX)
-              .EmitArrayLength(arrayType, arrayY, out var countY);
-
             if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
                 var elementType = arrayType.GetElementType();
                 var hasCustomComparer = _configuration.HasCustomComparer(elementType);
                 il.EmitArraySorting(hasCustomComparer, elementType, arrayX, arrayY);
             }
 
-            return _arrayComparisonEmitter.EmitCompareArrays(il, arrayType, _variable.OwnerType, arrayX, arrayY, countX, countY, gotoNext);
+            return _arrayComparisonEmitter.EmitCompareArrays(il, arrayType, _variable.OwnerType, arrayX, arrayY, gotoNext);
         }
 
         public ILEmitter Emit(ILEmitter il) => il

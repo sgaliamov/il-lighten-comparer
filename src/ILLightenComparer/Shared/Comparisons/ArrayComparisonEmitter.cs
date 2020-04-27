@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functional;
@@ -42,11 +43,11 @@ namespace ILLightenComparer.Shared.Comparisons
             Type ownerType,
             LocalBuilder xArray,
             LocalBuilder yArray,
-            LocalBuilder countX,
-            LocalBuilder countY,
             Label afterLoop)
         {
-            il.LoadInteger(0)
+            il.EmitArrayLength(arrayType, xArray, out var countX)
+              .EmitArrayLength(arrayType, yArray, out var countY)
+              .LoadInteger(0)
               .Store(typeof(int), out var index)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var continueLoop)

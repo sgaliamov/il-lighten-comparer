@@ -21,7 +21,7 @@ namespace ILLightenComparer.Shared.Comparisons
         private readonly MethodInfo _moveNextMethod;
         private readonly MethodInfo _getCurrentMethod;
         private readonly MethodInfo _getEnumeratorMethod;
-        private readonly ArrayComparisonEmitter _collectionComparer;
+        private readonly ArrayComparisonEmitter _arrayComparisonEmitter;
         private readonly IVariable _variable;
         private readonly IConfigurationProvider _configuration;
         private readonly IResolver _resolver;
@@ -31,14 +31,14 @@ namespace ILLightenComparer.Shared.Comparisons
         private EnumerablesComparison(
             IResolver resolver,
             int defaultResult,
-            ArrayComparisonEmitter collectionComparer,
+            ArrayComparisonEmitter arrayComparisonEmitter,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             _resolver = resolver;
             _defaultResult = defaultResult;
-            _collectionComparer = collectionComparer;
+            _arrayComparisonEmitter = arrayComparisonEmitter;
             _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
             _configuration = configuration;
             _variable = variable;
@@ -59,14 +59,14 @@ namespace ILLightenComparer.Shared.Comparisons
         public static EnumerablesComparison Create(
             IResolver comparisons,
             int defaultResult,
-            ArrayComparisonEmitter collectionComparer,
+            ArrayComparisonEmitter arrayComparisonEmitter,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, defaultResult, collectionComparer, emitCheckIfLoopsAreDone, configuration, variable);
+                return new EnumerablesComparison(comparisons, defaultResult, arrayComparisonEmitter, emitCheckIfLoopsAreDone, configuration, variable);
             }
 
             return null;
@@ -74,7 +74,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {
-            var (x, y) = _collectionComparer.EmitLoad(_variable, il, gotoNext);
+            var (x, y) = _arrayComparisonEmitter.EmitLoad(_variable, il, gotoNext);
 
             if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
                 return EmitCompareAsSortedArrays(il, gotoNext, x, y);
@@ -112,10 +112,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
             var arrayType = _elementType.MakeArrayType();
 
-            il.EmitArrayLength(arrayType, x, out var countX)
-              .EmitArrayLength(arrayType, y, out var countY);
-
-            return _collectionComparer.EmitCompareArrays(il, arrayType, _variable.OwnerType, x, y, countX, countY, gotoNext);
+            return _arrayComparisonEmitter.EmitCompareArrays(il, arrayType, _variable.OwnerType, x, y, gotoNext);
         }
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable)
