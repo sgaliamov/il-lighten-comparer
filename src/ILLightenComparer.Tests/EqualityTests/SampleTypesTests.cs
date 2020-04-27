@@ -33,7 +33,7 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Compare_types_directly()
         {
-            Parallel.ForEach(SampleTypes.Types, new ParallelOptions { MaxDegreeOfParallelism = 1 }, item => {
+            Parallel.ForEach(SampleTypes.Types, item => {
                 var (type, referenceComparer) = item;
                 new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
             });
