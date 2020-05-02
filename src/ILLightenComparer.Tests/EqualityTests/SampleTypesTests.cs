@@ -41,7 +41,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
         private static void TestCollection(Type genericCollectionType = null)
         {
-            Parallel.ForEach(SampleTypes.Types, item => {
+            Parallel.ForEach(SampleTypes.Types, new ParallelOptions { MaxDegreeOfParallelism = 1 }, item => {
                 var (type, referenceComparer) = item;
                 TestCollection(type, referenceComparer, genericCollectionType, false);
                 TestCollection(type, referenceComparer, genericCollectionType, true);
