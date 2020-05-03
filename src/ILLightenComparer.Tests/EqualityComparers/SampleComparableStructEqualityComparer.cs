@@ -4,13 +4,23 @@ using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
-    internal sealed class SampleObjectEqualityComparer<TMember> : IEqualityComparer<SampleEqualityObject<TMember>>, IEqualityComparer
+    internal sealed class SampleComparableStructEqualityComparer<TMember> : IEqualityComparer<SampleComparableStruct<TMember>>, IEqualityComparer
     {
         private readonly IEqualityComparer _memberComparer;
 
-        public SampleObjectEqualityComparer(IEqualityComparer memberComparer = null) => _memberComparer = memberComparer ?? EqualityComparer<TMember>.Default;
+        public SampleComparableStructEqualityComparer(IEqualityComparer memberComparer = null) => _memberComparer = memberComparer ?? EqualityComparer<TMember>.Default;
 
-        public bool Equals(SampleEqualityObject<TMember> x, SampleEqualityObject<TMember> y)
+        public bool Equals(SampleComparableStruct<TMember> x, SampleComparableStruct<TMember> y)
+        {
+            var compare = _memberComparer.Equals(x.Field, y.Field);
+            if (!compare) {
+                return false;
+            }
+
+            return _memberComparer.Equals(x.Property, y.Property);
+        }
+
+        bool IEqualityComparer.Equals(object x, object y)
         {
             if (ReferenceEquals(x, y)) {
                 return true;
@@ -20,22 +30,11 @@ namespace ILLightenComparer.Tests.EqualityComparers
                 return false;
             }
 
-            var compare = _memberComparer.Equals(x.Field, y.Field);
-            if (!compare) {
-                return false;
-            }
-
-            return _memberComparer.Equals(x.Property, y.Property);
+            return Equals((SampleComparableStruct<TMember>)x, (SampleComparableStruct<TMember>)y);
         }
 
-        bool IEqualityComparer.Equals(object x, object y) => Equals((SampleEqualityObject<TMember>)x, (SampleEqualityObject<TMember>)y);
-
-        public int GetHashCode(SampleEqualityObject<TMember> obj)
+        public int GetHashCode(SampleComparableStruct<TMember> obj)
         {
-            if (obj is null) {
-                return 0;
-            }
-
             var setter = _memberComparer as IHashSeedSetter;
             var combiner = HashCodeCombiner.Start();
 
@@ -46,6 +45,6 @@ namespace ILLightenComparer.Tests.EqualityComparers
             return combiner.CombineObjects(obj.Property is null ? 0 : _memberComparer.GetHashCode(obj.Property));
         }
 
-        public int GetHashCode(object obj) => GetHashCode((SampleEqualityObject<TMember>)obj);
+        public int GetHashCode(object obj) => GetHashCode((SampleComparableStruct<TMember>)obj);
     }
 }

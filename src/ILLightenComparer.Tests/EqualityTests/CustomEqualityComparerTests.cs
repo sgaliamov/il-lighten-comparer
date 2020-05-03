@@ -44,8 +44,8 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void After_clean_custom_comparer_for_value_type_dynamic_comparer_should_be_created()
         {
-            var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
-            var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
+            var x = _fixture.Create<SampleEqualityObject<SampleStruct<string>>>();
+            var y = _fixture.Create<SampleEqualityObject<SampleStruct<string>>>();
 
             var reference = new SampleObjectEqualityComparer<SampleStruct<string>>(new SampleStructEqualityComparer<string>());
             var expectedEquals = reference.Equals(x, y);
@@ -53,10 +53,10 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
             var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomEqualityComparer>());
-            var comparerCustom = builder.GetEqualityComparer<SampleObject<SampleStruct<string>>>();
+            var comparerCustom = builder.GetEqualityComparer<SampleEqualityObject<SampleStruct<string>>>();
             var comparerDefault = builder.Configure(c => c
                 .SetCustomEqualityComparer<SampleStruct<string>>(null))
-                .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
+                .GetEqualityComparer<SampleEqualityObject<SampleStruct<string>>>();
 
             using (new AssertionScope()) {
                 comparerCustom.Equals(x, y).Should().BeTrue();
@@ -89,8 +89,8 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Custom_comparer_should_be_used_for_collection_when_defined()
         {
             Test(() => {
-                var x = _fixture.Create<SampleObject<int[]>>();
-                var y = _fixture.Create<SampleObject<int[]>>();
+                var x = _fixture.Create<SampleEqualityObject<int[]>>();
+                var y = _fixture.Create<SampleEqualityObject<int[]>>();
 
                 var referenceComparer = new SampleObjectEqualityComparer<int[]>(new CustomizableEqualityComparer<int[]>(
                     (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
@@ -109,7 +109,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                             hashIsUsed = true;
                             return 0;
                         })))
-                    .GetEqualityComparer<SampleObject<int[]>>();
+                    .GetEqualityComparer<SampleEqualityObject<int[]>>();
 
                 var actualEquals = comparer.Equals(x, y);
                 var hashX = comparer.GetHashCode(x);

@@ -223,10 +223,10 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Equality_on_member_array_of_nullables_works()
         {
-            var x = _fixture.Create<SampleObject<EnumSmall?[]>>();
+            var x = _fixture.Create<SampleEqualityObject<EnumSmall?[]>>();
             x.Field = x.Field?.RandomNulls().ToArray();
             x.Property = x.Property?.RandomNulls().ToArray();
-            var y = _fixture.Create<SampleObject<EnumSmall?[]>>();
+            var y = _fixture.Create<SampleEqualityObject<EnumSmall?[]>>();
             y.Field = y.Field?.RandomNulls().ToArray();
             y.Property = y.Property?.RandomNulls().ToArray();
 
@@ -235,7 +235,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleObject<EnumSmall?[]>>();
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityObject<EnumSmall?[]>>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
