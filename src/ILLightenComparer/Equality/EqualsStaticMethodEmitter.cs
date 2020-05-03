@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -24,7 +23,6 @@ namespace ILLightenComparer.Equality
 
             var needReferenceComparison =
                  !objectType.IsValueType
-                 && !objectType.IsSealedEquatable()
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
@@ -38,14 +36,19 @@ namespace ILLightenComparer.Equality
             var emitter = _resolver.GetComparisonEmitter(new ArgumentVariable(objectType));
 
             il.DefineLabel(out var exit)
-              .Execute(emitter.Emit(exit))
-              .Execute(emitter.EmitCheckForResult(exit))
+              .Execute(emitter.Emit(exit));
+
+            //if (detecCycles) {
+            //    il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
+            //    il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
+            //}
+
+            il.Execute(emitter.EmitCheckForResult(exit))
               .MarkLabel(exit)
               .Return(1);
         }
 
-        // no need detect cycle as flow goes outside context
-        public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsSealedEquatable();
+        public bool NeedCreateCycleDetectionSets(Type objectType) => true;
 
         private static void EmitCycleDetection(ILEmitter il) => il
             .AreSame(
@@ -53,7 +56,7 @@ namespace ILLightenComparer.Equality
                 Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
                    Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
             .IfFalse_S(out var next)
-            .Return(0)
+            .Throw(New(typeof(ArgumentException).GetConstructor(new[] { typeof(string) }), LoadString("Cycle detected.")))
             .MarkLabel(next);
     }
 }
