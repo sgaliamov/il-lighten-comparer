@@ -38,8 +38,14 @@ namespace ILLightenComparer.Comparer
             var emitter = _resolver.GetComparisonEmitter(new ArgumentVariable(objectType));
 
             il.DefineLabel(out var exit)
-              .Execute(emitter.Emit(exit))
-              .Execute(emitter.EmitCheckForResult(exit))
+              .Execute(emitter.Emit(exit));
+
+            if (detecCycles) {
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
+            }
+
+            il.Execute(emitter.EmitCheckForResult(exit))
               .MarkLabel(exit)
               .Return(0);
         }
