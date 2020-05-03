@@ -95,11 +95,14 @@ namespace ILLightenComparer.Tests.EqualityTests
         private static void Comparison_with_itself_produces_true<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
         {
             var obj = Fixture.Create<T>();
+            var expected = referenceComparer.GetHashCode(obj);
+            var actual = typedComparer.GetHashCode(obj);
 
             using (new AssertionScope()) {
-                referenceComparer.Equals(obj, obj).Should().BeTrue(obj.ToString());
-                typedComparer.Equals(obj, obj).Should().BeTrue(obj.ToString());
-                typedComparer.GetHashCode(obj).Should().Be(referenceComparer.GetHashCode(obj), obj.ToString());
+                var message = $"\n{string.Join("\n", obj.ObjectToArray())}";
+                referenceComparer.Equals(obj, obj).Should().BeTrue(message);
+                typedComparer.Equals(obj, obj).Should().BeTrue(message);
+                actual.Should().Be(expected, message);
             }
         }
 

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityComparers
@@ -20,8 +19,11 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public HashCodeCombiner Combine<TItem>(IEqualityComparer<TItem> itemComparer, TItem[] objects)
         {
+            Debugger.Break();
             foreach (var o in objects) {
-                Add(() => o is null ? 0 : itemComparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0);
+                var part = (_combinedHash64 << 5) + _combinedHash64;
+                var hash = o is null ? 0 : itemComparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0;
+                _combinedHash64 = part ^ hash;
             }
 
             return this;
@@ -32,7 +34,5 @@ namespace ILLightenComparer.Tests.EqualityComparers
         public static HashCodeCombiner Combine<TItem>(params TItem[] objects) => Start().Combine(null, objects.UnfoldArrays());
 
         public static implicit operator int(HashCodeCombiner self) => self.CombinedHash;
-
-        private void Add(Func<int> hasher) => _combinedHash64 = ((_combinedHash64 << 5) + _combinedHash64) ^ hasher();
     }
 }

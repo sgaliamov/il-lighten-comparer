@@ -6,7 +6,7 @@ using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
-    internal sealed class CollectionEqualityComparer<TItem> : IEqualityComparer<IEnumerable<TItem>>, IEqualityComparer, IHashSeedSetter
+    public sealed class CollectionEqualityComparer<TItem> : IEqualityComparer<IEnumerable<TItem>>, IEqualityComparer, IHashSeedSetter
     {
         private readonly IEqualityComparer<TItem> _itemComparer;
         private readonly bool _sort;
@@ -67,7 +67,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public int GetHashCode(IEnumerable<TItem> obj) => obj is null ? 0 : HashCodeCombiner.Start(_seed).Combine(_itemComparer, obj.ObjectToArray().Cast<TItem>().ToArray());
 
-        public int GetHashCode(object obj) => GetHashCode(obj as IEnumerable<TItem>);
+        public int GetHashCode(object obj) => GetHashCode((IEnumerable<TItem>)obj);
 
         public void SetHashSeed(long seed) => _seed = seed;
     }
