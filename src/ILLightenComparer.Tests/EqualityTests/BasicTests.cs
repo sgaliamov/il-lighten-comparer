@@ -122,7 +122,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var x = new SampleEqualityChildObject<EnumSmall?> { Field = null, Property = EnumSmall.First };
             var y = new SampleEqualityChildObject<EnumSmall?> { Field = EnumSmall.One, Property = EnumSmall.First };
 
-            var referenceComparer = EqualityComparer<SampleEqualityChildObject<EnumSmall?>>.Default; // new CustomizableEqualityComparer<SampleEqualityBaseObject<int?>>((a, b) => a.Equals(b), x => x.GetHashCode());
+            var referenceComparer = EqualityComparer<SampleEqualityChildObject<EnumSmall?>>.Default;
             var expectedHashX = referenceComparer.GetHashCode(x);
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);

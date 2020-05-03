@@ -63,8 +63,6 @@ namespace ILLightenComparer.Shared.Comparisons
             LoadArgument(Arg.SetX),
             LoadArgument(Arg.SetY));
 
-        public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
-
-        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
+        public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
     }
 }

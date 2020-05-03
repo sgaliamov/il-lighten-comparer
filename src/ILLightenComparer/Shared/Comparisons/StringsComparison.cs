@@ -40,16 +40,12 @@ namespace ILLightenComparer.Shared.Comparisons
             return null;
         }
 
-        public bool PutsResultInStack { get; } = true;
-
         public ILEmitter Emit(ILEmitter il, Label _) => il.Call(
             _compareMethod,
             _variable.Load(Arg.X),
             _variable.Load(Arg.Y),
             LoadInteger(_stringComparisonType));
 
-        public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
-
-        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
+        public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
     }
 }

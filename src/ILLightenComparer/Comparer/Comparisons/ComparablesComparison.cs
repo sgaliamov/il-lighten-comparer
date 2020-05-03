@@ -53,16 +53,6 @@ namespace ILLightenComparer.Comparer.Comparisons
             return il.Call(_compareToMethod);
         }
 
-        public ILEmitter Emit(ILEmitter il)
-        {
-            il.DefineLabel(out var exit);
-
-            return Emit(il, exit)
-                .EmitReturnIfTruthy(exit)
-                .MarkLabel(exit)
-                .Return(0);
-        }
-
-        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);
+        public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);
     }
 }

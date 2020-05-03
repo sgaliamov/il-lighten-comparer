@@ -8,7 +8,12 @@ namespace ILLightenComparer.Equality
 {
     internal static class CustomEmitters
     {
-        public static ILEmitter EmitReturnIfFalsy(this ILEmitter il, Label next) => il.IfTrue(next).Return(0);
+        /// <summary>
+        /// Returns zero if stack has zero value, otherwise got to <paramref name="next"/>.
+        /// </summary>
+        public static ILEmitter EmitReturnIfFalsy(this ILEmitter il, Label next) => il
+            .IfTrue(next)
+            .Return(0);
 
         public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder isDoneX, LocalBuilder isDoneY, Label gotoNext) => il
             .LoadLocal(isDoneX)

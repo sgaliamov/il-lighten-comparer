@@ -70,7 +70,7 @@ namespace ILLightenComparer.Shared.Comparisons
                 return il
                     .Execute(
                         itemComparison.Emit(continueLoop),
-                        itemComparison.EmitCheckForIntermediateResult(continueLoop))
+                        itemComparison.EmitCheckForResult(continueLoop))
                     .MarkLabel(continueLoop)
                     .Add(LoadLocal(index), LoadInteger(1))
                     .Store(index)

@@ -30,18 +30,18 @@ namespace ILLightenComparer.Comparer
             var collectionComparer = new ArrayComparisonEmitter(this, CustomEmitters.EmitCheckIfLoopsAreDone, CustomEmitters.EmitReferenceComparison);
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
-                (IVariable variable) => NullableComparison.Create(this, 0, CustomEmitters.EmitReturnIfTruthy, CustomEmitters.EmitCheckNullablesForValue, variable),
+                (IVariable variable) => NullableComparison.Create(this, CustomEmitters.EmitReturnIfTruthy, CustomEmitters.EmitCheckNullablesForValue, variable),
                 IntegralsComparison.Create,
                 (IVariable variable) => StringsComparison.Create(StringCompareMethod, CustomEmitters.EmitReturnIfTruthy, _configuration, variable),
                 ComparablesComparison.Create,
-                (IVariable variable) => MembersComparison.Create(this, 0, membersProvider, variable),
+                (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
                 (IVariable variable) => IndirectComparison.Create(
                     CustomEmitters.EmitReturnIfTruthy,
                     variableType => context.GetStaticCompareMethodInfo(variableType),
                     DelayedCompare,
                     variable),
-                (IVariable variable) => ArraysComparison.Create(0, collectionComparer, _configuration, variable),
-                (IVariable variable) => EnumerablesComparison.Create(this, 0, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
+                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
             };
         }
 

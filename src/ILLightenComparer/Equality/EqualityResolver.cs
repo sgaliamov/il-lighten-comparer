@@ -36,7 +36,7 @@ namespace ILLightenComparer.Equality
             var collectionComparer = new ArrayComparisonEmitter(this, CustomEmitters.EmitCheckIfLoopsAreDone, CustomEmitters.EmitReferenceComparison);
 
             _comparisonFactories = new Func<IVariable, IComparisonEmitter>[] {
-                (IVariable variable) => NullableComparison.Create(this, 1, CustomEmitters.EmitReturnIfFalsy, CustomEmitters.EmitCheckNullablesForValue, variable),
+                (IVariable variable) => NullableComparison.Create(this, CustomEmitters.EmitReturnIfFalsy, CustomEmitters.EmitCheckNullablesForValue, variable),
                 CeqEqualityComparison.Create,
                 (IVariable variable) => StringsComparison.Create(StringEqualsMethod, CustomEmitters.EmitReturnIfFalsy, _configuration, variable),
                 OperatorEqualityComparison.Create,
@@ -45,9 +45,9 @@ namespace ILLightenComparer.Equality
                     variableType => context.GetStaticEqualsMethodInfo(variableType),
                     DelayedEquals,
                     variable),
-                (IVariable variable) => MembersComparison.Create(this, 1, membersProvider, variable),
-                (IVariable variable) => ArraysComparison.Create(1, collectionComparer, _configuration, variable),
-                (IVariable variable) => EnumerablesComparison.Create(this, 1, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
+                (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
+                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
             };
         }
 

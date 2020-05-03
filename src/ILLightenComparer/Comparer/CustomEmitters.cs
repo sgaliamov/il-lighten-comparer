@@ -3,17 +3,20 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Comparer
 {
     internal static class CustomEmitters
     {
+        /// <summary>
+        /// Returns non zero value if stack has it, otherwise got to <paramref name="next"/>.
+        /// </summary>
         public static ILEmitter EmitReturnIfTruthy(this ILEmitter il, Label next) => il
             .Store(typeof(int), out var result)
             .LoadLocal(result)
             .IfFalse(next)
-            .LoadLocal(result)
-            .Return();
+            .Return(LoadLocal(result));
 
         public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder isDoneX, LocalBuilder isDoneY, Label gotoNext) => il
             .LoadLocal(isDoneX)

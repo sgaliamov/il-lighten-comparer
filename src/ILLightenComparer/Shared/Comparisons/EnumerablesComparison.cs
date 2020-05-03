@@ -26,18 +26,15 @@ namespace ILLightenComparer.Shared.Comparisons
         private readonly IConfigurationProvider _configuration;
         private readonly IResolver _resolver;
         private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
-        private readonly int _defaultResult;
 
         private EnumerablesComparison(
             IResolver resolver,
-            int defaultResult,
             ArrayComparisonEmitter arrayComparisonEmitter,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
             IVariable variable)
         {
             _resolver = resolver;
-            _defaultResult = defaultResult;
             _arrayComparisonEmitter = arrayComparisonEmitter;
             _emitCheckIfLoopsAreDone = emitCheckIfLoopsAreDone;
             _configuration = configuration;
@@ -58,7 +55,6 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public static EnumerablesComparison Create(
             IResolver comparisons,
-            int defaultResult,
             ArrayComparisonEmitter arrayComparisonEmitter,
             EmitCheckIfLoopsAreDoneDelegate emitCheckIfLoopsAreDone,
             IConfigurationProvider configuration,
@@ -66,7 +62,7 @@ namespace ILLightenComparer.Shared.Comparisons
         {
             var variableType = variable.VariableType;
             if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
-                return new EnumerablesComparison(comparisons, defaultResult, arrayComparisonEmitter, emitCheckIfLoopsAreDone, configuration, variable);
+                return new EnumerablesComparison(comparisons, arrayComparisonEmitter, emitCheckIfLoopsAreDone, configuration, variable);
             }
 
             return null;
@@ -96,13 +92,7 @@ namespace ILLightenComparer.Shared.Comparisons
             return il;
         }
 
-        public ILEmitter Emit(ILEmitter il) => il
-            .DefineLabel(out var exit)
-            .Execute(this.Emit(exit))
-            .MarkLabel(exit)
-            .Return(_defaultResult);
-
-        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label _) => il;
+        public ILEmitter EmitCheckForResult(ILEmitter il, Label _) => il;
 
         private ILEmitter EmitCompareAsSortedArrays(ILEmitter il, Label gotoNext, LocalBuilder x, LocalBuilder y)
         {
@@ -148,7 +138,7 @@ namespace ILLightenComparer.Shared.Comparisons
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
 
                 il.Execute(itemComparison.Emit(loopStart))
-                  .Execute(itemComparison.EmitCheckForIntermediateResult(loopStart));
+                  .Execute(itemComparison.EmitCheckForResult(loopStart));
             }
         }
 
