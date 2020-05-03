@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Reflection;
+using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Shared
 {
@@ -11,7 +12,7 @@ namespace ILLightenComparer.Shared
 
         public static readonly MethodInfo TryAddMethod = typeof(CycleDetectionSet).GetMethod(nameof(TryAdd), new[] { typeof(object), typeof(byte) });
 
-        public static readonly MethodInfo RemoveMethod = typeof(CycleDetectionSet).GetMethod(nameof(ICollection<object>.Remove), new[] { typeof(object) });
+        public static readonly MethodInfo RemoveMethod = typeof(IDictionary).FindMethod(nameof(IDictionary.Remove), new[] { typeof(object) });
 
         public static readonly MethodInfo GetCountProperty = typeof(CycleDetectionSet).GetProperty(nameof(Count)).GetGetMethod();
     }

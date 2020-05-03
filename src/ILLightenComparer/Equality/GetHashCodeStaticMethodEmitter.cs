@@ -37,7 +37,7 @@ namespace ILLightenComparer.Equality
             _resolver.GetHasherEmitter(new ArgumentVariable(objectType)).Emit(il);
 
             if (detecCycles) {
-                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.Input)).Pop();
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.CycleSet), LoadArgument(Arg.Input));
             }
 
             il.Return();
@@ -47,7 +47,7 @@ namespace ILLightenComparer.Equality
 
         private static void EmitCycleDetection(ILEmitter il) => il
             .IfTrue_S(
-                Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.Y), LoadArgument(Arg.X), LoadInteger(0)),
+                Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.CycleSet), LoadArgument(Arg.Input), LoadInteger(0)),
                 out var next)
             .Return(0) // todo: 3. return collection size
             .MarkLabel(next);

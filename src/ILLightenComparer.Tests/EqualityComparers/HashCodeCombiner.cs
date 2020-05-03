@@ -19,7 +19,6 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         public HashCodeCombiner Combine<TItem>(IEqualityComparer<TItem> itemComparer, TItem[] objects)
         {
-            Debugger.Break();
             foreach (var o in objects) {
                 var part = (_combinedHash64 << 5) + _combinedHash64;
                 var hash = o is null ? 0 : itemComparer?.GetHashCode(o) ?? o?.GetHashCode() ?? 0;
