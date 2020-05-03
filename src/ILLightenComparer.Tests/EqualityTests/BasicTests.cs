@@ -294,12 +294,12 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Enumerable_structs_with_nullables_are_comparable()
         {
-            var referenceComparer = new CollectionEqualityComparer<SampleStruct<int?>?>(new NullableEqualityComparer<SampleStruct<int?>>(new SampleStructEqualityComparer<int?>()));
-            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<SampleStruct<int?>?>>();
+            var referenceComparer = new CollectionEqualityComparer<SampleComparableStruct<int?>?>(new NullableEqualityComparer<SampleComparableStruct<int?>>(new SampleComparableStructEqualityComparer<int?>()));
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<SampleComparableStruct<int?>?>>();
 
             Helper.Parallel(() => {
-                var x = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
-                var y = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+                var x = _fixture.Create<EnumerableStruct<SampleComparableStruct<int?>?>>();
+                var y = _fixture.Create<EnumerableStruct<SampleComparableStruct<int?>?>>();
 
                 var expectedHashX = referenceComparer.GetHashCode(x);
                 var expectedHashY = referenceComparer.GetHashCode(y);
