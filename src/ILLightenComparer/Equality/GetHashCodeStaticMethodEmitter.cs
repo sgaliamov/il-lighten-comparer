@@ -20,9 +20,8 @@ namespace ILLightenComparer.Equality
         {
             using var il = staticMethodBuilder.CreateILEmitter();
 
-            var needNullCheck =
-                 !objectType.IsValueType
-                 && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do null check anyway
+            var isCollection = objectType.ImplementsGeneric(typeof(IEnumerable<>));
+            var needNullCheck = !objectType.IsValueType && !isCollection; // collections do null check anyway
 
             if (needNullCheck) {
                 il.LoadArgument(Arg.Input)
@@ -35,10 +34,13 @@ namespace ILLightenComparer.Equality
                 EmitCycleDetection(il);
             }
 
-            _resolver
-                .GetHasherEmitter(new ArgumentVariable(objectType))
-                .Emit(il)
-                .Return();
+            _resolver.GetHasherEmitter(new ArgumentVariable(objectType)).Emit(il);
+
+            if (detecCycles) {
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.Input)).Pop();
+            }
+
+            il.Return();
         }
 
         public bool NeedCreateCycleDetectionSets(Type _) => true;

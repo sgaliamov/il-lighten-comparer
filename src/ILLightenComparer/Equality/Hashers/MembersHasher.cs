@@ -63,6 +63,7 @@ namespace ILLightenComparer.Equality.Hashers
                 }
             }
 
+            // todo: 1. why cast only for members hasher?
             return il.LoadLocal(hash).Cast(typeof(int)); // todo: 1. test overflow
         }
     }
