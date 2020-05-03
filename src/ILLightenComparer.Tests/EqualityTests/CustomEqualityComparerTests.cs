@@ -70,13 +70,13 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Custom_comparer_defined_as_a_type_should_be_used()
         {
             Test(() => {
-                var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
-                var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
+                var x = _fixture.Create<SampleObject<SampleComparableStruct<string>>>();
+                var y = _fixture.Create<SampleObject<SampleComparableStruct<string>>>();
                 var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
                 var comparer = new ComparerBuilder(c => c
                     .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
-                    .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
+                    .GetEqualityComparer<SampleObject<SampleComparableStruct<string>>>();
 
                 using (new AssertionScope()) {
                     comparer.Equals(x, y).Should().BeTrue();
@@ -133,12 +133,12 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Custom_comparer_should_be_used_for_structs()
         {
             Test(() => {
-                var x = _fixture.Create<SampleStruct<string>>();
-                var y = _fixture.Create<SampleStruct<string>>();
+                var x = _fixture.Create<SampleComparableStruct<string>>();
+                var y = _fixture.Create<SampleComparableStruct<string>>();
 
                 var comparer = new ComparerBuilder(c => c
                     .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
-                    .GetEqualityComparer<SampleStruct<string>>();
+                    .GetEqualityComparer<SampleComparableStruct<string>>();
 
                 using (new AssertionScope()) {
                     comparer.Equals(x, y).Should().BeTrue();
@@ -151,7 +151,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
-        private sealed class SampleStructCustomEqualityComparer : CustomizableEqualityComparer<SampleStruct<string>>
+        private sealed class SampleStructCustomEqualityComparer : CustomizableEqualityComparer<SampleComparableStruct<string>>
         {
             public SampleStructCustomEqualityComparer() : base((__, _) => true, _ => 0) { }
         }

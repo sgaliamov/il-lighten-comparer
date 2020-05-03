@@ -80,7 +80,7 @@ namespace ILLightenComparer.Equality.Hashers
             }
 
             if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
-                return EmitHashAsSortedArray(il, enumerable, hash);
+                return EmitHashAsSortedArray(il, enumerable, hash).MarkLabel(end);
             }
 
             il.Call(_getEnumeratorMethod, LoadCaller(enumerable))
@@ -109,7 +109,9 @@ namespace ILLightenComparer.Equality.Hashers
 
             il.EmitArraySorting(hasCustomComparer, _elementType, enumerable);
 
-            return _arrayHashEmitter.Emit(il, enumerable, hash);
+            var arrayType = _elementType.MakeArrayType();
+
+            return _arrayHashEmitter.Emit(il, arrayType, enumerable, hash);
         }
 
         private void Loop(ILEmitter il, LocalBuilder enumerator, Label loopStart, LocalBuilder hash)

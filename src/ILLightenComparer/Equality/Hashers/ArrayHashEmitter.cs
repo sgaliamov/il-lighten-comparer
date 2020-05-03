@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
@@ -19,10 +20,8 @@ namespace ILLightenComparer.Equality.Hashers
             _variable = variable;
         }
 
-        public ILEmitter Emit(ILEmitter il, LocalBuilder array, LocalBuilder hash)
+        public ILEmitter Emit(ILEmitter il, Type arrayType, LocalBuilder array, LocalBuilder hash)
         {
-            var arrayType = _variable.VariableType;
-
             il.LoadInteger(0) // start loop
               .Store(typeof(int), out var index)
               .EmitArrayLength(arrayType, array, out var count)

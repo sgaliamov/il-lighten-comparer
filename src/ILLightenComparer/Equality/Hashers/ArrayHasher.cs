@@ -54,7 +54,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             il.MarkLabel(begin);
 
-            return _arrayHashEmitter.Emit(il, array, hash).MarkLabel(end);
+            return _arrayHashEmitter.Emit(il, arrayType, array, hash).MarkLabel(end);
         }
     }
 }
