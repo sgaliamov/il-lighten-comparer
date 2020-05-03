@@ -112,9 +112,10 @@ namespace ILLightenComparer.Tests.EqualityTests
             var clone = obj.DeepClone();
 
             using (new AssertionScope()) {
-                referenceComparer.Equals(obj, clone).Should().BeTrue();
-                typedComparer.Equals(obj, clone).Should().BeTrue();
-                typedComparer.GetHashCode(obj).Should().Be(referenceComparer.GetHashCode(clone));
+                var message = $"\nobj:\n{string.Join("\n", obj.ObjectToArray())}\nclone:\n{string.Join("\n", clone.ObjectToArray())}";
+                referenceComparer.Equals(obj, clone).Should().BeTrue(message);
+                typedComparer.Equals(obj, clone).Should().BeTrue(message);
+                typedComparer.GetHashCode(obj).Should().Be(referenceComparer.GetHashCode(clone), message);
             }
         }
 

@@ -86,11 +86,12 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
-        public void Detects_cycle_on_second_member()
+        public void Detects_cycle_on_second_member_and_handles_equalty_by_value()
         {
-            var one = new SelfSealed();
+            var one = new SelfSealed { Value = 0 };
             one.Second = new SelfSealed {
-                First = one
+                First = one,
+                Value = 0
             };
             /*
                   1
@@ -104,8 +105,9 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 
             var other = new SelfSealed {
                 Second = new SelfSealed {
-                    First = new SelfSealed()
-                }
+                    First = new SelfSealed { Value = 0 }
+                },
+                Value = 0
             };
             /*
                   3

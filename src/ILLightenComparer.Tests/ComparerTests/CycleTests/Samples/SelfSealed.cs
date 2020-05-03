@@ -40,6 +40,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                     return -1;
                 }
 
+                // & because, both methods need to be executed.
                 if (!setX.TryAdd(x, 0) & !setY.TryAdd(y, 0)) {
                     return setX.Count - setY.Count;
                 }
@@ -62,5 +63,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 return 0;
             }
         }
+
+        public bool Equals(SelfSealed obj) => Value == obj.Value;
+
+        public override bool Equals(object obj) => Equals((SelfSealed)obj);
+
+        public override int GetHashCode() => Value.GetHashCode();
     }
 }

@@ -45,6 +45,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                     return -1;
                 }
 
+                // & because, both methods need to be executed.
                 if (!setX.TryAdd(x, 0) & !setY.TryAdd(y, 0)) {
                     return setX.Count - setY.Count;
                 }
