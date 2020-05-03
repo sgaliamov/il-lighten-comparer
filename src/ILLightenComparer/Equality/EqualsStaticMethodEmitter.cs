@@ -38,10 +38,10 @@ namespace ILLightenComparer.Equality
             il.DefineLabel(out var exit)
               .Execute(emitter.Emit(exit));
 
-            //if (detecCycles) {
-            //    il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
-            //    il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
-            //}
+            if (detecCycles) {
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
+            }
 
             il.Execute(emitter.EmitCheckForResult(exit))
               .MarkLabel(exit)
@@ -56,7 +56,7 @@ namespace ILLightenComparer.Equality
                 Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
                    Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
             .IfFalse_S(out var next)
-            .Throw(New(typeof(ArgumentException).GetConstructor(new[] { typeof(string) }), LoadString("Cycle detected.")))
+            .Throw(New(typeof(ArgumentException).GetConstructor(new[] { typeof(string) }), LoadString("Can't compare objects: cycle detected.")))
             .MarkLabel(next);
     }
 }
