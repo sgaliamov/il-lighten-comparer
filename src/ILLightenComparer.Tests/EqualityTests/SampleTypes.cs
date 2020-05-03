@@ -30,8 +30,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 [typeof(SampleEqualityBaseObject<EnumSmall?>)] = null,
                 [typeof(SampleEqualityChildObject<EnumSmall?>)] = null,
                 [typeof(SampleEqualityStruct<EnumSmall?>)] = null,
-                [typeof(SampleObject<EnumSmall?>)] = new SampleObjectEqualityComparer<EnumSmall?>(),
-                [typeof(SampleStruct<EnumSmall?>)] = new SampleStructEqualityComparer<EnumSmall?>()
+                [typeof(SampleEqualityObject<EnumSmall?>)] = new SampleObjectEqualityComparer<EnumSmall?>(),
+                [typeof(SampleEqualityStruct<EnumSmall?>)] = new SampleStructEqualityComparer<EnumSmall?>()
             };
 
             NullableTypes = Types

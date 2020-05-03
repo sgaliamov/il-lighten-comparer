@@ -1,25 +1,53 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ILLightenComparer.Tests.EqualityComparers;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleEqualityChildObject<TMember> : SampleEqualityBaseObject<TMember>
+    public sealed class SampleEqualityChildObject<TMember> : SampleEqualityBaseObject<TMember>, IComparable<SampleEqualityChildObject<TMember>>
     {
-        public static IEqualityComparer<TMember> ChildComparer = EqualityComparer<TMember>.Default;
+        private readonly static IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
+        public static IEqualityComparer<TMember> ChildEqualityComparer = EqualityComparer<TMember>.Default;
 
         public TMember ChildField;
         public TMember ChildProperty { get; set; }
+
+        public override string ToString() => this.ToJson();
 
         public override bool Equals(object obj) => Equals(obj as SampleEqualityChildObject<TMember>);
 
         public bool Equals(SampleEqualityChildObject<TMember> other) =>
             other != null
             && base.Equals(other)
-            && EqualityComparer<TMember>.Default.Equals(ChildField, other.ChildField)
-            && EqualityComparer<TMember>.Default.Equals(ChildProperty, other.ChildProperty);
+            && ChildEqualityComparer.Equals(ChildField, other.ChildField)
+            && ChildEqualityComparer.Equals(ChildProperty, other.ChildProperty);
 
         public override int GetHashCode() => HashCodeCombiner.Combine(Field, Property, ChildField, ChildProperty);
 
-        public override string ToString() => $"{{ {Field}, {Property}, {ChildField}, {ChildProperty} }}";
+        public int CompareTo(SampleEqualityChildObject<TMember> other)
+        {
+            if (ReferenceEquals(this, other)) {
+                return 0;
+            }
+
+            if (other is null) {
+                return 1;
+            }
+
+            var compare = base.CompareTo(other);
+            if (compare != 0) {
+                return compare;
+            }
+
+            compare = ChildComparer.Compare(ChildField, other.ChildField);
+            if (compare != 0) {
+                return compare;
+            }
+
+            return ChildComparer.Compare(ChildProperty, other.ChildProperty);
+        }
+
+        public override int CompareTo(SampleEqualityBaseObject<TMember> other) => CompareTo((SampleEqualityChildObject<TMember>)other);
     }
 }
