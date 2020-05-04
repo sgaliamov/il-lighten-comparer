@@ -25,18 +25,18 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Reset_ignored_members()
         {
-            var x = _fixture.Create<SampleEqualityObject<int>>();
-            var y = _fixture.Create<SampleEqualityObject<int>>();
-            var expected = new SampleObjectEqualityComparer<int>().Equals(x, y);
+            var x = _fixture.Create<ComparableObject<int>>();
+            var y = _fixture.Create<ComparableObject<int>>();
+            var expected = new ComparableObjectEqualityComparer<int>().Equals(x, y);
 
             var builder = new ComparerBuilder();
-            var comparer1 = builder.For<SampleEqualityObject<int>>(c => c.IgnoreMember(o => o.Field, o => o.Property))
+            var comparer1 = builder.For<ComparableObject<int>>(c => c.IgnoreMember(o => o.Field, o => o.Property))
                                    .GetEqualityComparer();
-            var comparer2 = builder.Configure(c => c.IgnoreMember<SampleEqualityObject<int>, int>(null))
-                                   .GetEqualityComparer<SampleEqualityObject<int>>();
-            var comparer3 = builder.Configure(c => c.IgnoreMember((SampleEqualityObject<int> o) => o.Field))
-                                   .Configure(c => c.IgnoreMember<SampleEqualityObject<int>, int>(null))
-                                   .GetEqualityComparer<SampleEqualityObject<int>>();
+            var comparer2 = builder.Configure(c => c.IgnoreMember<ComparableObject<int>, int>(null))
+                                   .GetEqualityComparer<ComparableObject<int>>();
+            var comparer3 = builder.Configure(c => c.IgnoreMember((ComparableObject<int> o) => o.Field))
+                                   .Configure(c => c.IgnoreMember<ComparableObject<int>, int>(null))
+                                   .GetEqualityComparer<ComparableObject<int>>();
 
             using (new AssertionScope()) {
                 comparer1.Equals(x, y).Should().BeTrue();

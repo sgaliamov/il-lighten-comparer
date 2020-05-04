@@ -4,16 +4,16 @@ using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    public sealed class SampleComparableChildObject<TMember> :
-        SampleComparableBaseObject<TMember>,
-        IComparable<SampleComparableChildObject<TMember>>
+    public sealed class ComparableChildObject<TMember> :
+        ComparableBaseObject<TMember>,
+        IComparable<ComparableChildObject<TMember>>
     {
         public static IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
 
         public TMember ChildField;
         public TMember ChildProperty { get; set; }
 
-        public int CompareTo(SampleComparableChildObject<TMember> other)
+        public int CompareTo(ComparableChildObject<TMember> other)
         {
             if (ReferenceEquals(this, other)) {
                 return 0;
@@ -38,6 +38,6 @@ namespace ILLightenComparer.Tests.Samples
 
         public override string ToString() => this.ToJson();
 
-        public override int CompareTo(SampleComparableBaseObject<TMember> other) => CompareTo(other as SampleComparableChildObject<TMember>);
+        public override int CompareTo(ComparableBaseObject<TMember> other) => CompareTo(other as ComparableChildObject<TMember>);
     }
 }

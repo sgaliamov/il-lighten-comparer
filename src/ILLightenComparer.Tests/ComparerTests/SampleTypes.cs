@@ -27,9 +27,9 @@ namespace ILLightenComparer.Tests.ComparerTests
                 [typeof(EnumSmall)] = null,
                 [typeof(EnumBig)] = null,
                 [typeof(string)] = null,
-                [typeof(SampleComparableBaseObject<EnumSmall?>)] = null,
-                [typeof(SampleComparableChildObject<EnumSmall?>)] = null,
-                [typeof(SampleComparableStruct<EnumSmall?>)] = null,
+                [typeof(ComparableBaseObject<EnumSmall?>)] = null,
+                [typeof(ComparableChildObject<EnumSmall?>)] = null,
+                [typeof(ComparableStruct<EnumSmall?>)] = null,
                 [typeof(SampleObject<EnumSmall?>)] = new SampleObjectComparer<EnumSmall?>(),
                 [typeof(SampleStruct<EnumSmall?>)] = new SampleStructComparer<EnumSmall?>()
             };

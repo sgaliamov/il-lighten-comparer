@@ -6,17 +6,19 @@ using ILLightenComparer.Tests.Utilities;
 namespace ILLightenComparer.Tests.Samples
 {
     [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "Test class")]
-    public sealed class SampleEqualityObject<TMember> : IComparable<SampleEqualityObject<TMember>>
+    public class ComparableBaseObject<TMember> : IComparable<ComparableBaseObject<TMember>>
     {
-        private readonly static IComparer<TMember> Comparer = Comparer<TMember>.Default;
+        [SuppressMessage("Design", "RCS1158:Static member in generic type should use a type parameter.", Justification = "Test class")]
+        public static bool UsedCompareTo;
+        public static IComparer<TMember> Comparer = Comparer<TMember>.Default;
 
         public TMember Field;
         public TMember Property { get; set; }
 
-        public override string ToString() => $"Object: {this.ToJson()}";
-
-        public int CompareTo([AllowNull] SampleEqualityObject<TMember> other)
+        public virtual int CompareTo(ComparableBaseObject<TMember> other)
         {
+            UsedCompareTo = true;
+
             if (ReferenceEquals(this, other)) {
                 return 0;
             }
@@ -32,5 +34,7 @@ namespace ILLightenComparer.Tests.Samples
 
             return Comparer.Compare(Property, other.Property);
         }
+
+        public override string ToString() => this.ToJson();
     }
 }

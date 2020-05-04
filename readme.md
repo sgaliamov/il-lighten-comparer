@@ -158,10 +158,4 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 * [Multidimensional arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/multidimensional-arrays) are not supported now, but [Jagged arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/jagged-arrays) are.
 * If a type implements `IComparable<T>` interface and type is a value type or **`sealed`** then this implementations will be used.
 
-## What next
-
-1. Support more types.
-1. Add more settings.
-1. Improve performance.
-
-In case of unexpected behavior welcome to create an [issue](https://github.com/sgaliamov/il-lighten-comparer/issues/new) and provide the type that you use.
+In case of an unexpected behavior, please welcome to create an [issue](https://github.com/sgaliamov/il-lighten-comparer/issues/new) and provide the type and data that you use.

@@ -4,13 +4,13 @@ using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
-    internal sealed class SampleComparableStructEqualityComparer<TMember> : IEqualityComparer<SampleComparableStruct<TMember>>, IEqualityComparer
+    internal sealed class ComparableStructEqualityComparer<TMember> : IEqualityComparer<ComparableStruct<TMember>>, IEqualityComparer
     {
         private readonly IEqualityComparer _memberComparer;
 
-        public SampleComparableStructEqualityComparer(IEqualityComparer memberComparer = null) => _memberComparer = memberComparer ?? EqualityComparer<TMember>.Default;
+        public ComparableStructEqualityComparer(IEqualityComparer memberComparer = null) => _memberComparer = memberComparer ?? EqualityComparer<TMember>.Default;
 
-        public bool Equals(SampleComparableStruct<TMember> x, SampleComparableStruct<TMember> y)
+        public bool Equals(ComparableStruct<TMember> x, ComparableStruct<TMember> y)
         {
             var compare = _memberComparer.Equals(x.Field, y.Field);
             if (!compare) {
@@ -30,10 +30,10 @@ namespace ILLightenComparer.Tests.EqualityComparers
                 return false;
             }
 
-            return Equals((SampleComparableStruct<TMember>)x, (SampleComparableStruct<TMember>)y);
+            return Equals((ComparableStruct<TMember>)x, (ComparableStruct<TMember>)y);
         }
 
-        public int GetHashCode(SampleComparableStruct<TMember> obj)
+        public int GetHashCode(ComparableStruct<TMember> obj)
         {
             var setter = _memberComparer as IHashSeedSetter;
             var combiner = HashCodeCombiner.Start();
@@ -45,6 +45,6 @@ namespace ILLightenComparer.Tests.EqualityComparers
             return combiner.CombineObjects(obj.Property is null ? 0 : _memberComparer.GetHashCode(obj.Property));
         }
 
-        public int GetHashCode(object obj) => GetHashCode((SampleComparableStruct<TMember>)obj);
+        public int GetHashCode(object obj) => GetHashCode((ComparableStruct<TMember>)obj);
     }
 }

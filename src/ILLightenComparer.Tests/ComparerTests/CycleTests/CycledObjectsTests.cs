@@ -254,8 +254,8 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         [Fact]
         public void When_sealed_comparable_has_member_with_cycle()
         {
-            var comparer = _builder.For<SampleComparableChildObject<OneSealed>>().GetComparer();
-            SampleComparableChildObject<OneSealed>.ChildComparer = ComparerForOneSealed;
+            var comparer = _builder.For<ComparableChildObject<OneSealed>>().GetComparer();
+            ComparableChildObject<OneSealed>.ChildComparer = ComparerForOneSealed;
 
             var one = _fixture.Create<OneSealed>();
             var other = _fixture.Create<OneSealed>();
@@ -264,11 +264,11 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             other.Two.Three.One = _fixture.Create<OneSealed>();
             other.Two.Three.One.Value = one.Value;
             other.Two.Three.One.Two.Three.One = other;
-            var x = new SampleComparableChildObject<OneSealed> {
+            var x = new ComparableChildObject<OneSealed> {
                 ChildField = null,
                 ChildProperty = other
             };
-            var y = new SampleComparableChildObject<OneSealed> {
+            var y = new ComparableChildObject<OneSealed> {
                 ChildField = null,
                 ChildProperty = one
             };
