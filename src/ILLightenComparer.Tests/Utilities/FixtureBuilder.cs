@@ -87,8 +87,13 @@ namespace ILLightenComparer.Tests.Utilities
         {
             var times = 5;
             while (true) {
+                if ((type.IsNullable() || type.IsClass) && !(oldValue is null) && ThreadSafeRandom.NextDouble() < Constants.NullProbability) {
+                    return null;
+                }
+
                 var newValue = SimpleFixture.Value.Create(type);
-                if (!newValue.Equals(oldValue)) {
+
+                if (oldValue is null || !newValue.Equals(oldValue)) {
                     return newValue;
                 }
 
