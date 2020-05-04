@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
@@ -9,12 +10,13 @@ namespace ILLightenComparer.Tests.EqualityComparers
     {
         private readonly IEqualityComparer<TItem> _itemComparer;
         private readonly bool _sort;
-        private long _seed = HashCodeCombiner.Seed;
+        private AsyncLocal<long> _seed = new AsyncLocal<long>();
 
         public CollectionEqualityComparer(IEqualityComparer<TItem> itemComparer = null, bool sort = false)
         {
             _sort = sort;
             _itemComparer = itemComparer ?? EqualityComparer<TItem>.Default;
+            _seed.Value = HashCodeCombiner.Seed;
         }
 
         public bool Equals(IEnumerable<TItem> x, IEnumerable<TItem> y)
@@ -76,11 +78,11 @@ namespace ILLightenComparer.Tests.EqualityComparers
                 obj = array;
             }
 
-            return HashCodeCombiner.Start(_seed).Combine(_itemComparer, obj.ToArray().Cast<TItem>().ToArray());
+            return HashCodeCombiner.Start(_seed.Value).Combine(_itemComparer, obj.ToArray().Cast<TItem>().ToArray());
         }
 
         public int GetHashCode(object obj) => GetHashCode((IEnumerable<TItem>)obj);
 
-        public void SetHashSeed(long seed) => _seed = seed;
+        public void SetHashSeed(long seed) => _seed.Value = seed;
     }
 }
