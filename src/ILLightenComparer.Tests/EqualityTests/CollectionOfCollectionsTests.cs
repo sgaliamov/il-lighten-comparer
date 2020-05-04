@@ -34,13 +34,61 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Compare_enumerables_of_enumerables()
         {
-            var collectionComparer = new CollectionEqualityComparer<List<int?>>(new CollectionEqualityComparer<int?>());
-            var referenceComparer = new CollectionEqualityComparer<EnumerableStruct<List<int?>>?>(
-                new NullableEqualityComparer<EnumerableStruct<List<int?>>>(
-                    new CustomizableEqualityComparer<EnumerableStruct<List<int?>>>(
-                        (a, b) => collectionComparer.Equals(a, b),
-                        x => collectionComparer.GetHashCode(x))));
+            int GetHashCode(IEnumerable<EnumerableStruct<List<int?>>?> input)
+            {
+                var num = 5381L;
+                if (input == null) {
+                    return 0;
+                }
+
+                var enumerator = input.GetEnumerator();
+                while (enumerator.MoveNext()) {
+                    var num2 = (num << 5) + num;
+                    var enumerableStruct = enumerator.Current;
+                    long num3;
+                    if (enumerableStruct == null) {
+                        num3 = 0L;
+                    } else {
+                        var num4 = 5381L;
+                        var enumerator2 = enumerableStruct.Value.GetEnumerator();
+                        if (enumerator2 == null) {
+                            num3 = 0L;
+                        } else {
+                            while (enumerator2.MoveNext()) {
+                                var num5 = (num4 << 5) + num4;
+                                var list = enumerator2.Current;
+                                long num6;
+                                if (list == null) {
+                                    num6 = 0L;
+                                } else {
+                                    var enumerator3 = list.GetEnumerator();
+                                    while (enumerator3.MoveNext()) {
+                                        var num7 = (num4 << 5) + num4;
+                                        var num8 = enumerator3.Current;
+                                        num4 = (num7 ^ (num8?.GetHashCode() ?? 0));
+                                    }
+                                    num6 = num4;
+                                }
+                                num4 = (num5 ^ num6);
+                            }
+                            num3 = num4;
+                        }
+                    }
+                    num = (num2 ^ num3);
+                }
+
+                return (int)num;
+            }
+
             var comparer = new ComparerBuilder().GetEqualityComparer<IEnumerable<EnumerableStruct<List<int?>>?>>();
+            var listComparer = new CollectionEqualityComparer<List<int?>>(new CollectionEqualityComparer<int?>());
+            var customizableComparer = new CustomizableEqualityComparer<EnumerableStruct<List<int?>>>(
+                (a, b) => listComparer.Equals(a, b),
+                _ => throw new NotSupportedException());
+            var collectionComparer = new CollectionEqualityComparer<EnumerableStruct<List<int?>>?>(new NullableEqualityComparer<EnumerableStruct<List<int?>>>(customizableComparer));
+            var referenceComparer = new CustomizableEqualityComparer<IEnumerable<EnumerableStruct<List<int?>>?>>(
+                (a, b) => collectionComparer.Equals(a, b),
+                GetHashCode);
 
             Helper.Parallel(() => {
                 var x = _fixture.CreateMany<EnumerableStruct<List<int?>>?>().RandomNulls().ToList();
@@ -60,7 +108,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     hashX.Should().Be(expectedHashX);
                     hashY.Should().Be(expectedHashY);
                 }
-            }, 1);
+            });
         }
 
         [Fact]
@@ -153,14 +201,11 @@ namespace ILLightenComparer.Tests.EqualityTests
                 item => {
                     var (type, referenceComparer) = item;
                     var collections = getCollectionTypes(type);
-                    var comparerTypes = collections
+                    var comparer = collections
                         .Prepend(type)
                         .Take(collections.Length)
                         .Select(x => typeof(CollectionEqualityComparer<>).MakeGenericType(x))
-                        .ToArray();
-                    var comparer = comparerTypes.Aggregate(
-                        referenceComparer,
-                        (current, comparerType) => (IEqualityComparer)Activator.CreateInstance(comparerType, current, sort));
+                        .Aggregate(referenceComparer, (current, comparerType) => (IEqualityComparer)Activator.CreateInstance(comparerType, current, sort));
 
                     type = collections.Last();
 

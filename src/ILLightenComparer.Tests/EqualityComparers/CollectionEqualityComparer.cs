@@ -10,7 +10,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
     {
         private readonly IEqualityComparer<TItem> _itemComparer;
         private readonly bool _sort;
-        private AsyncLocal<long> _seed = new AsyncLocal<long>();
+        private readonly AsyncLocal<long> _seed = new AsyncLocal<long>();
 
         public CollectionEqualityComparer(IEqualityComparer<TItem> itemComparer = null, bool sort = false)
         {
@@ -78,7 +78,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
                 obj = array;
             }
 
-            return HashCodeCombiner.Start(_seed.Value).Combine(_itemComparer, obj.ToArray().Cast<TItem>().ToArray());
+            return HashCodeCombiner.Start(_seed.Value).Combine(_itemComparer, obj.ToArray());
         }
 
         public int GetHashCode(object obj) => GetHashCode((IEnumerable<TItem>)obj);
