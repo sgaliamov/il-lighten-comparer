@@ -38,5 +38,7 @@ namespace ILLightenComparer.Extensions
         }
 
         public static readonly MethodInfo DisposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
+
+        public static readonly ConstructorInfo ArgumentExceptionConstructor = typeof(ArgumentException).GetConstructor(new[] { typeof(string) });
     }
 }

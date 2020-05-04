@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Samples
 {
-    [DebuggerDisplay("{ToString()}")]
     [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "Test class")]
     public sealed class SampleEqualityObject<TMember> : IComparable<SampleEqualityObject<TMember>>
     {

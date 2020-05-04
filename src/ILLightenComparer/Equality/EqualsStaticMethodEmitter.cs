@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
@@ -30,7 +31,7 @@ namespace ILLightenComparer.Equality
             }
 
             if (detecCycles) {
-                EmitCycleDetection(il);
+                EmitCycleDetection(il, objectType);
             }
 
             var emitter = _resolver.GetComparisonEmitter(new ArgumentVariable(objectType));
@@ -50,13 +51,13 @@ namespace ILLightenComparer.Equality
 
         public bool NeedCreateCycleDetectionSets(Type objectType) => true;
 
-        private static void EmitCycleDetection(ILEmitter il) => il
+        private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
             .AreSame(
                 LoadInteger(0),
                 Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
                    Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
             .IfFalse_S(out var next)
-            .Throw(New(typeof(ArgumentException).GetConstructor(new[] { typeof(string) }), LoadString("Can't compare objects: cycle detected.")))
+            .Throw(New(Methods.ArgumentExceptionConstructor, LoadString($"Can't compare objects. Cycle is detected in {objectType.DisplayName()}.")))
             .MarkLabel(next);
     }
 }
