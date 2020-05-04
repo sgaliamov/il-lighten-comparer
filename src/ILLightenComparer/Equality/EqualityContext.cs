@@ -12,13 +12,14 @@ namespace ILLightenComparer.Equality
     internal sealed class EqualityContext : IEqualityComparerContext
     {
         private readonly IConfigurationProvider _configuration;
+        private readonly IComparerProvider _comparerProvider;
         private readonly ComparersCollection _emittedComparers = new ComparersCollection();
         private readonly GenericProvider _genericProvider;
 
-        public EqualityContext(MembersProvider membersProvider, IConfigurationProvider configuration)
+        public EqualityContext(IComparerProvider comparerProvider, MembersProvider membersProvider, IConfigurationProvider configuration)
         {
             _configuration = configuration;
-
+            _comparerProvider = comparerProvider;
             var equalityResolver = new EqualityResolver(this, membersProvider, _configuration);
             var hasherResolver = new HasherResolver(this, membersProvider, _configuration);
 
@@ -84,6 +85,8 @@ namespace ILLightenComparer.Equality
         public IEqualityComparer<T> GetEqualityComparer<T>() => _configuration.GetCustomEqualityComparer<T>()
             ?? (IEqualityComparer<T>)_emittedComparers.GetOrAdd(typeof(T), key => CreateInstance<T>(key));
 
+        public IComparer<T> GetComparer<T>() => _comparerProvider.GetComparer<T>();
+
         private IEqualityComparer<T> CreateInstance<T>(Type key) => _genericProvider
             .EnsureComparerType(key)
             .CreateInstance<IEqualityComparerContext, IEqualityComparer<T>>(this);
@@ -108,7 +111,7 @@ namespace ILLightenComparer.Equality
         }
     }
 
-    internal interface IEqualityComparerContext : IEqualityComparerProvider, IContext
+    internal interface IEqualityComparerContext : IEqualityComparerProvider, IContext, IComparerProvider
     {
         bool DelayedEquals<T>(T x, T y, CycleDetectionSet xSet, CycleDetectionSet ySet);
         int DelayedHash<T>(T x, CycleDetectionSet xSet);

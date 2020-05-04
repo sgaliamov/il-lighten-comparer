@@ -46,10 +46,10 @@ namespace ILLightenComparer
                 var configurationCopy = new ConfigurationProvider(_configurationProvider);
                 var membersProvider = new MembersProvider(configurationCopy);
 
-                return (
-                    new ComparerContext(membersProvider, configurationCopy),
-                    new EqualityContext(membersProvider, configurationCopy)
-                );
+                var comparerContext = new ComparerContext(membersProvider, configurationCopy);
+                var equalityContext = new EqualityContext(comparerContext, membersProvider, configurationCopy);
+
+                return (comparerContext, equalityContext);
             }, LazyThreadSafetyMode.PublicationOnly);
         }
 
