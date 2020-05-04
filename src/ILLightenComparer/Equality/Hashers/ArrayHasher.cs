@@ -46,13 +46,12 @@ namespace ILLightenComparer.Equality.Hashers
               .Store(arrayType, out var array)
               .IfTrue_S(LoadLocal(array), out var begin)
               .LoadInteger(0)
-              .GoTo(out var end);
+              .GoTo(out var end)
+              .MarkLabel(begin);
 
             if (_configuration.IgnoreCollectionOrder) {
                 il.EmitArraySorting(_hasCustomComparer, arrayType.GetElementType(), array);
             }
-
-            il.MarkLabel(begin);
 
             return _arrayHashEmitter.Emit(il, arrayType, array, hash).MarkLabel(end);
         }

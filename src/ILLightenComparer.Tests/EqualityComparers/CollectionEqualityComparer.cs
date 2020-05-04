@@ -65,7 +65,20 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
         bool IEqualityComparer.Equals(object x, object y) => Equals(x as IEnumerable<TItem>, y as IEnumerable<TItem>);
 
-        public int GetHashCode(IEnumerable<TItem> obj) => obj is null ? 0 : HashCodeCombiner.Start(_seed).Combine(_itemComparer, obj.ObjectToArray().Cast<TItem>().ToArray());
+        public int GetHashCode(IEnumerable<TItem> obj)
+        {
+            if (obj is null) {
+                return 0;
+            }
+
+            if (_sort) {
+                var array = obj.ToArray();
+                Array.Sort(array);
+                obj = array;
+            }
+
+            return HashCodeCombiner.Start(_seed).Combine(_itemComparer, obj.ToArray().Cast<TItem>().ToArray());
+        }
 
         public int GetHashCode(object obj) => GetHashCode((IEnumerable<TItem>)obj);
 
