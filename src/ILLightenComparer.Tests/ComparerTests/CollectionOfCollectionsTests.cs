@@ -15,22 +15,6 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class CollectionOfCollectionsTests
     {
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
-
-        [Fact]
-        public void Compare_array_of_array()
-        {
-            Type[] GetCollectionTypes(Type type)
-            {
-                var array1Type = type.MakeArrayType();
-                var array2Type = array1Type.MakeArrayType();
-
-                return new[] { array1Type, array2Type };
-            }
-
-            CompareCollectionOfCollections(GetCollectionTypes);
-        }
-
         [Fact]
         public void Compare_enumerables_of_enumerables()
         {
@@ -52,6 +36,20 @@ namespace ILLightenComparer.Tests.ComparerTests
                     equals.Should().Be(expectedEquals);
                 }
             });
+        }
+
+        [Fact]
+        public void Compare_array_of_array()
+        {
+            Type[] GetCollectionTypes(Type type)
+            {
+                var array1Type = type.MakeArrayType();
+                var array2Type = array1Type.MakeArrayType();
+
+                return new[] { array1Type, array2Type };
+            }
+
+            CompareCollectionOfCollections(GetCollectionTypes);
         }
 
         [Fact]
@@ -111,6 +109,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
         }
 
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes)
         {
             Parallel.Invoke(
@@ -144,14 +144,11 @@ namespace ILLightenComparer.Tests.ComparerTests
                 item => {
                     var (type, referenceComparer) = item;
                     var collections = getCollectionTypes(type);
-                    var comparerTypes = collections
+                    var comparer = collections
                         .Prepend(type)
                         .Take(collections.Length)
                         .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
-                        .ToArray();
-                    var comparer = comparerTypes.Aggregate(
-                        referenceComparer,
-                        (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
+                        .Aggregate(referenceComparer, (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
 
                     type = collections.Last();
 

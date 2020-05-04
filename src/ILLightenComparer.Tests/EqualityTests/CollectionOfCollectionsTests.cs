@@ -15,22 +15,6 @@ namespace ILLightenComparer.Tests.EqualityTests
 {
     public sealed class CollectionOfCollectionsTests
     {
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
-
-        [Fact]
-        public void Compare_array_of_array()
-        {
-            Type[] GetCollectionTypes(Type type)
-            {
-                var array1Type = type.MakeArrayType();
-                var array2Type = array1Type.MakeArrayType();
-
-                return new[] { array1Type, array2Type };
-            }
-
-            CompareCollectionOfCollections(GetCollectionTypes);
-        }
-
         [Fact]
         public void Compare_enumerables_of_enumerables()
         {
@@ -112,6 +96,20 @@ namespace ILLightenComparer.Tests.EqualityTests
         }
 
         [Fact]
+        public void Compare_array_of_array()
+        {
+            Type[] GetCollectionTypes(Type type)
+            {
+                var array1Type = type.MakeArrayType();
+                var array2Type = array1Type.MakeArrayType();
+
+                return new[] { array1Type, array2Type };
+            }
+
+            CompareCollectionOfCollections(GetCollectionTypes);
+        }
+
+        [Fact]
         public void Compare_array_of_list()
         {
             Type[] GetCollectionTypes(Type type)
@@ -168,6 +166,8 @@ namespace ILLightenComparer.Tests.EqualityTests
             Assert.Throws<NotSupportedException>(() => builder.For<ComparableStruct<int[,]>>().GetComparer());
         }
 
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes)
         {
             Parallel.Invoke(
@@ -196,6 +196,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             Type genericSampleComparer)
         {
             var types = nullable ? TestTypes.NullableTypes : TestTypes.Types;
+
             Parallel.ForEach(
                 types,
                 item => {
@@ -215,7 +216,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                         comparer = (IEqualityComparer)Activator.CreateInstance(comparerType, comparer);
                     }
 
-                    new GenericTests().GenericTest(type, comparer, sort, Constants.SmallCount);
+                    new GenericTests().GenericTest(type, comparer, sort, 1);
                 });
         }
     }
