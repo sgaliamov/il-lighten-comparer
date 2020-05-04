@@ -20,7 +20,7 @@ namespace ILLightenComparer.Abstractions
 
     internal static class ComparisonEmitterExtensions
     {
-        public static Func<ILEmitter, ILEmitter> Emit(this IComparisonEmitter emitter, Label next) => il => emitter.Emit(il, next);
-        public static Func<ILEmitter, ILEmitter> EmitCheckForResult(this IComparisonEmitter emitter, Label next) => il => emitter.EmitCheckForResult(il, next);
+        public static ILEmitterFunc Emit(this IComparisonEmitter emitter, Label next) => il => emitter.Emit(il, next);
+        public static ILEmitterFunc EmitCheckForResult(this IComparisonEmitter emitter, Label next) => il => emitter.EmitCheckForResult(il, next);
     }
 }

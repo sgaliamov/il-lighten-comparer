@@ -20,7 +20,7 @@ namespace ILLightenComparer.Abstractions
 
     internal static class HasherEmitterExtensions
     {
-        public static Func<ILEmitter, ILEmitter> Emit(this IHasherEmitter hasher, LocalBuilder hash) => il => hasher.Emit(il, hash);
+        public static ILEmitterFunc Emit(this IHasherEmitter hasher, LocalBuilder hash) => il => hasher.Emit(il, hash);
 
         public static ILEmitter EmitHashing(this IHasherEmitter hasher, ILEmitter il, LocalBuilder hash)
         {

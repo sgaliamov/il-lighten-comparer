@@ -14,10 +14,10 @@ namespace ILLightenComparer.Variables
 
     internal static class VariableExtensions
     {
-        public static Func<ILEmitter, ILEmitter> Load(this IVariable variable, ushort arg) =>
+        public static ILEmitterFunc Load(this IVariable variable, ushort arg) =>
           (ILEmitter il) => variable.Load(il, arg);
 
-        public static Func<ILEmitter, ILEmitter> LoadAddress(this IVariable variable, ushort arg) =>
+        public static ILEmitterFunc LoadAddress(this IVariable variable, ushort arg) =>
             (ILEmitter il) => variable.LoadAddress(il, arg);
     }
 }
