@@ -82,14 +82,14 @@ namespace ILLightenComparer.Shared.Comparisons
             // the problem now with the inner `return` statements, it has to be `leave` instruction
             //il.BeginExceptionBlock(); 
 
-            Loop(il, xEnumerator, yEnumerator, gotoNext);
+            Loop(il.DefineLabel(out var dispose), xEnumerator, yEnumerator, dispose);
 
             //il.BeginFinallyBlock();
-            EmitDisposeEnumerators(il, xEnumerator, yEnumerator);
+            EmitDisposeEnumerators(il.MarkLabel(dispose), xEnumerator, yEnumerator);
 
             //il.EndExceptionBlock();
 
-            return il;
+            return il.GoTo(gotoNext);
         }
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label _) => il;
@@ -117,7 +117,7 @@ namespace ILLightenComparer.Shared.Comparisons
             return (xEnumerator, yEnumerator);
         }
 
-        private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label gotoNext)
+        private void Loop(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator, Label exitLoop)
         {
             il.DefineLabel(out var loopStart);
 
@@ -125,7 +125,7 @@ namespace ILLightenComparer.Shared.Comparisons
                 il.MarkLabel(loopStart);
                 var (xDone, yDone) = EmitMoveNext(xEnumerator, yEnumerator, il);
 
-                _emitCheckIfLoopsAreDone(il, xDone, yDone, gotoNext);
+                _emitCheckIfLoopsAreDone(il, xDone, yDone, exitLoop);
             }
 
             using (il.LocalsScope()) {
@@ -152,9 +152,7 @@ namespace ILLightenComparer.Shared.Comparisons
         }
 
         private static void EmitDisposeEnumerators(ILEmitter il, LocalBuilder xEnumerator, LocalBuilder yEnumerator) => il
-            .LoadCaller(xEnumerator)
-            .Call(Methods.DisposeMethod)
-            .LoadCaller(yEnumerator)
-            .Call(Methods.DisposeMethod);
+            .EmitDispose(xEnumerator)
+            .EmitDispose(yEnumerator);
     }
 }

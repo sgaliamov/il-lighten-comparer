@@ -141,8 +141,6 @@ namespace ILLightenComparer.Equality.Hashers
             }
         }
 
-        private static void EmitDisposeEnumerator(ILEmitter il, LocalBuilder enumerator) => il
-            .LoadCaller(enumerator)
-            .Call(Methods.DisposeMethod);
+        private static void EmitDisposeEnumerator(ILEmitter il, LocalBuilder enumerator) => il.EmitDispose(enumerator);
     }
 }
