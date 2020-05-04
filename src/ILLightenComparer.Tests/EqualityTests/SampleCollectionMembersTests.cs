@@ -65,8 +65,8 @@ namespace ILLightenComparer.Tests.EqualityTests
         private static void Ignoring_order_does_not_add_side_effect_for(Type sampleType, Type memberType)
         {
             var type = memberType == null
-                           ? sampleType
-                           : sampleType.MakeGenericType(memberType);
+                ? sampleType
+                : sampleType.MakeGenericType(memberType);
 
             var method = typeof(SampleCollectionMembersTests)
                 .GetGenericMethod(nameof(Ignoring_order_does_not_add_side_effect_for), BindingFlags.NonPublic | BindingFlags.Static)
@@ -77,16 +77,17 @@ namespace ILLightenComparer.Tests.EqualityTests
 
         private static void Ignoring_order_does_not_add_side_effect_for<TElement>()
         {
-            var comparer = new ComparerBuilder(c => c.SetDefaultCollectionsOrderIgnoring(true)).GetComparer<TElement[]>();
-
             var fixture = FixtureBuilder.GetInstance();
             var sample = fixture.Create<TElement[]>();
             var clone = sample.DeepClone();
 
             var elements = FixtureBuilder.GetSimpleInstance().CreateMany<TElement>().ToArray();
-            comparer.Compare(sample, elements)
-                    .Should()
-                    .NotBe(0);
+
+            new ComparerBuilder(c => c.SetDefaultCollectionsOrderIgnoring(true))
+                .GetComparer<TElement[]>()
+                .Compare(sample, elements)
+                .Should()
+                .NotBe(0);
 
             sample.ShouldBeSameOrder(clone);
         }
