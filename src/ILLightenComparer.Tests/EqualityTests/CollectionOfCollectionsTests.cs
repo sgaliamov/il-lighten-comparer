@@ -18,9 +18,9 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Compare_enumerables_of_enumerables()
         {
-            int GetHashCode(IEnumerable<EnumerableStruct<List<int?>>?> input)
+            static int GetHashCode(IEnumerable<EnumerableStruct<List<int?>>?> input)
             {
-                var num = 5381L;
+                var num = HashCodeCombiner.Seed;
                 if (input == null) {
                     return 0;
                 }
@@ -33,7 +33,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     if (enumerableStruct == null) {
                         num3 = 0L;
                     } else {
-                        var num4 = 5381L;
+                        var num4 = HashCodeCombiner.Seed;
                         var enumerator2 = enumerableStruct.Value.GetEnumerator();
                         if (enumerator2 == null) {
                             num3 = 0L;
@@ -177,10 +177,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             );
         }
 
-        private static void CompareCollectionOfCollections(
-            Func<Type, Type[]> getCollectionTypes,
-            Type genericContainer,
-            Type genericSampleComparer)
+        private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes, Type genericContainer, Type genericSampleComparer)
         {
             CompareCollectionOfCollections(getCollectionTypes, false, false, genericContainer, genericSampleComparer);
             CompareCollectionOfCollections(getCollectionTypes, true, false, genericContainer, genericSampleComparer);
