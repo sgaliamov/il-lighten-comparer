@@ -13,7 +13,29 @@ namespace ILLightenComparer.Tests.EqualityTests
 {
     public sealed class BasicTests
     {
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+        [Fact]
+        public void Basic_test()
+        {
+            var x = new SampleEqualityChildObject<EnumSmall?> { Field = null, Property = EnumSmall.First };
+            var y = new SampleEqualityChildObject<EnumSmall?> { Field = EnumSmall.One, Property = EnumSmall.First };
+
+            var referenceComparer = EqualityComparer<SampleEqualityChildObject<EnumSmall?>>.Default;
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityChildObject<EnumSmall?>>();
+
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+            var equals = comparer.Equals(x, y);
+
+            using (new AssertionScope()) {
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
+        }
 
         [Fact]
         public void Empty_object_should_be_equal()
@@ -113,30 +135,6 @@ namespace ILLightenComparer.Tests.EqualityTests
                 comparer.Equals(x, x).Should().BeTrue();
                 equality.Should().Be(x.Field is null && x.Property is null);
                 hashY.Should().Be(expectedCustomHash);
-            }
-        }
-
-        [Fact]
-        public void Basic_test()
-        {
-            var x = new SampleEqualityChildObject<EnumSmall?> { Field = null, Property = EnumSmall.First };
-            var y = new SampleEqualityChildObject<EnumSmall?> { Field = EnumSmall.One, Property = EnumSmall.First };
-
-            var referenceComparer = EqualityComparer<SampleEqualityChildObject<EnumSmall?>>.Default;
-            var expectedHashX = referenceComparer.GetHashCode(x);
-            var expectedHashY = referenceComparer.GetHashCode(y);
-            var expectedEquals = referenceComparer.Equals(x, y);
-
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityChildObject<EnumSmall?>>();
-
-            var hashX = comparer.GetHashCode(x);
-            var hashY = comparer.GetHashCode(y);
-            var equals = comparer.Equals(x, y);
-
-            using (new AssertionScope()) {
-                equals.Should().Be(expectedEquals);
-                hashX.Should().Be(expectedHashX);
-                hashY.Should().Be(expectedHashY);
             }
         }
 
@@ -331,5 +329,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                 hashX.Should().Be(0);
             }
         }
+
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }
