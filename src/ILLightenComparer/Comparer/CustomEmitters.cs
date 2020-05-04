@@ -56,7 +56,7 @@ namespace ILLightenComparer.Comparer
                      .Call(hasValueMethod)
                      .IfTrue_S(out var ifFirstHasValue)
                      .LoadLocal(secondHasValue)
-                     .IfFalse_S(ifBothNull)
+                     .IfFalse(ifBothNull)
                      .Return(-1)
                      .MarkLabel(ifFirstHasValue)
                      .LoadLocal(secondHasValue)
