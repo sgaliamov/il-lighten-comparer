@@ -113,9 +113,9 @@ namespace ILLightenComparer.Tests.Utilities
         {
             unchecked {
                 var hashCode = 397;
-                hashCode = (hashCode * 397) ^ (MemberInfo != null ? MemberInfo.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Parent != null ? Parent.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Value != null ? Value.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (MemberInfo?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (Parent?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (Value?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }

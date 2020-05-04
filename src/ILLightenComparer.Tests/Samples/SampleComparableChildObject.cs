@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Samples
 {
@@ -35,7 +36,7 @@ namespace ILLightenComparer.Tests.Samples
             return ChildComparer.Compare(ChildProperty, other.ChildProperty);
         }
 
-        public override string ToString() => $"{{ {Field}, {Property}, {ChildField}, {ChildProperty} }}";
+        public override string ToString() => this.ToJson();
 
         public override int CompareTo(SampleComparableBaseObject<TMember> other) => CompareTo(other as SampleComparableChildObject<TMember>);
     }

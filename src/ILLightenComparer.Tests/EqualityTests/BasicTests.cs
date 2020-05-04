@@ -13,7 +13,29 @@ namespace ILLightenComparer.Tests.EqualityTests
 {
     public sealed class BasicTests
     {
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+        [Fact]
+        public void Basic_test()
+        {
+            var x = new SampleEqualityChildObject<EnumSmall?> { Field = null, Property = EnumSmall.First };
+            var y = new SampleEqualityChildObject<EnumSmall?> { Field = EnumSmall.One, Property = EnumSmall.First };
+
+            var referenceComparer = EqualityComparer<SampleEqualityChildObject<EnumSmall?>>.Default;
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var expectedEquals = referenceComparer.Equals(x, y);
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityChildObject<EnumSmall?>>();
+
+            var hashX = comparer.GetHashCode(x);
+            var hashY = comparer.GetHashCode(y);
+            var equals = comparer.Equals(x, y);
+
+            using (new AssertionScope()) {
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
+        }
 
         [Fact]
         public void Empty_object_should_be_equal()
@@ -117,17 +139,17 @@ namespace ILLightenComparer.Tests.EqualityTests
         }
 
         [Fact]
-        public void Equality_on_nullable_structs_works()
+        public void Equality_on_nullable_equality_structs_works()
         {
-            var x = _fixture.Create<SampleStruct<EnumBig>?>();
-            var y = _fixture.Create<SampleStruct<EnumBig>?>();
+            var x = _fixture.Create<SampleEqualityStruct<EnumBig?>?>();
+            var y = _fixture.Create<SampleEqualityStruct<EnumBig?>?>();
 
-            var referenceComparer = new NullableEqualityComparer<SampleStruct<EnumBig>>();
+            var referenceComparer = new NullableEqualityComparer<SampleEqualityStruct<EnumBig?>>();
             var expectedHashX = referenceComparer.GetHashCode(x);
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleStruct<EnumBig>?>();
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityStruct<EnumBig?>?>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -136,6 +158,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
                 comparer.Equals(null, null).Should().BeTrue();
+                referenceComparer.Equals(y, y).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);
                 hashY.Should().Be(expectedHashY);
@@ -187,6 +210,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 comparer.Equals(x, x).Should().BeTrue();
+                referenceComparer.Equals(y, y).Should().BeTrue();
                 comparer.Equals(null, null).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
                 hashX.Should().Be(expectedHashX);
@@ -197,10 +221,10 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Equality_on_member_array_of_nullables_works()
         {
-            var x = _fixture.Create<SampleObject<EnumSmall?[]>>();
+            var x = _fixture.Create<SampleEqualityObject<EnumSmall?[]>>();
             x.Field = x.Field?.RandomNulls().ToArray();
             x.Property = x.Property?.RandomNulls().ToArray();
-            var y = _fixture.Create<SampleObject<EnumSmall?[]>>();
+            var y = _fixture.Create<SampleEqualityObject<EnumSmall?[]>>();
             y.Field = y.Field?.RandomNulls().ToArray();
             y.Property = y.Property?.RandomNulls().ToArray();
 
@@ -209,7 +233,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleObject<EnumSmall?[]>>();
+            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityObject<EnumSmall?[]>>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -219,8 +243,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 comparer.Equals(x, x).Should().BeTrue();
                 comparer.Equals(null, null).Should().BeTrue();
                 equals.Should().Be(expectedEquals);
-                hashX.Should().Be(expectedHashX, x.ToStringEx());
-                hashY.Should().Be(expectedHashY, y.ToStringEx());
+                hashX.Should().Be(expectedHashX, x.ToJson());
+                hashY.Should().Be(expectedHashY, y.ToJson());
             }
         }
 
@@ -268,12 +292,12 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Enumerable_structs_with_nullables_are_comparable()
         {
-            var referenceComparer = new CollectionEqualityComparer<SampleStruct<int?>?>(new NullableEqualityComparer<SampleStruct<int?>>(new SampleStructEqualityComparer<int?>()));
-            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<SampleStruct<int?>?>>();
+            var referenceComparer = new CollectionEqualityComparer<SampleComparableStruct<int?>?>(new NullableEqualityComparer<SampleComparableStruct<int?>>(new SampleComparableStructEqualityComparer<int?>()));
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<SampleComparableStruct<int?>?>>();
 
             Helper.Parallel(() => {
-                var x = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
-                var y = _fixture.Create<EnumerableStruct<SampleStruct<int?>?>>();
+                var x = _fixture.Create<EnumerableStruct<SampleComparableStruct<int?>?>>();
+                var y = _fixture.Create<EnumerableStruct<SampleComparableStruct<int?>?>>();
 
                 var expectedHashX = referenceComparer.GetHashCode(x);
                 var expectedHashY = referenceComparer.GetHashCode(y);
@@ -305,5 +329,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                 hashX.Should().Be(0);
             }
         }
+
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }

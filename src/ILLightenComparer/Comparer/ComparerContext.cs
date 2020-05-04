@@ -23,7 +23,7 @@ namespace ILLightenComparer.Comparer
             var resolver = new ComparisonResolver(this, membersProvider, _configuration);
 
             var methodEmitters = new Dictionary<string, IStaticMethodEmitter> {
-                { CompareMethodName, new CompareStaticMethodEmitter(resolver) }
+                [CompareMethodName] = new CompareStaticMethodEmitter(resolver)
             };
 
             _genericProvider = new GenericProvider(typeof(IComparer<>), new GenericTypeBuilder(methodEmitters, _configuration));

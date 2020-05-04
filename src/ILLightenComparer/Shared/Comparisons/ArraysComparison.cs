@@ -1,6 +1,7 @@
 ﻿using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 
@@ -8,24 +9,22 @@ namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class ArraysComparison : IComparisonEmitter
     {
-        private readonly int _defaultResult;
-        private readonly CollectionComparer _collectionComparer;
+        private readonly ArrayComparisonEmitter _arrayComparisonEmitter;
         private readonly IConfigurationProvider _configuration;
         private readonly IVariable _variable;
 
-        private ArraysComparison(int defaultResult, CollectionComparer collectionComparer, IConfigurationProvider configuration, IVariable variable)
+        private ArraysComparison(ArrayComparisonEmitter arrayComparisonEmitter, IConfigurationProvider configuration, IVariable variable)
         {
             _configuration = configuration;
             _variable = variable;
-            _defaultResult = defaultResult;
-            _collectionComparer = collectionComparer;
+            _arrayComparisonEmitter = arrayComparisonEmitter;
         }
 
-        public static ArraysComparison Create(int defaultResult, CollectionComparer collectionComparer, IConfigurationProvider configuration, IVariable variable)
+        public static ArraysComparison Create(ArrayComparisonEmitter arrayComparisonEmitter, IConfigurationProvider configuration, IVariable variable)
         {
             var variableType = variable.VariableType;
             if (variableType.IsArray && variableType.GetArrayRank() == 1) {
-                return new ArraysComparison(defaultResult, collectionComparer, configuration, variable);
+                return new ArraysComparison(arrayComparisonEmitter, configuration, variable);
             }
 
             return null;
@@ -33,23 +32,18 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public ILEmitter Emit(ILEmitter il, Label gotoNext)
         {
-            var variableType = _variable.VariableType;
-            var (x, y) = _collectionComparer.EmitLoad(_variable, il, gotoNext);
-            var (countX, countY) = _collectionComparer.EmitLoadCounts(variableType, x, y, il);
+            var arrayType = _variable.VariableType;
+            var (arrayX, arrayY) = _arrayComparisonEmitter.EmitLoad(_variable, il, gotoNext);
 
             if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
-                _collectionComparer.EmitArraySorting(il, variableType.GetElementType(), x, y);
+                var elementType = arrayType.GetElementType();
+                var hasCustomComparer = _configuration.HasCustomComparer(elementType);
+                il.EmitArraySorting(hasCustomComparer, elementType, arrayX, arrayY);
             }
 
-            return _collectionComparer.CompareArrays(variableType, _variable.OwnerType, x, y, countX, countY, il, gotoNext);
+            return _arrayComparisonEmitter.EmitCompareArrays(il, arrayType, _variable.OwnerType, arrayX, arrayY, gotoNext);
         }
 
-        public ILEmitter Emit(ILEmitter il) => il
-            .DefineLabel(out var exit)
-            .Execute(this.Emit(exit))
-            .MarkLabel(exit)
-            .Return(_defaultResult);
-
-        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label _) => il;
+        public ILEmitter EmitCheckForResult(ILEmitter il, Label _) => il;
     }
 }

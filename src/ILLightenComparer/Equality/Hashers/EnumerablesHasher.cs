@@ -24,6 +24,7 @@ namespace ILLightenComparer.Equality.Hashers
         private readonly MethodInfo _getEnumeratorMethod;
         private readonly MethodInfo _moveNextMethod;
         private readonly MethodInfo _getCurrentMethod;
+        private readonly ArrayHashEmitter _arrayHashEmitter;
 
         private EnumerablesHasher(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
         {
@@ -42,6 +43,7 @@ namespace ILLightenComparer.Equality.Hashers
             _enumeratorType = _getEnumeratorMethod.ReturnType;
             _moveNextMethod = _enumeratorType.FindMethod(nameof(IEnumerator.MoveNext), Type.EmptyTypes);
             _getCurrentMethod = _enumeratorType.GetPropertyGetter(nameof(IEnumerator.Current));
+            _arrayHashEmitter = new ArrayHashEmitter(resolver, variable);
         }
 
         public static EnumerablesHasher Create(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
@@ -66,11 +68,6 @@ namespace ILLightenComparer.Equality.Hashers
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
         {
-            // todo: 2.
-            //if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
-            //    return EmitCompareAsSortedArrays(il, gotoNext, x, y);
-            //}
-
             il.Execute(_variable.Load(Arg.Input))
               .Store(_variable.VariableType, out var enumerable)
               .DefineLabel(out var end);
@@ -80,6 +77,10 @@ namespace ILLightenComparer.Equality.Hashers
                   .LoadInteger(0)
                   .GoTo(end)
                   .MarkLabel(begin);
+            }
+
+            if (_configuration.Get(_variable.OwnerType).IgnoreCollectionOrder) {
+                return EmitHashAsSortedArray(il, enumerable, hash).MarkLabel(end);
             }
 
             il.Call(_getEnumeratorMethod, LoadCaller(enumerable))
@@ -100,6 +101,17 @@ namespace ILLightenComparer.Equality.Hashers
             //il.EndExceptionBlock();
 
             return il.LoadLocal(hash).MarkLabel(end);
+        }
+
+        private ILEmitter EmitHashAsSortedArray(ILEmitter il, LocalBuilder enumerable, LocalBuilder hash)
+        {
+            var hasCustomComparer = _configuration.HasCustomComparer(_elementType);
+
+            il.EmitArraySorting(hasCustomComparer, _elementType, enumerable);
+
+            var arrayType = _elementType.MakeArrayType();
+
+            return _arrayHashEmitter.Emit(il, arrayType, enumerable, hash);
         }
 
         private void Loop(ILEmitter il, LocalBuilder enumerator, Label loopStart, LocalBuilder hash)

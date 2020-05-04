@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/sgaliamov/il-lighten-comparer/graph/badge.svg)](https://codecov.io/gh/sgaliamov/il-lighten-comparer)
 [![NuGet Badge](https://buildstats.info/nuget/ILLightenComparer)](https://www.nuget.org/packages/ILLightenComparer)
 
-**ILLightenComparer** is a library that can generate `IComparer<T>` implementation on runtime using advantages of IL code emission with main focus on **performance**.
+**ILLightenComparer** is a library that can generate `IComparer<T>` and `IEqualityComparer<T>` implementations on runtime using advantages of IL code emission with main focus on **performance**.
 
 ## Features
 
@@ -25,7 +25,6 @@ With regular models like [MovieModel](https://github.com/sgaliamov/il-lighten-co
 | --------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
 | IL Lighten Comparer   | 12.90 ms | 0.2700 ms | 0.3214 ms | 12.77 ms |  1.00 |    0.00 |
 | Manual implementation | 12.47 ms | 0.2760 ms | 0.7785 ms | 12.15 ms |  1.00 |    0.09 |
-| Nito Comparer         | 16.45 ms | 0.3627 ms | 1.0111 ms | 16.32 ms |  1.33 |    0.07 |
 
 With light optimized structures like [LightStruct](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Benchmark/LightStruct.cs) `ILLightenComparer` able to give serious performance boost.
 
@@ -33,7 +32,6 @@ With light optimized structures like [LightStruct](https://github.com/sgaliamov/
 | --------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
 | IL Lighten Comparer   | 2.151 ms | 0.0862 ms | 0.2473 ms | 2.105 ms |  1.00 |    0.00 |
 | Manual implementation | 3.236 ms | 0.0643 ms | 0.0570 ms | 3.225 ms |  1.40 |    0.16 |
-| Nito Comparer         | 6.968 ms | 0.2257 ms | 0.6655 ms | 6.647 ms |  3.28 |    0.43 |
 
 ## Configuration options
 
@@ -50,8 +48,13 @@ With light optimized structures like [LightStruct](https://github.com/sgaliamov/
 ### Basic usage
 
 ``` csharp
-var comparer = new ComparerBuilder().GetComparer<Tuple<int, string>>();
-var result = comparer.Compare(x, y);
+var builder = new ComparerBuilder();
+var comparer = builder.GetComparer<Tuple<int, string>>();
+var equalityComparer = builder.GetEqualityComparer<Tuple<int, string>>();
+
+var compareResult = comparer.Compare(x, y);
+var equalityResult = equalityComparer.Equals(x, y);
+var hashResult = equalityComparer.GetHashCode(x);
 ```
 
 ### Ignore collection order
@@ -157,9 +160,8 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 
 ## What next
 
-1. Generate implementation for `IEqualityComparer<T>`.
-2. Support more types.
-3. Add more settings.
-4. Improve performance.
+1. Support more types.
+1. Add more settings.
+1. Improve performance.
 
-In case of unexpected behavior please welcome to create an [issue](https://github.com/sgaliamov/il-lighten-comparer/issues/new) and provide the type that you use.
+In case of unexpected behavior welcome to create an [issue](https://github.com/sgaliamov/il-lighten-comparer/issues/new) and provide the type that you use.

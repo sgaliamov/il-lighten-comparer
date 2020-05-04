@@ -26,6 +26,36 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                 return Compare(x, y, setX, setY);
             }
 
+            public int Compare(IEnumerable<SelfSealed> x, IEnumerable<SelfSealed> y)
+            {
+                var setX = new CycleDetectionSet();
+                var setY = new CycleDetectionSet();
+
+                using var enumeratorX = x.GetEnumerator();
+                using var enumeratorY = y.GetEnumerator();
+
+                while (true) {
+                    var xDone = !enumeratorX.MoveNext();
+                    var yDone = !enumeratorY.MoveNext();
+
+                    if (xDone) {
+                        return yDone ? 0 : -1;
+                    }
+
+                    if (yDone) {
+                        return 1;
+                    }
+
+                    var xCurrent = enumeratorX.Current;
+                    var yCurrent = enumeratorY.Current;
+
+                    var compare = Compare(xCurrent, yCurrent, setX, setY);
+                    if (compare != 0) {
+                        return compare;
+                    }
+                }
+            }
+
             private static int Compare(SelfSealed x, SelfSealed y, CycleDetectionSet setX, CycleDetectionSet setY)
             {
                 if (ReferenceEquals(x, y)) {
@@ -40,6 +70,7 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                     return -1;
                 }
 
+                // & because, both methods need to be executed.
                 if (!setX.TryAdd(x, 0) & !setY.TryAdd(y, 0)) {
                     return setX.Count - setY.Count;
                 }
@@ -59,8 +90,17 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                     return compareValue;
                 }
 
+                setX.Remove(x, out _);
+                setY.Remove(y, out _);
+
                 return 0;
             }
         }
+
+        public bool Equals(SelfSealed obj) => Value == obj.Value;
+
+        public override bool Equals(object obj) => Equals((SelfSealed)obj);
+
+        public override int GetHashCode() => Value.GetHashCode();
     }
 }

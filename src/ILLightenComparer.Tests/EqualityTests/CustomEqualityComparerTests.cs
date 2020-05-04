@@ -44,19 +44,19 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void After_clean_custom_comparer_for_value_type_dynamic_comparer_should_be_created()
         {
-            var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
-            var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
+            var x = _fixture.Create<SampleEqualityObject<SampleComparableStruct<string>>>();
+            var y = _fixture.Create<SampleEqualityObject<SampleComparableStruct<string>>>();
 
-            var reference = new SampleObjectEqualityComparer<SampleStruct<string>>(new SampleStructEqualityComparer<string>());
+            var reference = new SampleObjectEqualityComparer<SampleComparableStruct<string>>(new SampleComparableStructEqualityComparer<string>());
             var expectedEquals = reference.Equals(x, y);
             var expectedHash = reference.GetHashCode(x);
             var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
             var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomEqualityComparer>());
-            var comparerCustom = builder.GetEqualityComparer<SampleObject<SampleStruct<string>>>();
+            var comparerCustom = builder.GetEqualityComparer<SampleEqualityObject<SampleComparableStruct<string>>>();
             var comparerDefault = builder.Configure(c => c
-                .SetCustomEqualityComparer<SampleStruct<string>>(null))
-                .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
+                .SetCustomEqualityComparer<SampleComparableStruct<string>>(null))
+                .GetEqualityComparer<SampleEqualityObject<SampleComparableStruct<string>>>();
 
             using (new AssertionScope()) {
                 comparerCustom.Equals(x, y).Should().BeTrue();
@@ -70,13 +70,13 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Custom_comparer_defined_as_a_type_should_be_used()
         {
             Test(() => {
-                var x = _fixture.Create<SampleObject<SampleStruct<string>>>();
-                var y = _fixture.Create<SampleObject<SampleStruct<string>>>();
+                var x = _fixture.Create<SampleObject<SampleComparableStruct<string>>>();
+                var y = _fixture.Create<SampleObject<SampleComparableStruct<string>>>();
                 var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
                 var comparer = new ComparerBuilder(c => c
                     .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
-                    .GetEqualityComparer<SampleObject<SampleStruct<string>>>();
+                    .GetEqualityComparer<SampleObject<SampleComparableStruct<string>>>();
 
                 using (new AssertionScope()) {
                     comparer.Equals(x, y).Should().BeTrue();
@@ -89,8 +89,8 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Custom_comparer_should_be_used_for_collection_when_defined()
         {
             Test(() => {
-                var x = _fixture.Create<SampleObject<int[]>>();
-                var y = _fixture.Create<SampleObject<int[]>>();
+                var x = _fixture.Create<SampleEqualityObject<int[]>>();
+                var y = _fixture.Create<SampleEqualityObject<int[]>>();
 
                 var referenceComparer = new SampleObjectEqualityComparer<int[]>(new CustomizableEqualityComparer<int[]>(
                     (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
@@ -109,7 +109,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                             hashIsUsed = true;
                             return 0;
                         })))
-                    .GetEqualityComparer<SampleObject<int[]>>();
+                    .GetEqualityComparer<SampleEqualityObject<int[]>>();
 
                 var actualEquals = comparer.Equals(x, y);
                 var hashX = comparer.GetHashCode(x);
@@ -133,12 +133,12 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Custom_comparer_should_be_used_for_structs()
         {
             Test(() => {
-                var x = _fixture.Create<SampleStruct<string>>();
-                var y = _fixture.Create<SampleStruct<string>>();
+                var x = _fixture.Create<SampleComparableStruct<string>>();
+                var y = _fixture.Create<SampleComparableStruct<string>>();
 
                 var comparer = new ComparerBuilder(c => c
                     .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
-                    .GetEqualityComparer<SampleStruct<string>>();
+                    .GetEqualityComparer<SampleComparableStruct<string>>();
 
                 using (new AssertionScope()) {
                     comparer.Equals(x, y).Should().BeTrue();
@@ -147,11 +147,11 @@ namespace ILLightenComparer.Tests.EqualityTests
             });
         }
 
-        private static void Test(Action action) => Enumerable.Range(0, 8).AsParallel().ForAll(_ => action());
+        private static void Test(Action action) => Enumerable.Range(0, Constants.SmallCount).AsParallel().ForAll(_ => action());
 
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
-        private sealed class SampleStructCustomEqualityComparer : CustomizableEqualityComparer<SampleStruct<string>>
+        private sealed class SampleStructCustomEqualityComparer : CustomizableEqualityComparer<SampleComparableStruct<string>>
         {
             public SampleStructCustomEqualityComparer() : base((__, _) => true, _ => 0) { }
         }

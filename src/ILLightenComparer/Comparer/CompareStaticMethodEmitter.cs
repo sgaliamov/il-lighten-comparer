@@ -11,6 +11,7 @@ using static Illuminator.Functional;
 
 namespace ILLightenComparer.Comparer
 {
+    // todo: 3. unify with EqualsStaticMethodEmitter
     internal sealed class CompareStaticMethodEmitter : IStaticMethodEmitter
     {
         private readonly ComparisonResolver _resolver;
@@ -34,7 +35,19 @@ namespace ILLightenComparer.Comparer
                 EmitCycleDetection(il);
             }
 
-            _resolver.GetComparisonEmitter(new ArgumentVariable(objectType)).Emit(il);
+            var emitter = _resolver.GetComparisonEmitter(new ArgumentVariable(objectType));
+
+            il.DefineLabel(out var exit)
+              .Execute(emitter.Emit(exit));
+
+            if (detecCycles) {
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
+            }
+
+            il.Execute(emitter.EmitCheckForResult(exit))
+              .MarkLabel(exit)
+              .Return(0);
         }
 
         // no need detect cycle as flow goes outside context

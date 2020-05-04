@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Samples
 {
@@ -23,6 +24,6 @@ namespace ILLightenComparer.Tests.Samples
             return Comparer.Compare(Property, other.Property);
         }
 
-        public override string ToString() => $"{{ {Field}, {Property} }}";
+        public override string ToString() => this.ToJson();
     }
 }

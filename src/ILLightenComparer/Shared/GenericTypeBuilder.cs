@@ -132,9 +132,7 @@ namespace ILLightenComparer.Shared
                 parameters);
 
             using (var il = methodBuilder.CreateILEmitter()) {
-                il.LoadArgument(Arg.This)
-                  .New(constructorInfo)
-                  .Return();
+                il.New(constructorInfo, LoadArgument(Arg.This)).Return();
             }
         }
     }

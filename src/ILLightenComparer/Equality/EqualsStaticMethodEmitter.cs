@@ -11,6 +11,7 @@ using static Illuminator.Functional;
 
 namespace ILLightenComparer.Equality
 {
+    // todo: 3. unify with CompareStaticMethodEmitter
     internal sealed class EqualsStaticMethodEmitter : IStaticMethodEmitter
     {
         private readonly EqualityResolver _resolver;
@@ -23,7 +24,6 @@ namespace ILLightenComparer.Equality
 
             var needReferenceComparison =
                  !objectType.IsValueType
-                 && !objectType.IsSealedEquatable()
                  && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
@@ -31,21 +31,33 @@ namespace ILLightenComparer.Equality
             }
 
             if (detecCycles) {
-                EmitCycleDetection(il);
+                EmitCycleDetection(il, objectType);
             }
 
-            _resolver.GetComparisonEmitter(new ArgumentVariable(objectType)).Emit(il);
+            var emitter = _resolver.GetComparisonEmitter(new ArgumentVariable(objectType));
+
+            il.DefineLabel(out var exit)
+              .Execute(emitter.Emit(exit));
+
+            if (detecCycles) {
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
+                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
+            }
+
+            il.Execute(emitter.EmitCheckForResult(exit))
+              .MarkLabel(exit)
+              .Return(1);
         }
 
-        public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsSealedEquatable();
+        public bool NeedCreateCycleDetectionSets(Type objectType) => true;
 
-        private static void EmitCycleDetection(ILEmitter il) => il
+        private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
             .AreSame(
                 LoadInteger(0),
                 Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
                    Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
             .IfFalse_S(out var next)
-            .Return(0)
+            .Throw(New(Methods.ArgumentExceptionConstructor, LoadString($"Can't compare objects. Cycle is detected in {objectType.DisplayName()}.")))
             .MarkLabel(next);
     }
 }

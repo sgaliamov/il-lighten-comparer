@@ -34,8 +34,6 @@ namespace ILLightenComparer.Equality.Comparisons
             _variable.Load(Arg.X),
             _variable.Load(Arg.Y));
 
-        public ILEmitter Emit(ILEmitter il) => Emit(il, default).Return();
-
-        public ILEmitter EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.EmitReturnIfFalsy(next);
+        public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfFalsy(next);
     }
 }

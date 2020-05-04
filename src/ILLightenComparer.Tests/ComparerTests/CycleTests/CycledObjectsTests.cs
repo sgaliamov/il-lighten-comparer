@@ -88,9 +88,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         [Fact]
         public void Detects_cycle_on_second_member()
         {
-            var one = new SelfSealed();
+            var one = new SelfSealed { Value = 1 };
             one.Second = new SelfSealed {
-                First = one
+                First = one,
+                Value = 2
             };
             /*
                   1
@@ -104,8 +105,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 
             var other = new SelfSealed {
                 Second = new SelfSealed {
-                    First = new SelfSealed()
-                }
+                    First = new SelfSealed { Value = 3 },
+                    Value = 4
+                },
+                Value = 5
             };
             /*
                   3
@@ -122,6 +125,97 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
 
             using (new AssertionScope()) {
                 expected.Should().Be(1);
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Fact]
+        public void No_cycle_when_identical_objects_in_collection()
+        {
+            var one = new SelfSealed { Value = 1 };
+            one.Second = new SelfSealed {
+                First = one,
+                Value = 1
+            };
+            var two = new SelfSealed { Value = 1 };
+            two.Second = new SelfSealed {
+                First = two,
+                Value = 1
+            };
+            var x = new[] {
+                one,
+                one,
+                one
+            };
+
+            var other = new SelfSealed {
+                Second = new SelfSealed {
+                    First = new SelfSealed {
+                        Value = 4
+                    },
+                    Value = 4
+                },
+                Value = 3
+            };
+            var y = new[] {
+                two,
+                two,
+                other
+            };
+
+            var expected = SelfSealed.Comparer.Compare(x, y);
+            var comparer = new ComparerBuilder().For<SelfSealed>(c => c.IgnoreMember(o => o.Id)).GetComparer<SelfSealed[]>();
+            var actual = comparer.Compare(x, y);
+
+            using (new AssertionScope()) {
+                expected.Should().Be(-1);
+                actual.Should().Be(-1);
+            }
+        }
+
+        [Fact]
+        public void Detects_cycle_handles_equalty_by_value()
+        {
+            var one = new SelfSealed { Value = 1 };
+            one.Second = new SelfSealed {
+                First = one,
+                Value = 1
+            };
+            /*
+                  1-1
+                 / \
+                N   2-1
+            cycle: / \
+                  1-1 N
+                 / \ 
+                N   2-1
+            */
+
+            var other = new SelfSealed {
+                Second = new SelfSealed {
+                    First = new SelfSealed {
+                        Second = new SelfSealed { Value = 0 },
+                        Value = 4
+                    },
+                    Value = 4
+                },
+                Value = 3
+            };
+            /*
+                  3-3
+                 / \
+                N   4-4
+                   / \
+                  5-4 N
+                 / \
+                N   6-6
+            */
+
+            var expected = SelfSealed.Comparer.Compare(one, other);
+            var actual = ComparerSelfSealed.Compare(one, other);
+
+            using (new AssertionScope()) {
+                expected.Should().Be(-1);
                 actual.Should().Be(expected);
             }
         }

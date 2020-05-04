@@ -21,24 +21,19 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times, int count = Constants.BigCount)
         {
-            var method = type.GetOrAddProperty(
-                nameof(GenericTest),
-                () => {
-                    var methodInfo = GetTestMethod(type);
-
-                    return (Action<IComparerBuilder, IComparer, int, int>)methodInfo.CreateDelegate(typeof(Action<IComparerBuilder, IComparer, int, int>));
-                });
+            var method = type.GetOrAddProperty($"Comparer_{nameof(GenericTest)}", () => {
+                var methodInfo = GetTestMethod(type);
+                return (Action<IComparerBuilder, IComparer, int, int>)methodInfo.CreateDelegate(typeof(Action<IComparerBuilder, IComparer, int, int>));
+            });
 
             var builder = _comparerBuilder ?? new ComparerBuilder();
             builder.Configure(c => c.SetDefaultCollectionsOrderIgnoring(sort));
-
             method(builder, referenceComparer, times, count);
         }
 
-        private static MethodInfo GetTestMethod(Type objType) =>
-            typeof(GenericTests)
-                .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
-                .MakeGenericMethod(objType);
+        private static MethodInfo GetTestMethod(Type objType) => typeof(GenericTests)
+            .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
+            .MakeGenericMethod(objType);
 
         private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times, int count)
         {
@@ -74,9 +69,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void Comparison_of_object_with_null_produces_positive_value<T>(
-            IComparer referenceComparer,
-            IComparer<T> typedComparer)
+        private static void Comparison_of_object_with_null_produces_positive_value<T>(IComparer referenceComparer, IComparer<T> typedComparer)
         {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
@@ -138,10 +131,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void Sorting_must_work_the_same_as_for_reference_comparer<T>(
-            IComparer referenceComparer,
-            IComparer<T> typedComparer,
-            int count)
+        private static void Sorting_must_work_the_same_as_for_reference_comparer<T>(IComparer referenceComparer, IComparer<T> typedComparer, int count)
         {
             var original = CreateMany<T>(count).ToArray();
 
@@ -223,13 +213,13 @@ namespace ILLightenComparer.Tests.ComparerTests
             var list = Activator.CreateInstance(listType);
             var addMethod = listType.GetMethod(nameof(List<object>.Add), new[] { elementType });
             var asEnumerableMethod = typeof(Enumerable)
-                                     .GetGenericMethod(nameof(Enumerable.AsEnumerable), BindingFlags.Static | BindingFlags.Public)
-                                     .MakeGenericMethod(elementType);
+                .GetGenericMethod(nameof(Enumerable.AsEnumerable), BindingFlags.Static | BindingFlags.Public)
+                .MakeGenericMethod(elementType);
 
             foreach (var item in (IEnumerable)result) {
                 var parameters = ThreadSafeRandom.NextDouble() < Constants.NullProbability
-                                     ? new[] { (object)null }
-                                     : new[] { item };
+                    ? new[] { (object)null }
+                    : new[] { item };
 
                 addMethod.Invoke(list, parameters);
             }
