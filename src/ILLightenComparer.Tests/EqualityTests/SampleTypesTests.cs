@@ -26,7 +26,7 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Compare_nullable_types_directly()
         {
             foreach (var (nullableType, nullableComparer) in TestTypes.NullableTypes) {
-                new GenericTests().GenericTest(nullableType, nullableComparer, false, Constants.SmallCount);
+                new GenericTests(false).GenericTest(nullableType, nullableComparer, Constants.SmallCount);
             }
         }
 
@@ -35,7 +35,7 @@ namespace ILLightenComparer.Tests.EqualityTests
         {
             Parallel.ForEach(TestTypes.Types, item => {
                 var (type, referenceComparer) = item;
-                new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
+                new GenericTests(false).GenericTest(type, referenceComparer, Constants.SmallCount);
             });
         }
 
@@ -66,7 +66,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var constructor = comparerType.GetConstructor(new[] { typeof(IEqualityComparer<>).MakeGenericType(objectType), typeof(bool) });
             var comparer = (IEqualityComparer)constructor.Invoke(new object[] { itemComparer, sort });
 
-            new GenericTests().GenericTest(collectionType, comparer, sort, Constants.SmallCount);
+            new GenericTests(sort).GenericTest(collectionType, comparer, Constants.SmallCount);
         }
     }
 }

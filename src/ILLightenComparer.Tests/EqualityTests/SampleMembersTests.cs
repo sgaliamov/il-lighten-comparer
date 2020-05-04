@@ -36,7 +36,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     var comparerType = genericSampleComparer.MakeGenericType(type);
                     var comparer = (IEqualityComparer)Activator.CreateInstance(comparerType, referenceComparer);
 
-                    new GenericTests().GenericTest(objectType, comparer, false, Constants.SmallCount);
+                    new GenericTests(false).GenericTest(objectType, comparer, Constants.SmallCount);
                 });
         }
     }

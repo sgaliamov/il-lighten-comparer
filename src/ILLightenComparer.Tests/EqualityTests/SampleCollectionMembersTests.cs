@@ -116,7 +116,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     var sampleComparerType = genericSampleComparer.MakeGenericType(collectionType);
                     var sampleComparer = (IEqualityComparer)Activator.CreateInstance(sampleComparerType, collectionComparer);
 
-                    new GenericTests().GenericTest(sampleType, sampleComparer, sort, Constants.SmallCount);
+                    new GenericTests(sort).GenericTest(sampleType, sampleComparer, Constants.SmallCount);
                 });
         }
     }

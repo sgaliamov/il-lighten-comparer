@@ -139,27 +139,25 @@ namespace ILLightenComparer.Tests.ComparerTests
             Type genericSampleComparer)
         {
             var types = nullable ? TestTypes.NullableTypes : TestTypes.Types;
-            Parallel.ForEach(
-                types,
-                item => {
-                    var (type, referenceComparer) = item;
-                    var collections = getCollectionTypes(type);
-                    var comparer = collections
-                        .Prepend(type)
-                        .Take(collections.Length)
-                        .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
-                        .Aggregate(referenceComparer, (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
+            Parallel.ForEach(types, item => {
+                var (type, referenceComparer) = item;
+                var collections = getCollectionTypes(type);
+                var comparer = collections
+                    .Prepend(type)
+                    .Take(collections.Length)
+                    .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
+                    .Aggregate(referenceComparer, (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
 
-                    type = collections.Last();
+                type = collections.Last();
 
-                    if (genericSampleType != null) {
-                        var comparerType = genericSampleComparer.MakeGenericType(type);
-                        type = genericSampleType.MakeGenericType(type);
-                        comparer = (IComparer)Activator.CreateInstance(comparerType, comparer);
-                    }
+                if (genericSampleType != null) {
+                    var comparerType = genericSampleComparer.MakeGenericType(type);
+                    type = genericSampleType.MakeGenericType(type);
+                    comparer = (IComparer)Activator.CreateInstance(comparerType, comparer);
+                }
 
-                    new GenericTests().GenericTest(type, comparer, sort, 1, 2);
-                });
+                new GenericTests().GenericTest(type, comparer, sort, 1, 2);
+            });
         }
     }
 }
