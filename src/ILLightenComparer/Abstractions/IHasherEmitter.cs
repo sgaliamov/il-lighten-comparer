@@ -28,7 +28,7 @@ namespace ILLightenComparer.Abstractions
                 LoadLocal(hash));
 
             return il
-                .Xor(add, Execute(hasher.Emit(hash), Cast(typeof(long))))
+                .Xor(add, hasher.Emit(hash))
                 .Store(hash);
         }
     }

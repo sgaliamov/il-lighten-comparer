@@ -125,7 +125,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             if (typeof(T).GetGenericInterface(typeof(IEnumerable<>)) != null) { return; }
 
-            for (int i = 0; i < times; i++) {
+            for (var i = 0; i < times; i++) {
                 var original = Fixture.Create<T>();
                 foreach (var mutant in Fixture.CreateMutants(original)) {
                     var because = $":\n{typeof(T)}\n{original}\n{mutant}\n{referenceComparer.GetType()}\n";
