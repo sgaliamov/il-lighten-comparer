@@ -20,7 +20,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             Test(typeof(ComparableBaseObject<>), nameof(ComparableBaseObject<object>.Comparer), true);
             Test(typeof(ComparableChildObject<>), nameof(ComparableChildObject<object>.ChildComparer), true);
 
-            foreach (var item in SampleTypes.Types) {
+            foreach (var item in TestTypes.Types) {
                 typeof(ComparableBaseObject<>)
                     .MakeGenericType(item.Key)
                     .GetField(nameof(ComparableBaseObject<object>.UsedCompareTo), BindingFlags.Public | BindingFlags.Static)
@@ -80,7 +80,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type comparableGenericType, string comparerName, bool makeNullable)
         {
-            var types = makeNullable ? SampleTypes.NullableTypes : SampleTypes.Types;
+            var types = makeNullable ? TestTypes.NullableTypes : TestTypes.Types;
             Parallel.ForEach(
                 types,
                 item => {

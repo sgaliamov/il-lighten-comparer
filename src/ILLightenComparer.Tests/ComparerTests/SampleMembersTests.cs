@@ -26,7 +26,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool nullable)
         {
-            var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
+            var types = nullable ? TestTypes.NullableTypes : TestTypes.Types;
 
             Parallel.ForEach(
                 types,

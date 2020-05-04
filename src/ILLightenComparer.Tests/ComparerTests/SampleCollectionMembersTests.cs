@@ -96,7 +96,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
         {
             Parallel.ForEach(
-                SampleTypes.Types,
+                TestTypes.Types,
                 item => {
                     var (type, referenceComparer) = item;
                     var itemComparer = referenceComparer;

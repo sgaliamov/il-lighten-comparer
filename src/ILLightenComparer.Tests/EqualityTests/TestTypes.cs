@@ -8,9 +8,9 @@ using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityTests
 {
-    internal static class SampleTypes
+    internal static class TestTypes
     {
-        static SampleTypes()
+        static TestTypes()
         {
             Types = new Dictionary<Type, IEqualityComparer> {
                 [typeof(sbyte)] = null,
