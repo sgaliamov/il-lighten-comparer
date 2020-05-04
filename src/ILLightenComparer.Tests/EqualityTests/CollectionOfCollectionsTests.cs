@@ -9,6 +9,7 @@ using FluentAssertions.Execution;
 using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
+using Illuminator.Extensions;
 using Xunit;
 
 namespace ILLightenComparer.Tests.EqualityTests
@@ -194,27 +195,143 @@ namespace ILLightenComparer.Tests.EqualityTests
         {
             var types = nullable ? TestTypes.NullableTypes : TestTypes.Types;
 
+            var hashMethod = typeof(CollectionOfCollectionsTests)
+                .GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
+                .Where(x => x.Name == nameof(GetTwoLevelHashCode))
+                .Single(x => {
+                    var type = x.GetParameters()[0].ParameterType;
+                    if (genericSampleType == null) {
+                        return type.ImplementsGeneric(typeof(IEnumerable<>));
+                    }
+
+                    return type.Name == genericSampleType.Name;
+                });
+
             Parallel.ForEach(
                 types,
                 item => {
-                    var (type, referenceComparer) = item;
-                    var collections = getCollectionTypes(type);
+                    var (itemType, itemComparer) = item;
+                    var collections = getCollectionTypes(itemType);
                     var comparer = collections
-                        .Prepend(type)
+                        .Prepend(itemType)
                         .Take(collections.Length)
                         .Select(x => typeof(CollectionEqualityComparer<>).MakeGenericType(x))
-                        .Aggregate(referenceComparer, (current, comparerType) => (IEqualityComparer)Activator.CreateInstance(comparerType, current, sort));
+                        .Aggregate(itemComparer, (current, comparerType) => (IEqualityComparer)Activator.CreateInstance(comparerType, current, sort));
 
-                    type = collections.Last();
+                    var combinedType = collections.Last();
 
                     if (genericSampleType != null) {
-                        var comparerType = genericSampleComparer.MakeGenericType(type);
-                        type = genericSampleType.MakeGenericType(type);
+                        var comparerType = genericSampleComparer.MakeGenericType(combinedType);
+                        combinedType = genericSampleType.MakeGenericType(combinedType);
                         comparer = (IEqualityComparer)Activator.CreateInstance(comparerType, comparer);
                     }
 
-                    new GenericTests().GenericTest(type, comparer, sort, 1);
+                    var customizableComparerType = typeof(UglyEqualityComparer<>).MakeGenericType(combinedType);
+
+                    var customizableComparer = (IEqualityComparer)Activator.CreateInstance(customizableComparerType, comparer, hashMethod.MakeGenericMethod(itemType));
+
+                    new GenericTests().GenericTest(combinedType, customizableComparer, sort, 1);
                 });
+        }
+
+        private static int GetTwoLevelHashCode<T>(ComparableStruct<IEnumerable<IEnumerable<T>>> obj) => GetTwoLevelHashCode(new ComparableObject<IEnumerable<IEnumerable<T>>> {
+            Field = obj.Field,
+            Property = obj.Property
+        });
+
+        private static int GetTwoLevelHashCode<T>(IEnumerable<IEnumerable<T>> collection)
+        {
+            var num = HashCodeCombiner.Seed;
+            if (collection == null) {
+                return 0;
+            }
+
+            var enumerator = collection.GetEnumerator();
+            while (enumerator.MoveNext()) {
+                var num2 = (num << 5) + num;
+                var list = enumerator.Current;
+                long num3;
+                if (list == null) {
+                    num3 = 0L;
+                } else {
+                    var enumerator2 = list.GetEnumerator();
+                    while (enumerator2.MoveNext()) {
+                        var num4 = (num << 5) + num;
+                        var b = enumerator2.Current;
+                        num = (num4 ^ b.GetHashCode());
+                    }
+                    num3 = num;
+                }
+                num = (num2 ^ num3);
+            }
+
+            return (int)num;
+        }
+
+        private static int GetTwoLevelHashCode<T>(ComparableObject<IEnumerable<IEnumerable<T>>> obj)
+        {
+            if (obj == null) {
+                return 0;
+            }
+
+            var num = HashCodeCombiner.Seed;
+            var num2 = (num << 5) + num;
+            var list = obj.Field;
+            long num3;
+
+            if (list == null) {
+                num3 = 0L;
+            } else {
+                var enumerator = list.GetEnumerator();
+                while (enumerator.MoveNext()) {
+                    var num4 = (num << 5) + num;
+                    var list2 = enumerator.Current;
+                    long num5;
+                    if (list2 == null) {
+                        num5 = 0L;
+                    } else {
+                        var enumerator2 = list2.GetEnumerator();
+                        while (enumerator2.MoveNext()) {
+                            var num6 = (num << 5) + num;
+                            var b = enumerator2.Current;
+                            num = (num6 ^ b.GetHashCode());
+                        }
+                        num5 = num;
+                    }
+                    num = (num4 ^ num5);
+                }
+                num3 = num;
+            }
+            num = (num2 ^ num3);
+            var num7 = (num << 5) + num;
+            list = obj.Property;
+            long num8;
+            if (list == null) {
+                num8 = 0L;
+            } else {
+                var enumerator = list.GetEnumerator();
+                while (enumerator.MoveNext()) {
+                    var num9 = (num << 5) + num;
+                    var list2 = enumerator.Current;
+                    long num10;
+                    if (list2 == null) {
+                        num10 = 0L;
+                    } else {
+                        var enumerator2 = list2.GetEnumerator();
+                        while (enumerator2.MoveNext()) {
+                            var num11 = (num << 5) + num;
+                            var b = enumerator2.Current;
+                            num = (num11 ^ b.GetHashCode());
+                        }
+                        num10 = num;
+                    }
+                    num = (num9 ^ num10);
+                }
+                num8 = num;
+            }
+            num = (num7 ^ num8);
+
+            return (int)num;
         }
     }
 }
