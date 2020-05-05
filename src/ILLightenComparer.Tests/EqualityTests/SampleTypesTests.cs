@@ -63,8 +63,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 : genericCollectionType.MakeGenericType(objectType);
 
             var comparerType = typeof(CollectionEqualityComparer<>).MakeGenericType(objectType);
-            var constructor = comparerType.GetConstructor(new[] { typeof(IEqualityComparer<>).MakeGenericType(objectType), typeof(bool) });
-            var comparer = (IEqualityComparer)constructor.Invoke(new object[] { itemComparer, sort });
+            var constructor = comparerType.GetConstructor(new[] { typeof(IEqualityComparer<>).MakeGenericType(objectType), typeof(bool), typeof(IComparer<>).MakeGenericType(objectType) });
+            var comparer = (IEqualityComparer)constructor.Invoke(new object[] { itemComparer, sort, null });
 
             new GenericTests(sort).GenericTest(collectionType, comparer, Constants.SmallCount);
         }

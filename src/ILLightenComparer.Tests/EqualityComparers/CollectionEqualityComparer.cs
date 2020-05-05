@@ -8,13 +8,15 @@ namespace ILLightenComparer.Tests.EqualityComparers
 {
     internal sealed class CollectionEqualityComparer<TItem> : IEqualityComparer<IEnumerable<TItem>>, IEqualityComparer, IHashSeedSetter
     {
+        private readonly IComparer<TItem> _sortComparer;
         private readonly IEqualityComparer<TItem> _itemComparer;
         private readonly bool _sort;
         private readonly AsyncLocal<long> _seed = new AsyncLocal<long>();
 
-        public CollectionEqualityComparer(IEqualityComparer<TItem> itemComparer = null, bool sort = false)
+        public CollectionEqualityComparer(IEqualityComparer<TItem> itemComparer = null, bool sort = false, IComparer<TItem> sortComparer = null)
         {
             _sort = sort;
+            _sortComparer = sortComparer ?? Comparer<TItem>.Default;
             _itemComparer = itemComparer ?? EqualityComparer<TItem>.Default;
             _seed.Value = HashCodeCombiner.Seed;
         }
@@ -31,11 +33,11 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
             if (_sort) {
                 var ax = x.ToArray();
-                Array.Sort(ax);
+                Array.Sort(ax, _sortComparer);
                 x = ax;
 
                 var ay = y.ToArray();
-                Array.Sort(ay);
+                Array.Sort(ay, _sortComparer);
                 y = ay;
             }
 
@@ -74,7 +76,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
             if (_sort) {
                 var array = obj.ToArray();
-                Array.Sort(array);
+                Array.Sort(array, _sortComparer);
                 obj = array;
             }
 
