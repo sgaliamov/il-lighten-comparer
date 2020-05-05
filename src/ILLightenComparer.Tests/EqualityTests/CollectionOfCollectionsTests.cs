@@ -181,9 +181,9 @@ namespace ILLightenComparer.Tests.EqualityTests
         private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes, Type genericContainer, Type genericSampleComparer)
         {
             CompareCollectionOfCollections(getCollectionTypes, false, false, genericContainer, genericSampleComparer);
-            //CompareCollectionOfCollections(getCollectionTypes, true, false, genericContainer, genericSampleComparer);
+            CompareCollectionOfCollections(getCollectionTypes, true, false, genericContainer, genericSampleComparer);
             CompareCollectionOfCollections(getCollectionTypes, false, true, genericContainer, genericSampleComparer);
-            //CompareCollectionOfCollections(getCollectionTypes, true, true, genericContainer, genericSampleComparer);
+            CompareCollectionOfCollections(getCollectionTypes, true, true, genericContainer, genericSampleComparer);
         }
 
         private static void CompareCollectionOfCollections(
@@ -197,26 +197,35 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             Parallel.ForEach(types, item => {
                 var (itemType, itemComparer) = item;
-                var collections = getCollectionTypes(itemType);
-                var comparer = collections
+                var collectionTypes = getCollectionTypes(itemType);
+                var types = collectionTypes
                     .Prepend(itemType)
-                    .Take(collections.Length)
-                    .Aggregate(itemComparer, (current, type) => {
+                    .Take(collectionTypes.Length);
+
+                var sortComparersMap = types
+                    .Select(type => (type, typeof(CollectionComparer<>).MakeGenericType(type)))
+                    .Select<(Type, Type), (Type, IComparer, IComparer)>((current, prev) => {
+                        var comparer = (IComparer)Activator.CreateInstance(current.Item2, prev.Item2, sort);
+                        // build `comparer` for the current type `current.Item1` and associate the previous comparer `prev.Item2` with the type.
+                        return (current.Item1, comparer, prev.Item2);
+                    })
+                    .ToDictionary(x => x.Item1, x => x.Item3);
+
+                var refereceComparer = types
+                    .Aggregate(itemComparer, (prev, type) => {
                         var comparerType = typeof(CollectionEqualityComparer<>).MakeGenericType(type);
-                        //var sortComparerTypes = typeof(CollectionComparer<>).MakeGenericType(type);
-                        //var sortComparer = (IComparer)Activator.CreateInstance(sortComparerTypes, current, sort);
-                        return (IEqualityComparer)Activator.CreateInstance(comparerType, current, sort, null);
+                        return (IEqualityComparer)Activator.CreateInstance(comparerType, prev, sort, sort ? sortComparersMap[type] : null);
                     });
 
-                var combinedType = collections.Last();
+                var combinedType = collectionTypes.Last();
 
                 if (genericSampleType != null) {
                     var comparerType = genericSampleComparer.MakeGenericType(combinedType);
                     combinedType = genericSampleType.MakeGenericType(combinedType);
-                    comparer = (IEqualityComparer)Activator.CreateInstance(comparerType, comparer);
+                    refereceComparer = (IEqualityComparer)Activator.CreateInstance(comparerType, refereceComparer);
                 }
 
-                new GenericTests(sort, false).GenericTest(combinedType, comparer, 1);
+                new GenericTests(sort, false).GenericTest(combinedType, refereceComparer, 1);
             });
         }
     }

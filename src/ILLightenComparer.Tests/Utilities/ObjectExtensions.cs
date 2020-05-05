@@ -16,8 +16,7 @@ namespace ILLightenComparer.Tests.Utilities
 
         private static readonly ConditionalWeakTable<object, object> ObjectIds = new ConditionalWeakTable<object, object>();
 
-        public static ConditionalWeakTable<object, ConcurrentDictionary<string, object>> ObjectCache =
-            new ConditionalWeakTable<object, ConcurrentDictionary<string, object>>();
+        public static ConditionalWeakTable<object, ConcurrentDictionary<string, object>> ObjectCache = new ConditionalWeakTable<object, ConcurrentDictionary<string, object>>();
 
         public static T GetOrAddProperty<T, TTarget>(this TTarget obj, string name, Func<T> value)
             where TTarget : class
@@ -61,5 +60,14 @@ namespace ILLightenComparer.Tests.Utilities
             IEnumerable enumerable => UnfoldArrays(enumerable.Cast<object>().ToArray()),
             _ => new[] { item },
         };
+
+        public static IEnumerable<TResult> Select<T, TResult>(this IEnumerable<T> source, Func<T, TResult, TResult> selector)
+        {
+            TResult result = default;
+            foreach (var item in source) {
+                result = selector(item, result);
+                yield return result;
+            }
+        }
     }
 }
