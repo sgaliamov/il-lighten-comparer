@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ILLightenComparer.Tests\ILLightenComparer.Tests.csproj" />
-    <ProjectReference Include="..\ILLightenComparer\ILLightenComparer.csproj" />
   </ItemGroup>
 
 </Project>
