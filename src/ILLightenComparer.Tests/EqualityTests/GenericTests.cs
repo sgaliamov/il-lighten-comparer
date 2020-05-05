@@ -102,7 +102,6 @@ namespace ILLightenComparer.Tests.EqualityTests
         private void Comparison_with_itself_produces_true<T>(IEqualityComparer<T> referenceComparer, IEqualityComparer<T> typedComparer)
         {
             var obj = Fixture.Create<T>();
-            var expected = referenceComparer.GetHashCode(obj);
             var actual = typedComparer.GetHashCode(obj);
 
             using (new AssertionScope()) {
@@ -111,6 +110,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                 typedComparer.Equals(obj, obj).Should().BeTrue(message);
 
                 if (_compareHashes) {
+                    var expected = referenceComparer.GetHashCode(obj);
                     actual.Should().Be(expected, message);
                 }
             }
