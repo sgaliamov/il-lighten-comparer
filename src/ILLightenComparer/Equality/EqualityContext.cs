@@ -48,7 +48,7 @@ namespace ILLightenComparer.Equality
             var xType = x.GetType();
             var yType = y.GetType();
             if (xType != yType) {
-                throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
+                return false;
             }
 
             var compareMethod = GetCompiledStaticEqualsMethod(xType);
