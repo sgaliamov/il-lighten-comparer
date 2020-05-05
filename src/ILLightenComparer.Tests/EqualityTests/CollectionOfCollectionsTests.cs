@@ -206,7 +206,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     .Select(type => (type, typeof(CollectionComparer<>).MakeGenericType(type)))
                     .Select<(Type, Type), (Type, IComparer, IComparer)>((current, prev) => {
                         var comparer = (IComparer)Activator.CreateInstance(current.Item2, prev.Item2, sort);
-                        // build `comparer` for the current type `current.Item1` and associate the previous comparer `prev.Item2` with the type.
+                        // build `comparer` for the current type `current.Item1` and associate the previous comparer `prev.Item2` with it.
                         return (current.Item1, comparer, prev.Item2);
                     })
                     .ToDictionary(x => x.Item1, x => x.Item3);
@@ -225,6 +225,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     refereceComparer = (IEqualityComparer)Activator.CreateInstance(comparerType, refereceComparer);
                 }
 
+                // todo: 0. create one test with sorting
                 new GenericTests(sort, false).GenericTest(combinedType, refereceComparer, 1);
             });
         }
