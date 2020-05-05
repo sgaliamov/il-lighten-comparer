@@ -35,8 +35,6 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\external\illuminator\src\Illuminator\Illuminator.csproj" />
-  </ItemGroup>
+  <Import Project="..\..\external\illuminator\src\Illuminator\Illuminator.Shared.projitems" Label="Shared" />
 
 </Project>
