@@ -99,7 +99,9 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Hashing_object_of_arrays_of_arrays()
         {
-            static int GetArrayHashCode(ComparableStruct<int?[][]>?[] input)
+            var builder = new ComparerBuilder(c => c.SetDefaultCollectionsOrderIgnoring(true));
+
+            int GetArrayHashCode(ComparableStruct<int?[][]>?[] input)
             {
                 var num = 5381L;
                 if (input == null) {
@@ -110,95 +112,103 @@ namespace ILLightenComparer.Tests.EqualityTests
                 Array.Sort(array);
                 var num2 = 0;
                 var length = array.Length;
+
                 while (num2 != length) {
                     var num3 = (num << 5) + num;
                     var comparableStruct = array[num2];
                     num = num3 ^ (comparableStruct != null ? GetHashCode(comparableStruct.Value) : 0);
                     num2++;
                 }
+
                 return (int)num;
             }
 
-            static int GetHashCode(ComparableStruct<int?[][]> A_1)
+            int GetHashCode(ComparableStruct<int?[][]> A_1)
             {
                 var num = 5381L;
                 var num2 = (num << 5) + num;
                 var array = A_1.Field;
-                long num3;
-                if (array == null) {
-                    num3 = 0L;
-                } else {
-                    IComparer<int?[]> comparer = new CollectionComparer<int?>();
+                var num3 = 0L;
+
+                if (array != null) {
+                    var comparer = builder.GetComparer<int?[]>();
                     array = array.ToArray();
                     Array.Sort(array, comparer);
                     var num4 = 0;
                     var length = array.Length;
+
                     while (num4 != length) {
                         var num5 = (num << 5) + num;
                         var array2 = array[num4];
-                        long num6;
-                        if (array2 == null) {
-                            num6 = 0L;
-                        } else {
+                        var num6 = 0L;
+
+                        if (array2 != null) {
                             array2 = array2.ToArray();
                             Array.Sort(array2);
                             var num7 = 0;
                             var length2 = array2.Length;
+
                             while (num7 != length2) {
                                 var num8 = (num << 5) + num;
-                                int? num9 = array2[num7];
-                                num = num8 ^ ((num9 != null) ? num9.Value.GetHashCode() : 0);
+                                var num9 = array2[num7];
+                                num = num8 ^ (num9?.GetHashCode() ?? 0);
                                 num7++;
                             }
                             num6 = num;
                         }
+
                         num = num5 ^ num6;
                         num4++;
                     }
+
                     num3 = num;
                 }
+
                 num = num2 ^ num3;
                 var num10 = (num << 5) + num;
                 array = A_1.Property;
-                long num11;
-                if (array == null) {
-                    num11 = 0L;
-                } else {
-                    IComparer<int?[]> comparer = new CollectionComparer<int?>();
+                var num11 = 0L;
+
+                if (array != null) {
+                    var comparer = builder.GetComparer<int?[]>();
                     array = array.ToArray();
                     Array.Sort(array, comparer);
                     var num4 = 0;
                     var length = array.Length;
+
                     while (num4 != length) {
                         var num12 = (num << 5) + num;
-                        int?[] array2 = array[num4];
-                        long num13;
-                        if (array2 == null) {
-                            num13 = 0L;
-                        } else {
+                        var array2 = array[num4];
+                        var num13 = 0L;
+
+                        if (array2 != null) {
                             array2 = array2.ToArray();
                             Array.Sort(array2);
                             var num7 = 0;
                             var length2 = array2.Length;
+
                             while (num7 != length2) {
                                 var num14 = (num << 5) + num;
-                                int? num9 = array2[num7];
-                                num = num14 ^ ((num9 != null) ? num9.Value.GetHashCode() : 0);
+                                var num9 = array2[num7];
+                                num = num14 ^ (num9?.GetHashCode() ?? 0);
                                 num7++;
                             }
                             num13 = num;
                         }
+
                         num = num12 ^ num13;
                         num4++;
                     }
                     num11 = num;
                 }
+
                 num = num10 ^ num11;
+
                 return (int)num;
             }
 
             ComparableStruct<int?[][]>.Comparer = new CollectionComparer<int?[]>(new CollectionComparer<int?>());
-            var comparer = new ComparerBuilder(c => c.SetDefaultCollectionsOrderIgnoring(true)).GetEqualityComparer<ComparableStruct<int?[][]>?[]>();
+            var comparer = builder.GetEqualityComparer<ComparableStruct<int?[][]>?[]>();
             var referenceComparer = new CustomizableEqualityComparer<ComparableStruct<int?[][]>?[]>((__, _) => false, GetArrayHashCode);
 
             var x = _fixture.CreateMany<ComparableStruct<int?[][]>?>().RandomNulls().ToArray();
