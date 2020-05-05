@@ -9,13 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.11.0" />
-    <PackageReference Include="BenchmarkDotNet" Version="0.12.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
     <PackageReference Include="Nito.Comparers" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ILLightenComparer.Tests\ILLightenComparer.Tests.csproj" />
-    <ProjectReference Include="..\ILLightenComparer\ILLightenComparer.csproj" />
   </ItemGroup>
 
 </Project>
