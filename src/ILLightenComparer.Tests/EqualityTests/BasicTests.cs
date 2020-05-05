@@ -221,19 +221,19 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Equality_on_member_array_of_nullables_works()
         {
-            var x = _fixture.Create<SampleEqualityObject<EnumSmall?[]>>();
+            var x = _fixture.Create<ComparableObject<EnumSmall?[]>>();
             x.Field = x.Field?.RandomNulls().ToArray();
             x.Property = x.Property?.RandomNulls().ToArray();
-            var y = _fixture.Create<SampleEqualityObject<EnumSmall?[]>>();
+            var y = _fixture.Create<ComparableObject<EnumSmall?[]>>();
             y.Field = y.Field?.RandomNulls().ToArray();
             y.Property = y.Property?.RandomNulls().ToArray();
 
-            var referenceComparer = new SampleObjectEqualityComparer<EnumSmall?[]>(new CollectionEqualityComparer<EnumSmall?>());
+            var referenceComparer = new ComparableObjectEqualityComparer<EnumSmall?[]>(new CollectionEqualityComparer<EnumSmall?>());
             var expectedHashX = referenceComparer.GetHashCode(x);
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityObject<EnumSmall?[]>>();
+            var comparer = new ComparerBuilder().GetEqualityComparer<ComparableObject<EnumSmall?[]>>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -292,12 +292,12 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Enumerable_structs_with_nullables_are_comparable()
         {
-            var referenceComparer = new CollectionEqualityComparer<SampleComparableStruct<int?>?>(new NullableEqualityComparer<SampleComparableStruct<int?>>(new SampleComparableStructEqualityComparer<int?>()));
-            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<SampleComparableStruct<int?>?>>();
+            var referenceComparer = new CollectionEqualityComparer<ComparableStruct<int?>?>(new NullableEqualityComparer<ComparableStruct<int?>>(new ComparableStructEqualityComparer<int?>()));
+            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<ComparableStruct<int?>?>>();
 
             Helper.Parallel(() => {
-                var x = _fixture.Create<EnumerableStruct<SampleComparableStruct<int?>?>>();
-                var y = _fixture.Create<EnumerableStruct<SampleComparableStruct<int?>?>>();
+                var x = _fixture.Create<EnumerableStruct<ComparableStruct<int?>?>>();
+                var y = _fixture.Create<EnumerableStruct<ComparableStruct<int?>?>>();
 
                 var expectedHashX = referenceComparer.GetHashCode(x);
                 var expectedHashY = referenceComparer.GetHashCode(y);

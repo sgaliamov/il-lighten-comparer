@@ -25,23 +25,23 @@ namespace ILLightenComparer.Tests.EqualityTests
         [Fact]
         public void Compare_nullable_types_directly()
         {
-            foreach (var (nullableType, nullableComparer) in SampleTypes.NullableTypes) {
-                new GenericTests().GenericTest(nullableType, nullableComparer, false, Constants.SmallCount);
+            foreach (var (nullableType, nullableComparer) in TestTypes.NullableTypes) {
+                new GenericTests(false).GenericTest(nullableType, nullableComparer, Constants.SmallCount);
             }
         }
 
         [Fact]
         public void Compare_types_directly()
         {
-            Parallel.ForEach(SampleTypes.Types, item => {
+            Parallel.ForEach(TestTypes.Types, item => {
                 var (type, referenceComparer) = item;
-                new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
+                new GenericTests(false).GenericTest(type, referenceComparer, Constants.SmallCount);
             });
         }
 
         private static void TestCollection(Type genericCollectionType = null)
         {
-            Parallel.ForEach(SampleTypes.Types, item => {
+            Parallel.ForEach(TestTypes.Types, item => {
                 var (type, referenceComparer) = item;
                 TestCollection(type, referenceComparer, genericCollectionType, false);
                 TestCollection(type, referenceComparer, genericCollectionType, true);
@@ -50,7 +50,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
         private static void TestNullableCollection(Type genericCollectionType = null)
         {
-            foreach (var (nullableType, nullableComparer) in SampleTypes.NullableTypes) {
+            foreach (var (nullableType, nullableComparer) in TestTypes.NullableTypes) {
                 TestCollection(nullableType, nullableComparer, genericCollectionType, false);
                 TestCollection(nullableType, nullableComparer, genericCollectionType, true);
             }
@@ -63,10 +63,10 @@ namespace ILLightenComparer.Tests.EqualityTests
                 : genericCollectionType.MakeGenericType(objectType);
 
             var comparerType = typeof(CollectionEqualityComparer<>).MakeGenericType(objectType);
-            var constructor = comparerType.GetConstructor(new[] { typeof(IEqualityComparer<>).MakeGenericType(objectType), typeof(bool) });
-            var comparer = (IEqualityComparer)constructor.Invoke(new object[] { itemComparer, sort });
+            var constructor = comparerType.GetConstructor(new[] { typeof(IEqualityComparer<>).MakeGenericType(objectType), typeof(bool), typeof(IComparer<>).MakeGenericType(objectType) });
+            var comparer = (IEqualityComparer)constructor.Invoke(new object[] { itemComparer, sort, null });
 
-            new GenericTests().GenericTest(collectionType, comparer, sort, Constants.SmallCount);
+            new GenericTests(sort).GenericTest(collectionType, comparer, Constants.SmallCount);
         }
     }
 }

@@ -6,14 +6,16 @@ using System.Reflection.Emit;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Extensions
 {
-    internal static class ArrayEmitionExtensions
+    internal static class ILEmitterExtensions
     {
         private const string LengthMethodName = nameof(Array.Length);
         private static readonly MethodInfo ToArrayMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray));
         private static readonly MethodInfo GetComparerMethod = typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
+        private static readonly MethodInfo DisposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
 
         public static ILEmitter EmitArrayLength(this ILEmitter il, Type arrayType, LocalBuilder array, out LocalBuilder count) => il
             .LoadLocal(array)
@@ -43,6 +45,11 @@ namespace ILLightenComparer.Extensions
 
             return il;
         }
+
+        public static ILEmitter EmitDispose(this ILEmitter il, LocalBuilder local) => il
+            .LoadCaller(local)
+            .Execute(local.LocalType.IsValueType, Constrained(local.LocalType))
+            .Call(DisposeMethod);
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
         {

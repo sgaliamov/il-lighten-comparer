@@ -2,19 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
     internal sealed class CollectionEqualityComparer<TItem> : IEqualityComparer<IEnumerable<TItem>>, IEqualityComparer, IHashSeedSetter
     {
+        private readonly IComparer<TItem> _sortComparer;
         private readonly IEqualityComparer<TItem> _itemComparer;
         private readonly bool _sort;
-        private long _seed = HashCodeCombiner.Seed;
+        private readonly AsyncLocal<long> _seed = new AsyncLocal<long>();
 
-        public CollectionEqualityComparer(IEqualityComparer<TItem> itemComparer = null, bool sort = false)
+        public CollectionEqualityComparer(IEqualityComparer<TItem> itemComparer = null, bool sort = false, IComparer<TItem> sortComparer = null)
         {
             _sort = sort;
+            _sortComparer = sortComparer ?? Comparer<TItem>.Default;
             _itemComparer = itemComparer ?? EqualityComparer<TItem>.Default;
+            _seed.Value = HashCodeCombiner.Seed;
         }
 
         public bool Equals(IEnumerable<TItem> x, IEnumerable<TItem> y)
@@ -29,11 +33,11 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
             if (_sort) {
                 var ax = x.ToArray();
-                Array.Sort(ax);
+                Array.Sort(ax, _sortComparer);
                 x = ax;
 
                 var ay = y.ToArray();
-                Array.Sort(ay);
+                Array.Sort(ay, _sortComparer);
                 y = ay;
             }
 
@@ -62,7 +66,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
             }
         }
 
-        bool IEqualityComparer.Equals(object x, object y) => Equals(x as IEnumerable<TItem>, y as IEnumerable<TItem>);
+        bool IEqualityComparer.Equals(object x, object y) => Equals((IEnumerable<TItem>)x, (IEnumerable<TItem>)y);
 
         public int GetHashCode(IEnumerable<TItem> obj)
         {
@@ -72,15 +76,15 @@ namespace ILLightenComparer.Tests.EqualityComparers
 
             if (_sort) {
                 var array = obj.ToArray();
-                Array.Sort(array);
+                Array.Sort(array, _sortComparer);
                 obj = array;
             }
 
-            return HashCodeCombiner.Start(_seed).Combine(_itemComparer, obj.ToArray().Cast<TItem>().ToArray());
+            return HashCodeCombiner.Start(_seed.Value).Combine(_itemComparer, obj.ToArray());
         }
 
         public int GetHashCode(object obj) => GetHashCode((IEnumerable<TItem>)obj);
 
-        public void SetHashSeed(long seed) => _seed = seed;
+        public void SetHashSeed(long seed) => _seed.Value = seed;
     }
 }

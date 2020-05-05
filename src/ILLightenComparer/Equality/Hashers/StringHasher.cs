@@ -39,7 +39,7 @@ namespace ILLightenComparer.Equality.Hashers
             .Store(typeof(string), out var local)
             .IfFalse_S(LoadLocal(local), out var zero)
             .Call(GetHashCodeMethod, LoadLocal(local), LoadInteger(_stringComparison))
-            .GoTo(out var next)
+            .GoTo_S(out var next)
             .MarkLabel(zero)
             .LoadInteger(0)
             .MarkLabel(next);

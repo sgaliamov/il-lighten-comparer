@@ -8,9 +8,9 @@ using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityTests
 {
-    internal static class SampleTypes
+    internal static class TestTypes
     {
-        static SampleTypes()
+        static TestTypes()
         {
             Types = new Dictionary<Type, IEqualityComparer> {
                 [typeof(sbyte)] = null,
@@ -30,8 +30,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 [typeof(SampleEqualityBaseObject<EnumSmall?>)] = null,
                 [typeof(SampleEqualityChildObject<EnumSmall?>)] = null,
                 [typeof(SampleEqualityStruct<EnumSmall?>)] = null,
-                [typeof(SampleEqualityObject<EnumSmall?>)] = new SampleObjectEqualityComparer<EnumSmall?>(),
-                [typeof(SampleComparableStruct<EnumSmall?>)] = new SampleComparableStructEqualityComparer<EnumSmall?>()
+                [typeof(ComparableObject<EnumSmall?>)] = new ComparableObjectEqualityComparer<EnumSmall?>(),
+                [typeof(ComparableStruct<EnumSmall?>)] = new ComparableStructEqualityComparer<EnumSmall?>()
             };
 
             NullableTypes = Types

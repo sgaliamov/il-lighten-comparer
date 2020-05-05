@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections;
 using System.Threading.Tasks;
-using ILLightenComparer.Tests.Comparers;
+using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
-namespace ILLightenComparer.Tests.ComparerTests
+namespace ILLightenComparer.Tests.EqualityTests
 {
     public sealed class SampleMembersTests
     {
         [Fact]
         public void Compare_sample_objects()
         {
-            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), false);
-            Test(typeof(SampleObject<>), typeof(SampleObjectComparer<>), true);
+            Test(typeof(ComparableObject<>), typeof(ComparableObjectEqualityComparer<>), false);
+            Test(typeof(ComparableObject<>), typeof(ComparableObjectEqualityComparer<>), true);
         }
 
         [Fact]
         public void Compare_sample_structs()
         {
-            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), false);
-            Test(typeof(SampleStruct<>), typeof(SampleStructComparer<>), true);
+            Test(typeof(ComparableStruct<>), typeof(ComparableStructEqualityComparer<>), false);
+            Test(typeof(ComparableStruct<>), typeof(ComparableStructEqualityComparer<>), true);
         }
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool nullable)
@@ -34,9 +34,9 @@ namespace ILLightenComparer.Tests.ComparerTests
                     var (type, referenceComparer) = item;
                     var objectType = genericSampleType.MakeGenericType(type);
                     var comparerType = genericSampleComparer.MakeGenericType(type);
-                    var comparer = (IComparer)Activator.CreateInstance(comparerType, referenceComparer);
+                    var comparer = (IEqualityComparer)Activator.CreateInstance(comparerType, referenceComparer);
 
-                    new GenericTests().GenericTest(objectType, comparer, false, Constants.SmallCount);
+                    new GenericTests(false).GenericTest(objectType, comparer, Constants.SmallCount);
                 });
         }
     }

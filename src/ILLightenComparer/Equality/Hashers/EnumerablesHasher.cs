@@ -85,9 +85,13 @@ namespace ILLightenComparer.Equality.Hashers
 
             il.Call(_getEnumeratorMethod, LoadCaller(enumerable))
               .Store(_enumeratorType, out var enumerator)
-              .IfTrue_S(LoadLocal(enumerator), out var loopStart)
-              .LoadInteger(0)
-              .GoTo(end);
+              .DefineLabel(out var loopStart);
+
+            if (!_enumeratorType.IsValueType) {
+                il.IfTrue_S(LoadLocal(enumerator), loopStart)
+                  .LoadInteger(0)
+                  .GoTo(end);
+            }
 
             // todo: 1. think how to use try/finally block
             // the problem now with the inner `return` statements, it has to be `leave` instruction
@@ -137,8 +141,6 @@ namespace ILLightenComparer.Equality.Hashers
             }
         }
 
-        private static void EmitDisposeEnumerator(ILEmitter il, LocalBuilder enumerator) => il
-            .LoadCaller(enumerator)
-            .Call(Methods.DisposeMethod);
+        private static void EmitDisposeEnumerator(ILEmitter il, LocalBuilder enumerator) => il.EmitDispose(enumerator);
     }
 }

@@ -103,7 +103,8 @@
 - [x] ~~possible to merge `MembersComparison` and `HierarchicalsComparison` but need to create `LocalVariable` class~~
 - [x] ~~compare references and the end?~~ no, because objects are equal semantically
 - [ ] fix *todo* list
-- [ ] ignore existing `IComparable` implementation
+- [ ] setting ignore existing `IComparable` implementation
+- [ ] use exiting `IEquatable` implementation and setting to disable it
 - [ ] maybe move logic for `IComparable` to separate static method to simplify logic with variables loading - no need to have deal with addresses?
 - [ ] add `IgnoreAll()` method to be able simplify comparison setup on specific fields or props only
 - [ ] add `Include(string member)` method in pair with `IgnoreAll`

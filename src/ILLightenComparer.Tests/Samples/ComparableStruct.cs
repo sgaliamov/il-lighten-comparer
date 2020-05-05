@@ -7,14 +7,14 @@ namespace ILLightenComparer.Tests.Samples
 {
     [SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "Test class")]
     [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "Test class")]
-    public struct SampleComparableStruct<TMember> : IComparable<SampleComparableStruct<TMember>>
+    public struct ComparableStruct<TMember> : IComparable<ComparableStruct<TMember>>
     {
         public static IComparer<TMember> Comparer = Comparer<TMember>.Default;
 
         public TMember Field;
         public TMember Property { get; set; }
 
-        public int CompareTo(SampleComparableStruct<TMember> other)
+        public int CompareTo(ComparableStruct<TMember> other)
         {
             var compare = Comparer.Compare(Field, other.Field);
             if (compare != 0) {
