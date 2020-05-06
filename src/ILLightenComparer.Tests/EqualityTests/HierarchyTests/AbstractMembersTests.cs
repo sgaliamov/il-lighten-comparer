@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
-using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples;
-using ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested;
+using FluentAssertions.Execution;
+using ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples;
+using ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples.Nested;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -49,37 +52,17 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
             _comparer.Equals(one, another).Should().BeFalse();
         }
 
-        //[Fact]
-        //public void Abstract_property_comparison()
-        //{
-        //    Test(x => new AbstractMembers {
-        //        AbstractProperty = x
-        //    });
-        //}
+        [Fact]
+        public void Abstract_property_comparison() => TestOneMember(x => new AbstractMembers { AbstractProperty = x });
 
-        //[Fact]
-        //public void Interface_field_comparison()
-        //{
-        //    Test(x => new AbstractMembers {
-        //        InterfaceField = x
-        //    });
-        //}
+        [Fact]
+        public void Interface_field_comparison() => TestOneMember(x => new AbstractMembers { InterfaceField = x });
 
-        //[Fact]
-        //public void Not_sealed_property_comparison()
-        //{
-        //    Test(x => new AbstractMembers {
-        //        NotSealedProperty = x
-        //    });
-        //}
+        [Fact]
+        public void Not_sealed_property_comparison() => TestOneMember(x => new AbstractMembers { NotSealedProperty = x });
 
-        //[Fact]
-        //public void Object_field_comparison()
-        //{
-        //    Test(x => new AbstractMembers {
-        //        ObjectField = x
-        //    });
-        //}
+        [Fact]
+        public void Object_field_comparison() => TestOneMember(x => new AbstractMembers { ObjectField = x });
 
         //[Fact]
         //public void Replaced_member_does_not_break_comparison()
@@ -124,23 +107,42 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
         //    _comparer.Compare(one, another).Should().BePositive();
         //}
 
-        //private void Test(Func<SealedNestedObject, AbstractMembers> selector)
-        //{
-        //    var original = _fixture
-        //                   .Build<SealedNestedObject>()
-        //                   .Without(x => x.DeepNestedField)
-        //                   .Without(x => x.DeepNestedProperty)
-        //                   .CreateMany(1000)
-        //                   .Select(selector)
-        //                   .ToArray();
+        private void TestOneMember(Func<SealedNestedObject, AbstractMembers> selector)
+        {
+            const int count = 1000;
 
-        //    var clone = original.DeepClone();
+            var x = _fixture
+                .Build<SealedNestedObject>()
+                .Without(x => x.DeepNestedField)
+                .Without(x => x.DeepNestedProperty)
+                .CreateMany(count)
+                .Select(selector)
+                .ToArray();
 
-        //    Array.Sort(original, AbstractMembers.Comparer);
-        //    Array.Sort(clone, _comparer);
+            var y = _fixture
+               .Build<SealedNestedObject>()
+               .Without(x => x.DeepNestedField)
+               .Without(x => x.DeepNestedProperty)
+               .CreateMany(count)
+               .Select(selector)
+               .ToArray();
 
-        //    original.ShouldBeSameOrder(clone);
-        //}
+            for (int i = 0; i < count; i++) {
+                //var expectedHashX = x[i].GetHashCode();
+                //var expectedHashY = y[i].GetHashCode();
+                var expectedEquals = x[i].Equals(y[i]);
+
+                var hashX = _comparer.GetHashCode(x[i]);
+                var hashY = _comparer.GetHashCode(y[i]);
+                var equals = _comparer.Equals(x[i], y[i]);
+
+                using (new AssertionScope()) {
+                    equals.Should().Be(expectedEquals);
+                    hashX.Should().NotBe(0);
+                    hashY.Should().NotBe(0);
+                }
+            }
+        }
 
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
