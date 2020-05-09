@@ -7,7 +7,7 @@ namespace ILLightenComparer.Tests.Samples
 {
     public sealed class SampleEqualityChildObject<TMember> : SampleEqualityBaseObject<TMember>, IComparable<SampleEqualityChildObject<TMember>>
     {
-        private readonly static IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
+        private readonly static IComparer<TMember> ChildComparer = Helper.DefaultComparer<TMember>();
         public static IEqualityComparer<TMember> ChildEqualityComparer = EqualityComparer<TMember>.Default;
 
         public TMember ChildField;

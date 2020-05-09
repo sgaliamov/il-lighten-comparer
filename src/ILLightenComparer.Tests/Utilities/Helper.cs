@@ -17,6 +17,10 @@ namespace ILLightenComparer.Tests.Utilities
 
     internal static class Helper
     {
+        public static IComparer<T> DefaultComparer<T>() => typeof(T) == typeof(object)
+            ? new ObjectComparer() as IComparer<T>
+            : Comparer<T>.Default;
+
         public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
         {
             using var enumeratorOne = one.GetEnumerator();
