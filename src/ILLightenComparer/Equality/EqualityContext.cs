@@ -71,11 +71,11 @@ namespace ILLightenComparer.Equality
                 return 0;
             }
 
-            if (typeof(T) == typeof(object)) {
+            var actualType = comparable.GetType();
+
+            if (actualType == typeof(object)) {
                 return comparable.GetHashCode();
             }
-
-            var actualType = comparable.GetType();
 
             var hashMethod = GetCompiledStaticHashMethod(actualType);
 
