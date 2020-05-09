@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Samples
@@ -8,6 +9,8 @@ namespace ILLightenComparer.Tests.Samples
         ComparableBaseObject<TMember>,
         IComparable<ComparableChildObject<TMember>>
     {
+        [SuppressMessage("Design", "RCS1158:Static member in generic type should use a type parameter.", Justification = "Test class")]
+        new public static bool UsedCompareTo;
         public static IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
 
         public TMember ChildField;
@@ -15,6 +18,9 @@ namespace ILLightenComparer.Tests.Samples
 
         public int CompareTo(ComparableChildObject<TMember> other)
         {
+            UsedCompareTo = true;
+            ComparableBaseObject<TMember>.UsedCompareTo = true;
+
             if (ReferenceEquals(this, other)) {
                 return 0;
             }

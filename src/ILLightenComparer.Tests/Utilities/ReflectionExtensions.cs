@@ -12,5 +12,7 @@ namespace ILLightenComparer.Tests.Utilities
 
             return typeof(Nullable<>).MakeGenericType(type);
         }
+
+        public static bool IsSealedType(this Type type) => type.IsValueType || type.IsSealed;
     }
 }

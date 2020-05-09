@@ -9,6 +9,8 @@ namespace ILLightenComparer.Tests.Samples
     [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "Test class")]
     public struct ComparableStruct<TMember> : IComparable<ComparableStruct<TMember>>
     {
+        [SuppressMessage("Design", "RCS1158:Static member in generic type should use a type parameter.", Justification = "Test class")]
+        public static bool UsedCompareTo;
         public static IComparer<TMember> Comparer = Comparer<TMember>.Default;
 
         public TMember Field;
@@ -16,6 +18,8 @@ namespace ILLightenComparer.Tests.Samples
 
         public int CompareTo(ComparableStruct<TMember> other)
         {
+            UsedCompareTo = true;
+
             var compare = Comparer.Compare(Field, other.Field);
             if (compare != 0) {
                 return compare;
