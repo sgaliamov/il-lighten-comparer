@@ -74,7 +74,7 @@ namespace ILLightenComparer.Equality
             var actualType = comparable.GetType();
 
             if (actualType == typeof(object)) {
-                return comparable.GetHashCode();
+                return 0; // todo: 1. rethink empty objects comparison
             }
 
             var hashMethod = GetCompiledStaticHashMethod(actualType);

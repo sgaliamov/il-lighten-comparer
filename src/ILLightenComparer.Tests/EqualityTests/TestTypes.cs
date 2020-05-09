@@ -18,7 +18,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                         return y is null;
                     }
                     return y != null;
-                }, x => x?.GetHashCode() ?? 0),
+                }, _ => 0),
                 [typeof(sbyte)] = null,
                 [typeof(byte)] = null,
                 [typeof(char)] = null,

@@ -27,8 +27,8 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             using (new AssertionScope()) {
                 actual.Should().BeTrue();
-                hashX.Should().Be(x.GetHashCode());
-                hashY.Should().Be(y.GetHashCode());
+                hashX.Should().Be(0, "Hash of empty collection is 0.");
+                hashY.Should().Be(0, "Hash of empty collection is 0.");
             }
         }
 
