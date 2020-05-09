@@ -128,8 +128,8 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
                .ToArray();
 
             for (int i = 0; i < count; i++) {
-                //var expectedHashX = x[i].GetHashCode();
-                //var expectedHashY = y[i].GetHashCode();
+                var expectedHashX = x[i].GetHashCode();
+                var expectedHashY = y[i].GetHashCode();
                 var expectedEquals = x[i].Equals(y[i]);
 
                 var hashX = _comparer.GetHashCode(x[i]);
@@ -138,8 +138,8 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
 
                 using (new AssertionScope()) {
                     equals.Should().Be(expectedEquals);
-                    hashX.Should().NotBe(0);
-                    hashY.Should().NotBe(0);
+                    hashX.Should().Be(expectedHashX);
+                    hashY.Should().Be(expectedHashY);
                 }
             }
         }
