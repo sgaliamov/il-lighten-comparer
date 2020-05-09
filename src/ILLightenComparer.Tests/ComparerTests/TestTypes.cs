@@ -13,7 +13,13 @@ namespace ILLightenComparer.Tests.ComparerTests
         static TestTypes()
         {
             Types = new Dictionary<Type, IComparer> {
-                [typeof(object)] = new CustomizableComparer<object>((__, _) => 0),
+                [typeof(object)] = new CustomizableComparer<object>((x, y) => {
+                    if (x is null) {
+                        return y is null ? 0 : -1;
+                    }
+
+                    return y is null ? 1 : 0;
+                }),
                 [typeof(sbyte)] = null,
                 [typeof(byte)] = null,
                 [typeof(char)] = null,

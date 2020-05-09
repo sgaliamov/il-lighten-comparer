@@ -9,6 +9,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
@@ -141,10 +142,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             Array.Sort(copy0, referenceComparer);
             Array.Sort(copy1, typedComparer);
 
-            using (new AssertionScope()) {
-                copy1.ShouldBeSameOrder(copy0);
-                copy1.ShouldBeSameOrder(copy0);
-            }
+            copy1.ShouldBeSameOrder(copy0);
+            copy1.ShouldBeSameOrder(copy0);
         }
 
         private static void Comparisons_work_identical<T>(IComparer referenceComparer, IComparer<T> typedComparer, int times)

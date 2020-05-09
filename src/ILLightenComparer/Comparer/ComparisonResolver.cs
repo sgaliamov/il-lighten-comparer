@@ -33,7 +33,7 @@ namespace ILLightenComparer.Comparer
                 IntegralsComparison.Create,
                 (IVariable variable) => StringsComparison.Create(StringCompareMethod, CustomEmitters.EmitReturnIfTruthy, _configuration, variable),
                 ComparablesComparison.Create,
-                ObjectComparison.Create,
+                (IVariable variable) => ObjectComparison.Create(CustomEmitters.EmitReferenceComparison, variable),
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
                 (IVariable variable) => IndirectComparison.Create(
                     CustomEmitters.EmitReturnIfTruthy,

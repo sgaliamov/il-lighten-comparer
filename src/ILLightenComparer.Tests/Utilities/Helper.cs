@@ -9,6 +9,7 @@ using FluentAssertions.Execution;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.EqualityComparers;
 using Illuminator.Extensions;
+using Xunit;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -36,7 +37,9 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static void ShouldBeEquals<T>(this T x, T y)
         {
-            if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
+            if (typeof(T) == typeof(object)) {
+                Assert.True(x is null ? y is null : y != null);
+            } else if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
                 x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
             } else {
                 x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>().WithStrictOrdering());
