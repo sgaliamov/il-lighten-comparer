@@ -24,7 +24,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityChildObject<EnumSmall?>>();
+            var comparer = new ComparerBuilder().GetEqualityComparer<object>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);

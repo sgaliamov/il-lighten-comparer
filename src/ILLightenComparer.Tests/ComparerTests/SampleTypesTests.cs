@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using ILLightenComparer.Tests.Comparers;
+using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -43,12 +46,19 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Should_use_delayed_comparison()
         {
+            var x = _fixture.CreateMany<SampleStruct<EnumSmall?>?>().ToArray();
+            var y = _fixture.CreateMany<SampleStruct<EnumSmall?>?>().ToArray();
+
+            var referenceComparer = new CollectionComparer<SampleStruct<EnumSmall?>?>(new NullableComparer<SampleStruct<EnumSmall?>>(new SampleStructComparer<EnumSmall?>()));
             var comparer = new ComparerBuilder().GetComparer<object>();
 
-            var actual = comparer.Compare("1", "2");
+            var expected = referenceComparer.Compare(x, y).Normalize();
+            var actual = comparer.Compare(x, y).Normalize();
 
-            actual.Should().NotBe(0);
+            actual.Should().Be(expected);
         }
+
+        private readonly static IFixture _fixture = FixtureBuilder.GetInstance();
 
         private static void TestCollection(Type genericCollectionType = null)
         {

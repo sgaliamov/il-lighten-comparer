@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.EqualityComparers;
+using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -39,6 +44,31 @@ namespace ILLightenComparer.Tests.EqualityTests
             });
         }
 
+        [Fact]
+        public void Should_use_delayed_comparison()
+        {
+            var x = _fixture.CreateMany<SampleEqualityStruct<EnumSmall?>?>().ToArray();
+            var y = _fixture.CreateMany<SampleEqualityStruct<EnumSmall?>?>().ToArray();
+
+            var referenceComparer = new CollectionEqualityComparer<SampleEqualityStruct<EnumSmall?>?>(
+                new NullableEqualityComparer<SampleEqualityStruct<EnumSmall?>>());
+
+            var comparer = new ComparerBuilder().GetEqualityComparer<object>();
+
+            var expectedHashX = referenceComparer.GetHashCode(x);
+            var expectedHashY = referenceComparer.GetHashCode(y);
+            var actualHashX = comparer.GetHashCode(x);
+            var actualHashY = comparer.GetHashCode(y);
+            var expected = referenceComparer.Equals(x, y);
+            var actual = comparer.Equals(x, y);
+
+            using (new AssertionScope()) {
+                actualHashX.Should().Be(expectedHashX);
+                actualHashY.Should().Be(expectedHashY);
+                actual.Should().Be(expected);
+            }
+        }
+
         private static void TestCollection(Type genericCollectionType = null)
         {
             Parallel.ForEach(TestTypes.Types, item => {
@@ -68,5 +98,7 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             new GenericTests(sort).GenericTest(collectionType, comparer, Constants.SmallCount);
         }
+
+        private readonly static IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }
