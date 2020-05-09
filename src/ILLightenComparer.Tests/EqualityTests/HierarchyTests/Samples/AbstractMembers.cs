@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples.Nested;
 
