@@ -357,7 +357,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     refereceComparer = (IEqualityComparer)Activator.CreateInstance(comparerType, refereceComparer);
                 }
 
-                // todo: 0. create one test with sorting
+                // todo: 3. try enable hash comparison
                 new GenericTests(sort, false).GenericTest(combinedType, refereceComparer, 1);
             });
         }

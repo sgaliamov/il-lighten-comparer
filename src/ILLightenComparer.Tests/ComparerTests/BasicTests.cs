@@ -26,7 +26,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         }
 
         [Fact]
-        public void Empty_objects_are_identical_because_they_have_no_members()
+        public void Objects_are_identical_because_they_have_no_members()
         {
             var x = new object();
             var y = new object();

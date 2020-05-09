@@ -51,6 +51,10 @@ namespace ILLightenComparer.Equality
                 return false;
             }
 
+            if (xType == typeof(object)) {
+                return true;
+            }
+
             var compareMethod = GetCompiledStaticEqualsMethod(xType);
 
             return compareMethod.InvokeCompare<IEqualityComparerContext, T, bool>(xType, this, x, y, xSet, ySet);
@@ -65,6 +69,10 @@ namespace ILLightenComparer.Equality
 
             if (!typeof(T).IsValueType && comparable is null) {
                 return 0;
+            }
+
+            if (typeof(T) == typeof(object)) {
+                return comparable.GetHashCode();
             }
 
             var actualType = comparable.GetType();
