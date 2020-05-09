@@ -41,13 +41,13 @@ namespace ILLightenComparer.Equality
                 (IVariable variable) => StringsComparison.Create(StringEqualsMethod, CustomEmitters.EmitReturnIfFalsy, _configuration, variable),
                 OperatorEqualityComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
+                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable),
                 (IVariable variable) => IndirectComparison.Create(
                     CustomEmitters.EmitReturnIfFalsy,
                     variableType => context.GetStaticEqualsMethodInfo(variableType),
                     DelayedEquals,
-                    variable),
-                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
-                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
+                    variable)
             };
         }
 

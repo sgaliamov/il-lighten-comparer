@@ -30,11 +30,11 @@ namespace ILLightenComparer.Shared.Comparisons
             MembersProvider membersProvider,
             IVariable variable)
         {
-            if (variable.VariableType != typeof(object) && variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
-                return new MembersComparison(resolver, membersProvider, variable);
+            if (variable.VariableType == typeof(object) || !variable.VariableType.IsHierarchical() || !(variable is ArgumentVariable)) {
+                return null;
             }
 
-            return null;
+            return new MembersComparison(resolver, membersProvider, variable);
         }
 
         public ILEmitter Emit(ILEmitter il, Label _)

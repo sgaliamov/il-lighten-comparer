@@ -34,13 +34,13 @@ namespace ILLightenComparer.Comparer
                 (IVariable variable) => StringsComparison.Create(StringCompareMethod, CustomEmitters.EmitReturnIfTruthy, _configuration, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
+                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable),
                 (IVariable variable) => IndirectComparison.Create(
                     CustomEmitters.EmitReturnIfTruthy,
                     variableType => context.GetStaticCompareMethodInfo(variableType),
                     DelayedCompare,
-                    variable),
-                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
-                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
+                    variable)
             };
         }
 
