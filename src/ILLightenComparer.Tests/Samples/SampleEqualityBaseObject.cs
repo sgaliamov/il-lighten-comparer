@@ -9,7 +9,7 @@ namespace ILLightenComparer.Tests.Samples
     [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "<Pending>")]
     public class SampleEqualityBaseObject<TMember> : IComparable<SampleEqualityBaseObject<TMember>>
     {
-        private static readonly IComparer<TMember> Comparer = Comparer<TMember>.Default;
+        private static readonly IComparer<TMember> Comparer = Helper.DefaultComparer<TMember>();
 
         public TMember Field;
         public TMember Property { get; set; }
