@@ -47,6 +47,11 @@ namespace ILLightenComparer.Tests.Utilities
 
             IEnumerable<T> Process()
             {
+                if (typeof(T) == typeof(object)) {
+                    yield return prototype is null ? (T)new object() : default;
+                    yield break;
+                }
+
                 var clone = prototype.DeepClone();
                 foreach (var member in new ObjectWalker(new Member(clone))) {
                     if (member.Parent?.GetType().IsValueType ?? false) {
@@ -54,6 +59,10 @@ namespace ILLightenComparer.Tests.Utilities
                     }
 
                     if (!member.ValueType.IsPrimitive() && member.Value != null) {
+                        continue;
+                    }
+
+                    if (member.ValueType == typeof(object)) {
                         continue;
                     }
 
