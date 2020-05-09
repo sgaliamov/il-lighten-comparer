@@ -108,7 +108,7 @@ namespace ILLightenComparer.Shared
         private bool NeedDetectCycles(Type objectType, string methodName) =>
             objectType.IsClass
             && NeedCreateCycleDetectionSets(objectType, methodName)
-            && !objectType.ImplementsGeneric(typeof(IEnumerable<>));
+            && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>));
 
         private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)
         {
