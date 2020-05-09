@@ -30,7 +30,7 @@ namespace ILLightenComparer.Shared.Comparisons
             MembersProvider membersProvider,
             IVariable variable)
         {
-            if (variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
+            if (variable.VariableType != typeof(object) && variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
                 return new MembersComparison(resolver, membersProvider, variable);
             }
 

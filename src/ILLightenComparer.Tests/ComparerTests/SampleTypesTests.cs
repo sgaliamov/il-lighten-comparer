@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
@@ -37,6 +38,16 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var (type, referenceComparer) = item;
                 new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
             });
+        }
+
+        [Fact]
+        public void Should_use_delayed_comparison()
+        {
+            var comparer = new ComparerBuilder().GetComparer<object>();
+
+            var actual = comparer.Compare("1", "2");
+
+            actual.Should().NotBe(0);
         }
 
         private static void TestCollection(Type genericCollectionType = null)
