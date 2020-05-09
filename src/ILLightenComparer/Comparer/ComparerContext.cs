@@ -50,6 +50,10 @@ namespace ILLightenComparer.Comparer
                 throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
             }
 
+            if (xType == typeof(object)) {
+                return 0;
+            }
+
             var compareMethod = GetCompiledStaticCompareMethod(xType);
 
             return compareMethod.InvokeCompare<IComparerContext, T, int>(xType, this, x, y, xSet, ySet);

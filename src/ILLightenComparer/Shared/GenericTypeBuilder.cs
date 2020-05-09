@@ -106,7 +106,8 @@ namespace ILLightenComparer.Shared
             && _methodEmitter[methodName].NeedCreateCycleDetectionSets(objectType);
 
         private bool NeedDetectCycles(Type objectType, string methodName) =>
-            objectType.IsClass
+            objectType != typeof(object) // indirect comparison will trigger
+            && objectType.IsClass
             && NeedCreateCycleDetectionSets(objectType, methodName)
             && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>));
 
