@@ -15,6 +15,19 @@ namespace ILLightenComparer.Tests.ComparerTests
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
         [Fact]
+        public void Empty_objects_are_identical_because_they_have_no_members()
+        {
+            var x = new object();
+            var y = new object();
+
+            var comparer = new ComparerBuilder().GetComparer<object>();
+
+            var actual = comparer.Compare(x, y);
+
+            actual.Should().Be(0);
+        }
+
+        [Fact]
         public void Empty_object_should_be_equal()
         {
             var comparer = new ComparerBuilder().GetComparer<DummyObject>();
