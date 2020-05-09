@@ -5,6 +5,7 @@ using Illuminator;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
+    // todo: 3. use as optimization. cannot use now because real type can be used. DelayedCompare resolves it.
     internal sealed class ObjectComparison : IComparisonEmitter
     {
         private readonly IVariable _variable;

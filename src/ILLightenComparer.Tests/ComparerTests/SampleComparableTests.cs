@@ -6,7 +6,6 @@ using FluentAssertions;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
-using Illuminator.Extensions;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
@@ -98,13 +97,19 @@ namespace ILLightenComparer.Tests.ComparerTests
                             .SetValue(null, itemComparer);
                     }
 
+                    comparableType
+                        .GetField("UsedCompareTo", BindingFlags.Public | BindingFlags.Static)?
+                        .SetValue(null, false);
+
                     new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
 
-                    comparableType
-                        .GetField("UsedCompareTo", BindingFlags.Public | BindingFlags.Static)
-                        .GetValue(null)
-                        .Should()
-                        .Be(comparableType.IsSealedType(), comparableType.DisplayName());
+                    if (comparableType.IsSealedType()) {
+                        comparableType
+                            .GetField("UsedCompareTo", BindingFlags.Public | BindingFlags.Static)
+                            .GetValue(null)
+                            .Should()
+                            .Be(true, comparableType.FullName);
+                    }
                 });
         }
     }
