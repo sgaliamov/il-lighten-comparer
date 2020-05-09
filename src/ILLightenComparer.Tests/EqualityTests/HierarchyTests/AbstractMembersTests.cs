@@ -53,16 +53,16 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
         }
 
         [Fact]
-        public void Abstract_property_comparison() => TestOneMember(x => new AbstractMembers { AbstractProperty = x });
+        public void Abstract_property_comparison() => TestOneMember(x => new AbstractMembers { AbstractProperty = x }, Constants.SmallCount);
 
         [Fact]
-        public void Interface_field_comparison() => TestOneMember(x => new AbstractMembers { InterfaceField = x });
+        public void Interface_field_comparison() => TestOneMember(x => new AbstractMembers { InterfaceField = x }, Constants.SmallCount);
 
         [Fact]
-        public void Not_sealed_property_comparison() => TestOneMember(x => new AbstractMembers { NotSealedProperty = x });
+        public void Not_sealed_property_comparison() => TestOneMember(x => new AbstractMembers { NotSealedProperty = x }, Constants.SmallCount);
 
         [Fact]
-        public void Object_field_comparison() => TestOneMember(x => new AbstractMembers { ObjectField = x });
+        public void Object_field_comparison() => TestOneMember(x => new AbstractMembers { ObjectField = x }, Constants.BigCount);
 
         //[Fact]
         //public void Replaced_member_does_not_break_comparison()
@@ -107,10 +107,8 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
         //    _comparer.Compare(one, another).Should().BePositive();
         //}
 
-        private void TestOneMember(Func<SealedNestedObject, AbstractMembers> selector)
+        private void TestOneMember(Func<SealedNestedObject, AbstractMembers> selector, int count)
         {
-            const int count = 1000;
-
             var x = _fixture
                 .Build<SealedNestedObject>()
                 .Without(x => x.DeepNestedField)
