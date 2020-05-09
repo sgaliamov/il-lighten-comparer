@@ -15,7 +15,7 @@ namespace ILLightenComparer.Tests.Samples
 
         public override string ToString() => this.ToJson();
 
-        public override bool Equals(object obj) => Equals(obj as SampleEqualityChildObject<TMember>);
+        public override bool Equals(object obj) => Equals((SampleEqualityChildObject<TMember>)obj);
 
         public bool Equals(SampleEqualityChildObject<TMember> other) =>
             other != null
