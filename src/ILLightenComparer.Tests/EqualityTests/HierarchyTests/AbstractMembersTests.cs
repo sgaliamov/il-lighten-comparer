@@ -146,12 +146,6 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
 
         private readonly IEqualityComparer<AbstractMembers> _comparer =
             new ComparerBuilder()
-                .For<SealedNestedObject>(c =>
-                    c.IgnoreMember(o => o.DeepNestedField)
-                     .IgnoreMember(o => o.DeepNestedProperty)
-                     .DefineMembersOrder(order =>
-                         order.Member(o => o.Key)
-                              .Member(o => o.Text)))
                 .For<AnotherNestedObject>(c => c
                     .DefineMembersOrder(order =>
                         order.Member(o => o.Value)

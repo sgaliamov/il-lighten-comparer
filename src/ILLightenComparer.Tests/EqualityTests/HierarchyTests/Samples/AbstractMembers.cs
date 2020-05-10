@@ -23,11 +23,7 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples
                 && EqualityComparer<BaseNestedObject>.Default.Equals(NotSealedProperty, other.NotSealedProperty);
         }
 
-        public override int GetHashCode()
-        {
-            var interfaceFieldHash = InterfaceField is null ? 0 : HashCodeCombiner.Combine(InterfaceField.Text);
-
-            return HashCodeCombiner.Combine(interfaceFieldHash, ObjectField, AbstractProperty, NotSealedProperty);
-        }
+        public override int GetHashCode() => HashCodeCombiner
+            .Combine(InterfaceField, ObjectField, AbstractProperty, NotSealedProperty);
     }
 }
