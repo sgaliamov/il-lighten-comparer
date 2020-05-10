@@ -8,7 +8,6 @@ using static Illuminator.Functional;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
-
     [MedianColumn]
     [RankColumn]
     public class EqualityBenchmark

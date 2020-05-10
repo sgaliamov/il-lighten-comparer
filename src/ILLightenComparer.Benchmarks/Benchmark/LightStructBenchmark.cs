@@ -7,17 +7,15 @@ namespace ILLightenComparer.Benchmarks.Benchmark
     {
         private static readonly IComparer<LightStruct> Native = LightStruct.Comparer;
 
-        private static readonly IComparer<LightStruct> ILLightenComparer
-            = new ComparerBuilder(c =>
-                  c.SetDefaultCyclesDetection(false))
-              .For<LightStruct>()
-              .GetComparer();
+        private static readonly IComparer<LightStruct> ILLightenComparer = new ComparerBuilder(c => c
+            .SetDefaultCyclesDetection(false))
+            .For<LightStruct>()
+            .GetComparer();
 
-        private static readonly IComparer<LightStruct> NitoComparer
-            = Nito.Comparers.ComparerBuilder
-                  .For<LightStruct>()
-                  .OrderBy(x => x.Key)
-                  .ThenBy(x => x.Value);
+        private static readonly IComparer<LightStruct> NitoComparer = Nito.Comparers.ComparerBuilder
+            .For<LightStruct>()
+            .OrderBy(x => x.Key)
+            .ThenBy(x => x.Value);
 
         public LightStructBenchmark() : base(Native, ILLightenComparer, NitoComparer) { }
     }

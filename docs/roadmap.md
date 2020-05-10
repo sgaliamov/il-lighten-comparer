@@ -89,7 +89,7 @@
 - [x] implement `GetHashCode`
 - [x] implement `Equals`
 - [x] implementation for `IEnumarable`
-- [ ] create tests
+- [x] create tests
 
 ## Phase 7 Improvements
 

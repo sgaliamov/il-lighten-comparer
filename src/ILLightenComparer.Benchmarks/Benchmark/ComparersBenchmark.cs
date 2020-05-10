@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
 using ILLightenComparer.Tests.Utilities;
@@ -19,7 +20,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
         private readonly T[] _one = new T[N];
         private readonly T[] _other = new T[N];
 
-        // ReSharper disable once NotAccessedField.Local
+        [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "<Pending>")]
         private int _out;
 
         protected ComparersBenchmark(IComparer<T> manual, IComparer<T> il, IComparer<T> nito)
