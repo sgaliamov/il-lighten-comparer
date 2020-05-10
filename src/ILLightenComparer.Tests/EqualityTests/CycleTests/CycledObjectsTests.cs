@@ -4,7 +4,7 @@ using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Force.DeepCloner;
-using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
+using ILLightenComparer.Tests.EqualityTests.CycleTests.Samples;
 using Xunit;
 
 namespace ILLightenComparer.Tests.EqualityTests.CycleTests
@@ -67,25 +67,23 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             }
         }
 
-        //[Fact]
-        //public void Cross_reference_should_not_fail()
-        //{
-        //    var other = new SelfSealed();
-        //    var one = new SelfSealed {
-        //        First = other,
-        //        Second = other
-        //    };
-        //    other.First = one;
-        //    other.Second = one;
+        [Fact]
+        public void Cross_reference_should_fail()
+        {
+            var x = new SelfSealed();
+            var y = new SelfSealed {
+                First = x,
+                Second = x
+            };
+            x.First = y;
+            x.Second = y;
 
-        //    var expected = SelfSealed.Comparer.Equals(one, other);
-        //    var actual = ComparerSelfSealed.Equals(one, other);
-
-        //    using (new AssertionScope()) {
-        //        expected.Should().Be(0);
-        //        actual.Should().Be(expected);
-        //    }
-        //}
+            using (new AssertionScope()) {
+                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.Equals(x, y));
+                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.GetHashCode(x));
+                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.GetHashCode(y));
+            }
+        }
 
         //[Fact]
         //public void Cycle_detection_in_multiple_threads_works()
@@ -302,7 +300,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
         //    }
         //}
 
-        private IEqualityComparer<SelfSealed> ComparerSelfSealed => _builder.For<SelfSealed>(c => c.IgnoreMember(o => o.Id)).GetEqualityComparer();
+        private IEqualityComparer<SelfSealed> ComparerSelfSealed => _builder.For<SelfSealed>().GetEqualityComparer();
         private readonly Fixture _fixture;
         private IEqualityComparer<SelfOpened> ComparerSelfOpened => _builder.For<SelfOpened>().GetEqualityComparer();
         private IEqualityComparer<OneSealed> ComparerForOneSealed => _builder.For<OneSealed>().GetEqualityComparer();
