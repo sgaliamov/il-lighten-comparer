@@ -15,6 +15,6 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples.Nested
                 && Value == other.Value;
         }
 
-        public override int GetHashCode() => HashCodeCombiner.Combine<object>(Text, Value, Key);
+        public override int GetHashCode() => HashCodeCombiner.Combine<object>(Value, Key, Text);
     }
 }

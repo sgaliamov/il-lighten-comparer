@@ -4,6 +4,7 @@ using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Force.DeepCloner;
 using ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples;
 using ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples.Nested;
 using ILLightenComparer.Tests.Utilities;
@@ -64,26 +65,35 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
         [Fact]
         public void Object_field_comparison() => TestOneMember(x => new AbstractMembers { ObjectField = x }, Constants.BigCount);
 
-        //[Fact]
-        //public void Replaced_member_does_not_break_comparison()
-        //{
-        //    var one = new AbstractMembers {
-        //        NotSealedProperty = _fixture.Create<BaseNestedObject>()
-        //    };
-        //    _comparer.Compare(one, one.DeepClone()).Should().Be(0);
+        [Fact]
+        public void Replaced_member_does_not_break_comparison()
+        {
+            var one = new AbstractMembers {
+                NotSealedProperty = _fixture.Create<BaseNestedObject>()
+            };
+            _comparer.Equals(one, one.DeepClone()).Should().BeTrue();
 
-        //    for (var i = 0; i < 100; i++) {
-        //        one.NotSealedProperty = _fixture.Create<AnotherNestedObject>();
-        //        var other = new AbstractMembers {
-        //            NotSealedProperty = _fixture.Create<AnotherNestedObject>()
-        //        };
+            for (var i = 0; i < 100; i++) {
+                one.NotSealedProperty = _fixture.Create<AnotherNestedObject>();
+                var other = new AbstractMembers {
+                    NotSealedProperty = _fixture.Create<AnotherNestedObject>()
+                };
 
-        //        var expected = AbstractMembers.Comparer.Compare(one, other).Normalize();
-        //        var actual = _comparer.Compare(one, other).Normalize();
+                var expectedHashX = one.GetHashCode();
+                var expectedHashY = other.GetHashCode();
+                var expectedEquals = one.Equals(other);
 
-        //        actual.Should().Be(expected);
-        //    }
-        //}
+                var hashX = _comparer.GetHashCode(one);
+                var hashY = _comparer.GetHashCode(other);
+                var equals = _comparer.Equals(one, other);
+
+                using (new AssertionScope()) {
+                    equals.Should().Be(expectedEquals);
+                    hashX.Should().Be(expectedHashX);
+                    hashY.Should().Be(expectedHashY);
+                }
+            }
+        }
 
         //[Fact]
         //public void When_left_member_is_null_comparison_produces_negative_value()
