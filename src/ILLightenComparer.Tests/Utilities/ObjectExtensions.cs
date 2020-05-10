@@ -71,15 +71,15 @@ namespace ILLightenComparer.Tests.Utilities
             }
         }
 
-        public static unsafe long GetAddress<T>(this T value)
+        public static unsafe IntPtr GetAddress<T>(this T value)
         {
             if (value is null) {
-                return 0;
+                return default;
             }
 
             var reference = __makeref(value);
 
-            return (long)**(IntPtr**)(&reference);
+            return **(IntPtr**)(&reference);
         }
     }
 }

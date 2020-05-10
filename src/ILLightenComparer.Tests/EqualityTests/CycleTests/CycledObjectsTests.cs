@@ -52,18 +52,14 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             x.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
             y.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
 
-            var expectedHashX = x.GetHashCode();
-            var expectedHashY = y.GetHashCode();
-            var expectedEquals = x.Equals(y);
-
             var hashX = ComparerForOneSealed.GetHashCode(x);
             var hashY = ComparerForOneSealed.GetHashCode(y);
             var equals = ComparerForOneSealed.Equals(x, y);
 
             using (new AssertionScope()) {
-                equals.Should().Be(expectedEquals);
-                hashX.Should().Be(expectedHashX);
-                hashY.Should().Be(expectedHashY);
+                equals.Should().BeFalse();
+                hashX.Should().NotBe(0);
+                hashY.Should().NotBe(0);
             }
         }
 
