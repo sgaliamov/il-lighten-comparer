@@ -1,5 +1,7 @@
 ﻿using BenchmarkDotNet.Running;
 using ILLightenComparer.Benchmarks.Benchmark;
+using ILLightenComparer.Benchmarks.Benchmark.Comparer;
+using ILLightenComparer.Benchmarks.Benchmark.EqualityComparer;
 
 namespace ILLightenComparer.Benchmarks
 {
@@ -7,8 +9,15 @@ namespace ILLightenComparer.Benchmarks
     {
         public static void Main()
         {
-            BenchmarkRunner.Run<Benchmark.Comparer.LightStructComparerBenchmark>();
-            BenchmarkRunner.Run<Benchmark.Comparer.RegularModelBenchmark>();
+            BenchmarkRunner.Run<LightStructComparerBenchmark>();
+            BenchmarkRunner.Run<RegularModelComparerBenchmark>();
+
+            BenchmarkRunner.Run<RegularModelEqualityBenchmark>();
+            BenchmarkRunner.Run<RegularModelEqualityBenchmark>();
+
+            BenchmarkRunner.Run<LightStructEqualityBenchmark>();
+            BenchmarkRunner.Run<LightStructHashBenchmark>();
+
             BenchmarkRunner.Run<CompareIntegral>();
             BenchmarkRunner.Run<EqualityBenchmark>();
         }
