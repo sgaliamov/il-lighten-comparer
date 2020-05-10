@@ -5,7 +5,7 @@ using AutoFixture;
 using BenchmarkDotNet.Attributes;
 using ILLightenComparer.Tests.Utilities;
 
-namespace ILLightenComparer.Benchmarks.Benchmark
+namespace ILLightenComparer.Benchmarks.Benchmark.Comparer
 {
     [MedianColumn]
     public abstract class ComparersBenchmark<T>

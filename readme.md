@@ -19,14 +19,14 @@
 
 ## [Benchmarks](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Program.cs)
 
-With regular models like [MovieModel](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Benchmark/MovieModel.cs) generated comparer is criminally close to manual implementation.
+With regular models like [MovieModel](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Models/MovieModel.cs) generated comparer is criminally close to manual implementation.
 
 | Method                |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
 | --------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
 | IL Lighten Comparer   | 12.90 ms | 0.2700 ms | 0.3214 ms | 12.77 ms |  1.00 |    0.00 |
 | Manual implementation | 12.47 ms | 0.2760 ms | 0.7785 ms | 12.15 ms |  1.00 |    0.09 |
 
-With light optimized structures like [LightStruct](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Benchmark/LightStruct.cs) `ILLightenComparer` able to give serious performance boost.
+With light optimized structures like [LightStruct](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Models/LightStruct.cs) `ILLightenComparer` able to give serious performance boost.
 
 | Method                |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
 | --------------------- | -------: | --------: | --------: | -------: | ----: | ------: |

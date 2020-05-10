@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using ILLightenComparer.Benchmarks.Models;
 using Nito.Comparers;
 
-namespace ILLightenComparer.Benchmarks.Benchmark
+namespace ILLightenComparer.Benchmarks.Benchmark.Comparer
 {
-    public class LightStructBenchmark : ComparersBenchmark<LightStruct>
+    public class LightStructComparerBenchmark : ComparersBenchmark<LightStruct>
     {
-        private static readonly IComparer<LightStruct> Native = LightStruct.Comparer;
+        private static readonly IComparer<LightStruct> Native = LightStructComparer.Instance;
 
         private static readonly IComparer<LightStruct> ILLightenComparer = new ComparerBuilder(c => c
             .SetDefaultCyclesDetection(false))
@@ -17,6 +18,6 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             .OrderBy(x => x.Key)
             .ThenBy(x => x.Value);
 
-        public LightStructBenchmark() : base(Native, ILLightenComparer, NitoComparer) { }
+        public LightStructComparerBenchmark() : base(Native, ILLightenComparer, NitoComparer) { }
     }
 }
