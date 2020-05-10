@@ -11,7 +11,7 @@
 7. Generated methods should follow a possible manual implementation as much as possible. So, if types of arguments are not matched it should fail with `ArgumentException`. If one of types is cast-able to another, an object with more members should be considered as bigger object, because if base parts are same, extra parts of child class add additional weight.
 8. Visitor Pattern can be applied when decision can be done on design stage.
 9. Generated `Compare` method should not do any reflection on runtime.
-10. Equality is defined by semantic, that why empty objects are equal. And hash is overwritten.
+10. Equality is defined by semantic, that why empty objects are equal. And hashing behavior is overwritten.
 
 ## Cycle detection
 
