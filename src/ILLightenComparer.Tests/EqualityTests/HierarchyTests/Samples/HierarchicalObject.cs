@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples.Nested;
 using ILLightenComparer.Tests.Samples;
 
 namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples
 {
-    public sealed class HierarchicalObject : IEquatable<HierarchicalObject>
+    public sealed class HierarchicalObject
     {
         public SampleEqualityBaseObject<EnumSmall> ComparableField;
         public SealedNestedObject NestedField;
