@@ -4,7 +4,7 @@ using Nito.Comparers;
 
 namespace ILLightenComparer.Benchmarks.Benchmark.EqualityComparer
 {
-    public class LightStructComparerBenchmark : EqualityComparersBenchmark<LightStruct>
+    public class LightStructEqualityBenchmark : EqualityComparersBenchmark<LightStruct>
     {
         private static readonly IEqualityComparer<LightStruct> Native = LightStructEqualityComparer.Instance;
 
@@ -18,6 +18,6 @@ namespace ILLightenComparer.Benchmarks.Benchmark.EqualityComparer
             .OrderBy(x => x.Key)
             .ThenBy(x => x.Value);
 
-        public LightStructComparerBenchmark() : base(Native, ILLightenComparer, NitoComparer) { }
+        public LightStructEqualityBenchmark() : base(Native, ILLightenComparer, NitoComparer) { }
     }
 }
