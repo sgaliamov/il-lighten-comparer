@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ILLightenComparer.Tests.EqualityComparers;
+﻿using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples.Nested;
 
 namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples
@@ -17,13 +16,12 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests.Samples
         public bool Equals(AbstractMembers other)
         {
             return other != null
-                && EqualityComparer<INestedObject>.Default.Equals(InterfaceField, other.InterfaceField)
-                && EqualityComparer<object>.Default.Equals(ObjectField, other.ObjectField)
-                && EqualityComparer<AbstractNestedObject>.Default.Equals(AbstractProperty, other.AbstractProperty)
-                && EqualityComparer<BaseNestedObject>.Default.Equals(NotSealedProperty, other.NotSealedProperty);
+                && (InterfaceField?.Equals(other.InterfaceField) ?? other.InterfaceField is null)
+                && (ObjectField?.Equals(other.ObjectField) ?? other.ObjectField is null)
+                && (AbstractProperty?.Equals((object)other.AbstractProperty) ?? other.AbstractProperty is null)
+                && (NotSealedProperty?.Equals((object)other.NotSealedProperty) ?? other.NotSealedProperty is null);
         }
 
-        public override int GetHashCode() => HashCodeCombiner
-            .Combine(InterfaceField, ObjectField, AbstractProperty, NotSealedProperty);
+        public override int GetHashCode() => HashCodeCombiner.Combine(InterfaceField, ObjectField, AbstractProperty, NotSealedProperty);
     }
 }
