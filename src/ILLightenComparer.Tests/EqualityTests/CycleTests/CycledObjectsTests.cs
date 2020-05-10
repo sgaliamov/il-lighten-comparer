@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Force.DeepCloner;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
 using Xunit;
 
@@ -41,20 +42,30 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             }
         }
 
-        //[Fact]
-        //public void Comparison_with_cycle_on_types_level_only()
-        //{
-        //    var one = _fixture.Create<OneSealed>();
-        //    var other = one.DeepClone();
-        //    other.Value = (sbyte)(one.Value + 1);
-        //    one.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
-        //    other.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
+        [Fact]
+        public void Comparison_with_cycle_on_types_level_only()
+        {
+            var x = _fixture.Create<OneSealed>();
+            var y = x.DeepClone();
 
-        //    var expected = one.Two.Three.One.Value.CompareTo(other.Two.Three.One.Value);
-        //    var actual = ComparerForOneSealed.Equals(one, other);
+            y.Value = (sbyte)(x.Value + 1);
+            x.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
+            y.Two.Three.One = _fixture.Build<OneSealed>().Without(x => x.Two).Create();
 
-        //    actual.Should().Be(expected);
-        //}
+            var expectedHashX = x.GetHashCode();
+            var expectedHashY = y.GetHashCode();
+            var expectedEquals = x.Equals(y);
+
+            var hashX = ComparerForOneSealed.GetHashCode(x);
+            var hashY = ComparerForOneSealed.GetHashCode(y);
+            var equals = ComparerForOneSealed.Equals(x, y);
+
+            using (new AssertionScope()) {
+                equals.Should().Be(expectedEquals);
+                hashX.Should().Be(expectedHashX);
+                hashY.Should().Be(expectedHashY);
+            }
+        }
 
         //[Fact]
         //public void Cross_reference_should_not_fail()
