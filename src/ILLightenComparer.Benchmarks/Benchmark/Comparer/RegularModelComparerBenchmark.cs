@@ -4,7 +4,7 @@ using Nito.Comparers;
 
 namespace ILLightenComparer.Benchmarks.Benchmark.Comparer
 {
-    public class RegularModelBenchmark : ComparersBenchmark<MovieModel>
+    public class RegularModelComparerBenchmark : ComparersBenchmark<MovieModel>
     {
         private static readonly IComparer<MovieModel> Manual = MovieModelComparer.Instance;
 
@@ -23,6 +23,6 @@ namespace ILLightenComparer.Benchmarks.Benchmark.Comparer
             .ThenBy(x => x.ReleaseDate)
             .ThenBy(x => x.Title);
 
-        public RegularModelBenchmark() : base(Manual, ILLightenComparer, NitoComparer) { }
+        public RegularModelComparerBenchmark() : base(Manual, ILLightenComparer, NitoComparer) { }
     }
 }
