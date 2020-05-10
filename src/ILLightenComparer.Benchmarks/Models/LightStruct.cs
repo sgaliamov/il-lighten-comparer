@@ -27,4 +27,24 @@ namespace ILLightenComparer.Benchmarks.Models
             return _collectionComparer.Compare(x.Value, y.Value);
         }
     }
+
+    internal sealed class LightStructEqualityComparer : IEqualityComparer<LightStruct>
+    {
+        public static IEqualityComparer<LightStruct> Instance { get; } = new LightStructEqualityComparer();
+
+        public bool Equals([AllowNull] LightStruct x, [AllowNull] LightStruct y) =>
+            x.Key == y.Key
+            && EqualityComparer<char[]>.Default.Equals(x.Value, y.Value);
+
+        public int GetHashCode([DisallowNull] LightStruct obj)
+        {
+            var hash = 0x1505L;
+            hash = ((hash << 5) + hash) ^ obj.Key;
+            for (int i = 0; i < obj.Value.Length; i++) {
+                hash = ((hash << 5) + hash) ^ obj.Value[i];
+            }
+
+            return (int)hash;
+        }
+    }
 }

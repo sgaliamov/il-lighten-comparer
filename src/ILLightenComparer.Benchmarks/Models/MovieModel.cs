@@ -123,4 +123,50 @@ namespace ILLightenComparer.Benchmarks.Models
             return string.CompareOrdinal(x.Title, y.Title);
         }
     }
+
+    internal sealed class MovieModelEqualityComparer : IEqualityComparer<MovieModel>
+    {
+        public static IEqualityComparer<MovieModel> Instance { get; } = new MovieModelEqualityComparer();
+
+        public bool Equals([AllowNull] MovieModel one, [AllowNull] MovieModel other) =>
+            one != null && other != null
+            && EqualityComparer<Dictionary<int, string>>.Default.Equals(one.Actors.Actors, other.Actors.Actors)
+            && one.Genre == other.Genre
+            && one.Id == other.Id
+            && one.Price == other.Price
+            && one.ReleaseDate == other.ReleaseDate
+            && one.Title == other.Title;
+
+        public int GetHashCode([DisallowNull] MovieModel obj)
+        {
+            var hash = 0x1505L;
+            hash = ((hash << 5) + hash) ^ ActorsCollectionEqualityComparer.Instance.GetHashCode(obj.Actors);
+            hash = ((hash << 5) + hash) ^ obj.Genre.GetHashCode();
+            hash = ((hash << 5) + hash) ^ obj.Id.GetHashCode();
+            hash = ((hash << 5) + hash) ^ obj.Price.GetHashCode();
+            hash = ((hash << 5) + hash) ^ obj.ReleaseDate.GetHashCode();
+            hash = ((hash << 5) + hash) ^ obj.Title.GetHashCode();
+
+            return (int)hash;
+        }
+    }
+
+    internal sealed class ActorsCollectionEqualityComparer : IEqualityComparer<ActorsCollection>
+    {
+        public static IEqualityComparer<ActorsCollection> Instance { get; } = new ActorsCollectionEqualityComparer();
+
+        public bool Equals([AllowNull] ActorsCollection x, [AllowNull] ActorsCollection y) =>
+            EqualityComparer<Dictionary<int, string>>.Default.Equals(x.Actors, y.Actors);
+
+        public int GetHashCode([DisallowNull] ActorsCollection obj)
+        {
+            var hash = 0x1505L;
+            foreach (var item in obj.Actors) {
+                hash = ((hash << 5) + hash) ^ item.Key.GetHashCode();
+                hash = ((hash << 5) + hash) ^ item.Value.GetHashCode();
+            }
+
+            return (int)hash;
+        }
+    }
 }
