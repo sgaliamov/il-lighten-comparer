@@ -14,11 +14,10 @@ namespace ILLightenComparer.Comparer
 {
     internal sealed class ComparisonResolver : IResolver
     {
+        private static readonly MethodInfo DelayedCompare = typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
         private static readonly MethodInfo StringCompareMethod = typeof(string).GetMethod(
             nameof(string.Compare),
             new[] { typeof(string), typeof(string), typeof(StringComparison) });
-
-        private static readonly MethodInfo DelayedCompare = typeof(IComparerContext).GetMethod(nameof(IComparerContext.DelayedCompare));
 
         private readonly IReadOnlyCollection<Func<IVariable, IComparisonEmitter>> _comparisonFactories;
         private readonly IConfigurationProvider _configuration;
@@ -35,13 +34,13 @@ namespace ILLightenComparer.Comparer
                 (IVariable variable) => StringsComparison.Create(StringCompareMethod, CustomEmitters.EmitReturnIfTruthy, _configuration, variable),
                 ComparablesComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
+                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
+                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable),
                 (IVariable variable) => IndirectComparison.Create(
                     CustomEmitters.EmitReturnIfTruthy,
                     variableType => context.GetStaticCompareMethodInfo(variableType),
                     DelayedCompare,
-                    variable),
-                (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
-                (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable)
+                    variable)
             };
         }
 

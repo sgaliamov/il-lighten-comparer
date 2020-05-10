@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Illuminator.Extensions;
 using Newtonsoft.Json;
 
 namespace ILLightenComparer.Tests.Utilities
@@ -68,6 +69,17 @@ namespace ILLightenComparer.Tests.Utilities
                 result = selector(item, result);
                 yield return result;
             }
+        }
+
+        public static unsafe long GetAddress<T>(this T value)
+        {
+            if (value is null) {
+                return 0;
+            }
+
+            var reference = __makeref(value);
+
+            return (long)**(IntPtr**)(&reference);
         }
     }
 }

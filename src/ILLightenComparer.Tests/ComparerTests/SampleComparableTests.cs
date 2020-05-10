@@ -15,26 +15,17 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Compare_comparable_objects()
         {
-            Test(typeof(ComparableBaseObject<>), nameof(ComparableBaseObject<object>.Comparer), false);
-            Test(typeof(ComparableChildObject<>), nameof(ComparableChildObject<object>.ChildComparer), false);
-            Test(typeof(ComparableBaseObject<>), nameof(ComparableBaseObject<object>.Comparer), true);
-            Test(typeof(ComparableChildObject<>), nameof(ComparableChildObject<object>.ChildComparer), true);
-
-            foreach (var item in TestTypes.Types) {
-                typeof(ComparableBaseObject<>)
-                    .MakeGenericType(item.Key)
-                    .GetField(nameof(ComparableBaseObject<object>.UsedCompareTo), BindingFlags.Public | BindingFlags.Static)
-                    .GetValue(null)
-                    .Should()
-                    .Be(true);
-            }
+            Test(typeof(ComparableBaseObject<>), false);
+            Test(typeof(ComparableChildObject<>), false);
+            Test(typeof(ComparableBaseObject<>), true);
+            Test(typeof(ComparableChildObject<>), true);
         }
 
         [Fact]
         public void Compare_comparable_structs()
         {
-            Test(typeof(ComparableStruct<>), nameof(ComparableStruct<object>.Comparer), false);
-            Test(typeof(ComparableStruct<>), nameof(ComparableStruct<object>.Comparer), true);
+            Test(typeof(ComparableStruct<>), false);
+            Test(typeof(ComparableStruct<>), true);
         }
 
         [Fact]
@@ -78,25 +69,46 @@ namespace ILLightenComparer.Tests.ComparerTests
             ComparableChildObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
         }
 
-        private static void Test(Type comparableGenericType, string comparerName, bool makeNullable)
+        private static void Test(Type comparableGenericType, bool makeNullable)
         {
             var types = makeNullable ? TestTypes.NullableTypes : TestTypes.Types;
-            Parallel.ForEach(
-                types,
-                item => {
-                    var (type, referenceComparer) = item;
-                    var objectType = type;
-                    var itemComparer = referenceComparer;
 
-                    var comparableType = comparableGenericType.MakeGenericType(objectType);
-                    if (itemComparer != null) {
-                        comparableType
-                            .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
-                            .SetValue(null, itemComparer);
-                    }
+            Parallel.ForEach(types, item => {
+                var (objectType, referenceComparer) = item;
+                var itemComparer = referenceComparer;
+                var comparableType = comparableGenericType.MakeGenericType(objectType);
 
-                    new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
-                });
+                if (itemComparer != null) {
+                    typeof(ComparableStruct<>)
+                        .MakeGenericType(objectType)
+                        .GetField(nameof(ComparableStruct<object>.Comparer), BindingFlags.Public | BindingFlags.Static)
+                        .SetValue(null, itemComparer);
+
+                    typeof(ComparableBaseObject<>)
+                        .MakeGenericType(objectType)
+                        .GetField(nameof(ComparableBaseObject<object>.Comparer), BindingFlags.Public | BindingFlags.Static)
+                        .SetValue(null, itemComparer);
+
+                    typeof(ComparableChildObject<>)
+                        .MakeGenericType(objectType)
+                        .GetField(nameof(ComparableChildObject<object>.ChildComparer), BindingFlags.Public | BindingFlags.Static)
+                        .SetValue(null, itemComparer);
+                }
+
+                comparableType
+                    .GetField("UsedCompareTo", BindingFlags.Public | BindingFlags.Static)?
+                    .SetValue(null, false);
+
+                new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
+
+                if (comparableType.IsSealedType()) {
+                    comparableType
+                        .GetField("UsedCompareTo", BindingFlags.Public | BindingFlags.Static)
+                        .GetValue(null)
+                        .Should()
+                        .Be(true, comparableType.FullName);
+                }
+            });
         }
     }
 }

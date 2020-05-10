@@ -13,6 +13,12 @@ namespace ILLightenComparer.Tests.EqualityTests
         static TestTypes()
         {
             Types = new Dictionary<Type, IEqualityComparer> {
+                [typeof(object)] = new CustomizableEqualityComparer<object>((x, y) => {
+                    if (x is null) {
+                        return y is null;
+                    }
+                    return y != null;
+                }, _ => 0),
                 [typeof(sbyte)] = null,
                 [typeof(byte)] = null,
                 [typeof(char)] = null,

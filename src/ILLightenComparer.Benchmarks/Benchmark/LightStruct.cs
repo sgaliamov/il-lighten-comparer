@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using ILLightenComparer.Tests.Comparers;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
+    [SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "<Pending>")]
     public struct LightStruct
     {
         public byte Key;

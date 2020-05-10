@@ -25,7 +25,7 @@ namespace ILLightenComparer.Comparer
             var needReferenceComparison =
                  !objectType.IsValueType
                  && !objectType.IsSealedComparable() // ComparablesComparison do this check
-                 && !objectType.ImplementsGeneric(typeof(IEnumerable<>)); // collections do reference comparisons anyway
+                 && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
                 il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));

@@ -34,11 +34,11 @@ namespace ILLightenComparer.Equality.Hashers
             IConfigurationProvider configuration,
             IVariable variable)
         {
-            if (variable.VariableType.IsHierarchical() && variable is ArgumentVariable) {
-                return new MembersHasher(resolver, membersProvider, configuration, variable);
+            if (variable.VariableType == typeof(object) || !variable.VariableType.IsHierarchical() || !(variable is ArgumentVariable)) {
+                return null;
             }
 
-            return null;
+            return new MembersHasher(resolver, membersProvider, configuration, variable);
         }
 
         public ILEmitter Emit(ILEmitter il)

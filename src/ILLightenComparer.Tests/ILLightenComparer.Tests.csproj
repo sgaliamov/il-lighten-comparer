@@ -5,6 +5,7 @@
     <TargetFrameworks Condition="'$(Configuration)'=='Release'">netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ServerGarbageCollection>true</ServerGarbageCollection>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

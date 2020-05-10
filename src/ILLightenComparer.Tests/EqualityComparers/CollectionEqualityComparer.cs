@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.EqualityComparers
 {
@@ -16,7 +17,7 @@ namespace ILLightenComparer.Tests.EqualityComparers
         public CollectionEqualityComparer(IEqualityComparer<TItem> itemComparer = null, bool sort = false, IComparer<TItem> sortComparer = null)
         {
             _sort = sort;
-            _sortComparer = sortComparer ?? Comparer<TItem>.Default;
+            _sortComparer = sortComparer ?? Helper.DefaultComparer<TItem>();
             _itemComparer = itemComparer ?? EqualityComparer<TItem>.Default;
             _seed.Value = HashCodeCombiner.Seed;
         }

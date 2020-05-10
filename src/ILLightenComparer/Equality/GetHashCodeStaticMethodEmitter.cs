@@ -21,7 +21,7 @@ namespace ILLightenComparer.Equality
         {
             using var il = staticMethodBuilder.CreateILEmitter();
 
-            var isCollection = objectType.ImplementsGeneric(typeof(IEnumerable<>));
+            var isCollection = objectType.ImplementsGenericInterface(typeof(IEnumerable<>));
             var needNullCheck = !objectType.IsValueType && !isCollection; // collections do null check anyway
 
             if (needNullCheck) {

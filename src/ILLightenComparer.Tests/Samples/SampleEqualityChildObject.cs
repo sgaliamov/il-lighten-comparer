@@ -7,7 +7,7 @@ namespace ILLightenComparer.Tests.Samples
 {
     public sealed class SampleEqualityChildObject<TMember> : SampleEqualityBaseObject<TMember>, IComparable<SampleEqualityChildObject<TMember>>
     {
-        private readonly static IComparer<TMember> ChildComparer = Comparer<TMember>.Default;
+        private readonly static IComparer<TMember> ChildComparer = Helper.DefaultComparer<TMember>();
         public static IEqualityComparer<TMember> ChildEqualityComparer = EqualityComparer<TMember>.Default;
 
         public TMember ChildField;
@@ -15,7 +15,7 @@ namespace ILLightenComparer.Tests.Samples
 
         public override string ToString() => this.ToJson();
 
-        public override bool Equals(object obj) => Equals(obj as SampleEqualityChildObject<TMember>);
+        public override bool Equals(object obj) => Equals((SampleEqualityChildObject<TMember>)obj);
 
         public bool Equals(SampleEqualityChildObject<TMember> other) =>
             other != null

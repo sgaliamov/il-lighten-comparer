@@ -32,7 +32,7 @@ namespace ILLightenComparer.Shared.Comparisons
             IVariable variable)
         {
             var variableType = variable.VariableType;
-            if (!variableType.IsHierarchical() || (variable is ArgumentVariable)) {
+            if (variableType != typeof(object) && variable is ArgumentVariable) {
                 return null;
             }
 

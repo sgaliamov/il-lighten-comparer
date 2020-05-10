@@ -61,7 +61,7 @@ namespace ILLightenComparer.Shared.Comparisons
             IVariable variable)
         {
             var variableType = variable.VariableType;
-            if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
+            if (variableType.ImplementsGenericInterface(typeof(IEnumerable<>)) && !variableType.IsArray) {
                 return new EnumerablesComparison(comparisons, arrayComparisonEmitter, emitCheckIfLoopsAreDone, configuration, variable);
             }
 

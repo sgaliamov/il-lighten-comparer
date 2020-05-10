@@ -14,26 +14,21 @@ namespace ILLightenComparer.Tests.EqualityTests
     public sealed class BasicTests
     {
         [Fact]
-        public void Basic_test()
+        public void Objects_are_identical_because_they_have_no_members()
         {
-            var x = new SampleEqualityChildObject<EnumSmall?> { Field = null, Property = EnumSmall.First };
-            var y = new SampleEqualityChildObject<EnumSmall?> { Field = EnumSmall.One, Property = EnumSmall.First };
+            var x = new object();
+            var y = new object();
 
-            var referenceComparer = EqualityComparer<SampleEqualityChildObject<EnumSmall?>>.Default;
-            var expectedHashX = referenceComparer.GetHashCode(x);
-            var expectedHashY = referenceComparer.GetHashCode(y);
-            var expectedEquals = referenceComparer.Equals(x, y);
+            var comparer = new ComparerBuilder().GetEqualityComparer<object>();
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityChildObject<EnumSmall?>>();
-
+            var actual = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
-            var equals = comparer.Equals(x, y);
 
             using (new AssertionScope()) {
-                equals.Should().Be(expectedEquals);
-                hashX.Should().Be(expectedHashX);
-                hashY.Should().Be(expectedHashY);
+                actual.Should().BeTrue();
+                hashX.Should().Be(0, "Hash of empty collection is 0.");
+                hashY.Should().Be(0, "Hash of empty collection is 0.");
             }
         }
 

@@ -48,7 +48,11 @@ namespace ILLightenComparer.Equality
             var xType = x.GetType();
             var yType = y.GetType();
             if (xType != yType) {
-                throw new ArgumentException($"Argument types {xType} and {yType} are not matched.");
+                return false;
+            }
+
+            if (xType == typeof(object)) {
+                return true;
             }
 
             var compareMethod = GetCompiledStaticEqualsMethod(xType);
@@ -68,6 +72,10 @@ namespace ILLightenComparer.Equality
             }
 
             var actualType = comparable.GetType();
+
+            if (actualType == typeof(object)) {
+                return 0; // todo: 1. rethink empty objects comparison
+            }
 
             var hashMethod = GetCompiledStaticHashMethod(actualType);
 

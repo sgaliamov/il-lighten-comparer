@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Comparers
 {
@@ -8,7 +9,7 @@ namespace ILLightenComparer.Tests.Comparers
     {
         private readonly IComparer<TValue> _valueComparer;
 
-        public NullableComparer(IComparer<TValue> valueComparer = null) => _valueComparer = valueComparer ?? Comparer<TValue>.Default;
+        public NullableComparer(IComparer<TValue> valueComparer = null) => _valueComparer = valueComparer ?? Helper.DefaultComparer<TValue>();
 
         public int Compare(object x, object y)
         {

@@ -49,7 +49,7 @@ namespace ILLightenComparer.Equality.Hashers
         public static EnumerablesHasher Create(HasherResolver resolver, IConfigurationProvider configuration, IVariable variable)
         {
             var variableType = variable.VariableType;
-            if (variableType.ImplementsGeneric(typeof(IEnumerable<>)) && !variableType.IsArray) {
+            if (variableType.ImplementsGenericInterface(typeof(IEnumerable<>)) && !variableType.IsArray) {
                 return new EnumerablesHasher(resolver, configuration, variable);
             }
 

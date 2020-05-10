@@ -9,6 +9,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
@@ -21,23 +22,19 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         public void GenericTest(Type type, IComparer referenceComparer, bool sort, int times, int count = Constants.BigCount)
         {
-            var method = type.GetOrAddProperty($"Comparer_{nameof(GenericTest)}", () => {
-                var methodInfo = GetTestMethod(type);
-                return (Action<IComparerBuilder, IComparer, int, int>)methodInfo.CreateDelegate(typeof(Action<IComparerBuilder, IComparer, int, int>));
-            });
-
+            var method = type.GetOrAddProperty($"Comparer_{nameof(GenericTest)}", () => GetTestMethod(type));
             var builder = _comparerBuilder ?? new ComparerBuilder();
             builder.Configure(c => c.SetDefaultCollectionsOrderIgnoring(sort));
-            method(builder, referenceComparer, times, count);
+            method.Invoke(null, new object[] { builder, referenceComparer, times, count });
         }
 
         private static MethodInfo GetTestMethod(Type objType) => typeof(GenericTests)
             .GetGenericMethod(nameof(Test), BindingFlags.Static | BindingFlags.NonPublic)
             .MakeGenericMethod(objType);
 
-        private static void Test<T>(IComparerProvider comparersBuilder, IComparer referenceComparer, int times, int count)
+        private static void Test<T>(IComparerProvider comparersBuilder, IComparer<T> referenceComparer, int times, int count)
         {
-            if (referenceComparer == null) { referenceComparer = Comparer<T>.Default; }
+            if (referenceComparer == null) { referenceComparer = Helper.DefaultComparer<T>(); }
 
             var typedComparer = comparersBuilder.GetComparer<T>();
 
@@ -55,7 +52,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             );
         }
 
-        private static void Comparison_of_null_with_object_produces_negative_value<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        private static void Comparison_of_null_with_object_produces_negative_value<T>(IComparer<T> referenceComparer, IComparer<T> typedComparer)
         {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
@@ -69,7 +66,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void Comparison_of_object_with_null_produces_positive_value<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        private static void Comparison_of_object_with_null_produces_positive_value<T>(IComparer<T> referenceComparer, IComparer<T> typedComparer)
         {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
@@ -83,7 +80,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void Comparison_when_both_null_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        private static void Comparison_when_both_null_produces_0<T>(IComparer<T> referenceComparer, IComparer<T> typedComparer)
         {
             if (!typeof(T).IsClass && !typeof(T).IsNullable()) {
                 return;
@@ -95,7 +92,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void Comparison_with_itself_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        private static void Comparison_with_itself_produces_0<T>(IComparer<T> referenceComparer, IComparer<T> typedComparer)
         {
             var obj = Fixture.Create<T>();
 
@@ -105,7 +102,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void Comparison_with_same_produces_0<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        private static void Comparison_with_same_produces_0<T>(IComparer<T> referenceComparer, IComparer<T> typedComparer)
         {
             var obj = Fixture.Create<T>();
             var clone = obj.DeepClone();
@@ -116,7 +113,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void Mutate_class_members_and_test_comparison<T>(IComparer referenceComparer, IComparer<T> typedComparer)
+        private static void Mutate_class_members_and_test_comparison<T>(IComparer<T> referenceComparer, IComparer<T> typedComparer)
         {
             if (typeof(T).IsValueType) { return; }
 
@@ -131,7 +128,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             }
         }
 
-        private static void Sorting_must_work_the_same_as_for_reference_comparer<T>(IComparer referenceComparer, IComparer<T> typedComparer, int count)
+        private static void Sorting_must_work_the_same_as_for_reference_comparer<T>(IComparer<T> referenceComparer, IComparer<T> typedComparer, int count)
         {
             var original = CreateMany<T>(count).ToArray();
 
@@ -141,13 +138,11 @@ namespace ILLightenComparer.Tests.ComparerTests
             Array.Sort(copy0, referenceComparer);
             Array.Sort(copy1, typedComparer);
 
-            using (new AssertionScope()) {
-                copy1.ShouldBeSameOrder(copy0);
-                copy1.ShouldBeSameOrder(copy0);
-            }
+            copy1.ShouldBeSameOrder(copy0);
+            copy1.ShouldBeSameOrder(copy0);
         }
 
-        private static void Comparisons_work_identical<T>(IComparer referenceComparer, IComparer<T> typedComparer, int times)
+        private static void Comparisons_work_identical<T>(IComparer<T> referenceComparer, IComparer<T> typedComparer, int times)
         {
             var type = typeof(T);
             for (var i = 0; i < times; i++) {

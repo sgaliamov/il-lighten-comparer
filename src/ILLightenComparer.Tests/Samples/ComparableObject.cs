@@ -8,7 +8,7 @@ namespace ILLightenComparer.Tests.Samples
     [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "Test class")]
     public sealed class ComparableObject<TMember> : IComparable<ComparableObject<TMember>>
     {
-        private readonly static IComparer<TMember> Comparer = Comparer<TMember>.Default;
+        private readonly static IComparer<TMember> Comparer = Helper.DefaultComparer<TMember>();
 
         public TMember Field;
         public TMember Property { get; set; }

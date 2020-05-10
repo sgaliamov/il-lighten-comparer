@@ -71,11 +71,11 @@ namespace ILLightenComparer.Extensions
         public static bool IsSealedType(this Type type) => type.IsValueType || type.IsSealed;
 
         public static bool IsSealedComparable(this Type type) =>
-            type.ImplementsGeneric(typeof(IComparable<>))
+            type.ImplementsGenericInterface(typeof(IComparable<>))
             && type.IsSealedType();
 
         public static bool IsSealedEquatable(this Type type) =>
-           type.ImplementsGeneric(typeof(IEquatable<>))
+           type.ImplementsGenericInterface(typeof(IEquatable<>))
            && type.IsSealedType();
 
         public static bool IsHierarchical(this Type type) =>

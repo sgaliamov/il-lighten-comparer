@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ILLightenComparer.Tests.Utilities;
 
 namespace ILLightenComparer.Tests.Comparers
 {
@@ -13,7 +14,7 @@ namespace ILLightenComparer.Tests.Comparers
         public CollectionComparer(IComparer<TItem> itemComparer = null, bool sort = false)
         {
             _sort = sort;
-            _itemComparer = itemComparer ?? Comparer<TItem>.Default;
+            _itemComparer = itemComparer ?? Helper.DefaultComparer<TItem>();
         }
 
         public int Compare(object x, object y) => Compare((IEnumerable<TItem>)x, (IEnumerable<TItem>)y);

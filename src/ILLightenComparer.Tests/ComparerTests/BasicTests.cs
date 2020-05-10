@@ -12,7 +12,31 @@ namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class BasicTests
     {
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+        [Fact]
+        public void Delayed_comparison_on_sample_object()
+        {
+            var x = new SampleObject<EnumSmall?> { Field = null };
+            var y = new SampleObject<EnumSmall?> { Field = EnumSmall.One, };
+
+            var comparer = new ComparerBuilder().GetComparer<object>();
+
+            var actual = comparer.Compare(x, y);
+
+            actual.Should().Be(-1);
+        }
+
+        [Fact]
+        public void Objects_are_identical_because_they_have_no_members()
+        {
+            var x = new object();
+            var y = new object();
+
+            var comparer = new ComparerBuilder().GetComparer<object>();
+
+            var actual = comparer.Compare(x, y);
+
+            actual.Should().Be(0);
+        }
 
         [Fact]
         public void Empty_object_should_be_equal()
@@ -103,5 +127,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             Assert.Throws<NullReferenceException>(() => comparer.Compare(x, x));
             Assert.Throws<NullReferenceException>(() => comparer.Compare(default, default));
         }
+
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }

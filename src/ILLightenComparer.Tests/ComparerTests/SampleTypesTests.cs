@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
 using ILLightenComparer.Tests.Comparers;
+using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -38,6 +42,23 @@ namespace ILLightenComparer.Tests.ComparerTests
                 new GenericTests().GenericTest(type, referenceComparer, false, Constants.SmallCount);
             });
         }
+
+        [Fact]
+        public void Should_use_delayed_comparison()
+        {
+            var x = Fixture.CreateMany<SampleStruct<EnumSmall?>?>().ToArray();
+            var y = Fixture.CreateMany<SampleStruct<EnumSmall?>?>().ToArray();
+
+            var referenceComparer = new CollectionComparer<SampleStruct<EnumSmall?>?>(new NullableComparer<SampleStruct<EnumSmall?>>(new SampleStructComparer<EnumSmall?>()));
+            var comparer = new ComparerBuilder().GetComparer<object>();
+
+            var expected = referenceComparer.Compare(x, y).Normalize();
+            var actual = comparer.Compare(x, y).Normalize();
+
+            actual.Should().Be(expected);
+        }
+
+        private readonly static IFixture Fixture = FixtureBuilder.GetInstance();
 
         private static void TestCollection(Type genericCollectionType = null)
         {

@@ -24,7 +24,7 @@ namespace ILLightenComparer.Extensions
 
         public static ILEmitter EmitArraySorting(this ILEmitter il, bool hasCustomComparer, Type elementType, params LocalBuilder[] arrays)
         {
-            var useSimpleSorting = !hasCustomComparer && elementType.GetUnderlyingType().ImplementsGeneric(typeof(IComparable<>));
+            var useSimpleSorting = !hasCustomComparer && elementType.GetUnderlyingType().ImplementsGenericInterface(typeof(IComparable<>));
 
             if (useSimpleSorting) {
                 foreach (var array in arrays) {
