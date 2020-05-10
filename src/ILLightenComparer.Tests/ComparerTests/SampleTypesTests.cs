@@ -46,8 +46,8 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Should_use_delayed_comparison()
         {
-            var x = _fixture.CreateMany<SampleStruct<EnumSmall?>?>().ToArray();
-            var y = _fixture.CreateMany<SampleStruct<EnumSmall?>?>().ToArray();
+            var x = Fixture.CreateMany<SampleStruct<EnumSmall?>?>().ToArray();
+            var y = Fixture.CreateMany<SampleStruct<EnumSmall?>?>().ToArray();
 
             var referenceComparer = new CollectionComparer<SampleStruct<EnumSmall?>?>(new NullableComparer<SampleStruct<EnumSmall?>>(new SampleStructComparer<EnumSmall?>()));
             var comparer = new ComparerBuilder().GetComparer<object>();
@@ -58,7 +58,7 @@ namespace ILLightenComparer.Tests.ComparerTests
             actual.Should().Be(expected);
         }
 
-        private readonly static IFixture _fixture = FixtureBuilder.GetInstance();
+        private readonly static IFixture Fixture = FixtureBuilder.GetInstance();
 
         private static void TestCollection(Type genericCollectionType = null)
         {

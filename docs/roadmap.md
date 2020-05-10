@@ -127,3 +127,4 @@
 - [ ] float, double, date time precision
 - [ ] `checked` subs
 - [ ] automatic cycle detection when needed
+- [ ] null  and empty objects should return different hashes

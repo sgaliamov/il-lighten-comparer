@@ -4,12 +4,12 @@
 [![codecov](https://codecov.io/gh/sgaliamov/il-lighten-comparer/graph/badge.svg)](https://codecov.io/gh/sgaliamov/il-lighten-comparer)
 [![NuGet Badge](https://buildstats.info/nuget/ILLightenComparer)](https://www.nuget.org/packages/ILLightenComparer)
 
-**ILLightenComparer** is a library that can generate `IComparer<T>` and `IEqualityComparer<T>` implementations on runtime using advantages of IL code emission with main focus on **performance**.
+**ILLightenComparer** is a flexible library that can generate very effective and comprehensive `IComparer<T>` and `IEqualityComparer<T>` implementations on runtime using advantages of `IL` code emission.
 
 ## Features
 
 * High performance.
-* Support for complex classes and structures.
+* Support for classes and structures any complexity and nesting.
 * Highly configurable.
 * Fluent intuitive API.
 * Cycle detection.
@@ -64,8 +64,8 @@ var x = new[] { 1, 2, 3 };
 var y = new[] { 2, 3, 1 };
 
 var comparer = new ComparerBuilder()
-                .For<int[]>(c => c.IgnoreCollectionsOrder(true))
-                .GetComparer();
+    .For<int[]>(c => c.IgnoreCollectionsOrder(true))
+    .GetComparer();
 
 var result = comparer.Compare(x, y);
 result.Should().Be(0);
@@ -78,10 +78,10 @@ var x = new Tuple<int, string, double>(1, "value 1", 1.1);
 var y = new Tuple<int, string, double>(1, "value 2", 2.2);
 
 var comparer = new ComparerBuilder()
-                .For<Tuple<int, string, double>>()
-                .Configure(c => c.IgnoreMember(o => o.Item2)
-                                 .IgnoreMember(o => o.Item3))
-                .GetComparer();
+    .For<Tuple<int, string, double>>()
+    .Configure(c => c.IgnoreMember(o => o.Item2)
+                     .IgnoreMember(o => o.Item3))
+    .GetComparer();
 
 var result = comparer.Compare(x, y);
 result.Should().Be(0);
@@ -95,8 +95,8 @@ var y = _fixture.Create<Tuple<int, string>>();
 var customComparer = new CustomizableComparer<Tuple<int, string>>((a, b) => 0); // makes all objects always equal
 
 var comparer = new ComparerBuilder()
-                .Configure(c => c.SetCustomComparer(customComparer))
-                .GetComparer<Tuple<int, string>>();
+    .Configure(c => c.SetCustomComparer(customComparer))
+    .GetComparer<Tuple<int, string>>();
 
 var result = comparer.Compare(x, y);
 result.Should().Be(0);
@@ -108,10 +108,11 @@ result.Should().Be(0);
 var builder = new ComparerBuilder(c => c.SetDefaultCyclesDetection(false)); // defines initial configuration
 
 // adds some configuration later
-builder.Configure(c => c.SetStringComparisonType(
-                            typeof(Tuple<int, string, Tuple<short, string>>),
-                            StringComparison.InvariantCultureIgnoreCase)
-                        .IgnoreMember<Tuple<int, string, Tuple<short, string>>, int>(o => o.Item1));
+builder.Configure(c => c
+    .SetStringComparisonType(
+        typeof(Tuple<int, string, Tuple<short, string>>),
+        StringComparison.InvariantCultureIgnoreCase)
+    .IgnoreMember<Tuple<int, string, Tuple<short, string>>, int>(o => o.Item1));
 
 // defines configuration for specific types
 builder.For<Tuple<short, string>>(c => c.DefineMembersOrder(
@@ -131,8 +132,9 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 
   // initially configuration defines case insensitive string comparison
   var builder = new ComparerBuilder()
-      .For<Tuple<int, string>>(c => c.SetStringComparisonType(StringComparison.CurrentCultureIgnoreCase)
-                                     .DetectCycles(false));
+      .For<Tuple<int, string>>(c => c
+          .SetStringComparisonType(StringComparison.CurrentCultureIgnoreCase)
+          .DetectCycles(false));
 
   // in addition, setup to ignore first member
   builder.Configure(c => c.IgnoreMember(o => o.Item1));
@@ -141,9 +143,10 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
   var ignoreCaseComparer = builder.GetComparer();
 
   // override string comparison type with case sensitive setting and build new comparer
-  var originalCaseComparer = builder.For<Tuple<int, string>>()
-                                    .Configure(c => c.SetStringComparisonType(StringComparison.Ordinal))
-                                    .GetComparer();
+  var originalCaseComparer = builder
+      .For<Tuple<int, string>>()
+      .Configure(c => c.SetStringComparisonType(StringComparison.Ordinal))
+      .GetComparer();
 
   // first comparer ignores case for strings still
   ignoreCaseComparer.Compare(x, y).Should().Be(0);
