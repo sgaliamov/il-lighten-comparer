@@ -95,27 +95,27 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
             }
         }
 
-        //[Fact]
-        //public void When_left_member_is_null_comparison_produces_negative_value()
-        //{
-        //    var one = new AbstractMembers();
-        //    var other = new AbstractMembers {
-        //        NotSealedProperty = _fixture.Create<BaseNestedObject>()
-        //    };
+        [Fact]
+        public void When_left_member_is_null_comparison_produces_false()
+        {
+            var one = new AbstractMembers();
+            var other = new AbstractMembers {
+                NotSealedProperty = _fixture.Create<BaseNestedObject>()
+            };
 
-        //    _comparer.Compare(one, other).Should().BeNegative();
-        //}
+            _comparer.Equals(one, other).Should().BeFalse();
+        }
 
-        //[Fact]
-        //public void When_right_member_is_null_comparison_produces_positive_value()
-        //{
-        //    var one = new AbstractMembers {
-        //        NotSealedProperty = _fixture.Create<BaseNestedObject>()
-        //    };
-        //    var another = new AbstractMembers();
+        [Fact]
+        public void When_right_member_is_null_comparison_produces_false()
+        {
+            var one = new AbstractMembers {
+                NotSealedProperty = _fixture.Create<BaseNestedObject>()
+            };
+            var another = new AbstractMembers();
 
-        //    _comparer.Compare(one, another).Should().BePositive();
-        //}
+            _comparer.Equals(one, another).Should().BeFalse();
+        }
 
         private void TestOneMember(Func<SealedNestedObject, AbstractMembers> selector, int count)
         {
