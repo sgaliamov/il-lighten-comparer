@@ -49,10 +49,11 @@ With light optimized structures like [LightStruct](https://github.com/sgaliamov/
 
 ``` csharp
 var builder = new ComparerBuilder();
-var comparer = builder.GetComparer<Tuple<int, string>>();
-var equalityComparer = builder.GetEqualityComparer<Tuple<int, string>>();
 
+var comparer = builder.GetComparer<Tuple<int, string>>();
 var compareResult = comparer.Compare(x, y);
+
+var equalityComparer = builder.GetEqualityComparer<Tuple<int, string>>();
 var equalityResult = equalityComparer.Equals(x, y);
 var hashResult = equalityComparer.GetHashCode(x);
 ```
