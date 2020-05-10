@@ -5,6 +5,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.EqualityTests.CycleTests.Samples;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.EqualityTests.CycleTests
@@ -81,23 +82,24 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             }
         }
 
-        //[Fact]
-        //public void Cycle_detection_in_multiple_threads_works()
-        //{
-        //    Helper.Parallel(() => {
-        //        var comparer = new ComparerBuilder().GetComparer<OneSealed>();
+        [Fact]
+        public void Cycle_detection_in_multiple_threads_works()
+        {
+            Helper.Parallel(() => {
+                var comparer = new ComparerBuilder().GetEqualityComparer<OneSealed>();
 
-        //        var one = _fixture.Create<OneSealed>();
-        //        var other = _fixture.Create<OneSealed>();
-        //        one.Two.Three.One = one;
-        //        other.Two.Three.One = other;
+                var one = _fixture.Create<OneSealed>();
+                var other = _fixture.Create<OneSealed>();
+                one.Two.Three.One = one;
+                other.Two.Three.One = other;
 
-        //        var expected = one.Value.CompareTo(other.Value);
-        //        var actual = comparer.Equals(one, other);
-
-        //        actual.Should().Be(expected);
-        //    });
-        //}
+                using (new AssertionScope()) {
+                    Assert.Throws<ArgumentException>(() => ComparerForOneSealed.Equals(one, other));
+                    Assert.Throws<ArgumentException>(() => ComparerForOneSealed.GetHashCode(one));
+                    Assert.Throws<ArgumentException>(() => ComparerForOneSealed.GetHashCode(other));
+                }
+            });
+        }
 
         //[Fact]
         //public void Detects_cycle_on_second_member()
