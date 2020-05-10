@@ -86,7 +86,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
 
             using (new AssertionScope()) {
                 ComparerObject.Equals(one, other).Should().BeFalse();
-                Assert.Throws<ArgumentException>(() => ComparerObject.GetHashCode(one));
+                ComparerObject.GetHashCode(one).Should().Be(0);
                 Assert.Throws<ArgumentException>(() => ComparerObject.GetHashCode(other));
             }
         }
@@ -122,7 +122,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             using (new AssertionScope()) {
                 ComparerStruct.Equals(one, other).Should().BeFalse();
                 Assert.Throws<ArgumentException>(() => ComparerStruct.GetHashCode(one));
-                Assert.Throws<ArgumentException>(() => ComparerStruct.GetHashCode(other));
+                ComparerStruct.GetHashCode(other).Should().Be(193376997);
             }
         }
 
