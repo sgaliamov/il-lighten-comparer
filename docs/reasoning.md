@@ -18,4 +18,4 @@
 1. Use `ConcurrentDictionary` instead `ObjectIDGenerator` to detect member cycles because users may want to override the way how to compare a member.
 2. Check for `null` before add to a cycle detections set because `null` is kind a value and should be compared on a next iteration.
 3. We need two separate sets to be able to go as deep as we can to behave same way when we don't have a cycle.
-4. Cycle detection is not applied on value types because it does not have a sense. Nested value could be equal to an owner object only because of wrong equality implementation, but it can not be considered as a cycle.
+4. Cycle detection is applied on value types because it's possible. For example `DateTime` has self referenced `Date` property that produces infinity cycle.

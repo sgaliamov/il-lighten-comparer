@@ -20,7 +20,7 @@ namespace ILLightenComparer.Tests
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
 
-            using (new AssertionScope()) {
+            using (new AssertionScope()) { 
                 equality.Should().BeFalse();
                 hashX.Should().NotBe(hashY);
             }

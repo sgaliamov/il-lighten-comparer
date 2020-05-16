@@ -3,6 +3,12 @@
     "MD031": false,
     "MD033": false
   },
+  "cSpell.ignorePaths": [
+    ".vscode",
+    "*.json",
+    "*.yml",
+    "*.sln"
+  ],
   "cSpell.words": [
     "Redstone",
     "Skylake",
