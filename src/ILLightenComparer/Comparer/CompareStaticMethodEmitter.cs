@@ -53,15 +53,20 @@ namespace ILLightenComparer.Comparer
         // no need detect cycle as flow goes outside context
         public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsSealedComparable();
 
-        private static void EmitCycleDetection(ILEmitter il) => il
-            .AreSame(
-                LoadInteger(0),
-                Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
-                   Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
-            .IfFalse_S(out var next)
-            .Return(Sub(
-                Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetX)),
-                Call(CycleDetectionSet.GetCountProperty, LoadArgument(Arg.SetY))))
-            .MarkLabel(next);
+        private static void EmitCycleDetection(ILEmitter il)
+        {
+            static ILEmitterFunc TryAdd(ushort set, ushort arg) => Call(
+                CycleDetectionSet.TryAddMethod,
+                LoadArgument(set),
+                LoadArgument(arg),
+                LoadInteger(0));
+
+            static ILEmitterFunc GetCount(ushort set) => Call(CycleDetectionSet.GetCountProperty, LoadArgument(set));
+
+            il.AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X), TryAdd(Arg.SetY, Arg.Y)))
+              .IfFalse_S(out var next)
+              .Return(Sub(GetCount(Arg.SetX), GetCount(Arg.SetY)))
+              .MarkLabel(next);
+        }
     }
 }
