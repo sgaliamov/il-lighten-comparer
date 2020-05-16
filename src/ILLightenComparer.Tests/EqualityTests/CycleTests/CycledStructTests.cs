@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using ILLightenComparer.Tests.EqualityTests.CycleTests.Samples;
+using ILLightenComparer.Tests.Samples;
 using Xunit;
 
 namespace ILLightenComparer.Tests.EqualityTests.CycleTests
@@ -22,6 +23,21 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
                     .Member(o => o.FirstStruct)
                     .Member(o => o.SecondStruct)))
                 .Builder;
+        }
+
+        [Fact]
+        public void Sefl_sealed_struct_should_throw_ArgumentException()
+        {
+            var comparer = _builder.GetEqualityComparer<SelfStruct<Guid>>();
+            var x = new SelfStruct<Guid> {
+                Key = Guid.NewGuid(),
+                Value = Guid.NewGuid()
+            };
+
+            using (new AssertionScope()) {
+                Assert.Throws<ArgumentException>(() => comparer.Equals(x, x));
+                Assert.Throws<ArgumentException>(() => comparer.GetHashCode(x));
+            }
         }
 
         [Fact]
