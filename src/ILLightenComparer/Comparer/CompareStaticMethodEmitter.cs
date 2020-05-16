@@ -24,7 +24,7 @@ namespace ILLightenComparer.Comparer
             il.DefineLabel(out var exit);
 
             var needReferenceComparison =
-                !objectType.IsSealedComparable() // ComparablesComparison do this check
+                !objectType.IsComparable() // ComparablesComparison do this check
                 && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
@@ -54,7 +54,7 @@ namespace ILLightenComparer.Comparer
         }
 
         // no need detect cycle as flow goes outside context
-        public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsSealedComparable();
+        public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsComparable();
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
             .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))

@@ -21,8 +21,7 @@ namespace ILLightenComparer.Comparer.Comparisons
 
         public static ComparablesComparison Create(IVariable variable)
         {
-            // todo: 0. if object implements IComparable, then it should be used anyway, create setting to enable it
-            if (variable.VariableType.GetUnderlyingType().IsSealedComparable()) {
+            if (variable.VariableType.GetUnderlyingType().IsComparable()) {
                 return new ComparablesComparison(variable);
             }
 

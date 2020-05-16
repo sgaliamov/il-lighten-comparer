@@ -160,6 +160,6 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 * For safety reasons cycle detection is enabled by default. But when you are sure that it is not possible you can disable it and get significant performance boost.
 * *protected* and *private* members are ignored during comparison.
 * [Multidimensional arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/multidimensional-arrays) are not supported now, but [Jagged arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/jagged-arrays) are.
-* If a type implements `IComparable<T>` interface and type is a value type or **`sealed`** then this implementations will be used.
+* If a type implements `IComparable<T>` interface then this implementations will be used.
 
 In case of an unexpected behavior, please welcome to create an [issue](https://github.com/sgaliamov/il-lighten-comparer/issues/new) and provide the type and data that you use.

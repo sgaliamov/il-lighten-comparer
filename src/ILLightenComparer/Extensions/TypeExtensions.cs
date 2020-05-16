@@ -76,9 +76,7 @@ namespace ILLightenComparer.Extensions
 
         public static bool IsSealedType(this Type type) => type.IsValueType || type.IsSealed;
 
-        public static bool IsSealedComparable(this Type type) =>
-            type.ImplementsGenericInterface(typeof(IComparable<>))
-            && type.IsSealedType();
+        public static bool IsComparable(this Type type) => type.ImplementsGenericInterface(typeof(IComparable<>));
 
         public static bool IsSealedEquatable(this Type type) =>
            type.ImplementsGenericInterface(typeof(IEquatable<>))
