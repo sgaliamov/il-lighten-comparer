@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
