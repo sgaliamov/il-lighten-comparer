@@ -18,7 +18,7 @@ namespace ILLightenComparer.Extensions
             typeof(ushort)
         });
 
-        private static readonly HashSet<Type> BasicEquitableTypes = new HashSet<Type>(new[] {
+        private static readonly HashSet<Type> CeqCompatibleTypes = new HashSet<Type>(new[] {
             typeof(sbyte),
             typeof(byte),
             typeof(char),
@@ -30,6 +30,8 @@ namespace ILLightenComparer.Extensions
             typeof(float),
             typeof(double)
         });
+
+        private static readonly HashSet<Type> BasicTypes = new HashSet<Type>(typeof(object).Assembly.GetTypes());
 
         /// <summary>
         ///     Creates instance using static method.
@@ -66,7 +68,9 @@ namespace ILLightenComparer.Extensions
 
         public static bool IsIntegral(this Type type) => SmallIntegralTypes.Contains(type);
 
-        public static bool IsBasicEquitable(this Type type) => BasicEquitableTypes.Contains(type);
+        public static bool IsCeqCompatible(this Type type) => CeqCompatibleTypes.Contains(type);
+
+        public static bool IsBasic(this Type type) => BasicTypes.Contains(type);
 
         public static bool IsSealedType(this Type type) => type.IsValueType || type.IsSealed;
 

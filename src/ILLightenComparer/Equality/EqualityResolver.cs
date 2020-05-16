@@ -40,6 +40,7 @@ namespace ILLightenComparer.Equality
                 CeqEqualityComparison.Create,
                 (IVariable variable) => StringsComparison.Create(StringEqualsMethod, CustomEmitters.EmitReturnIfFalsy, _configuration, variable),
                 OperatorEqualityComparison.Create,
+                BacisEqualityComparison.Create,
                 (IVariable variable) => MembersComparison.Create(this, membersProvider, variable),
                 (IVariable variable) => ArraysComparison.Create(collectionComparer, _configuration, variable),
                 (IVariable variable) => EnumerablesComparison.Create(this, collectionComparer, CustomEmitters.EmitCheckIfLoopsAreDone, _configuration, variable),

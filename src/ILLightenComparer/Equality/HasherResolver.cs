@@ -22,7 +22,7 @@ namespace ILLightenComparer.Equality
             _hashersFactories = new Func<IVariable, IHasherEmitter>[] {
                 (IVariable variable) => NullableHasher.Create(this, variable),
                 (IVariable variable) => StringHasher.Create(_configuration, variable),
-                PrimitiveHasher.Create,
+                BasicHasher.Create,
                 (IVariable variable) => MembersHasher.Create(this, membersProvider, _configuration, variable),
                 (IVariable variable) => ArrayHasher.Create(this, _configuration, variable),
                 (IVariable variable) => EnumerablesHasher.Create(this, _configuration, variable),
