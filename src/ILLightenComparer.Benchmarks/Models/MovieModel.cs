@@ -19,10 +19,9 @@ namespace ILLightenComparer.Benchmarks.Models
     {
         public Dictionary<int, string> Actors { get; set; }
 
-        public int CompareTo(object obj) =>
-            obj is ActorsCollection other
-                ? CompareTo(other)
-                : throw new ArgumentException($"Object must be of type {nameof(ActorsCollection)}");
+        public int CompareTo(object obj) => obj is ActorsCollection other
+            ? CompareTo(other)
+            : throw new ArgumentException($"Object must be of type {nameof(ActorsCollection)}");
 
         public int CompareTo(ActorsCollection other)
         {

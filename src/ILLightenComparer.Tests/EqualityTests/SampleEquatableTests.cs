@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Xunit;
 
@@ -22,7 +21,7 @@ namespace ILLightenComparer.Tests.EqualityTests
         {
             public int Property { get; set; }
 
-            public bool Equals([AllowNull] TrueEquatable other) => true;
+            public bool Equals(TrueEquatable other) => true;
         }
     }
 }
