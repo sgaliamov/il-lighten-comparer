@@ -68,6 +68,10 @@ namespace ILLightenComparer.Tests.Utilities
 
                     var setValue = GetSetValueAction(member);
 
+                    if (setValue == null) {
+                        continue;
+                    }
+
                     setValue(
                         member.Parent,
                         GetNewValue(member.ValueType, member.Value));
@@ -89,8 +93,10 @@ namespace ILLightenComparer.Tests.Utilities
         private static Action<object, object> GetSetValueAction(Member member) => member.MemberInfo switch
         {
             FieldInfo fieldInfo => fieldInfo.SetValue,
-            PropertyInfo propertyInfo => propertyInfo.SetValue,
-            _ => throw new InvalidOperationException(),
+            PropertyInfo propertyInfo => propertyInfo.GetSetMethod(true) == null
+                ? (Action<object, object>)null
+                : propertyInfo.SetValue,
+            _ => throw new NotSupportedException(),
         };
 
         private static object GetNewValue(Type type, object oldValue)

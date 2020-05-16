@@ -14,6 +14,14 @@ namespace ILLightenComparer.Tests.EqualityTests
     public sealed class BasicTests
     {
         [Fact]
+        public void Test_all_basic_types()
+        {
+            foreach (var type in Helper.BasicTypes) {
+                new GenericTests(false).GenericTest(type, null, Constants.SmallCount);
+            }
+        }
+
+        [Fact]
         public void Objects_are_identical_because_they_have_no_members()
         {
             var x = new object();

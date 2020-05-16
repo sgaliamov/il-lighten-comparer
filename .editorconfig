@@ -233,3 +233,6 @@ dotnet_diagnostic.RCS1233.severity = silent
 
 # CA1034: Nested types should not be visible
 dotnet_diagnostic.CA1034.severity = silent
+
+# RCS1112: Combine 'Enumerable.Where' method chain.
+dotnet_diagnostic.RCS1112.severity = silent
