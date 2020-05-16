@@ -13,26 +13,28 @@ namespace ILLightenComparer.Tests.ComparerTests
         static TestTypes()
         {
             Types = new Dictionary<Type, IComparer> {
-                [typeof(object)] = null,
-                [typeof(sbyte)] = null,
-                [typeof(byte)] = null,
-                [typeof(char)] = null,
-                [typeof(short)] = null,
-                [typeof(ushort)] = null,
-                [typeof(int)] = null,
-                [typeof(long)] = null,
-                [typeof(ulong)] = null,
-                [typeof(float)] = null,
-                [typeof(double)] = null,
-                [typeof(decimal)] = null,
-                [typeof(EnumSmall)] = null,
-                [typeof(EnumBig)] = null,
-                [typeof(string)] = null,
-                [typeof(ComparableBaseObject<EnumSmall?>)] = null,
-                [typeof(ComparableChildObject<EnumSmall?>)] = null,
-                [typeof(ComparableStruct<EnumSmall?>)] = null,
-                [typeof(SampleObject<EnumSmall?>)] = new SampleObjectComparer<EnumSmall?>(),
-                [typeof(SampleStruct<EnumSmall?>)] = new SampleStructComparer<EnumSmall?>()
+                //[typeof(object)] = null,
+                //[typeof(sbyte)] = null,
+                //[typeof(byte)] = null,
+                //[typeof(char)] = null,
+                //[typeof(short)] = null,
+                //[typeof(ushort)] = null,
+                //[typeof(int)] = null,
+                //[typeof(long)] = null,
+                //[typeof(ulong)] = null,
+                //[typeof(float)] = null,
+                //[typeof(double)] = null,
+                //[typeof(decimal)] = null,
+                //[typeof(EnumSmall)] = null,
+                //[typeof(EnumBig)] = null,
+                //[typeof(string)] = null,
+                [typeof(DateTime)] = null,
+                //[typeof(DateTimeOffset)] = null,
+                //[typeof(ComparableBaseObject<EnumSmall?>)] = null,
+                //[typeof(ComparableChildObject<EnumSmall?>)] = null,
+                //[typeof(ComparableStruct<EnumSmall?>)] = null,
+                //[typeof(SampleObject<EnumSmall?>)] = new SampleObjectComparer<EnumSmall?>(),
+                //[typeof(SampleStruct<EnumSmall?>)] = new SampleStructComparer<EnumSmall?>()
             };
 
             NullableTypes = Types
