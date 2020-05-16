@@ -13,7 +13,7 @@
 * Highly configurable.
 * Fluent intuitive API.
 * Cycle detection.
-* Collections comparison (`IEnumerable<T>`, arrays).
+* Collections and dictionaries comparison (`IEnumerable<T>`, arrays).
 * .NET Standard 2.0
 * No 3<sup>rd</sup> party dependencies.
 
