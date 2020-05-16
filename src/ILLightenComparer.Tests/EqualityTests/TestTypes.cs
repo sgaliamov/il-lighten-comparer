@@ -35,6 +35,8 @@ namespace ILLightenComparer.Tests.EqualityTests
                 [typeof(string)] = null,
                 [typeof(DateTime)] = null,
                 [typeof(DateTimeOffset)] = null,
+                [typeof(Guid)] = null,
+                [typeof(TimeSpan)] = null,
                 [typeof(SampleEqualityBaseObject<EnumSmall?>)] = null,
                 [typeof(SampleEqualityChildObject<EnumSmall?>)] = null,
                 [typeof(SampleEqualityStruct<EnumSmall?>)] = null,

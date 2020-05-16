@@ -30,6 +30,8 @@ namespace ILLightenComparer.Tests.ComparerTests
                 [typeof(string)] = null,
                 [typeof(DateTime)] = null,
                 [typeof(DateTimeOffset)] = null,
+                [typeof(Guid)] = null,
+                [typeof(TimeSpan)] = null,
                 [typeof(ComparableBaseObject<EnumSmall?>)] = null,
                 [typeof(ComparableChildObject<EnumSmall?>)] = null,
                 [typeof(ComparableStruct<EnumSmall?>)] = null,
