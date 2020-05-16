@@ -11,7 +11,6 @@ using static Illuminator.Functional;
 
 namespace ILLightenComparer.Comparer
 {
-    // todo: 3. unify with EqualsStaticMethodEmitter
     internal sealed class CompareStaticMethodEmitter : IStaticMethodEmitter
     {
         private readonly ComparisonResolver _resolver;

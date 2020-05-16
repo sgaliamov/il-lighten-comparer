@@ -103,12 +103,12 @@ namespace ILLightenComparer.Shared
         private bool NeedCreateCycleDetectionSets(Type objectType, string methodName) =>
             _configuration.Get(objectType).DetectCycles
             && !objectType.IsPrimitive()
-            && _methodEmitter[methodName].NeedCreateCycleDetectionSets(objectType);
+            && _methodEmitter[methodName].NeedCreateCycleDetectionSets(objectType.GetUnderlyingType());
 
         private bool NeedDetectCycles(Type objectType, string methodName) =>
             objectType != typeof(object) // indirect comparison will be triggered
-            && objectType.IsClass
             && NeedCreateCycleDetectionSets(objectType, methodName)
+            && !objectType.IsNullable()
             && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>));
 
         private static void BuildConstructorAndFactoryMethod(TypeBuilder typeBuilder, FieldInfo contextField)
