@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
-using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
+using static ILLightenComparer.Shared.CycleDetectionSet;
 using static Illuminator.Functional;
 
 namespace ILLightenComparer.Equality
 {
-    // todo: 3. unify with CompareStaticMethodEmitter
     internal sealed class EqualsStaticMethodEmitter : IStaticMethodEmitter
     {
         private readonly EqualityResolver _resolver;
@@ -22,12 +20,16 @@ namespace ILLightenComparer.Equality
         {
             using var il = staticMethodBuilder.CreateILEmitter();
 
-            var needReferenceComparison =
-                 !objectType.IsValueType
-                 && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>)); // collections do reference comparisons anyway
+            il.DefineLabel(out var exit);
+
+            var needReferenceComparison = !objectType.ImplementsGenericInterface(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
-                il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(1));
+                if (!objectType.IsValueType) {
+                    il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(1));
+                } else if (objectType.IsNullable()) {
+                    il.EmitCheckNullablesForValue(LoadArgumentAddress(Arg.X), LoadArgumentAddress(Arg.Y), objectType, exit);
+                }
             }
 
             if (detecCycles) {
@@ -36,12 +38,11 @@ namespace ILLightenComparer.Equality
 
             var emitter = _resolver.GetComparisonEmitter(new ArgumentVariable(objectType));
 
-            il.DefineLabel(out var exit)
-              .Execute(emitter.Emit(exit));
+            emitter.Emit(il, exit);
 
             if (detecCycles) {
-                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
-                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
+                il.Execute(Remove(Arg.SetX, Arg.X, objectType))
+                  .Execute(Remove(Arg.SetY, Arg.Y, objectType));
             }
 
             il.Execute(emitter.EmitCheckForResult(exit))
@@ -52,12 +53,9 @@ namespace ILLightenComparer.Equality
         public bool NeedCreateCycleDetectionSets(Type objectType) => true;
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .AreSame(
-                LoadInteger(0),
-                Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
-                   Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
+            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))
             .IfFalse_S(out var next)
-            .Throw(New(Methods.ArgumentExceptionConstructor, LoadString($"Can't compare objects. Cycle is detected in {objectType.DisplayName()}.")))
+            .Return(AreSame(GetCount(Arg.SetX), GetCount(Arg.SetY)))
             .MarkLabel(next);
     }
 }

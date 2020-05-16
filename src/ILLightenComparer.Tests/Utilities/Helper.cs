@@ -45,8 +45,12 @@ namespace ILLightenComparer.Tests.Utilities
                 Assert.True(x is null ? y is null : y != null);
             } else if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
                 x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
+            } else if (BasicTypes.Contains(typeof(T))) {
+                x.Should().Be(y);
             } else {
-                x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>().WithStrictOrdering());
+                x.Should().BeEquivalentTo(y, options => options
+                    .ComparingByMembers<T>()
+                    .WithStrictOrdering());
             }
         }
 
@@ -103,5 +107,14 @@ namespace ILLightenComparer.Tests.Utilities
                 yield return ThreadSafeRandom.NextDouble() < probability ? default : item;
             }
         }
+
+        public static readonly HashSet<Type> BasicTypes = new HashSet<Type>(typeof(object).Assembly
+            .GetTypes()
+            .Where(x => x.FullName.StartsWith("System."))
+            .Where(x => x.IsPublic)
+            .Where(x => !x.IsAbstract)
+            .Where(x => !x.IsGenericType)
+            .Where(x => x.ImplementsGenericInterface(typeof(IComparable<>)))
+            .Except(new[] { typeof(ArgIterator) }));
     }
 }

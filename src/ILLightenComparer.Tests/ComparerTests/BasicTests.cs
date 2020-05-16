@@ -6,12 +6,21 @@ using FluentAssertions.Execution;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
 using ILLightenComparer.Tests.Utilities;
+
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class BasicTests
     {
+        [Fact]
+        public void Test_all_basic_types()
+        {
+            foreach (var type in Helper.BasicTypes) {
+                new GenericTests().GenericTest(type, null, false, Constants.SmallCount);
+            }
+        }
+
         [Fact]
         public void Delayed_comparison_on_sample_object()
         {

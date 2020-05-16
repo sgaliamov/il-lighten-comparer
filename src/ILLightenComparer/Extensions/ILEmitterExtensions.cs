@@ -48,7 +48,7 @@ namespace ILLightenComparer.Extensions
 
         public static ILEmitter EmitDispose(this ILEmitter il, LocalBuilder local) => il
             .LoadCaller(local)
-            .Execute(local.LocalType.IsValueType, Constrained(local.LocalType))
+            .ExecuteIf(local.LocalType.IsValueType, Constrained(local.LocalType))
             .Call(DisposeMethod);
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)

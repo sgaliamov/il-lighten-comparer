@@ -9,7 +9,7 @@ namespace ILLightenComparer.Tests.Samples
     [SuppressMessage("Usage", "CA2231:Overload operator equals on overriding value type Equals", Justification = "Test class")]
     [SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "Test class")]
     [SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "Test class")]
-    public struct SampleEqualityStruct<TMember>: IComparable<SampleEqualityStruct<TMember>>
+    public struct SampleEqualityStruct<TMember> : IComparable<SampleEqualityStruct<TMember>>
     {
         private readonly static IComparer<TMember> Comparer = Helper.DefaultComparer<TMember>();
         public static IEqualityComparer<TMember> EqualityComparer = EqualityComparer<TMember>.Default;

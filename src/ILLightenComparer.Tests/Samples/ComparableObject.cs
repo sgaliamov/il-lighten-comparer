@@ -15,7 +15,7 @@ namespace ILLightenComparer.Tests.Samples
 
         public override string ToString() => $"Object: {this.ToJson()}";
 
-        public int CompareTo([AllowNull] ComparableObject<TMember> other)
+        public int CompareTo(ComparableObject<TMember> other)
         {
             if (ReferenceEquals(this, other)) {
                 return 0;

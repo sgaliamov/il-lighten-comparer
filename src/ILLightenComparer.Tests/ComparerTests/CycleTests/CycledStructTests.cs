@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
+using ILLightenComparer.Tests.Samples;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests
@@ -22,6 +24,18 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
                                           .Member(o => o.SecondStruct))
                                  .IgnoreMember(o => o.Id))
                        .Builder;
+        }
+
+        [Fact]
+        public void Sefl_sealed_struct_should_be_equal()
+        {
+            var comparer = _builder.GetComparer<SelfStruct<Guid>>();
+            var x = new SelfStruct<Guid> {
+                Key = Guid.NewGuid(),
+                Value = Guid.NewGuid()
+            };
+
+            comparer.Compare(x, x).Should().Be(0);
         }
 
         [Fact]

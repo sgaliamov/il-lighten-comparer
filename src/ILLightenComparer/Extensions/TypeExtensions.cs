@@ -18,7 +18,7 @@ namespace ILLightenComparer.Extensions
             typeof(ushort)
         });
 
-        private static readonly HashSet<Type> BasicEquitableTypes = new HashSet<Type>(new[] {
+        private static readonly HashSet<Type> CeqCompatibleTypes = new HashSet<Type>(new[] {
             typeof(sbyte),
             typeof(byte),
             typeof(char),
@@ -30,6 +30,13 @@ namespace ILLightenComparer.Extensions
             typeof(float),
             typeof(double)
         });
+
+        private static readonly HashSet<Type> BasicTypes = new HashSet<Type>(typeof(object).Assembly
+            .GetTypes()
+            .Where(x => x.FullName.StartsWith("System."))
+            .Where(x => x.IsPublic)
+            .Where(x => !x.IsGenericType)
+            .Except(new[] { typeof(object) })); // object is treated separately
 
         /// <summary>
         ///     Creates instance using static method.
@@ -66,17 +73,13 @@ namespace ILLightenComparer.Extensions
 
         public static bool IsIntegral(this Type type) => SmallIntegralTypes.Contains(type);
 
-        public static bool IsBasicEquitable(this Type type) => BasicEquitableTypes.Contains(type);
+        public static bool IsCeqCompatible(this Type type) => CeqCompatibleTypes.Contains(type);
+
+        public static bool IsBasic(this Type type) => BasicTypes.Contains(type);
 
         public static bool IsSealedType(this Type type) => type.IsValueType || type.IsSealed;
 
-        public static bool IsSealedComparable(this Type type) =>
-            type.ImplementsGenericInterface(typeof(IComparable<>))
-            && type.IsSealedType();
-
-        public static bool IsSealedEquatable(this Type type) =>
-           type.ImplementsGenericInterface(typeof(IEquatable<>))
-           && type.IsSealedType();
+        public static bool IsComparable(this Type type) => type.ImplementsGenericInterface(typeof(IComparable<>));
 
         public static bool IsHierarchical(this Type type) =>
             !type.IsPrimitive()

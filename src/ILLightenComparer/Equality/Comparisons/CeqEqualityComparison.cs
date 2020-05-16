@@ -15,7 +15,7 @@ namespace ILLightenComparer.Equality.Comparisons
 
         public static CeqEqualityComparison Create(IVariable variable)
         {
-            if (variable.VariableType.GetUnderlyingType().IsBasicEquitable()) {
+            if (variable.VariableType.GetUnderlyingType().IsCeqCompatible()) {
                 return new CeqEqualityComparison(variable);
             }
 

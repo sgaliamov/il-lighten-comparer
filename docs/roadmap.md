@@ -89,7 +89,7 @@
 - [x] implement `GetHashCode`
 - [x] implement `Equals`
 - [x] implementation for `IEnumarable`
-- [ ] create tests
+- [x] create tests
 
 ## Phase 7 Improvements
 
@@ -100,7 +100,7 @@
 - [x] use call instead `callvirt` when possible
 - [x] cache instances by type and **configuration** in `Context.GetComparerType`
 - [x] ~~create unified interface `IComparer<>: IComparer<>, IComparer`~~
-- [x] ~~possible to merge `MembersComparison` and `HierarchicalsComparison` but need to create `LocalVariable` class~~
+- [x] ~~possible to merge `MembersComparison` and `IndirectComparison` but need to create `LocalVariable` class~~
 - [x] ~~compare references and the end?~~ no, because objects are equal semantically
 - [ ] fix *todo* list
 - [ ] setting ignore existing `IComparable` implementation

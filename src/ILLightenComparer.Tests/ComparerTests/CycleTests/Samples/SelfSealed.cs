@@ -5,14 +5,14 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {
     public sealed class SelfSealed
     {
+        public static RelationalComparer Comparer { get; } = new RelationalComparer();
+
         public readonly int Id;
         public SelfSealed First;
-
-        public SelfSealed() => Id = this.GetObjectId();
-
-        public static RelationalComparer Comparer { get; } = new RelationalComparer();
         public SelfSealed Second { get; set; }
         public int Value { get; set; }
+
+        public SelfSealed() => Id = this.GetObjectId();
 
         public override string ToString() => Id.ToString();
 
