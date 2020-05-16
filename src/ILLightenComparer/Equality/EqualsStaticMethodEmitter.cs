@@ -52,7 +52,7 @@ namespace ILLightenComparer.Equality
         public bool NeedCreateCycleDetectionSets(Type objectType) => true;
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X, objectType.IsValueType), TryAdd(Arg.SetY, Arg.Y, objectType.IsValueType)))
+            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))
             .IfFalse_S(out var next)
             .Throw(New(Methods.ArgumentExceptionConstructor, LoadString($"Can't compare objects. Cycle is detected in {objectType.DisplayName()}.")))
             .MarkLabel(next);

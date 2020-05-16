@@ -47,7 +47,7 @@ namespace ILLightenComparer.Equality
         public bool NeedCreateCycleDetectionSets(Type _) => true;
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .IfTrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType.IsValueType), out var next)
+            .IfTrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
             .Throw(New(Methods.ArgumentExceptionConstructor, LoadString($"Can't get hash for an object. Cycle is detected in {objectType.DisplayName()}.")))
             .MarkLabel(next);
     }

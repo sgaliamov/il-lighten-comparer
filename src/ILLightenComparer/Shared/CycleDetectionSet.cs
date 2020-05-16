@@ -18,12 +18,12 @@ namespace ILLightenComparer.Shared
 
         public static readonly MethodInfo GetCountProperty = typeof(CycleDetectionSet).GetProperty(nameof(Count)).GetGetMethod();
 
-        public static ILEmitterFunc TryAdd(ushort set, ushort arg, bool isValueType) => Call(
+        public static ILEmitterFunc TryAdd(ushort set, ushort arg, Type argType) => Call(
             TryAddMethod,
             LoadArgument(set),
-            ExecuteIf(isValueType, Box()) + LoadArgument(arg),
+            LoadArgument(arg) + ExecuteIf(argType.IsValueType, Box(argType)),
             LoadInteger(0));
 
-        public static ILEmitterFunc GetCount(ushort set) => Call(GetCountProperty, LoadArgument(set));
+        public static ILEmitterFunc GetCount(ushort arg) => Call(GetCountProperty, LoadArgument(arg));
     }
 }
