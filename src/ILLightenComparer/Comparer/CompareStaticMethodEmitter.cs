@@ -32,7 +32,7 @@ namespace ILLightenComparer.Comparer
             }
 
             if (detecCycles) {
-                EmitCycleDetection(il);
+                EmitCycleDetection(il, objectType.IsValueType);
             }
 
             var emitter = _resolver.GetComparisonEmitter(new ArgumentVariable(objectType));
@@ -53,8 +53,8 @@ namespace ILLightenComparer.Comparer
         // no need detect cycle as flow goes outside context
         public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsSealedComparable();
 
-        private static void EmitCycleDetection(ILEmitter il) => il
-            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X), TryAdd(Arg.SetY, Arg.Y)))
+        private static void EmitCycleDetection(ILEmitter il, bool isValueType) => il
+            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X, isValueType), TryAdd(Arg.SetY, Arg.Y, isValueType)))
             .IfFalse_S(out var next)
             .Return(Sub(GetCount(Arg.SetX), GetCount(Arg.SetY)))
             .MarkLabel(next);
