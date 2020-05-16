@@ -22,13 +22,14 @@ namespace ILLightenComparer.Comparer
             using var il = staticMethodBuilder.CreateILEmitter();
 
             il.DefineLabel(out var exit);
+
             var needReferenceComparison =
                 !objectType.IsSealedComparable() // ComparablesComparison do this check
-                 && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>)); // collections do reference comparisons anyway
+                && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
                 if (!objectType.IsValueType) {
-                il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
+                    il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
                 } else if (objectType.IsNullable()) {
                     il.EmitCheckNullablesForValue(LoadArgumentAddress(Arg.X), LoadArgumentAddress(Arg.Y), objectType, exit);
                 }

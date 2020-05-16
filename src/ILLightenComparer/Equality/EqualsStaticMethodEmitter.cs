@@ -21,12 +21,16 @@ namespace ILLightenComparer.Equality
         {
             using var il = staticMethodBuilder.CreateILEmitter();
 
-            var needReferenceComparison =
-                 !objectType.IsValueType
-                 && !objectType.ImplementsGenericInterface(typeof(IEnumerable<>)); // collections do reference comparisons anyway
+            il.DefineLabel(out var exit);
+
+            var needReferenceComparison = !objectType.ImplementsGenericInterface(typeof(IEnumerable<>)); // collections do reference comparisons anyway
 
             if (needReferenceComparison) {
-                il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(1));
+                if (!objectType.IsValueType) {
+                    il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(1));
+                } else if (objectType.IsNullable()) {
+                    il.EmitCheckNullablesForValue(LoadArgumentAddress(Arg.X), LoadArgumentAddress(Arg.Y), objectType, exit);
+                }
             }
 
             if (detecCycles) {
@@ -35,8 +39,7 @@ namespace ILLightenComparer.Equality
 
             var emitter = _resolver.GetComparisonEmitter(new ArgumentVariable(objectType));
 
-            il.DefineLabel(out var exit)
-              .Execute(emitter.Emit(exit));
+            emitter.Emit(il, exit);
 
             if (detecCycles) {
                 il.Execute(Remove(Arg.SetX, Arg.X, objectType))
