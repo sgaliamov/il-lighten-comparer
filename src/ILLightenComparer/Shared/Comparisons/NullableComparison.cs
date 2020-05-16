@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -24,7 +24,7 @@ namespace ILLightenComparer.Shared.Comparisons
             _resolver = resolver;
             _checkForIntermediateResultEmitter = checkForIntermediateResultEmitter;
             _emitCheckNullablesForValue = emitCheckNullablesForValue;
-            _variable = variable ?? throw new ArgumentNullException(nameof(variable));
+            _variable = variable;
         }
 
         public static NullableComparison Create(
@@ -46,7 +46,11 @@ namespace ILLightenComparer.Shared.Comparisons
 
             _variable.Load(il, Arg.X).Store(variableType, out var nullableX);
             _variable.Load(il, Arg.Y).Store(variableType, out var nullableY);
-            _emitCheckNullablesForValue(il, nullableX, nullableY, variableType, gotoNext);
+
+            var isMember = !(_variable is ArgumentVariable);
+            if (isMember) {
+                _emitCheckNullablesForValue(il, LoadAddress(nullableX), LoadAddress(nullableY), variableType, gotoNext);
+            }
 
             var nullableVariables = new NullableVariables(variableType, _variable.OwnerType, new Dictionary<ushort, LocalBuilder>(2) {
                 [Arg.X] = nullableX,

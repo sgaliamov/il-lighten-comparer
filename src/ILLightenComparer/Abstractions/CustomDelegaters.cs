@@ -11,5 +11,5 @@ namespace ILLightenComparer.Abstractions
 
     public delegate ILEmitter EmitCheckIfLoopsAreDoneDelegate(ILEmitter il, LocalBuilder xDone, LocalBuilder yDone, Label gotoNext);
 
-    public delegate ILEmitter EmitCheckNullablesForValueDelegate(ILEmitter il, LocalVariableInfo nullableX, LocalVariableInfo nullableY, Type nullableType, Label ifBothNull);
+    public delegate ILEmitter EmitCheckNullablesForValueDelegate(ILEmitter il, ILEmitterFunc nullableX, ILEmitterFunc nullableY, Type nullableType, Label ifBothNull);
 }

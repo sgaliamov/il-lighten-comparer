@@ -13,11 +13,16 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleComparableTests
     {
         [Fact]
-        public void Compare_comparable_objects()
+        public void Compare_comparable_base_objects()
         {
             Test(typeof(ComparableBaseObject<>), false);
-            Test(typeof(ComparableChildObject<>), false);
             Test(typeof(ComparableBaseObject<>), true);
+        }
+
+        [Fact]
+        public void Compare_comparable_child_objects()
+        {
+            Test(typeof(ComparableChildObject<>), false);
             Test(typeof(ComparableChildObject<>), true);
         }
 
