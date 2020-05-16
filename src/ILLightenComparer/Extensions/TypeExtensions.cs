@@ -33,7 +33,8 @@ namespace ILLightenComparer.Extensions
 
         private static readonly HashSet<Type> BasicTypes = new HashSet<Type>(typeof(object).Assembly
             .GetTypes()
-            .Where(x => x.FullName.StartsWith("System.")));
+            .Where(x => x.FullName.StartsWith("System."))
+            .Except(new[] { typeof(object) })); // object is treated separately
 
         /// <summary>
         ///     Creates instance using static method.

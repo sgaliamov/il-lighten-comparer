@@ -21,7 +21,7 @@ namespace ILLightenComparer.Equality.Hashers
 
         public static BasicHasher Create(IVariable variable)
         {
-            if (variable.VariableType.IsBasic()) {
+            if (variable.VariableType.GetUnderlyingType().IsBasic()) {
                 return new BasicHasher(variable);
             }
 
