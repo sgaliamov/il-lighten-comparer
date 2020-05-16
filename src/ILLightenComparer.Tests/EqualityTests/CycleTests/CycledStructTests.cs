@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using ILLightenComparer.Tests.EqualityComparers;
 using ILLightenComparer.Tests.EqualityTests.CycleTests.Samples;
 using ILLightenComparer.Tests.Samples;
 using Xunit;
@@ -26,7 +27,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
         }
 
         [Fact]
-        public void Sefl_sealed_struct_should_throw_ArgumentException()
+        public void Sefl_sealed_struct_should_handle_cycle()
         {
             var comparer = _builder.GetEqualityComparer<SelfStruct<Guid>>();
             var x = new SelfStruct<Guid> {
@@ -35,8 +36,8 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             };
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => comparer.Equals(x, x));
-                Assert.Throws<ArgumentException>(() => comparer.GetHashCode(x));
+                comparer.Equals(x, x).Should().BeTrue();
+                comparer.GetHashCode(x).Should().Be(HashCodeCombiner.Combine<object>(x.Key, 1, x.Value));
             }
         }
 
@@ -50,9 +51,8 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             other.FirstStruct = new CycledStruct { SecondObject = other };
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => ComparerObject.Equals(one, other));
-                Assert.Throws<ArgumentException>(() => ComparerObject.GetHashCode(one));
-                Assert.Throws<ArgumentException>(() => ComparerObject.GetHashCode(other));
+                ComparerObject.Equals(one, other).Should().BeTrue();
+                ComparerObject.GetHashCode(one).Should().Be(ComparerObject.GetHashCode(other));
             }
         }
 
@@ -70,9 +70,8 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             other.FirstObject.SecondStruct = other;
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => ComparerStruct.Equals(one, other));
-                Assert.Throws<ArgumentException>(() => ComparerStruct.GetHashCode(one));
-                Assert.Throws<ArgumentException>(() => ComparerStruct.GetHashCode(other));
+                ComparerStruct.Equals(one, other).Should().BeTrue();
+                ComparerStruct.GetHashCode(one).Should().Be(ComparerStruct.GetHashCode(other));
             }
         }
 
@@ -103,7 +102,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             using (new AssertionScope()) {
                 ComparerObject.Equals(one, other).Should().BeFalse();
                 ComparerObject.GetHashCode(one).Should().Be(0);
-                Assert.Throws<ArgumentException>(() => ComparerObject.GetHashCode(other));
+                ComparerObject.GetHashCode(other).Should().Be(-1940015289);
             }
         }
 
@@ -137,7 +136,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
 
             using (new AssertionScope()) {
                 ComparerStruct.Equals(one, other).Should().BeFalse();
-                Assert.Throws<ArgumentException>(() => ComparerStruct.GetHashCode(one));
+                ComparerStruct.GetHashCode(one).Should().Be(193377063);
                 ComparerStruct.GetHashCode(other).Should().Be(193376997);
             }
         }

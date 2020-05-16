@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
-using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -48,7 +47,9 @@ namespace ILLightenComparer.Equality
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
             .IfTrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
-            .Throw(New(Methods.ArgumentExceptionConstructor, LoadString($"Can't get hash for an object. Cycle is detected in {objectType.DisplayName()}.")))
+            .Execute(GetCount(Arg.CycleSet))
+            .Store(typeof(int), out var count)
+            .Return(Call(typeof(int).GetMethod(nameof(GetHashCode)), LoadCaller(count)))
             .MarkLabel(next);
     }
 }

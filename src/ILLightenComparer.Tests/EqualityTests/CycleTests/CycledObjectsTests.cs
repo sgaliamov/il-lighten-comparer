@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -29,8 +28,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
 
             using (new AssertionScope()) {
                 ComparerForOneSealed.Equals(one, other).Should().BeFalse();
-                Assert.Throws<ArgumentException>(() => ComparerForOneSealed.GetHashCode(one));
-                Assert.Throws<ArgumentException>(() => ComparerForOneSealed.GetHashCode(other));
+                ComparerForOneSealed.GetHashCode(one).Should().NotBe(ComparerForOneSealed.GetHashCode(other));
             }
         }
 
@@ -67,9 +65,8 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             x.Second = y;
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.Equals(x, y));
-                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.GetHashCode(x));
-                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.GetHashCode(y));
+                ComparerSelfSealed.Equals(x, y).Should().BeTrue();
+                ComparerSelfSealed.GetHashCode(x).Should().Be(ComparerSelfSealed.GetHashCode(y));
             }
         }
 
@@ -85,9 +82,8 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
                 other.Two.Three.One = other;
 
                 using (new AssertionScope()) {
-                    Assert.Throws<ArgumentException>(() => ComparerForOneSealed.Equals(one, other));
-                    Assert.Throws<ArgumentException>(() => ComparerForOneSealed.GetHashCode(one));
-                    Assert.Throws<ArgumentException>(() => ComparerForOneSealed.GetHashCode(other));
+                    comparer.Equals(one, other).Should().BeFalse();
+                    comparer.GetHashCode(one).Should().NotBe(comparer.GetHashCode(other));
                 }
             });
         }
@@ -128,7 +124,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             */
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.GetHashCode(one));
+                ComparerSelfSealed.GetHashCode(one).Should().Be(-2015759071);
                 ComparerSelfSealed.GetHashCode(other).Should().Be(-1670556025);
                 ComparerSelfSealed.Equals(one, other).Should().BeFalse();
             }
@@ -171,9 +167,9 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             var comparer = new ComparerBuilder().For<SelfSealed>().GetEqualityComparer<SelfSealed[]>();
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => comparer.Equals(x, y));
-                Assert.Throws<ArgumentException>(() => comparer.GetHashCode(x));
-                Assert.Throws<ArgumentException>(() => comparer.GetHashCode(y));
+                comparer.Equals(x, y).Should().BeFalse();
+                comparer.GetHashCode(x).Should().Be(271135911);
+                comparer.GetHashCode(y).Should().Be(194708355);
             }
         }
 
@@ -216,7 +212,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             */
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.GetHashCode(one));
+                ComparerSelfSealed.GetHashCode(one).Should().Be(-2015758974);
                 ComparerSelfSealed.GetHashCode(other).Should().Be(-1064642813);
                 ComparerSelfSealed.Equals(one, other).Should().BeFalse();
             }
@@ -234,9 +230,9 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             var other = new SelfSealed { First = one };
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.GetHashCode(one));
-                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.GetHashCode(other));
-                Assert.Throws<ArgumentException>(() => ComparerSelfSealed.Equals(one, other));
+                ComparerSelfSealed.GetHashCode(one).Should().Be(1342073958);
+                ComparerSelfSealed.GetHashCode(other).Should().Be(-826099324);
+                ComparerSelfSealed.Equals(one, other).Should().BeFalse();
             }
         }
 
@@ -249,9 +245,8 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             other.Self = other;
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => ComparerSelfOpened.GetHashCode(one));
-                Assert.Throws<ArgumentException>(() => ComparerSelfOpened.GetHashCode(other));
-                Assert.Throws<ArgumentException>(() => ComparerSelfOpened.Equals(one, other));
+                ComparerSelfOpened.Equals(one, other).Should().BeFalse();
+                ComparerSelfOpened.GetHashCode(one).Should().NotBe(ComparerSelfOpened.GetHashCode(other));
             }
         }
 
@@ -278,9 +273,8 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
             };
 
             using (new AssertionScope()) {
-                Assert.Throws<ArgumentException>(() => comparer.GetHashCode(x));
-                Assert.Throws<ArgumentException>(() => comparer.GetHashCode(y));
-                Assert.Throws<ArgumentException>(() => comparer.Equals(x, y));
+                comparer.Equals(x, y).Should().BeFalse();
+                comparer.GetHashCode(x).Should().NotBe(comparer.GetHashCode(y));
             }
         }
 
