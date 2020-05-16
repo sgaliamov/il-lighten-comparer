@@ -41,8 +41,8 @@ namespace ILLightenComparer.Comparer
               .Execute(emitter.Emit(exit));
 
             if (detecCycles) {
-                il.Call(RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
-                il.Call(RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
+                il.Execute(Remove(Arg.SetX, Arg.X, objectType))
+                  .Execute(Remove(Arg.SetY, Arg.Y, objectType));
             }
 
             il.Execute(emitter.EmitCheckForResult(exit))

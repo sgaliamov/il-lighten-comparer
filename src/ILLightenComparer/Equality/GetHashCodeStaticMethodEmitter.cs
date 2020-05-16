@@ -38,7 +38,7 @@ namespace ILLightenComparer.Equality
             _resolver.GetHasherEmitter(new ArgumentVariable(objectType)).Emit(il);
 
             if (detecCycles) {
-                il.Call(RemoveMethod, LoadArgument(Arg.CycleSet), LoadArgument(Arg.Input));
+                il.Execute(Remove(Arg.CycleSet, Arg.Input, objectType));
             }
 
             il.Return();
