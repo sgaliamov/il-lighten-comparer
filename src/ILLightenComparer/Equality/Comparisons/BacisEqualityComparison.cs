@@ -5,7 +5,6 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static Illuminator.Functional;
 
 namespace ILLightenComparer.Equality.Comparisons
 {
@@ -17,7 +16,8 @@ namespace ILLightenComparer.Equality.Comparisons
         private BacisEqualityComparison(IVariable variable)
         {
             _variable = variable;
-            _equalityMethod = _variable.VariableType.GetMethod(nameof(Equals), BindingFlags.Public | BindingFlags.Instance);
+            var variableType = _variable.VariableType;
+            _equalityMethod = variableType.GetMethod(nameof(Equals), new[] { variableType });
         }
 
         public static BacisEqualityComparison Create(IVariable variable)
@@ -32,8 +32,7 @@ namespace ILLightenComparer.Equality.Comparisons
 
         public ILEmitter Emit(ILEmitter il, Label _) => il.Call(
             _equalityMethod,
-            ExecuteIf(_variable.VariableType.IsValueType, _variable.LoadAddress(Arg.X)),
-            ExecuteIf(!_variable.VariableType.IsValueType, _variable.Load(Arg.X)),
+            _variable.VariableType.IsValueType ? _variable.LoadAddress(Arg.X) : _variable.Load(Arg.X),
             _variable.Load(Arg.Y));
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfFalsy(next);
