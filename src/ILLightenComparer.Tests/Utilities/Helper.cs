@@ -45,8 +45,12 @@ namespace ILLightenComparer.Tests.Utilities
                 Assert.True(x is null ? y is null : y != null);
             } else if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
                 x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
+            } else if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(DateTimeOffset)) {
+                x.Should().Be(y);
             } else {
-                x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>().WithStrictOrdering());
+                x.Should().BeEquivalentTo(y, options => options
+                    .ComparingByMembers<T>()
+                    .WithStrictOrdering());
             }
         }
 
