@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
+using static ILLightenComparer.Shared.CycleDetectionSet;
 using static Illuminator.Functional;
 
 namespace ILLightenComparer.Comparer
@@ -41,8 +41,8 @@ namespace ILLightenComparer.Comparer
               .Execute(emitter.Emit(exit));
 
             if (detecCycles) {
-                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
-                il.Call(CycleDetectionSet.RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
+                il.Call(RemoveMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X));
+                il.Call(RemoveMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y));
             }
 
             il.Execute(emitter.EmitCheckForResult(exit))
@@ -53,20 +53,10 @@ namespace ILLightenComparer.Comparer
         // no need detect cycle as flow goes outside context
         public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsSealedComparable();
 
-        private static void EmitCycleDetection(ILEmitter il)
-        {
-            static ILEmitterFunc TryAdd(ushort set, ushort arg) => Call(
-                CycleDetectionSet.TryAddMethod,
-                LoadArgument(set),
-                LoadArgument(arg),
-                LoadInteger(0));
-
-            static ILEmitterFunc GetCount(ushort set) => Call(CycleDetectionSet.GetCountProperty, LoadArgument(set));
-
-            il.AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X), TryAdd(Arg.SetY, Arg.Y)))
-              .IfFalse_S(out var next)
-              .Return(Sub(GetCount(Arg.SetX), GetCount(Arg.SetY)))
-              .MarkLabel(next);
-        }
+        private static void EmitCycleDetection(ILEmitter il) => il
+            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X), TryAdd(Arg.SetY, Arg.Y)))
+            .IfFalse_S(out var next)
+            .Return(Sub(GetCount(Arg.SetX), GetCount(Arg.SetY)))
+            .MarkLabel(next);
     }
 }

@@ -7,6 +7,7 @@ using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
+using static ILLightenComparer.Shared.CycleDetectionSet;
 using static Illuminator.Functional;
 
 namespace ILLightenComparer.Equality
@@ -52,10 +53,7 @@ namespace ILLightenComparer.Equality
         public bool NeedCreateCycleDetectionSets(Type objectType) => true;
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .AreSame(
-                LoadInteger(0),
-                Or(Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetX), LoadArgument(Arg.X), LoadInteger(0)),
-                   Call(CycleDetectionSet.TryAddMethod, LoadArgument(Arg.SetY), LoadArgument(Arg.Y), LoadInteger(0))))
+            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X), TryAdd(Arg.SetY, Arg.Y)))
             .IfFalse_S(out var next)
             .Throw(New(Methods.ArgumentExceptionConstructor, LoadString($"Can't compare objects. Cycle is detected in {objectType.DisplayName()}.")))
             .MarkLabel(next);

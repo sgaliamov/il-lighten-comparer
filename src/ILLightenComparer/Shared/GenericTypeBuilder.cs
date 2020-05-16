@@ -90,10 +90,10 @@ namespace ILLightenComparer.Shared
 
         private void EmitStaticMethodCall(ILEmitter il, Type objectType, MethodBuilder staticMethod, int parametersCount)
         {
-            var create = NeedCreateCycleDetectionSets(objectType, staticMethod.Name);
+            var createCycleDetectionSets = NeedCreateCycleDetectionSets(objectType, staticMethod.Name);
 
             Enumerable.Range(0, parametersCount)
-                .Aggregate(il, (il, _) => create
+                .Aggregate(il, (il, _) => createCycleDetectionSets
                     ? il.New(CycleDetectionSet.DefaultConstructor)
                     : il.LoadNull())
                 .Call(staticMethod)

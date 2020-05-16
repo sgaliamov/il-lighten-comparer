@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
 using ILLightenComparer.Extensions;
+using Illuminator;
+using static Illuminator.Functional;
 
 namespace ILLightenComparer.Shared
 {
@@ -15,5 +17,13 @@ namespace ILLightenComparer.Shared
         public static readonly MethodInfo RemoveMethod = typeof(IDictionary).FindMethod(nameof(IDictionary.Remove), new[] { typeof(object) });
 
         public static readonly MethodInfo GetCountProperty = typeof(CycleDetectionSet).GetProperty(nameof(Count)).GetGetMethod();
+
+        public static ILEmitterFunc TryAdd(ushort set, ushort arg) => Call(
+            TryAddMethod,
+            LoadArgument(set),
+            LoadArgument(arg),
+            LoadInteger(0));
+
+        public static ILEmitterFunc GetCount(ushort set) => Call(GetCountProperty, LoadArgument(set));
     }
 }
