@@ -10,7 +10,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark.Comparer
     [MedianColumn]
     public abstract class ComparersBenchmark<T>
     {
-        private const int N = 100000;
+        private const int N = 150000;
 
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
         private readonly IComparer<T> _il;
@@ -62,7 +62,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark.Comparer
             }
         }
 
-        [Benchmark(Baseline = true, Description = "IL Lighten Comparer")]
+        [Benchmark(Description = "IL Lighten Comparer")]
         public void IL_Comparer()
         {
             for (var i = 0; i < N; i++) {
@@ -70,7 +70,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark.Comparer
             }
         }
 
-        [Benchmark(Description = "Manual implementation")]
+        [Benchmark(Baseline = true, Description = "Manual implementation")]
         public void Manual_Comparer()
         {
             for (var i = 0; i < N; i++) {
