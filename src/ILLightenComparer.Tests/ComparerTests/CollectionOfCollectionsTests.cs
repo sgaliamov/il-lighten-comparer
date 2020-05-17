@@ -3,14 +3,41 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
+using FluentAssertions.Execution;
+using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.Comparers;
+using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
     public sealed class CollectionOfCollectionsTests
     {
+        [Fact]
+        public void Compare_enumerables_of_enumerables()
+        {
+            var collectionComparer = new CollectionComparer<List<int?>>(new CollectionComparer<int?>());
+            var referenceComparer = new CollectionComparer<EnumerableStruct<List<int?>>?>(
+                new NullableComparer<EnumerableStruct<List<int?>>>(
+                    new CustomizableComparer<EnumerableStruct<List<int?>>>((a, b) => collectionComparer.Compare(a, b))));
+            var comparer = new ComparerBuilder().GetComparer<IEnumerable<EnumerableStruct<List<int?>>?>>();
+
+            Helper.Parallel(() => {
+                var x = _fixture.CreateMany<EnumerableStruct<List<int?>>?>().RandomNulls().ToList();
+                var y = _fixture.CreateMany<EnumerableStruct<List<int?>>?>().RandomNulls().ToList();
+
+                var expectedEquals = referenceComparer.Compare(x, y);
+                var equals = comparer.Compare(x, y);
+
+                using (new AssertionScope()) {
+                    comparer.Compare(x, x).Should().Be(0);
+                    equals.Should().Be(expectedEquals);
+                }
+            });
+        }
+
         [Fact]
         public void Compare_array_of_array()
         {
@@ -82,6 +109,8 @@ namespace ILLightenComparer.Tests.ComparerTests
             Assert.Throws<NotSupportedException>(() => builder.For<SampleStruct<int[,]>>().GetComparer());
         }
 
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         private static void CompareCollectionOfCollections(Func<Type, Type[]> getCollectionTypes)
         {
             Parallel.Invoke(
@@ -109,31 +138,26 @@ namespace ILLightenComparer.Tests.ComparerTests
             Type genericSampleType,
             Type genericSampleComparer)
         {
-            var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
-            Parallel.ForEach(
-                types,
-                item => {
-                    var (type, referenceComparer) = item;
-                    var collections = getCollectionTypes(type);
-                    var comparerTypes = collections
-                                        .Prepend(type)
-                                        .Take(collections.Length)
-                                        .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
-                                        .ToArray();
-                    var comparer = comparerTypes.Aggregate(
-                        referenceComparer,
-                        (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
+            var types = nullable ? TestTypes.NullableTypes : TestTypes.Types;
+            Parallel.ForEach(types, item => {
+                var (type, referenceComparer) = item;
+                var collections = getCollectionTypes(type);
+                var comparer = collections
+                    .Prepend(type)
+                    .Take(collections.Length)
+                    .Select(x => typeof(CollectionComparer<>).MakeGenericType(x))
+                    .Aggregate(referenceComparer, (current, comparerType) => (IComparer)Activator.CreateInstance(comparerType, current, sort));
 
-                    type = collections.Last();
+                type = collections.Last();
 
-                    if (genericSampleType != null) {
-                        var comparerType = genericSampleComparer.MakeGenericType(type);
-                        type = genericSampleType.MakeGenericType(type);
-                        comparer = (IComparer)Activator.CreateInstance(comparerType, comparer);
-                    }
+                if (genericSampleType != null) {
+                    var comparerType = genericSampleComparer.MakeGenericType(type);
+                    type = genericSampleType.MakeGenericType(type);
+                    comparer = (IComparer)Activator.CreateInstance(comparerType, comparer);
+                }
 
-                    new GenericTests().GenericTest(type, comparer, sort, 1, 2);
-                });
+                new GenericTests().GenericTest(type, comparer, sort, 1, 2);
+            });
         }
     }
 }

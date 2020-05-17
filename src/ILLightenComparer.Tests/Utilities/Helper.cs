@@ -5,25 +5,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
-using ILLightenComparer.Tests.Samples.Comparers;
+using FluentAssertions.Execution;
+using ILLightenComparer.Tests.Comparers;
+using ILLightenComparer.Tests.EqualityComparers;
+using Illuminator.Extensions;
+using Xunit;
 
 namespace ILLightenComparer.Tests.Utilities
 {
-    public sealed class ConcurrentSet<T> : ConcurrentDictionary<T, byte> { }
+    public sealed class CycleDetectionSet : ConcurrentDictionary<object, byte> { }
 
     internal static class Helper
     {
+        public static IComparer<T> DefaultComparer<T>() => typeof(T) == typeof(object)
+            ? new ObjectComparer() as IComparer<T>
+            : Comparer<T>.Default;
+
         public static void ShouldBeSameOrder<T>(this IEnumerable<T> one, IEnumerable<T> other)
         {
-            using (var enumeratorOne = one.GetEnumerator())
-            using (var enumeratorOther = other.GetEnumerator()) {
-                while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext()) {
-                    var oneCurrent = enumeratorOne.Current;
-                    var otherCurrent = enumeratorOther.Current;
+            using var enumeratorOne = one.GetEnumerator();
+            using var enumeratorOther = other.GetEnumerator();
 
-                    oneCurrent.ShouldBeEquals(otherCurrent);
-                }
+            while (enumeratorOne.MoveNext() && enumeratorOther.MoveNext()) {
+                var oneCurrent = enumeratorOne.Current;
+                var otherCurrent = enumeratorOther.Current;
 
+                oneCurrent.ShouldBeEquals(otherCurrent);
+            }
+
+            using (new AssertionScope()) {
                 enumeratorOne.MoveNext().Should().BeFalse();
                 enumeratorOther.MoveNext().Should().BeFalse();
             }
@@ -31,11 +41,16 @@ namespace ILLightenComparer.Tests.Utilities
 
         public static void ShouldBeEquals<T>(this T x, T y)
         {
-            if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
+            if (typeof(T) == typeof(object)) {
+                Assert.True(x is null ? y is null : y != null);
+            } else if (typeof(T).IsPrimitive() || typeof(T).IsNullable()) {
                 x.Should().BeEquivalentTo(y, options => options.WithStrictOrdering());
-            }
-            else {
-                x.Should().BeEquivalentTo(y, options => options.ComparingByMembers<T>().WithStrictOrdering());
+            } else if (BasicTypes.Contains(typeof(T))) {
+                x.Should().Be(y);
+            } else {
+                x.Should().BeEquivalentTo(y, options => options
+                    .ComparingByMembers<T>()
+                    .WithStrictOrdering());
             }
         }
 
@@ -52,14 +67,14 @@ namespace ILLightenComparer.Tests.Utilities
             return value;
         }
 
-        public static void Parallel(ThreadStart action) => Parallel(action, Environment.ProcessorCount * 10);
+        public static void Parallel(ThreadStart action) => Parallel(action, Environment.ProcessorCount * 4);
 
         public static void Parallel(ThreadStart action, int count)
         {
             var threads = Enumerable
-                          .Range(0, count)
-                          .Select(x => new Thread(action))
-                          .ToArray();
+                .Range(0, count)
+                .Select(_ => new Thread(action))
+                .ToArray();
 
             foreach (var thread in threads) {
                 thread.Start();
@@ -76,5 +91,30 @@ namespace ILLightenComparer.Tests.Utilities
 
             return (IComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
         }
+
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection) => collection?.Any() != true;
+
+        public static IEqualityComparer CreateNullableEqualityComparer(Type type, IEqualityComparer valueComparer)
+        {
+            var nullableComparerType = typeof(NullableEqualityComparer<>).MakeGenericType(type);
+
+            return (IEqualityComparer)Activator.CreateInstance(nullableComparerType, valueComparer);
+        }
+
+        public static IEnumerable<T> RandomNulls<T>(this IEnumerable<T> collection, double probability = .2)
+        {
+            foreach (var item in collection) {
+                yield return ThreadSafeRandom.NextDouble() < probability ? default : item;
+            }
+        }
+
+        public static readonly HashSet<Type> BasicTypes = new HashSet<Type>(typeof(object).Assembly
+            .GetTypes()
+            .Where(x => x.FullName.StartsWith("System."))
+            .Where(x => x.IsPublic)
+            .Where(x => !x.IsAbstract)
+            .Where(x => !x.IsGenericType)
+            .Where(x => x.ImplementsGenericInterface(typeof(IComparable<>)))
+            .Except(new[] { typeof(ArgIterator) }));
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using AutoFixture.Kernel;
 
@@ -17,49 +18,37 @@ namespace ILLightenComparer.Tests.Utilities
             _minMaxProbability = minMaxProbability;
         }
 
-        public object Create(object request, ISpecimenContext context) =>
-            request is Type type
-                ? CreateRandom(type)
-                : new NoSpecimen();
+        public object Create(object request, ISpecimenContext context) => request is Type type
+            ? type.GetTypeInfo().IsEnum
+                ? CreateRandomEnum(type)
+                : CreateRandom(type)
+            : new NoSpecimen();
 
-        private object CreateRandom(Type request)
+        private object CreateRandom(Type type) => (Type.GetTypeCode(type)) switch
         {
-            switch (Type.GetTypeCode(request)) {
-                case TypeCode.Byte:
-                    return MinMax<byte>(request) ?? (byte)GetNextRandom();
+            TypeCode.Byte => MinMax<byte>(type) ?? (byte)GetNextRandom(),
+            TypeCode.Decimal => MinMax<decimal>(type) ?? GetNextRandom(),
+            TypeCode.Double => MinMax<double>(type) ?? GetNextRandom(),
+            TypeCode.Int16 => MinMax<short>(type) ?? (short)GetNextRandom(),
+            TypeCode.Int32 => MinMax<int>(type) ?? (int)GetNextRandom(),
+            TypeCode.Int64 => MinMax<long>(type) ?? GetNextRandom(),
+            TypeCode.SByte => MinMax<sbyte>(type) ?? (sbyte)GetNextRandom(),
+            TypeCode.Single => MinMax<float>(type) ?? GetNextRandom(),
+            TypeCode.UInt16 => MinMax<ushort>(type) ?? (ushort)GetNextRandom(),
+            TypeCode.UInt32 => MinMax<uint>(type) ?? (uint)GetNextRandom(),
+            TypeCode.UInt64 => MinMax<ulong>(type) ?? (ulong)GetNextRandom(),
+            _ => new NoSpecimen(),
+        };
 
-                case TypeCode.Decimal:
-                    return MinMax<decimal>(request) ?? GetNextRandom();
+        private object CreateRandomEnum(Type type)
+        {
+            var values = Enum.GetValues(type).Cast<object>().OrderBy(x => x).ToArray();
 
-                case TypeCode.Double:
-                    return MinMax<double>(request) ?? GetNextRandom();
+            var index = ThreadSafeRandom.NextDouble() < _minMaxProbability
+                ? ThreadSafeRandom.NextDouble() < 0.5 ? 0 : values.Length - 1
+                : ThreadSafeRandom.Next(0, values.Length);
 
-                case TypeCode.Int16:
-                    return MinMax<short>(request) ?? (short)GetNextRandom();
-
-                case TypeCode.Int32:
-                    return MinMax<int>(request) ?? (int)GetNextRandom();
-
-                case TypeCode.Int64:
-                    return MinMax<long>(request) ?? GetNextRandom();
-
-                case TypeCode.SByte:
-                    return MinMax<sbyte>(request) ?? (sbyte)GetNextRandom();
-
-                case TypeCode.Single:
-                    return MinMax<float>(request) ?? GetNextRandom();
-
-                case TypeCode.UInt16:
-                    return MinMax<ushort>(request) ?? (ushort)GetNextRandom();
-
-                case TypeCode.UInt32:
-                    return MinMax<uint>(request) ?? (uint)GetNextRandom();
-
-                case TypeCode.UInt64:
-                    return MinMax<ulong>(request) ?? (ulong)GetNextRandom();
-
-                default: return new NoSpecimen();
-            }
+            return values[index];
         }
 
         private T? MinMax<T>(IReflect request) where T : struct
@@ -71,8 +60,8 @@ namespace ILLightenComparer.Tests.Utilities
             object Get(IReflect t, string name) => t.GetField(name, BindingFlags.Static | BindingFlags.Public).GetValue(null);
 
             return ThreadSafeRandom.NextDouble() < 0.5
-                       ? (T)Get(request, "MinValue")
-                       : (T)Get(request, "MaxValue");
+                ? (T)Get(request, "MinValue")
+                : (T)Get(request, "MaxValue");
         }
 
         private long GetNextRandom() => ThreadSafeRandom.Next(_lower, _upper);

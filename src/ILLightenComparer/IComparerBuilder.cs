@@ -7,7 +7,7 @@ namespace ILLightenComparer
     /// <summary>
     ///     Interface provides methods to build an instance of a comparer based on defined type and configuration.
     /// </summary>
-    public interface IComparerBuilder : IComparerProvider
+    public interface IComparerBuilder : IComparerProvider, IEqualityComparerProvider
     {
         /// <summary>
         ///     Converts the common builder to typed version.
@@ -39,7 +39,7 @@ namespace ILLightenComparer
     ///     Interface to build an instance of a comparer based for provided type <typeparamref name="T" />.
     /// </summary>
     /// <typeparam name="T">The type whose instances need to compare.</typeparam>
-    public interface IComparerBuilder<T> : IComparerProvider<T>
+    public interface IComparerBuilder<T> : IComparerProvider<T>, IEqualityComparerProvider<T>
     {
         /// <summary>
         ///     Self.
@@ -107,7 +107,7 @@ namespace ILLightenComparer
         IConfigurationBuilder SetDefaultFieldsInclusion(bool? value);
 
         /// <summary>
-        ///     Defined default <see cref="StringComparison" /> type.
+        ///     Defines default <see cref="StringComparison" /> type.
         /// </summary>
         /// <param name="value">
         ///     Default value is <see cref="StringComparison.Ordinal" />.
@@ -115,6 +115,16 @@ namespace ILLightenComparer
         /// </param>
         /// <returns>Configuration builder.</returns>
         IConfigurationBuilder SetDefaultStringComparisonType(StringComparison? value);
+
+        /// <summary>
+        ///     Defines default hash seed.
+        /// </summary>
+        /// <param name="value">
+        ///     Default value is 0x1505L.
+        ///     null value resets to default.
+        /// </param>
+        /// <returns>Configuration builder.</returns>
+        IConfigurationBuilder SetDefaultHashSeed(long? value);
     }
 
     /// <summary>
@@ -188,7 +198,7 @@ namespace ILLightenComparer
         IConfigurationBuilder DefineMembersOrder<T>(Action<IMembersOrder<T>> order);
 
         /// <summary>
-        ///     Defined <see cref="StringComparison" /> type for strings comparison.
+        ///     Defines <see cref="StringComparison" /> type for strings comparison.
         /// </summary>
         /// <param name="type">The type whose instances need to compare.</param>
         /// <param name="value">
@@ -197,6 +207,17 @@ namespace ILLightenComparer
         /// </param>
         /// <returns>Configuration builder.</returns>
         IConfigurationBuilder SetStringComparisonType(Type type, StringComparison? value);
+
+        /// <summary>
+        ///     Defines hash seed for the <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">The type whose instances need to be compared.</param>
+        /// <param name="value">
+        ///     Default value is 0x1505L.
+        ///     null value resets to default.
+        /// </param>
+        /// <returns>Configuration builder.</returns>
+        IConfigurationBuilder SetHashSeed(Type type, long? value);
 
         /// <summary>
         ///     Defines custom comparer.
@@ -213,6 +234,22 @@ namespace ILLightenComparer
         /// <typeparam name="TComparer">Type of custom comparer.</typeparam>
         /// <returns>Configuration builder.</returns>
         IConfigurationBuilder SetCustomComparer<TComparer>();
+
+        /// <summary>
+        ///     Defines custom equality comparer.
+        /// </summary>
+        /// <typeparam name="T">The type whose instances need to compare.</typeparam>
+        /// <param name="instance">Instance of a comparer.</param>
+        /// <returns>Configuration builder.</returns>
+        IConfigurationBuilder SetCustomEqualityComparer<T>(IEqualityComparer<T> instance);
+
+        /// <summary>
+        ///     Defines type of custom equality comparer.
+        ///     Type must has default constructor.
+        /// </summary>
+        /// <typeparam name="TComparer">Type of custom comparer.</typeparam>
+        /// <returns>Configuration builder.</returns>
+        IConfigurationBuilder SetCustomEqualityComparer<TComparer>();
 
         /// <summary>
         ///     Defines configuration for comparer of type <see cref="IComparer{T}" />.
@@ -293,7 +330,7 @@ namespace ILLightenComparer
     public interface IComparerProvider
     {
         /// <summary>
-        ///     Returns instance of a comparer.
+        ///     Returns an instance of comparer.
         /// </summary>
         /// <typeparam name="T">The type whose instances need to compare.</typeparam>
         /// <returns>Instance of <see cref="IComparer{T}" />.</returns>
@@ -303,20 +340,53 @@ namespace ILLightenComparer
     /// <summary>
     ///     Provides access to generated comparers.
     /// </summary>
+    public interface IEqualityComparerProvider
+    {
+        /// <summary>
+        ///     Returns an instance of equality comparer.
+        /// </summary>
+        /// <typeparam name="T">The type whose instances need to compare.</typeparam>
+        /// <returns>Instance of <see cref="IEqualityComparer{T}" />.</returns>
+        IEqualityComparer<T> GetEqualityComparer<T>();
+    }
+
+    /// <summary>
+    ///     Provides access to generated comparers.
+    /// </summary>
     public interface IComparerProvider<in T>
     {
         /// <summary>
-        ///     Returns instance of a comparer.
+        ///     Returns an instance of comparer.
         /// </summary>
         /// <typeparam name="T">The type whose instances need to compare.</typeparam>
         /// <returns>Instance of <see cref="IComparer{T}" />.</returns>
         IComparer<T> GetComparer();
 
         /// <summary>
-        ///     Returns instance of a comparer.
+        ///     Returns an instance of comparer.
         /// </summary>
         /// <typeparam name="TOther">The type whose instances need to compare.</typeparam>
         /// <returns>Instance of <see cref="IComparer{TOther}" />.</returns>
         IComparer<TOther> GetComparer<TOther>();
+    }
+
+    /// <summary>
+    ///     Provides access to generated equality comparers.
+    /// </summary>
+    public interface IEqualityComparerProvider<in T>
+    {
+        /// <summary>
+        ///     Returns an instance of equality comparer.
+        /// </summary>
+        /// <typeparam name="T">The type whose instances need to compare.</typeparam>
+        /// <returns>Instance of <see cref="IEqualityComparer{T}" />.</returns>
+        IEqualityComparer<T> GetEqualityComparer();
+
+        /// <summary>
+        ///     Returns an instance of equality comparer.
+        /// </summary>
+        /// <typeparam name="TOther">The type whose instances need to compare.</typeparam>
+        /// <returns>Instance of <see cref="IEqualityComparer{TOther}" />.</returns>
+        IEqualityComparer<TOther> GetEqualityComparer<TOther>();
     }
 }

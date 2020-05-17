@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
+using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -96,7 +96,7 @@ namespace ILLightenComparer.Tests.ComparerTests
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool useArrays, bool sort, bool makeNullable)
         {
             Parallel.ForEach(
-                SampleTypes.Types,
+                TestTypes.Types,
                 item => {
                     var (type, referenceComparer) = item;
                     var itemComparer = referenceComparer;

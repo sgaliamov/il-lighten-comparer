@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Linq;
 using AutoFixture;
 
 namespace ILLightenComparer.Tests.Utilities
@@ -19,8 +20,10 @@ namespace ILLightenComparer.Tests.Utilities
                 (fixture.Create<ushort>() % 4)
                 .ToString(CultureInfo.InvariantCulture)));
 
-            fixture.Customizations.Add(new CasualNullGenerator(0.1));
-            fixture.Customizations.Add(new CustomNumericGenerator(-1, 1, 0.1));
+            fixture.Customizations.Insert(0, new CasualNullGenerator(Constants.NullProbability));
+            fixture.Customizations.Insert(0, new CustomNumericGenerator(-1, 1, 0.1));
+            var enumGenerator = fixture.Customizations.First(x => x is EnumGenerator);
+            fixture.Customizations.Remove(enumGenerator);
         }
     }
 }

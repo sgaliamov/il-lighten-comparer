@@ -13,41 +13,37 @@ namespace ILLightenComparer.Tests.ComparerTests
     public sealed class SampleComparableTests
     {
         [Fact]
-        public void Compare_comparable_objects()
+        public void Compare_comparable_base_objects()
         {
-            Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer), false);
-            Test(typeof(SampleComparableChildObject<>), nameof(SampleComparableChildObject<object>.ChildComparer), false);
-            Test(typeof(SampleComparableBaseObject<>), nameof(SampleComparableBaseObject<object>.Comparer), true);
-            Test(typeof(SampleComparableChildObject<>), nameof(SampleComparableChildObject<object>.ChildComparer), true);
+            Test(typeof(ComparableBaseObject<>), false);
+            Test(typeof(ComparableBaseObject<>), true);
+        }
 
-            foreach (var item in SampleTypes.Types) {
-                typeof(SampleComparableBaseObject<>)
-                    .MakeGenericType(item.Key)
-                    .GetField(nameof(SampleComparableBaseObject<object>.UsedCompareTo), BindingFlags.Public | BindingFlags.Static)
-                    .GetValue(null)
-                    .Should()
-                    .Be(true);
-            }
+        [Fact]
+        public void Compare_comparable_child_objects()
+        {
+            Test(typeof(ComparableChildObject<>), false);
+            Test(typeof(ComparableChildObject<>), true);
         }
 
         [Fact]
         public void Compare_comparable_structs()
         {
-            Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer), false);
-            Test(typeof(SampleComparableStruct<>), nameof(SampleComparableStruct<object>.Comparer), true);
+            Test(typeof(ComparableStruct<>), false);
+            Test(typeof(ComparableStruct<>), true);
         }
 
         [Fact]
         public void Custom_comparable_implementation_should_return_negative_when_first_argument_isnull()
         {
-            var one = new SampleObject<SampleComparableBaseObject<EnumSmall>> {
-                Property = FixtureBuilder.GetInstance().Create<SampleComparableBaseObject<EnumSmall>>()
+            var one = new SampleObject<ComparableBaseObject<EnumSmall>> {
+                Property = FixtureBuilder.GetInstance().Create<ComparableBaseObject<EnumSmall>>()
             };
 
             var other = one.DeepClone();
             one.Property = null;
 
-            var comparer = new ComparerBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
+            var comparer = new ComparerBuilder().GetComparer<SampleObject<ComparableBaseObject<EnumSmall>>>();
 
             comparer.Compare(one, other).Should().BeNegative();
         }
@@ -55,18 +51,18 @@ namespace ILLightenComparer.Tests.ComparerTests
         [Fact]
         public void Replaced_comparable_object_is_compared_with_custom_implementation()
         {
-            var comparer = new ComparerBuilder().GetComparer<SampleObject<SampleComparableBaseObject<EnumSmall>>>();
+            var comparer = new ComparerBuilder().GetComparer<SampleObject<ComparableBaseObject<EnumSmall>>>();
             var fixture = FixtureBuilder.GetInstance();
 
-            var one = new SampleObject<SampleComparableBaseObject<EnumSmall>> {
-                Property = fixture.Create<SampleComparableChildObject<EnumSmall>>()
+            var one = new SampleObject<ComparableBaseObject<EnumSmall>> {
+                Property = fixture.Create<ComparableChildObject<EnumSmall>>()
             };
             comparer.Compare(one, one.DeepClone()).Should().Be(0);
 
             for (var i = 0; i < Constants.SmallCount; i++) {
-                one.Property = fixture.Create<SampleComparableChildObject<EnumSmall>>();
-                var other = new SampleObject<SampleComparableBaseObject<EnumSmall>> {
-                    Property = fixture.Create<SampleComparableChildObject<EnumSmall>>()
+                one.Property = fixture.Create<ComparableChildObject<EnumSmall>>();
+                var other = new SampleObject<ComparableBaseObject<EnumSmall>> {
+                    Property = fixture.Create<ComparableChildObject<EnumSmall>>()
                 };
 
                 var expected = one.Property.CompareTo(other.Property).Normalize();
@@ -75,28 +71,49 @@ namespace ILLightenComparer.Tests.ComparerTests
                 actual.Should().Be(expected);
             }
 
-            SampleComparableChildObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
+            ComparableChildObject<EnumSmall>.UsedCompareTo.Should().BeTrue();
         }
 
-        private static void Test(Type comparableGenericType, string comparerName, bool makeNullable)
+        private static void Test(Type comparableGenericType, bool makeNullable)
         {
-            var types = makeNullable ? SampleTypes.NullableTypes : SampleTypes.Types;
-            Parallel.ForEach(
-                types,
-                item => {
-                    var (type, referenceComparer) = item;
-                    var objectType = type;
-                    var itemComparer = referenceComparer;
+            var types = makeNullable ? TestTypes.NullableTypes : TestTypes.Types;
 
-                    var comparableType = comparableGenericType.MakeGenericType(objectType);
-                    if (itemComparer != null) {
-                        comparableType
-                            .GetField(comparerName, BindingFlags.Public | BindingFlags.Static)
-                            .SetValue(null, itemComparer);
-                    }
+            Parallel.ForEach(types, item => {
+                var (objectType, referenceComparer) = item;
+                var itemComparer = referenceComparer;
+                var comparableType = comparableGenericType.MakeGenericType(objectType);
 
-                    new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
-                });
+                if (itemComparer != null) {
+                    typeof(ComparableStruct<>)
+                        .MakeGenericType(objectType)
+                        .GetField(nameof(ComparableStruct<object>.Comparer), BindingFlags.Public | BindingFlags.Static)
+                        .SetValue(null, itemComparer);
+
+                    typeof(ComparableBaseObject<>)
+                        .MakeGenericType(objectType)
+                        .GetField(nameof(ComparableBaseObject<object>.Comparer), BindingFlags.Public | BindingFlags.Static)
+                        .SetValue(null, itemComparer);
+
+                    typeof(ComparableChildObject<>)
+                        .MakeGenericType(objectType)
+                        .GetField(nameof(ComparableChildObject<object>.ChildComparer), BindingFlags.Public | BindingFlags.Static)
+                        .SetValue(null, itemComparer);
+                }
+
+                comparableType
+                    .GetField("UsedCompareTo", BindingFlags.Public | BindingFlags.Static)?
+                    .SetValue(null, false);
+
+                new GenericTests().GenericTest(comparableType, null, false, Constants.SmallCount);
+
+                if (comparableType.IsSealedType()) {
+                    comparableType
+                        .GetField("UsedCompareTo", BindingFlags.Public | BindingFlags.Static)
+                        .GetValue(null)
+                        .Should()
+                        .Be(true, comparableType.FullName);
+                }
+            });
         }
     }
 }

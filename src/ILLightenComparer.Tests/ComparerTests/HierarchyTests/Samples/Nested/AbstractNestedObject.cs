@@ -8,7 +8,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
 
         public virtual int CompareTo(object obj)
         {
-            if (ReferenceEquals(null, obj)) {
+            if (obj is null) {
                 return 1;
             }
 
@@ -21,6 +21,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests.Samples.Nested
                        : throw new ArgumentException($"Object must be of type {nameof(AbstractNestedObject)}.");
         }
 
-        private int CompareTo(INestedObject other) => string.Compare(Text, other.Text, StringComparison.Ordinal);
+        private int CompareTo(INestedObject other) => string.CompareOrdinal(Text, other.Text);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Illuminator.Extensions;
 
 namespace ILLightenComparer.Tests.Utilities
 {
@@ -98,7 +99,7 @@ namespace ILLightenComparer.Tests.Utilities
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) {
+            if (obj is null) {
                 return false;
             }
 
@@ -113,9 +114,9 @@ namespace ILLightenComparer.Tests.Utilities
         {
             unchecked {
                 var hashCode = 397;
-                hashCode = (hashCode * 397) ^ (MemberInfo != null ? MemberInfo.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Parent != null ? Parent.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Value != null ? Value.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (MemberInfo?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (Parent?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (Value?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }

@@ -5,14 +5,14 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
 {
     public sealed class SelfSealed
     {
+        public static RelationalComparer Comparer { get; } = new RelationalComparer();
+
         public readonly int Id;
         public SelfSealed First;
-
-        public SelfSealed() => Id = this.GetObjectId();
-
-        public static RelationalComparer Comparer { get; } = new RelationalComparer();
         public SelfSealed Second { get; set; }
         public int Value { get; set; }
+
+        public SelfSealed() => Id = this.GetObjectId();
 
         public override string ToString() => Id.ToString();
 
@@ -20,26 +20,57 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
         {
             public int Compare(SelfSealed x, SelfSealed y)
             {
-                var setX = new ConcurrentSet<object>();
-                var setY = new ConcurrentSet<object>();
+                var setX = new CycleDetectionSet();
+                var setY = new CycleDetectionSet();
 
                 return Compare(x, y, setX, setY);
             }
 
-            private static int Compare(SelfSealed x, SelfSealed y, ConcurrentSet<object> setX, ConcurrentSet<object> setY)
+            public int Compare(IEnumerable<SelfSealed> x, IEnumerable<SelfSealed> y)
+            {
+                var setX = new CycleDetectionSet();
+                var setY = new CycleDetectionSet();
+
+                using var enumeratorX = x.GetEnumerator();
+                using var enumeratorY = y.GetEnumerator();
+
+                while (true) {
+                    var xDone = !enumeratorX.MoveNext();
+                    var yDone = !enumeratorY.MoveNext();
+
+                    if (xDone) {
+                        return yDone ? 0 : -1;
+                    }
+
+                    if (yDone) {
+                        return 1;
+                    }
+
+                    var xCurrent = enumeratorX.Current;
+                    var yCurrent = enumeratorY.Current;
+
+                    var compare = Compare(xCurrent, yCurrent, setX, setY);
+                    if (compare != 0) {
+                        return compare;
+                    }
+                }
+            }
+
+            private static int Compare(SelfSealed x, SelfSealed y, CycleDetectionSet setX, CycleDetectionSet setY)
             {
                 if (ReferenceEquals(x, y)) {
                     return 0;
                 }
 
-                if (ReferenceEquals(null, y)) {
+                if (y is null) {
                     return 1;
                 }
 
-                if (ReferenceEquals(null, x)) {
+                if (x is null) {
                     return -1;
                 }
 
+                // & because, both methods need to be executed.
                 if (!setX.TryAdd(x, 0) & !setY.TryAdd(y, 0)) {
                     return setX.Count - setY.Count;
                 }
@@ -59,8 +90,17 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests.Samples
                     return compareValue;
                 }
 
+                setX.Remove(x, out _);
+                setY.Remove(y, out _);
+
                 return 0;
             }
         }
+
+        public bool Equals(SelfSealed obj) => Value == obj.Value;
+
+        public override bool Equals(object obj) => Equals((SelfSealed)obj);
+
+        public override int GetHashCode() => Value.GetHashCode();
     }
 }

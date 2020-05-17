@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Threading.Tasks;
+using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.Samples;
-using ILLightenComparer.Tests.Samples.Comparers;
 using ILLightenComparer.Tests.Utilities;
 using Xunit;
 
@@ -26,7 +26,7 @@ namespace ILLightenComparer.Tests.ComparerTests
 
         private static void Test(Type genericSampleType, Type genericSampleComparer, bool nullable)
         {
-            var types = nullable ? SampleTypes.NullableTypes : SampleTypes.Types;
+            var types = nullable ? TestTypes.NullableTypes : TestTypes.Types;
 
             Parallel.ForEach(
                 types,

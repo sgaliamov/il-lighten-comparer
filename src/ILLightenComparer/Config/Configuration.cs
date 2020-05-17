@@ -12,7 +12,8 @@ namespace ILLightenComparer.Config
             configuration.MembersOrder,
             configuration.StringComparisonType,
             configuration.DetectCycles,
-            configuration.IgnoreCollectionOrder)
+            configuration.IgnoreCollectionOrder,
+            configuration.HashSeed)
         { }
 
         public Configuration(
@@ -21,7 +22,8 @@ namespace ILLightenComparer.Config
             IEnumerable<string> membersOrder,
             StringComparison stringComparisonType,
             bool detectCycles,
-            bool ignoreCollectionOrder
+            bool ignoreCollectionOrder,
+            long hashSeed
         )
         {
             IgnoredMembers = new HashSet<string>(ignoredMembers ?? throw new ArgumentNullException(nameof(ignoredMembers)));
@@ -30,6 +32,7 @@ namespace ILLightenComparer.Config
             StringComparisonType = stringComparisonType;
             DetectCycles = detectCycles;
             IgnoreCollectionOrder = ignoreCollectionOrder;
+            HashSeed = hashSeed;
         }
 
         public bool DetectCycles { get; set; }
@@ -38,13 +41,13 @@ namespace ILLightenComparer.Config
         public bool IncludeFields { get; set; }
         public string[] MembersOrder { get; private set; }
         public StringComparison StringComparisonType { get; set; }
+        public long HashSeed { get; set; }
 
         public void SetIgnoredMembers(IEnumerable<string> ignoredMembers)
         {
             if (ignoredMembers == null) {
                 IgnoredMembers.Clear();
-            }
-            else {
+            } else {
                 IgnoredMembers.UnionWith(ignoredMembers);
             }
         }

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using ILLightenComparer.Tests.ComparerTests.CycleTests.Samples;
+using ILLightenComparer.Tests.Samples;
 using Xunit;
 
 namespace ILLightenComparer.Tests.ComparerTests.CycleTests
@@ -24,6 +27,18 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
         }
 
         [Fact]
+        public void Sefl_sealed_struct_should_be_equal()
+        {
+            var comparer = _builder.GetComparer<SelfStruct<Guid>>();
+            var x = new SelfStruct<Guid> {
+                Key = Guid.NewGuid(),
+                Value = Guid.NewGuid()
+            };
+
+            comparer.Compare(x, x).Should().Be(0);
+        }
+
+        [Fact]
         public void Detects_cycle_in_object()
         {
             var one = new CycledStructObject();
@@ -35,8 +50,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = CycledStructObject.Comparer.Compare(one, other);
             var actual = ComparerObject.Compare(one, other);
 
-            expected.Should().Be(0);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(0);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -55,8 +72,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = CycledStruct.Comparer.Compare(one, other);
             var actual = ComparerStruct.Compare(one, other);
 
-            expected.Should().Be(0);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(0);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -86,8 +105,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = CycledStructObject.Comparer.Compare(one, other);
             var actual = ComparerObject.Compare(one, other);
 
-            expected.Should().Be(-1);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(-1);
+                actual.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -121,8 +142,10 @@ namespace ILLightenComparer.Tests.ComparerTests.CycleTests
             var expected = CycledStruct.Comparer.Compare(one, other);
             var actual = ComparerStruct.Compare(one, other);
 
-            expected.Should().Be(1);
-            actual.Should().Be(expected);
+            using (new AssertionScope()) {
+                expected.Should().Be(1);
+                actual.Should().Be(expected);
+            }
         }
 
         public IComparer<CycledStruct> ComparerStruct => _builder.GetComparer<CycledStruct>();

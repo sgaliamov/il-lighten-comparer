@@ -1,8 +1,15 @@
 {
   "markdownlint.config": {
     "MD031": false,
-    "MD033": false
+    "MD033": false,
+    "MD024": false
   },
+  "cSpell.ignorePaths": [
+    ".vscode",
+    "*.json",
+    "*.yml",
+    "*.sln"
+  ],
   "cSpell.words": [
     "Redstone",
     "Skylake",

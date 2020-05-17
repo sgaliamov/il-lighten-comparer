@@ -14,14 +14,6 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
     public sealed class AbstractMembersTests
     {
         [Fact]
-        public void Abstract_property_comparison()
-        {
-            Test(x => new AbstractMembers {
-                AbstractProperty = x
-            });
-        }
-
-        [Fact]
         public void Attempt_to_compare_different_sibling_types_throws_argument_exception()
         {
             var sealedNestedObject = _fixture
@@ -61,28 +53,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         }
 
         [Fact]
-        public void Interface_field_comparison()
-        {
-            Test(x => new AbstractMembers {
-                InterfaceField = x
-            });
-        }
+        public void Abstract_property_comparison() => TestOneField(x => new AbstractMembers { AbstractProperty = x });
 
         [Fact]
-        public void Not_sealed_property_comparison()
-        {
-            Test(x => new AbstractMembers {
-                NotSealedProperty = x
-            });
-        }
+        public void Interface_field_comparison() => TestOneField(x => new AbstractMembers { InterfaceField = x });
 
         [Fact]
-        public void Object_field_comparison()
-        {
-            Test(x => new AbstractMembers {
-                ObjectField = x
-            });
-        }
+        public void Not_sealed_property_comparison() => TestOneField(x => new AbstractMembers { NotSealedProperty = x });
+
+        [Fact]
+        public void Object_field_comparison() => TestOneField(x => new AbstractMembers { ObjectField = x });
 
         [Fact]
         public void Replaced_member_does_not_break_comparison()
@@ -127,15 +107,15 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             _comparer.Compare(one, another).Should().BePositive();
         }
 
-        private void Test(Func<SealedNestedObject, AbstractMembers> selector)
+        private void TestOneField(Func<SealedNestedObject, AbstractMembers> selector)
         {
             var original = _fixture
-                           .Build<SealedNestedObject>()
-                           .Without(x => x.DeepNestedField)
-                           .Without(x => x.DeepNestedProperty)
-                           .CreateMany(1000)
-                           .Select(selector)
-                           .ToArray();
+                .Build<SealedNestedObject>()
+                .Without(x => x.DeepNestedField)
+                .Without(x => x.DeepNestedProperty)
+                .CreateMany(1000)
+                .Select(selector)
+                .ToArray();
 
             var clone = original.DeepClone();
 
@@ -145,7 +125,7 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
             original.ShouldBeSameOrder(clone);
         }
 
-        private readonly Fixture _fixture = FixtureBuilder.GetInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
         private readonly IComparer<AbstractMembers> _comparer =
             new ComparerBuilder()

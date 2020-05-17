@@ -1,0 +1,76 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILLightenComparer", "src\ILLightenComparer\ILLightenComparer.csproj", "{020C78A5-4642-42C5-900C-DD3658051481}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILLightenComparer.Tests", "src\ILLightenComparer.Tests\ILLightenComparer.Tests.csproj", "{35E037F9-65A4-4468-A9BA-BC3A3DC8BC95}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILLightenComparer.Benchmarks", "src\ILLightenComparer.Benchmarks\ILLightenComparer.Benchmarks.csproj", "{52C5C857-3A08-4D74-B954-1B99FEB403D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{42B1037F-EFA0-4EB8-AD78-97E1E8E0C7F7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		_config.yml = _config.yml
+		appveyor.yml = appveyor.yml
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Illuminator", "external\illuminator\src\Illuminator\Illuminator.csproj", "{BA1BD1BA-215E-483D-BD64-63DAA30FF778}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{15FA73AD-EF43-4228-A4F6-44E186E5C06B}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\benchmarks.ps1 = scripts\benchmarks.ps1
+		scripts\build.ps1 = scripts\build.ps1
+		scripts\clean.ps1 = scripts\clean.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{EBC9FF7F-B58E-4C19-99D7-921DBAA533E3}"
+	ProjectSection(SolutionItems) = preProject
+		docs\benchmarks.md = docs\benchmarks.md
+		docs\deployment.md = docs\deployment.md
+		docs\reasoning.md = docs\reasoning.md
+		docs\roadmap.md = docs\roadmap.md
+	EndProjectSection
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Illuminator.Shared", "external\illuminator\src\Illuminator\Illuminator.Shared.shproj", "{4497D5CE-4813-46BA-868D-58D696AE81D4}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		external\illuminator\src\Illuminator\Illuminator.Shared.projitems*{020c78a5-4642-42c5-900c-dd3658051481}*SharedItemsImports = 5
+		external\illuminator\src\Illuminator\Illuminator.Shared.projitems*{4497d5ce-4813-46ba-868d-58d696ae81d4}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{020C78A5-4642-42C5-900C-DD3658051481}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020C78A5-4642-42C5-900C-DD3658051481}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020C78A5-4642-42C5-900C-DD3658051481}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020C78A5-4642-42C5-900C-DD3658051481}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35E037F9-65A4-4468-A9BA-BC3A3DC8BC95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35E037F9-65A4-4468-A9BA-BC3A3DC8BC95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35E037F9-65A4-4468-A9BA-BC3A3DC8BC95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35E037F9-65A4-4468-A9BA-BC3A3DC8BC95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52C5C857-3A08-4D74-B954-1B99FEB403D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52C5C857-3A08-4D74-B954-1B99FEB403D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52C5C857-3A08-4D74-B954-1B99FEB403D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52C5C857-3A08-4D74-B954-1B99FEB403D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA1BD1BA-215E-483D-BD64-63DAA30FF778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA1BD1BA-215E-483D-BD64-63DAA30FF778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA1BD1BA-215E-483D-BD64-63DAA30FF778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA1BD1BA-215E-483D-BD64-63DAA30FF778}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{15FA73AD-EF43-4228-A4F6-44E186E5C06B} = {42B1037F-EFA0-4EB8-AD78-97E1E8E0C7F7}
+		{EBC9FF7F-B58E-4C19-99D7-921DBAA533E3} = {42B1037F-EFA0-4EB8-AD78-97E1E8E0C7F7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28BDBBD9-3C78-4178-BD09-9CF47F412C7F}
+	EndGlobalSection
+EndGlobal
