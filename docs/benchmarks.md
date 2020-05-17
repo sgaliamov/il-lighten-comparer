@@ -32,8 +32,6 @@ With light optimized structures like [LightStruct](https://github.com/sgaliamov/
 |  Manual implementation  | 4.029 ms | 0.0537 ms | 0.0503 ms | 4.027 ms |  1.00 |    0.00 |
 |          Nito Comparer  | 6.919 ms | 0.0756 ms | 0.0670 ms | 6.926 ms |  1.72 |    0.03 |
 
-
-
 ## IEqualityComparer\<T\>
 
 ### Equals

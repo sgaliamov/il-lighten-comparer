@@ -126,23 +126,4 @@ namespace ILLightenComparer.Benchmarks.Models
             }
         }
     }
-
-    //internal sealed class ActorsCollectionEqualityComparer : IEqualityComparer<string[]>
-    //{
-    //    public static IEqualityComparer<string[]> Instance { get; } = new ActorsCollectionEqualityComparer();
-
-    //    public bool Equals([AllowNull] ActorsCollection x, [AllowNull] ActorsCollection y) =>
-    //        EqualityComparer<Dictionary<int, string>>.Default.Equals(x.Actors, y.Actors);
-
-    //    public int GetHashCode([DisallowNull] ActorsCollection obj)
-    //    {
-    //        var hash = 0x1505L;
-    //        foreach (var item in obj.Actors) {
-    //            hash = ((hash << 5) + hash) ^ item.Key.GetHashCode();
-    //            hash = ((hash << 5) + hash) ^ item.Value.GetHashCode();
-    //        }
-
-    //        return (int)hash;
-    //    }
-    //}
 }
