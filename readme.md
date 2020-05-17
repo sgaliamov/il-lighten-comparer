@@ -1,7 +1,7 @@
 # Fast comparer library
 
 [![Build status](https://ci.appveyor.com/api/projects/status/u9qs6c5v1qbvda2b/branch/master?svg=true)](https://ci.appveyor.com/project/sgaliamov/il-lighten-comparer/branch/master)
-[![codecov](https://codecov.io/gh/sgaliamov/il-lighten-comparer/graph/badge.svg)](https://codecov.io/gh/sgaliamov/il-lighten-comparer)
+[![codecov](https://codecov.io/gh/sgaliamov/il-lighten-comparer/branch/master/graph/badge.svg)](https://codecov.io/gh/sgaliamov/il-lighten-comparer)
 [![NuGet Badge](https://buildstats.info/nuget/ILLightenComparer)](https://www.nuget.org/packages/ILLightenComparer)
 
 **ILLightenComparer** is a flexible library that can generate very effective and comprehensive `IComparer<T>` and `IEqualityComparer<T>` implementations on runtime using advantages of `IL` code emission.
