@@ -27,7 +27,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var x = new object();
             var y = new object();
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<object>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<object>();
 
             var actual = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var x = new DummyObject();
             var y = new DummyObject();
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<DummyObject>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<DummyObject>();
             var equality = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -64,7 +64,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var x = new DummyStruct();
             var y = new DummyStruct();
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<DummyStruct>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<DummyStruct>();
             var equality = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -81,7 +81,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var x = new[] { 1, 2, 3 };
             var y = new[] { 1, 2, 3 };
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<int[]>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<int[]>();
             var equality = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -98,7 +98,7 @@ namespace ILLightenComparer.Tests.EqualityTests
         {
             var x = new[] { 1, 2, 3 };
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<int[]>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<int[]>();
             var equality = comparer.Equals(null, x);
             var hashY = comparer.GetHashCode(null);
 
@@ -113,7 +113,7 @@ namespace ILLightenComparer.Tests.EqualityTests
         {
             var x = _fixture.Create<SampleObject<int[]>>();
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<SampleObject<int[]>>();
             var equality = comparer.Equals(x, null);
             var hashY = comparer.GetHashCode(null);
 
@@ -130,7 +130,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var y = new SampleObject<int[]>();
             var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleObject<int[]>>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<SampleObject<int[]>>();
             var equality = comparer.Equals(x, y);
             var hashY = comparer.GetHashCode(y);
 
@@ -152,7 +152,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<SampleEqualityStruct<EnumBig?>?>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<SampleEqualityStruct<EnumBig?>?>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -179,7 +179,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<EnumBig?>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<EnumBig?>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -205,7 +205,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<EnumSmall?[]>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<EnumSmall?[]>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -236,7 +236,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<ComparableObject<EnumSmall?[]>>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<ComparableObject<EnumSmall?[]>>();
 
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -257,7 +257,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var x = new List<int>(new[] { 1, 2, 3 });
             var y = new List<int>(new[] { 2, 3, 1 });
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<IEnumerable<int>>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<IEnumerable<int>>();
             var equals = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -279,7 +279,7 @@ namespace ILLightenComparer.Tests.EqualityTests
             var expectedHashY = referenceComparer.GetHashCode(y);
             var expectedEquals = referenceComparer.Equals(x, y);
 
-            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<int>>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<EnumerableStruct<int>>();
             var equals = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
             var hashY = comparer.GetHashCode(y);
@@ -296,7 +296,7 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Enumerable_structs_with_nullables_are_comparable()
         {
             var referenceComparer = new CollectionEqualityComparer<ComparableStruct<int?>?>(new NullableEqualityComparer<ComparableStruct<int?>>(new ComparableStructEqualityComparer<int?>()));
-            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<ComparableStruct<int?>?>>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<EnumerableStruct<ComparableStruct<int?>?>>();
 
             Helper.Parallel(() => {
                 var x = _fixture.Create<EnumerableStruct<ComparableStruct<int?>?>>();
@@ -323,7 +323,7 @@ namespace ILLightenComparer.Tests.EqualityTests
         public void Null_enumerator_pass()
         {
             var x = new EnumerableStruct<int>(null);
-            var comparer = new ComparerBuilder().GetEqualityComparer<EnumerableStruct<int>>();
+            var comparer = ComparerBuilder.Default.GetEqualityComparer<EnumerableStruct<int>>();
             var hashX = comparer.GetHashCode(x);
 
             using (new AssertionScope()) {

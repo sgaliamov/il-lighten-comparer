@@ -32,12 +32,10 @@
 ### Basic usage
 
 ``` csharp
-var builder = new ComparerBuilder();
-
-var comparer = builder.GetComparer<Tuple<int, string>>();
+var comparer = ComparerBuilder.Default.GetComparer<Tuple<int, string>>();
 var compareResult = comparer.Compare(x, y);
 
-var equalityComparer = builder.GetEqualityComparer<Tuple<int, string>>();
+var equalityComparer = ComparerBuilder.Default.GetEqualityComparer<Tuple<int, string>>();
 var equalityResult = equalityComparer.Equals(x, y);
 var hashResult = equalityComparer.GetHashCode(x);
 ```
