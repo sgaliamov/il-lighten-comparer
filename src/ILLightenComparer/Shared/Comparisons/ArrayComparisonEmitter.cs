@@ -45,6 +45,7 @@ namespace ILLightenComparer.Shared.Comparisons
             LocalBuilder yArray,
             Label afterLoop)
         {
+            // todo: 2. compare array lengths at the beginning
             il.EmitArrayLength(arrayType, xArray, out var countX)
               .EmitArrayLength(arrayType, yArray, out var countY)
               .LoadInteger(0)

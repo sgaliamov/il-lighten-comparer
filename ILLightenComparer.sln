@@ -28,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{15FA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{EBC9FF7F-B58E-4C19-99D7-921DBAA533E3}"
 	ProjectSection(SolutionItems) = preProject
+		docs\benchmarks.md = docs\benchmarks.md
 		docs\deployment.md = docs\deployment.md
 		docs\reasoning.md = docs\reasoning.md
 		docs\roadmap.md = docs\roadmap.md

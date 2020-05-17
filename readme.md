@@ -8,30 +8,14 @@
 
 ## Features
 
-* High performance.
 * Support for classes and structures any complexity and nesting.
 * Highly configurable.
 * Fluent intuitive API.
 * Cycle detection.
-* Collections and dictionaries comparison (`IEnumerable<T>`, arrays).
+* Collections comparison (`IEnumerable<T>`, `T[]`, `T[][]`).
 * .NET Standard 2.0
+* High performance.
 * No 3<sup>rd</sup> party dependencies.
-
-## [Benchmarks](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Program.cs)
-
-With regular models like [MovieModel](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Models/MovieModel.cs) generated comparer is criminally close to manual implementation.
-
-| Method                |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
-| --------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
-| IL Lighten Comparer   | 12.90 ms | 0.2700 ms | 0.3214 ms | 12.77 ms |  1.00 |    0.00 |
-| Manual implementation | 12.47 ms | 0.2760 ms | 0.7785 ms | 12.15 ms |  1.00 |    0.09 |
-
-With light optimized structures like [LightStruct](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Benchmarks/Models/LightStruct.cs) `ILLightenComparer` able to give serious performance boost.
-
-| Method                |     Mean |     Error |    StdDev |   Median | Ratio | RatioSD |
-| --------------------- | -------: | --------: | --------: | -------: | ----: | ------: |
-| IL Lighten Comparer   | 2.151 ms | 0.0862 ms | 0.2473 ms | 2.105 ms |  1.00 |    0.00 |
-| Manual implementation | 3.236 ms | 0.0643 ms | 0.0570 ms | 3.225 ms |  1.40 |    0.16 |
 
 ## Configuration options
 
@@ -48,12 +32,10 @@ With light optimized structures like [LightStruct](https://github.com/sgaliamov/
 ### Basic usage
 
 ``` csharp
-var builder = new ComparerBuilder();
-
-var comparer = builder.GetComparer<Tuple<int, string>>();
+var comparer = ComparerBuilder.Default.GetComparer<Tuple<int, string>>();
 var compareResult = comparer.Compare(x, y);
 
-var equalityComparer = builder.GetEqualityComparer<Tuple<int, string>>();
+var equalityComparer = ComparerBuilder.Default.GetEqualityComparer<Tuple<int, string>>();
 var equalityResult = equalityComparer.Equals(x, y);
 var hashResult = equalityComparer.GetHashCode(x);
 ```
@@ -161,5 +143,6 @@ builder.For<Tuple<int, string, Tuple<short, string>>>(c => c.IncludeFields(false
 * *protected* and *private* members are ignored during comparison.
 * [Multidimensional arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/multidimensional-arrays) are not supported now, but [Jagged arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/jagged-arrays) are.
 * If a type implements `IComparable<T>` interface then this implementations will be used.
+* [Benchmarks](https://github.com/sgaliamov/il-lighten-comparer/blob/master/docs/benchmarks.md)
 
 In case of an unexpected behavior, please welcome to create an [issue](https://github.com/sgaliamov/il-lighten-comparer/issues/new) and provide the type and data that you use.

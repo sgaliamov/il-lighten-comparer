@@ -1,6 +1,7 @@
-obj/
-bin/
 .vs/
-*.user
 *.log
+*.user
+bin/
+obj/
+publish/
 results/

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 using Illuminator.Extensions;
 
 namespace ILLightenComparer.Extensions
@@ -97,6 +98,24 @@ namespace ILLightenComparer.Extensions
             }
 
             return type.GetMethod(name, types);
+        }
+
+        public static MethodBuilder DefineStaticMethod(
+            this TypeBuilder staticTypeBuilder,
+            string name,
+            Type returnType,
+            Type[] parameterTypes)
+        {
+            var methodBuilder = staticTypeBuilder.DefineMethod(
+                name,
+                MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.Final,
+                CallingConventions.Standard,
+                returnType,
+                parameterTypes);
+
+            methodBuilder.SetImplementationFlags(MethodImplAttributes.AggressiveInlining | MethodImplAttributes.IL);
+
+            return methodBuilder;
         }
     }
 }

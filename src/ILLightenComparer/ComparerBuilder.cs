@@ -16,6 +16,8 @@ namespace ILLightenComparer
     /// </summary>
     public sealed class ComparerBuilder : IComparerBuilder
     {
+        public static IComparerBuilder Default { get; } = new ComparerBuilder();
+
         private readonly ConfigurationProvider _configurationProvider = new ConfigurationProvider();
         private Lazy<(ComparerContext, EqualityContext)> _contexts;
 
