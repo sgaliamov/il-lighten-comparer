@@ -12,14 +12,14 @@ namespace ILLightenComparer.Benchmarks
         /// </summary>
         /// <param name="compare">Runs benchmarks for IComparer&lt;T&gt;.</param>
         /// <param name="equals">Runs benchmarks for IEqualityComparer&lt;T&gt;.Equals.</param>
-        /// <param name="getHashCode">Runs benchmarks for IEqualityComparer&lt;T&gt;.GetHashCode.</param>
+        /// <param name="hash">Runs benchmarks for IEqualityComparer&lt;T&gt;.GetHashCode.</param>
         /// <param name="struct">Runs benchmarks for a class.</param>
         /// <param name="class">Runs benchmarks for a struct.</param>
         /// <param name="misc">Runs others benchmarks.</param>
         public static void Main(
             bool compare = false,
             bool equals = false,
-            bool getHashCode = false,
+            bool hash = false,
             bool @struct = false,
             bool @class = true,
             bool misc = false)
@@ -40,11 +40,11 @@ namespace ILLightenComparer.Benchmarks
                 BenchmarkRunner.Run<RegularModelEqualityBenchmark>();
             }
 
-            if (getHashCode && @struct) {
+            if (hash && @struct) {
                 BenchmarkRunner.Run<LightStructHashBenchmark>();
             }
 
-            if (getHashCode && @class) {
+            if (hash && @class) {
                 BenchmarkRunner.Run<RegularModelHashBenchmark>();
             }
 

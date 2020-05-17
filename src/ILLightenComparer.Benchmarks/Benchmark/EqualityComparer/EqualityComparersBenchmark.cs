@@ -49,7 +49,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark.EqualityComparer
             }
         }
 
-        [Benchmark(Baseline = true, Description = "IL Lighten Comparer")]
+        [Benchmark(Description = "IL Lighten Comparer")]
         public void IL_Comparer()
         {
             for (var i = 0; i < N; i++) {
@@ -57,7 +57,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark.EqualityComparer
             }
         }
 
-        [Benchmark(Description = "Manual implementation")]
+        [Benchmark(Baseline = true, Description = "Manual implementation")]
         public void Manual_Comparer()
         {
             for (var i = 0; i < N; i++) {
