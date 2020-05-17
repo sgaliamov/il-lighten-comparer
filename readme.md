@@ -27,7 +27,7 @@
 * Defining string comparison type.
 * Defining custom comparers by type or instance.
 
-## [Examples](https://github.com/sgaliamov/il-lighten-comparer/blob/master/src/ILLightenComparer.Tests/Examples.cs)
+## Examples
 
 ### Basic usage
 
