@@ -21,7 +21,7 @@ namespace ILLightenComparer.Benchmarks
             bool equals = false,
             bool hash = false,
             bool @struct = false,
-            bool @class = true,
+            bool @class = false,
             bool misc = false)
         {
             if (compare && @struct) {
