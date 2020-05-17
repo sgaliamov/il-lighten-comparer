@@ -10,7 +10,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark.Comparer
     [MedianColumn]
     public abstract class ComparersBenchmark<T>
     {
-        private const int N = 150000;
+        private const int N = 130000;
 
         private readonly IFixture _fixture = FixtureBuilder.GetInstance();
         private readonly IComparer<T> _il;

@@ -110,21 +110,16 @@ namespace ILLightenComparer.Benchmarks.Models
                 return 1;
             }
 
-            var xLength = x.Length;
-            var yLength = y.Length;
             for (int i = 0; ; i++) {
-                if (i == xLength) {
-                    if (i == yLength) {
-                        return 0;
-                    }
-                    return 1;
+                if (i == x.Length) {
+                    return i == y.Length ? 0 : 1;
                 } else {
-                    if (i == yLength) {
+                    if (i == y.Length) {
                         return -1;
                     }
                 }
 
-                var c = string.CompareOrdinal(x[i], y[i]);
+                var c = string.Compare(x[i], y[i], StringComparison.Ordinal);
                 if (c != 0) {
                     return c;
                 }
