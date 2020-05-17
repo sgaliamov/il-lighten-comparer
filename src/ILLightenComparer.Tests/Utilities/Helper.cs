@@ -115,6 +115,6 @@ namespace ILLightenComparer.Tests.Utilities
             .Where(x => !x.IsAbstract)
             .Where(x => !x.IsGenericType)
             .Where(x => x.ImplementsGenericInterface(typeof(IComparable<>)))
-            .Except(new[] { typeof(ArgIterator) }));
+            .Where(x => x.Name != "ArgIterator"));
     }
 }
