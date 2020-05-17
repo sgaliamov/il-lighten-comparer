@@ -12,7 +12,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark.EqualityComparer
     {
         private const int N = 100000;
 
-        private readonly IFixture _fixture = FixtureBuilder.GetSimpleInstance();
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
         private readonly IEqualityComparer<T> _il;
         private readonly IEqualityComparer<T> _manual;
         private readonly IEqualityComparer<T> _nito;

@@ -7,19 +7,51 @@ namespace ILLightenComparer.Benchmarks
 {
     public sealed class Program
     {
-        public static void Main()
+        /// <summary>
+        /// Benchmarks runner for ILLightenComparer.
+        /// </summary>
+        /// <param name="compare">Runs benchmarks for IComparer&lt;T&gt;.</param>
+        /// <param name="equals">Runs benchmarks for IEqualityComparer&lt;T&gt;.Equals.</param>
+        /// <param name="getHashCode">Runs benchmarks for IEqualityComparer&lt;T&gt;.GetHashCode.</param>
+        /// <param name="struct">Runs benchmarks for a class.</param>
+        /// <param name="class">Runs benchmarks for a struct.</param>
+        /// <param name="misc">Runs others benchmarks.</param>
+        public static void Main(
+            bool compare = false,
+            bool equals = false,
+            bool getHashCode = false,
+            bool @struct = false,
+            bool @class = true,
+            bool misc = false)
         {
-            BenchmarkRunner.Run<LightStructComparerBenchmark>();
-            BenchmarkRunner.Run<RegularModelComparerBenchmark>();
+            if (compare && @struct) {
+                BenchmarkRunner.Run<LightStructComparerBenchmark>();
+            }
 
-            BenchmarkRunner.Run<RegularModelEqualityBenchmark>();
-            BenchmarkRunner.Run<RegularModelEqualityBenchmark>();
+            if (compare && @class) {
+                BenchmarkRunner.Run<RegularModelComparerBenchmark>();
+            }
 
-            BenchmarkRunner.Run<LightStructEqualityBenchmark>();
-            BenchmarkRunner.Run<LightStructHashBenchmark>();
+            if (equals && @struct) {
+                BenchmarkRunner.Run<LightStructEqualityBenchmark>();
+            }
 
-            BenchmarkRunner.Run<CompareIntegral>();
-            BenchmarkRunner.Run<EqualityBenchmark>();
+            if (equals && @class) {
+                BenchmarkRunner.Run<RegularModelEqualityBenchmark>();
+            }
+
+            if (getHashCode && @struct) {
+                BenchmarkRunner.Run<LightStructHashBenchmark>();
+            }
+
+            if (getHashCode && @class) {
+                BenchmarkRunner.Run<RegularModelHashBenchmark>();
+            }
+
+            if (misc) {
+                BenchmarkRunner.Run<CompareIntegral>();
+                BenchmarkRunner.Run<EqualityBenchmark>();
+            }
         }
     }
 }
