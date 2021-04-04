@@ -23,7 +23,7 @@ install:
 
 before_build:
 - pwsh: |
-    gitversion /l console /output buildserver /verbosity warn
+    gitversion /l console /output buildserver /verbosity quiet
     if ($env:APPVEYOR_REPO_TAG -eq $false) {
         Set-AppveyorBuildVariable -Name Configuration -Value debug
     }
