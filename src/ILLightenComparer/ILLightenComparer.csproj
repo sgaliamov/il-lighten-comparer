@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
@@ -11,7 +11,7 @@
 		<Owners>S. Galiamov</Owners>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://sgaliamov.github.io/il-lighten-comparer</PackageProjectUrl>
-		<PackageTags>IComparer, Reflection, MSIL, IL, Runtime code generation, Comparison</PackageTags>
+		<PackageTags>IEqualityComparer, IComparer, Reflection, MSIL, IL, Code-Generation, Comparison</PackageTags>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/sgaliamov/il-lighten-comparer.git</RepositoryUrl>
 	</PropertyGroup>

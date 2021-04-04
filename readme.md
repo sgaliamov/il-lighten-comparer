@@ -40,6 +40,8 @@ var equalityResult = equalityComparer.Equals(x, y);
 var hashResult = equalityComparer.GetHashCode(x);
 ```
 
+And it "just works", no need complex configuration.
+
 ### Ignore collection order
 
 ``` csharp
