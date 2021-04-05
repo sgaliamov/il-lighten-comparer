@@ -37,8 +37,8 @@ namespace ILLightenComparer.Equality.Hashers
 
             _variable
                 .Load(il, Arg.Input)
-                .Store(variableType, out var nullable)
-                .LoadAddress(nullable)
+                .Stloc(variableType, out var nullable)
+                .Ldloca(nullable)
                 .Call(_hasValueMethod)
                 .IfTrue_S(out var next)
                 .LoadInteger(0)

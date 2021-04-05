@@ -4,7 +4,7 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -34,16 +34,16 @@ namespace ILLightenComparer.Equality.Hashers
         }
 
         public ILEmitter Emit(ILEmitter il) => il
-            .LoadLong(_configuration.HashSeed)
-            .Store(typeof(long), out var hash)
-            .Execute(this.Emit(hash));
+            .Ldc_I8(_configuration.HashSeed)
+            .Stloc(typeof(long), out var hash)
+            .Emit(this.Emit(hash));
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
         {
             var arrayType = _variable.VariableType;
 
-            il.Execute(_variable.Load(Arg.Input)) // load array
-              .Store(arrayType, out var array)
+            il.Emit(_variable.Load(Arg.Input)) // load array
+              .Stloc(arrayType, out var array)
               .IfTrue_S(LoadLocal(array), out var begin)
               .LoadInteger(0)
               .GoTo(out var end)

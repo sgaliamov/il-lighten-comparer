@@ -29,17 +29,17 @@ namespace ILLightenComparer.Variables
         public Type OwnerType { get; }
 
         public ILEmitter Load(ILEmitter il, ushort arg) => il
-            .LoadAddress(_nullables[arg])
+            .Ldloca(_nullables[arg])
             .Call(_getValueMethod);
 
         public ILEmitter LoadAddress(ILEmitter il, ushort arg)
         {
             var underlyingType = VariableType.GetUnderlyingType();
 
-            return il.LoadAddress(_nullables[arg])
+            return il.Ldloca(_nullables[arg])
                      .Call(_getValueMethod)
-                     .Store(underlyingType, out var x)
-                     .LoadAddress(x);
+                     .Stloc(underlyingType, out var x)
+                     .Ldloca(x);
         }
     }
 }

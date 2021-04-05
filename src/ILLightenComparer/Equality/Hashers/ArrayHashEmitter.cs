@@ -5,7 +5,8 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
+using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -22,8 +23,8 @@ namespace ILLightenComparer.Equality.Hashers
 
         public ILEmitter Emit(ILEmitter il, Type arrayType, LocalBuilder array, LocalBuilder hash)
         {
-            il.LoadInteger(0) // start loop
-              .Store(typeof(int), out var index)
+            il.Ldc_I4(0) // start loop
+              .Stloc(typeof(int), out var index)
               .EmitArrayLength(arrayType, array, out var count)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var loopEnd);
@@ -39,12 +40,11 @@ namespace ILLightenComparer.Equality.Hashers
                 var arrays = new Dictionary<ushort, LocalBuilder>(1) { [Arg.Input] = array };
                 var itemVariable = new ArrayItemVariable(arrayType, _variable.OwnerType, arrays, index);
 
-                _resolver
-                    .GetHasherEmitter(itemVariable)
-                    .EmitHashing(il, hash)
-                    .Add(LoadLocal(index), LoadInteger(1))
-                    .Store(index)
-                    .GoTo(loopStart);
+                ILEmitterExtensions.Stloc(_resolver
+                                          .GetHasherEmitter(itemVariable)
+                                          .EmitHashing(il, hash)
+                                          .Add(LoadLocal(index), Ldc_I4(1)), index)
+                                   .GoTo(loopStart);
             }
 
             return il.MarkLabel(loopEnd).LoadLocal(hash);

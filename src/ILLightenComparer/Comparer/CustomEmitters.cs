@@ -2,7 +2,7 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Comparer
 {
@@ -12,55 +12,55 @@ namespace ILLightenComparer.Comparer
         /// Returns non zero value if stack has it, otherwise got to <paramref name="next"/>.
         /// </summary>
         public static ILEmitter EmitReturnIfTruthy(this ILEmitter il, Label next) => il
-            .Store(typeof(int), out var result)
-            .LoadLocal(result)
+            .Stloc(typeof(int), out var result)
+            .Ldloc(result)
             .IfFalse(next)
-            .Return(LoadLocal(result));
+            .Ret(LoadLocal(result));
 
         public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder isDoneX, LocalBuilder isDoneY, Label gotoNext) => il
-            .LoadLocal(isDoneX)
+            .Ldloc(isDoneX)
             .IfFalse_S(out var checkIsDoneY)
-            .LoadLocal(isDoneY)
+            .Ldloc(isDoneY)
             .IfFalse_S(out var returnM1)
             .GoTo(gotoNext)
             .MarkLabel(returnM1)
-            .Return(-1)
+            .Ret(-1)
             .MarkLabel(checkIsDoneY)
             .LoadLocal(isDoneY)
             .IfFalse_S(out var compare)
-            .Return(1)
+            .Ret(1)
             .MarkLabel(compare);
 
         public static ILEmitter EmitReferenceComparison(this ILEmitter il, ILEmitterFunc loadX, ILEmitterFunc loadY, ILEmitterFunc ifEqual) => il
-            .IfNotEqual_Un_S(loadX, loadY, out var checkX)
-            .Execute(ifEqual)
+            .Bne_Un_S(loadX, loadY, out var checkX)
+            .Emit(ifEqual)
             .MarkLabel(checkX)
             .Execute(loadX)
             .IfTrue_S(out var checkY)
-            .Return(-1)
+            .Ret(-1)
             .MarkLabel(checkY)
             .Execute(loadY)
             .IfTrue_S(out var next)
-            .Return(1)
+            .Ret(1)
             .MarkLabel(next);
 
         public static ILEmitter EmitCheckNullablesForValue(this ILEmitter il, ILEmitterFunc nullableX, ILEmitterFunc nullableY, Type nullableType, Label ifBothNull)
         {
             var hasValueMethod = nullableType.GetPropertyGetter("HasValue");
 
-            return il.Execute(nullableY)
+            return il.Emit(nullableY)
                      .Call(hasValueMethod)
-                     .Store(typeof(bool), out var secondHasValue)
-                     .Execute(nullableX)
+                     .Stloc(typeof(bool), out var secondHasValue)
+                     .Emit(nullableX)
                      .Call(hasValueMethod)
                      .IfTrue_S(out var ifFirstHasValue)
                      .LoadLocal(secondHasValue)
                      .IfFalse(ifBothNull)
-                     .Return(-1)
+                     .Ret(-1)
                      .MarkLabel(ifFirstHasValue)
                      .LoadLocal(secondHasValue)
                      .IfTrue_S(out var next)
-                     .Return(1)
+                     .Ret(1)
                      .MarkLabel(next);
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Emit;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Abstractions
 {
@@ -24,7 +24,7 @@ namespace ILLightenComparer.Abstractions
         public static ILEmitter EmitHashing(this IHasherEmitter hasher, ILEmitter il, LocalBuilder hash)
         {
             var add = Add(
-                ShiftLeft(LoadLocal(hash), LoadInteger(5)),
+                ShiftLeft(LoadLocal(hash), Ldc_I4(5)),
                 LoadLocal(hash));
 
             return il

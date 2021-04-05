@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Variables
 {
@@ -34,13 +34,13 @@ namespace ILLightenComparer.Variables
         public Type VariableType { get; }
         public Type OwnerType { get; }
 
-        public ILEmitter Load(ILEmitter il, ushort arg) => il.Call(
+        public ILEmitter Load(ILEmitter il, ushort arg) => il.CallMethod(
             _getItemMethod,
             LoadLocal(_arrays[arg]),
             LoadLocal(_indexVariable));
 
         public ILEmitter LoadAddress(ILEmitter il, ushort arg) => Load(il, arg)
-            .Store(VariableType, out var local)
-            .LoadAddress(local);
+            .Stloc(VariableType, out var local)
+            .Ldloca(local);
     }
 }

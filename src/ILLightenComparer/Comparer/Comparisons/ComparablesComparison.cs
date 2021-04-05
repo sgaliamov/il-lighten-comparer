@@ -36,20 +36,20 @@ namespace ILLightenComparer.Comparer.Comparisons
                 _variable.LoadAddress(il, Arg.X);
                 _variable.Load(il, Arg.Y);
             } else {
-                _variable.Load(il, Arg.X).Store(variableType, out var x);
+                _variable.Load(il, Arg.X).Stloc(variableType, out var x);
                 _variable.Load(il, Arg.Y)
-                         .Store(variableType, out var y)
-                         .LoadLocal(x)
+                         .Stloc(variableType, out var y)
+                         .Ldloc(x)
                          .IfTrue_S(out var call)
-                         .LoadLocal(y)
+                         .Ldloc(y)
                          .IfFalse_S(gotoNext)
-                         .Return(-1)
+                         .Ret(-1)
                          .MarkLabel(call)
                          .LoadLocal(x)
                          .LoadLocal(y);
             }
 
-            return il.Call(_compareToMethod);
+            return il.CallMethod(_compareToMethod);
         }
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);

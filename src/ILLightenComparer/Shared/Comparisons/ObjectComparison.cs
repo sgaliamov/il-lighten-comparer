@@ -17,13 +17,13 @@ namespace ILLightenComparer.Shared.Comparisons
             : null;
 
         public ILEmitter Emit(ILEmitter il, Label next) => il
-            .Execute(_variable.Load(Arg.Y))
+            .Emit(_variable.Load(Arg.Y))
             .IfTrue_S(_variable.Load(Arg.X), out var xIsNotNull)
             .IfFalse_S(next)
-            .Return(-1)
+            .Ret(-1)
             .MarkLabel(xIsNotNull)
             .IfTrue_S(next)
-            .Return(1);
+            .Ret(1);
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il;
     }

@@ -28,7 +28,7 @@ namespace ILLightenComparer.Equality.Hashers
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il) => il.Call(
+        public ILEmitter Emit(ILEmitter il) => il.CallMethod(
             _getHashMethod,
             _variable.VariableType.IsValueType ? _variable.LoadAddress(Arg.Input) : _variable.Load(Arg.Input));
 

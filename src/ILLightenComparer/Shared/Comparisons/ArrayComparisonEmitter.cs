@@ -5,7 +5,8 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
+using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -27,11 +28,11 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public (LocalBuilder collectionX, LocalBuilder collectionY) EmitLoad(IVariable variable, ILEmitter il, Label gotoNext)
         {
-            variable.Load(il, Arg.X).Store(variable.VariableType, out var collectionX);
-            variable.Load(il, Arg.Y).Store(variable.VariableType, out var collectionY);
+            variable.Load(il, Arg.X).Stloc(variable.VariableType, out var collectionX);
+            variable.Load(il, Arg.Y).Stloc(variable.VariableType, out var collectionY);
 
             if (!variable.VariableType.IsValueType) {
-                _emitReferenceComparison(il, LoadLocal(collectionX), LoadLocal(collectionY), GoTo(gotoNext)); // need, because a collection can be a member of an object
+                _emitReferenceComparison(il, LoadLocal(collectionX), LoadLocal(collectionY), Br(gotoNext)); // need, because a collection can be a member of an object
             }
 
             return (collectionX, collectionY);
@@ -48,15 +49,15 @@ namespace ILLightenComparer.Shared.Comparisons
             // todo: 2. compare array lengths at the beginning
             il.EmitArrayLength(arrayType, xArray, out var countX)
               .EmitArrayLength(arrayType, yArray, out var countY)
-              .LoadInteger(0)
-              .Store(typeof(int), out var index)
+              .Ldc_I4(0)
+              .Stloc(typeof(int), out var index)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var continueLoop)
               .MarkLabel(loopStart);
 
             using (il.LocalsScope()) {
-                il.AreSame(LoadLocal(index), LoadLocal(countX), out var isDoneX)
-                  .AreSame(LoadLocal(index), LoadLocal(countY), out var isDoneY);
+                il.Ceq(LoadLocal(index), LoadLocal(countX), out var isDoneX)
+                  .Ceq(LoadLocal(index), LoadLocal(countY), out var isDoneY);
                 _emitCheckIfLoopsAreDone(il, isDoneX, isDoneY, afterLoop);
             }
 
@@ -68,14 +69,13 @@ namespace ILLightenComparer.Shared.Comparisons
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, arrays, index);
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
 
-                return il
-                    .Execute(
-                        itemComparison.Emit(continueLoop),
-                        itemComparison.EmitCheckForResult(continueLoop))
-                    .MarkLabel(continueLoop)
-                    .Add(LoadLocal(index), LoadInteger(1))
-                    .Store(index)
-                    .GoTo(loopStart);
+                return ILEmitterExtensions.Stloc(il
+                                                 .Emit(
+                                                     itemComparison.Emit(continueLoop),
+                                                     itemComparison.EmitCheckForResult(continueLoop))
+                                                 .MarkLabel(continueLoop)
+                                                 .Add(LoadLocal(index), Ldc_I4(1)), index)
+                                          .GoTo(loopStart);
             }
         }
     }

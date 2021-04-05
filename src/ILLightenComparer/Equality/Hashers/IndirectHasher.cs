@@ -4,7 +4,7 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -43,7 +43,7 @@ namespace ILLightenComparer.Equality.Hashers
             return new IndirectHasher(hashMethod, variable);
         }
 
-        public ILEmitter Emit(ILEmitter il) => il.Call(
+        public ILEmitter Emit(ILEmitter il) => il.CallMethod(
             _hashMethod,
             LoadArgument(Arg.Context),
             _variable.Load(Arg.Input),

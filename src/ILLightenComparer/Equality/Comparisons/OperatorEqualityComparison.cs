@@ -29,7 +29,7 @@ namespace ILLightenComparer.Equality.Comparisons
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il, Label _) => il.Call(
+        public ILEmitter Emit(ILEmitter il, Label _) => il.CallMethod(
             _equalityMethod,
             _variable.Load(Arg.X),
             _variable.Load(Arg.Y));

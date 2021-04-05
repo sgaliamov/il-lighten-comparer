@@ -11,53 +11,53 @@ namespace ILLightenComparer.Equality
         /// Returns zero if stack has zero value, otherwise got to <paramref name="next"/>.
         /// </summary>
         public static ILEmitter EmitReturnIfFalsy(this ILEmitter il, Label next) => il
-            .IfTrue(next)
-            .Return(0);
+            .Brtrue(next)
+            .Ret(0);
 
         public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder isDoneX, LocalBuilder isDoneY, Label gotoNext) => il
-            .LoadLocal(isDoneX)
+            .Ldloc(isDoneX)
             .IfFalse_S(out var checkIsDoneY)
-            .LoadLocal(isDoneY)
+            .Ldloc(isDoneY)
             .IfFalse_S(out var returnFalse)
             .GoTo(gotoNext)
             .MarkLabel(returnFalse)
-            .Return(0)
+            .Ret(0)
             .MarkLabel(checkIsDoneY)
             .LoadLocal(isDoneY)
             .IfFalse_S(out var next)
-            .Return(0)
+            .Ret(0)
             .MarkLabel(next);
 
         public static ILEmitter EmitReferenceComparison(this ILEmitter il, ILEmitterFunc loadX, ILEmitterFunc loadY, ILEmitterFunc ifEqual) => il
-            .IfNotEqual_Un_S(loadX, loadY, out var checkX)
-            .Execute(ifEqual)
+            .Bne_Un_S(loadX, loadY, out var checkX)
+            .Emit(ifEqual)
             .MarkLabel(checkX)
             .Execute(loadX)
             .IfTrue_S(out var checkY)
-            .Return(0)
+            .Ret(0)
             .MarkLabel(checkY)
             .Execute(loadY)
             .IfTrue_S(out var next)
-            .Return(0)
+            .Ret(0)
             .MarkLabel(next);
 
         public static ILEmitter EmitCheckNullablesForValue(this ILEmitter il, ILEmitterFunc nullableX, ILEmitterFunc nullableY, Type nullableType, Label ifBothNull)
         {
             var hasValueMethod = nullableType.GetPropertyGetter("HasValue");
 
-            return il.Execute(nullableY)
+            return il.Emit(nullableY)
                      .Call(hasValueMethod)
-                     .Store(typeof(bool), out var secondHasValue)
-                     .Execute(nullableX)
+                     .Stloc(typeof(bool), out var secondHasValue)
+                     .Emit(nullableX)
                      .Call(hasValueMethod)
                      .IfTrue_S(out var ifFirstHasValue)
                      .LoadLocal(secondHasValue)
                      .IfFalse(ifBothNull)
-                     .Return(0)
+                     .Ret(0)
                      .MarkLabel(ifFirstHasValue)
                      .LoadLocal(secondHasValue)
                      .IfTrue_S(out var next)
-                     .Return(0)
+                     .Ret(0)
                      .MarkLabel(next);
         }
     }

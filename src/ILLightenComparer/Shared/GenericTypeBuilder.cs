@@ -9,7 +9,7 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Shared
 {
@@ -84,7 +84,7 @@ namespace ILLightenComparer.Shared
             Enumerable.Range(0, parametersCount)
                 .Aggregate(il
                 .LoadArgument(Arg.This)
-                .LoadField(contextField), (il, index) => il.LoadArgument((ushort)(index + 1)));
+                .Ldfld(contextField), (il, index) => il.LoadArgument((ushort)(index + 1)));
 
             EmitStaticMethodCall(il, objectType, staticMethod, parametersCount);
         }
@@ -95,10 +95,10 @@ namespace ILLightenComparer.Shared
 
             Enumerable.Range(0, parametersCount)
                 .Aggregate(il, (il, _) => createCycleDetectionSets
-                    ? il.New(CycleDetectionSet.DefaultConstructor)
-                    : il.LoadNull())
-                .Call(staticMethod)
-                .Return();
+                    ? il.Newobj(CycleDetectionSet.DefaultConstructor)
+                    : il.Ldnull())
+                .CallMethod(staticMethod)
+                .Ret();
         }
 
         private bool NeedCreateCycleDetectionSets(Type objectType, string methodName) =>
@@ -124,8 +124,8 @@ namespace ILLightenComparer.Shared
             using (var il = constructorInfo.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
                   .Call(typeof(object).GetConstructor(Type.EmptyTypes))
-                  .SetField(LoadArgument(Arg.This), LoadArgument(1), contextField)
-                  .Return();
+                  .Stfld(LoadArgument(Arg.This), LoadArgument(1), contextField)
+                  .Ret();
             }
 
             var methodBuilder = typeBuilder.DefineStaticMethod(
@@ -134,7 +134,7 @@ namespace ILLightenComparer.Shared
                 parameters);
 
             using (var il = methodBuilder.CreateILEmitter()) {
-                il.New(constructorInfo, LoadArgument(Arg.This)).Return();
+                il.Newobj(constructorInfo, LoadArgument(Arg.This)).Ret();
             }
         }
     }

@@ -10,7 +10,7 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -89,7 +89,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
             //il.EndExceptionBlock();
 
-            return il.GoTo(gotoNext);
+            return il.Br(gotoNext);
         }
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label _) => il;
@@ -107,10 +107,10 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable)
         {
-            il.Call(_getEnumeratorMethod, LoadCaller(xEnumerable))
-              .Store(_enumeratorType, out var xEnumerator)
+            il.CallMethod(_getEnumeratorMethod, LoadCaller(xEnumerable))
+              .Stloc(_enumeratorType, out var xEnumerator)
               .Call(_getEnumeratorMethod, LoadCaller(yEnumerable))
-              .Store(_enumeratorType, out var yEnumerator);
+              .Stloc(_enumeratorType, out var yEnumerator);
 
             // todo: 3. check enumerators for null?
 
@@ -137,16 +137,16 @@ namespace ILLightenComparer.Shared.Comparisons
                 var itemVariable = new EnumerableItemVariable(_enumeratorType, _elementType, _getCurrentMethod, enumerators);
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
 
-                il.Execute(itemComparison.Emit(loopStart))
-                  .Execute(itemComparison.EmitCheckForResult(loopStart));
+                il.Emit(itemComparison.Emit(loopStart))
+                  .Emit(itemComparison.EmitCheckForResult(loopStart));
             }
         }
 
         private (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
         {
             // todo: 3. it's possible to use "not done" flag. it will simplify emitted code in _emitCheckIfLoopsAreDone.
-            il.AreSame(Call(_moveNextMethod, LoadCaller(xEnumerator)), LoadInteger(0), out var xDone)
-              .AreSame(Call(_moveNextMethod, LoadCaller(yEnumerator)), LoadInteger(0), out var yDone);
+            il.Ceq(CallMethod(_moveNextMethod, LoadCaller(xEnumerator)), Ldc_I4(0), out var xDone)
+              .Ceq(CallMethod(_moveNextMethod, LoadCaller(yEnumerator)), Ldc_I4(0), out var yDone);
 
             return (xDone, yDone);
         }

@@ -32,9 +32,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Illuminator" Version="0.2.1" />
 		<PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
 	</ItemGroup>
 
-	<Import Project="..\..\external\illuminator\src\Illuminator\Illuminator.Shared.projitems" Label="Shared" />
+	<ItemGroup>
+	  <Compile Update="Extensions\FunctionalExtensions.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	  </Compile>
+	</ItemGroup>
 
 </Project>

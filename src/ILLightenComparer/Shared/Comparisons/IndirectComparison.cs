@@ -5,7 +5,7 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -55,7 +55,7 @@ namespace ILLightenComparer.Shared.Comparisons
             return new IndirectComparison(checkForIntermediateResultEmitter, compareMethod, variable);
         }
 
-        public ILEmitter Emit(ILEmitter il, Label _) => il.Call(
+        public ILEmitter Emit(ILEmitter il, Label _) => il.CallMethod(
             _method,
             LoadArgument(Arg.Context),
             _variable.Load(Arg.X),

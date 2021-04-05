@@ -6,7 +6,7 @@ using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Equality
 {
@@ -25,8 +25,8 @@ namespace ILLightenComparer.Equality
 
             if (needNullCheck) {
                 il.LoadArgument(Arg.Input)
-                  .IfTrue_S(out var next)
-                  .Return(0)
+                  .Brtrue_S(out var next)
+                  .Ret(0)
                   .MarkLabel(next);
             }
 
@@ -37,19 +37,19 @@ namespace ILLightenComparer.Equality
             _resolver.GetHasherEmitter(new ArgumentVariable(objectType)).Emit(il);
 
             if (detecCycles) {
-                il.Execute(Remove(Arg.CycleSet, Arg.Input, objectType));
+                il.Emit(Remove(Arg.CycleSet, Arg.Input, objectType));
             }
 
-            il.Return();
+            il.Ret();
         }
 
         public bool NeedCreateCycleDetectionSets(Type _) => true;
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .IfTrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
-            .Execute(GetCount(Arg.CycleSet))
+            .Brtrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
+            .Emit(GetCount(Arg.CycleSet))
             .Store(typeof(int), out var count)
-            .Return(Call(typeof(int).GetMethod(nameof(GetHashCode)), LoadCaller(count)))
+            .Ret(CallMethod(typeof(int).GetMethod(nameof(GetHashCode)), LoadCaller(count)))
             .MarkLabel(next);
     }
 }

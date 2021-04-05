@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using Illuminator.Extensions;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
@@ -35,7 +35,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             using (var il = subCompare.GetILGenerator().CreateILEmitter()) {
                 il.Sub(LoadArgument(0), LoadArgument(1))
                   .IfFalse_S(out var equals)
-                  .Return(0)
+                  .Ret(0)
                   .MarkLabel(equals)
                   .Return(1);
 
@@ -46,7 +46,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             using (var il = subNot.GetILGenerator().CreateILEmitter()) {
                 il.Sub(LoadArgument(0), LoadArgument(1))
                   .Not()
-                  .Return();
+                  .Ret();
 
                 _subNot = subNot.CreateDelegate<Func<int, int, bool>>();
             }

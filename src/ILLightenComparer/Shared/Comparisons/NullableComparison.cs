@@ -4,7 +4,7 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -44,8 +44,8 @@ namespace ILLightenComparer.Shared.Comparisons
         {
             var variableType = _variable.VariableType;
 
-            _variable.Load(il, Arg.X).Store(variableType, out var nullableX);
-            _variable.Load(il, Arg.Y).Store(variableType, out var nullableY);
+            _variable.Load(il, Arg.X).Stloc(variableType, out var nullableX);
+            _variable.Load(il, Arg.Y).Stloc(variableType, out var nullableY);
 
             var isMember = !(_variable is ArgumentVariable);
             if (isMember) {

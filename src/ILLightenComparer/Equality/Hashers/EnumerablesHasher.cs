@@ -10,7 +10,7 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static Illuminator.Functional;
+using static Illuminator.FunctionalExtensions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -61,21 +61,21 @@ namespace ILLightenComparer.Equality.Hashers
             var config = _configuration.Get(_variable.OwnerType);
 
             return il
-                .LoadLong(config.HashSeed)
-                .Store(typeof(long), out var hash)
-                .Execute(this.Emit(hash));
+                .Ldc_I8(config.HashSeed)
+                .Stloc(typeof(long), out var hash)
+                .Emit(this.Emit(hash));
         }
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
         {
-            il.Execute(_variable.Load(Arg.Input))
-              .Store(_variable.VariableType, out var enumerable)
+            il.Emit(_variable.Load(Arg.Input))
+              .Stloc(_variable.VariableType, out var enumerable)
               .DefineLabel(out var end);
 
             if (!_variable.VariableType.IsValueType) {
-                il.IfTrue_S(LoadLocal(enumerable), out var begin)
+                il.Brtrue_S(LoadLocal(enumerable), out var begin)
                   .LoadInteger(0)
-                  .GoTo(end)
+                  .Br(end)
                   .MarkLabel(begin);
             }
 
@@ -83,14 +83,14 @@ namespace ILLightenComparer.Equality.Hashers
                 return EmitHashAsSortedArray(il, enumerable, hash).MarkLabel(end);
             }
 
-            il.Call(_getEnumeratorMethod, LoadCaller(enumerable))
-              .Store(_enumeratorType, out var enumerator)
+            il.CallMethod(_getEnumeratorMethod, LoadCaller(enumerable))
+              .Stloc(_enumeratorType, out var enumerator)
               .DefineLabel(out var loopStart);
 
             if (!_enumeratorType.IsValueType) {
-                il.IfTrue_S(LoadLocal(enumerator), loopStart)
+                il.Brtrue_S(LoadLocal(enumerator), loopStart)
                   .LoadInteger(0)
-                  .GoTo(end);
+                  .Br(end);
             }
 
             // todo: 1. think how to use try/finally block
@@ -104,7 +104,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             //il.EndExceptionBlock();
 
-            return il.LoadLocal(hash).MarkLabel(end);
+            return il.Ldloc(hash).MarkLabel(end);
         }
 
         private ILEmitter EmitHashAsSortedArray(ILEmitter il, LocalBuilder enumerable, LocalBuilder hash)
@@ -124,7 +124,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
-                  .IfTrue_S(Call(_moveNextMethod, LoadCaller(enumerator)), out var next)
+                  .IfTrue_S(CallMethod(_moveNextMethod, LoadCaller(enumerator)), out var next)
                   .GoTo(loopEnd)
                   .MarkLabel(next);
             }
@@ -136,7 +136,7 @@ namespace ILLightenComparer.Equality.Hashers
                 _resolver
                     .GetHasherEmitter(itemVariable)
                     .EmitHashing(il, hash)
-                    .GoTo(loopStart)
+                    .Br(loopStart)
                     .MarkLabel(loopEnd);
             }
         }
