@@ -5,7 +5,7 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
 
 namespace ILLightenComparer.Shared.Comparisons
@@ -32,7 +32,7 @@ namespace ILLightenComparer.Shared.Comparisons
             variable.Load(il, Arg.Y).Stloc(variable.VariableType, out var collectionY);
 
             if (!variable.VariableType.IsValueType) {
-                _emitReferenceComparison(il, LoadLocal(collectionX), LoadLocal(collectionY), Br(gotoNext)); // need, because a collection can be a member of an object
+                _emitReferenceComparison(il, Ldloc(collectionX), Ldloc(collectionY), Br(gotoNext)); // need, because a collection can be a member of an object
             }
 
             return (collectionX, collectionY);
@@ -56,8 +56,8 @@ namespace ILLightenComparer.Shared.Comparisons
               .MarkLabel(loopStart);
 
             using (il.LocalsScope()) {
-                il.Ceq(LoadLocal(index), LoadLocal(countX), out var isDoneX)
-                  .Ceq(LoadLocal(index), LoadLocal(countY), out var isDoneY);
+                il.Ceq(Ldloc(index), Ldloc(countX), out var isDoneX)
+                  .Ceq(Ldloc(index), Ldloc(countY), out var isDoneY);
                 _emitCheckIfLoopsAreDone(il, isDoneX, isDoneY, afterLoop);
             }
 
@@ -74,7 +74,7 @@ namespace ILLightenComparer.Shared.Comparisons
                                                      itemComparison.Emit(continueLoop),
                                                      itemComparison.EmitCheckForResult(continueLoop))
                                                  .MarkLabel(continueLoop)
-                                                 .Add(LoadLocal(index), Ldc_I4(1)), index)
+                                                 .Add(Ldloc(index), Ldc_I4(1)), index)
                                           .GoTo(loopStart);
             }
         }

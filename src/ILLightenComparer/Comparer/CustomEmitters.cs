@@ -2,7 +2,7 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 
 namespace ILLightenComparer.Comparer
 {
@@ -15,7 +15,7 @@ namespace ILLightenComparer.Comparer
             .Stloc(typeof(int), out var result)
             .Ldloc(result)
             .IfFalse(next)
-            .Ret(LoadLocal(result));
+            .Ret(Ldloc(result));
 
         public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder isDoneX, LocalBuilder isDoneY, Label gotoNext) => il
             .Ldloc(isDoneX)

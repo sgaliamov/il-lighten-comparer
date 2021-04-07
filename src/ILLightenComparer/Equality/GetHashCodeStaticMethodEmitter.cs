@@ -6,7 +6,7 @@ using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 
 namespace ILLightenComparer.Equality
 {

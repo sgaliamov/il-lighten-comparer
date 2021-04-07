@@ -5,7 +5,7 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 
 namespace ILLightenComparer.Shared.Comparisons
 {

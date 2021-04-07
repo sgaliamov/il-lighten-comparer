@@ -4,7 +4,7 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -49,7 +49,7 @@ namespace ILLightenComparer.Shared.Comparisons
 
             var isMember = !(_variable is ArgumentVariable);
             if (isMember) {
-                _emitCheckNullablesForValue(il, LoadAddress(nullableX), LoadAddress(nullableY), variableType, gotoNext);
+                _emitCheckNullablesForValue(il, Ldloca(nullableX), Ldloca(nullableY), variableType, gotoNext);
             }
 
             var nullableVariables = new NullableVariables(variableType, _variable.OwnerType, new Dictionary<ushort, LocalBuilder>(2) {

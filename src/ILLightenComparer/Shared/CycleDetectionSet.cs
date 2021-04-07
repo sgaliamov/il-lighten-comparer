@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using ILLightenComparer.Extensions;
 using Illuminator;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 
 namespace ILLightenComparer.Shared
 {

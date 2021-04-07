@@ -10,7 +10,7 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -73,7 +73,7 @@ namespace ILLightenComparer.Equality.Hashers
               .DefineLabel(out var end);
 
             if (!_variable.VariableType.IsValueType) {
-                il.Brtrue_S(LoadLocal(enumerable), out var begin)
+                il.Brtrue_S(Ldloc(enumerable), out var begin)
                   .LoadInteger(0)
                   .Br(end)
                   .MarkLabel(begin);
@@ -88,7 +88,7 @@ namespace ILLightenComparer.Equality.Hashers
               .DefineLabel(out var loopStart);
 
             if (!_enumeratorType.IsValueType) {
-                il.Brtrue_S(LoadLocal(enumerator), loopStart)
+                il.Brtrue_S(Ldloc(enumerator), loopStart)
                   .LoadInteger(0)
                   .Br(end);
             }

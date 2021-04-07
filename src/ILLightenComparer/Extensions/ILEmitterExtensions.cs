@@ -134,6 +134,17 @@ namespace ILLightenComparer.Extensions
 
         public static ILEmitter Ret(this ILEmitter il, LocalBuilder local) => il.Ldloc(local).Ret();
 
+        public static ILEmitter Cast<T>(this ILEmitter self, ILEmitterFunc value) => value(self).Cast(typeof(T));
+
+        // todo: 3. test
+        public static ILEmitter Cast(this ILEmitter self, Type type) => Type.GetTypeCode(type) switch {
+            TypeCode.Int64 => self.Conv_I8(),
+            TypeCode.Int32 => self.Conv_I4(),
+            _ => type.IsValueType
+                ? self.Unbox_Any(type)
+                : self.Castclass(type)
+        };
+
         public static ILEmitter CallMethod(
             this ILEmitter il,
             MethodInfo methodInfo,

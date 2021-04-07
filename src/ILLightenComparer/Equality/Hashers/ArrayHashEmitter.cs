@@ -5,7 +5,7 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
 
 namespace ILLightenComparer.Equality.Hashers
@@ -31,7 +31,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
-                  .IfNotEqual_Un_S(LoadLocal(index), LoadLocal(count), out var next)
+                  .IfNotEqual_Un_S(Ldloc(index), Ldloc(count), out var next)
                   .GoTo(loopEnd)
                   .MarkLabel(next);
             }
@@ -43,7 +43,7 @@ namespace ILLightenComparer.Equality.Hashers
                 ILEmitterExtensions.Stloc(_resolver
                                           .GetHasherEmitter(itemVariable)
                                           .EmitHashing(il, hash)
-                                          .Add(LoadLocal(index), Ldc_I4(1)), index)
+                                          .Add(Ldloc(index), Ldc_I4(1)), index)
                                    .GoTo(loopStart);
             }
 

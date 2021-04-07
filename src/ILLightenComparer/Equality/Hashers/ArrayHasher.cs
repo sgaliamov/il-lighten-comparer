@@ -4,7 +4,7 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.FunctionalExtensions;
+using static ILLightenComparer.Extensions.Functional;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -44,7 +44,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             il.Emit(_variable.Load(Arg.Input)) // load array
               .Stloc(arrayType, out var array)
-              .IfTrue_S(LoadLocal(array), out var begin)
+              .IfTrue_S(Ldloc(array), out var begin)
               .LoadInteger(0)
               .GoTo(out var end)
               .MarkLabel(begin);

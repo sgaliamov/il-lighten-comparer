@@ -37,7 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Extensions\FunctionalExtensions.cs">
+	  <Compile Update="Extensions\Functional.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
