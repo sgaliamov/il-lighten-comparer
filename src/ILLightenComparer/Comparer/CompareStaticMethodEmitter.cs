@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
-using ILLightenComparer.Old;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
 using static Illuminator.FunctionalExtensions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Comparer
 {
@@ -57,10 +57,10 @@ namespace ILLightenComparer.Comparer
         // no need detect cycle as flow goes outside context
         public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsComparable();
 
-        private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .Ceq(Ldc_I4(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))
-            .IfFalse_S(out var next)
-            .Ret(Sub(GetCount(Arg.SetX), GetCount(Arg.SetY)))
-            .MarkLabel(next);
+        private static void EmitCycleDetection(ILEmitter il, Type objectType) =>
+            il.Ceq(Ldc_I4(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))
+              .Brfalse_S(out var next)
+              .Ret(Sub(GetCount(Arg.SetX), GetCount(Arg.SetY)))
+              .MarkLabel(next);
     }
 }

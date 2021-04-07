@@ -6,13 +6,12 @@ using System.Reflection.Emit;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static Illuminator.FunctionalExtensions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Extensions
 {
     internal static class ILEmitterExtensions
     {
-        private const byte ShortFormLimit = byte.MaxValue; // 255
         private const string LengthMethodName = nameof(Array.Length);
         private static readonly MethodInfo ToArrayMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray));
         private static readonly MethodInfo GetComparerMethod = typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
@@ -35,8 +34,8 @@ namespace ILLightenComparer.Extensions
             } else {
                 var getComparerMethod = GetComparerMethod.MakeGenericMethod(elementType);
 
-                il.LoadArgument(Arg.Context)
-                  .CallMethod(getComparerMethod)
+                il.Ldarg(Arg.Context)
+                  .CallMethod(getComparerMethod, Type.EmptyTypes)
                   .Stloc(getComparerMethod.ReturnType, out var comparer);
 
                 foreach (var array in arrays) {
@@ -47,10 +46,10 @@ namespace ILLightenComparer.Extensions
             return il;
         }
 
-        public static ILEmitter EmitDispose(this ILEmitter il, LocalBuilder local) => il
-                                                                                      .LoadCaller(local)
-                                                                                      .ExecuteIf(local.LocalType.IsValueType, Constrained(local.LocalType))
-                                                                                      .Call(DisposeMethod);
+        public static ILEmitter EmitDispose(this ILEmitter il, LocalBuilder local) =>
+            il.LoadCaller(local)
+              .ExecuteIf(local.LocalType.IsValueType, Constrained(local.LocalType))
+              .Call(DisposeMethod);
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array, LocalBuilder comparer)
         {
@@ -58,7 +57,7 @@ namespace ILLightenComparer.Extensions
             var sortMethod = GetArraySortWithComparer(elementType);
 
             il.Ldloc(array)
-              .CallMethod(copyMethod)
+              .CallMethod(copyMethod, Type.EmptyTypes)
               .Stloc(array)
               .Ldloc(array)
               .Ldloc(comparer)
@@ -71,10 +70,10 @@ namespace ILLightenComparer.Extensions
             var sortMethod = GetArraySortMethod(elementType);
 
             il.Ldloc(array)
-              .CallMethod(copyMethod)
+              .CallMethod(copyMethod, Type.EmptyTypes)
               .Stloc(array)
               .Ldloc(array)
-              .CallMethod(sortMethod);
+              .CallMethod(sortMethod, Type.EmptyTypes);
         }
 
         private static MethodInfo GetArraySortWithComparer(Type elementType) =>
@@ -124,55 +123,39 @@ namespace ILLightenComparer.Extensions
                 .Emit(whenTrue)
                 .MarkLabel(exit);
 
-        public static ILEmitter ExecuteIf(this ILEmitter il, bool condition, params ILEmitterFunc[] actions) => 
+        public static ILEmitter ExecuteIf(this ILEmitter il, bool condition, params ILEmitterFunc[] actions) =>
             condition ? il.Emit(actions) : il;
 
         // todo: 3. make Constrained when method is virtual and caller is value type
-        public static ILEmitter LoadCaller(this ILEmitter il, LocalVariableInfo local) =>
-            local.LocalType.IsValueType ? il.Ldloca(local) : il.Ldloc(local);
+        public static ILEmitter LoadCaller(this ILEmitter il, LocalBuilder local) =>
+            local.LocalType!.IsValueType ? il.Ldloca((short)local.LocalIndex) : il.Ldloc(local);
 
         public static ILEmitter Ret(this ILEmitter il, int value) => il.Ldc_I4(value).Ret();
 
         public static ILEmitter Ret(this ILEmitter il, LocalBuilder local) => il.Ldloc(local).Ret();
 
-        public static ILEmitter LoadArgument(this ILEmitter il, ushort argumentIndex)
-        {
-            switch (argumentIndex) {
-                case 0: return Emit(OpCodes.Ldarg_0);
-                case 1: return Emit(OpCodes.Ldarg_1);
-                case 2: return Emit(OpCodes.Ldarg_2);
-                case 3: return Emit(OpCodes.Ldarg_3);
-                default:
-                    var opCode = argumentIndex <= ShortFormLimit ? OpCodes.Ldarg_S : OpCodes.Ldarg;
-                    return Emit(opCode, argumentIndex);
-            }
-        }
-
-        public static ILEmitter LoadArgumentAddress(this ILEmitter il, ushort argumentIndex)
-        {
-            var opCode = argumentIndex <= ShortFormLimit ? OpCodes.Ldarga_S : OpCodes.Ldarga;
-            return Emit(opCode, argumentIndex);
-        }
-
-        public static ILEmitter CallMethod(this ILEmitter il, MethodInfo methodInfo, params ILEmitterFunc[] parameters)
+        public static ILEmitter CallMethod(
+            this ILEmitter il,
+            MethodInfo methodInfo,
+            Type[] parameterTypes,
+            params ILEmitterFunc[] parameters)
         {
             if (!(methodInfo is MethodBuilder)) {
-                var methodParametesLenght = methodInfo.GetParameters().Length;
+                var methodParametersLength = methodInfo.GetParameters().Length;
 
-                if ((methodInfo.IsStatic && methodParametesLenght != parameters.Length)
-                    || (!methodInfo.IsStatic && methodParametesLenght != parameters.Length - 1)) {
+                if ((methodInfo.IsStatic && methodParametersLength != parameters.Length)
+                    || (!methodInfo.IsStatic && methodParametersLength != parameters.Length - 1)) {
                     throw new ArgumentException($"Amount of parameters does not match method {methodInfo} signature.");
                 }
             }
 
-            foreach (var parameter in parameters) {
-                parameter(il);
-            }
-
-            return il.Call(methodInfo, parameters);
+            return il.Call(methodInfo, parameterTypes, parameters);
         }
 
-        public static ILEmitter CallMethod(this ILEmitter il, MethodInfo methodInfo)
+        public static ILEmitter CallMethod(
+            this ILEmitter il,
+            MethodInfo methodInfo,
+            Type[] parameterTypes)
         {
             var owner = methodInfo.DeclaringType;
             if (owner == typeof(ValueType)) {
@@ -192,15 +175,13 @@ namespace ILLightenComparer.Extensions
             // if the method belongs to Enum type, them it should be called as virtual and with constrained prefix
             // https://docs.microsoft.com/en-us/dotnet/api/system.reflection.emit.opcodes.constrained
             //var isEnum = owner.IsAssignableFrom(typeof(Enum));
-            var opCode = methodInfo.IsStatic || owner.IsValueType || owner.IsSealed || !methodInfo.IsVirtual // todo: 0. test
-                ? OpCodes.Call
-                : OpCodes.Callvirt;
-
             //if (isEnum) {
             //    Constrained(owner); // todo: 0. test
             //}
 
-            return Emit(opCode, methodInfo);
+            return methodInfo.IsStatic || owner.IsValueType || owner.IsSealed || !methodInfo.IsVirtual // todo: 0. test
+                ? il.Call(methodInfo, parameterTypes)
+                : il.Callvirt(methodInfo, parameterTypes);
         }
     }
 }

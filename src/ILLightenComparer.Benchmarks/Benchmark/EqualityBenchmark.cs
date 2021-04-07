@@ -33,7 +33,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
             var subCompare = new DynamicMethod("SubCompare", typeof(bool), new[] { typeof(int), typeof(int) });
             using (var il = subCompare.GetILGenerator().CreateILEmitter()) {
-                il.Sub(LoadArgument(0), LoadArgument(1))
+                il.Sub(Ldarg(0), Ldarg(1))
                   .IfFalse_S(out var equals)
                   .Ret(0)
                   .MarkLabel(equals)
@@ -44,7 +44,7 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
             var subNot = new DynamicMethod("SubNot", typeof(bool), new[] { typeof(int), typeof(int) });
             using (var il = subNot.GetILGenerator().CreateILEmitter()) {
-                il.Sub(LoadArgument(0), LoadArgument(1))
+                il.Sub(Ldarg(0), Ldarg(1))
                   .Not()
                   .Ret();
 

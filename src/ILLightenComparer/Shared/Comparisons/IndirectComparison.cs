@@ -57,11 +57,11 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public ILEmitter Emit(ILEmitter il, Label _) => il.CallMethod(
             _method,
-            LoadArgument(Arg.Context),
+            Ldarg(Arg.Context),
             _variable.Load(Arg.X),
             _variable.Load(Arg.Y),
-            LoadArgument(Arg.SetX),
-            LoadArgument(Arg.SetY));
+            Ldarg(Arg.SetX),
+            Ldarg(Arg.SetY));
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
     }

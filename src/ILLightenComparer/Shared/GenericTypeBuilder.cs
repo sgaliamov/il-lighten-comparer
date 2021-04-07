@@ -10,6 +10,7 @@ using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 using static Illuminator.FunctionalExtensions;
+using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
 
 namespace ILLightenComparer.Shared
 {
@@ -82,9 +83,8 @@ namespace ILLightenComparer.Shared
             using var il = methodBuilder.CreateILEmitter();
 
             Enumerable.Range(0, parametersCount)
-                .Aggregate(il
-                .LoadArgument(Arg.This)
-                .Ldfld(contextField), (il, index) => il.LoadArgument((ushort)(index + 1)));
+                .Aggregate(ILEmitterExtensions.Ldarg(il, Arg.This)
+                                              .Ldfld(contextField), (il, index) => ILEmitterExtensions.Ldarg(il, (ushort)(index + 1)));
 
             EmitStaticMethodCall(il, objectType, staticMethod, parametersCount);
         }
@@ -122,10 +122,10 @@ namespace ILLightenComparer.Shared
                 parameters);
 
             using (var il = constructorInfo.CreateILEmitter()) {
-                il.LoadArgument(Arg.This)
-                  .Call(typeof(object).GetConstructor(Type.EmptyTypes))
-                  .Stfld(LoadArgument(Arg.This), LoadArgument(1), contextField)
-                  .Ret();
+                ILEmitterExtensions.Ldarg(il, Arg.This)
+                                   .Call(typeof(object).GetConstructor(Type.EmptyTypes))
+                                   .Stfld(Ldarg(Arg.This), Ldarg(1), contextField)
+                                   .Ret();
             }
 
             var methodBuilder = typeBuilder.DefineStaticMethod(
@@ -134,7 +134,7 @@ namespace ILLightenComparer.Shared
                 parameters);
 
             using (var il = methodBuilder.CreateILEmitter()) {
-                il.Newobj(constructorInfo, LoadArgument(Arg.This)).Ret();
+                il.Newobj(constructorInfo, Ldarg(Arg.This)).Ret();
             }
         }
     }
