@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
@@ -45,11 +46,11 @@ namespace ILLightenComparer.Equality
 
         public bool NeedCreateCycleDetectionSets(Type _) => true;
 
-        private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .Brtrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
-            .Emit(GetCount(Arg.CycleSet))
-            .Store(typeof(int), out var count)
-            .Ret(CallMethod(typeof(int).GetMethod(nameof(GetHashCode)), LoadCaller(count)))
-            .MarkLabel(next);
+        private static void EmitCycleDetection(ILEmitter il, Type objectType) => 
+            il.Brtrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
+              .Emit(GetCount(Arg.CycleSet))
+              .Stloc(typeof(int), out var count)
+              .Ret(CallMethod(typeof(int).GetMethod(nameof(GetHashCode)), Type.EmptyTypes, LoadCaller(count)))
+              .MarkLabel(next);
     }
 }

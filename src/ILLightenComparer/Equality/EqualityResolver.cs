@@ -11,6 +11,7 @@ using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
+using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Equality
 {

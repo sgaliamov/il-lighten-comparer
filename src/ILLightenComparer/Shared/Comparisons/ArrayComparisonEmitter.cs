@@ -5,16 +5,15 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static ILLightenComparer.Extensions.Functions;
-using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class ArrayComparisonEmitter
     {
-        private readonly IResolver _resolver;
-        private readonly EmitReferenceComparisonDelegate _emitReferenceComparison;
         private readonly EmitCheckIfLoopsAreDoneDelegate _emitCheckIfLoopsAreDone;
+        private readonly EmitReferenceComparisonDelegate _emitReferenceComparison;
+        private readonly IResolver _resolver;
 
         public ArrayComparisonEmitter(
             IResolver resolver,
@@ -69,13 +68,12 @@ namespace ILLightenComparer.Shared.Comparisons
                 var itemVariable = new ArrayItemVariable(arrayType, ownerType, arrays, index);
                 var itemComparison = _resolver.GetComparisonEmitter(itemVariable);
 
-                return ILEmitterExtensions.Stloc(il
-                                                 .Emit(
-                                                     itemComparison.Emit(continueLoop),
-                                                     itemComparison.EmitCheckForResult(continueLoop))
-                                                 .MarkLabel(continueLoop)
-                                                 .Add(Ldloc(index), Ldc_I4(1)), index)
-                                          .GoTo(loopStart);
+                return il.Emit(
+                             itemComparison.Emit(continueLoop),
+                             itemComparison.EmitCheckForResult(continueLoop))
+                         .MarkLabel(continueLoop)
+                         .Add(Ldloc(index), Ldc_I4(1)).Stloc(index)
+                         .Br(loopStart);
             }
         }
     }

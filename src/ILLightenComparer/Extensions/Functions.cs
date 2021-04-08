@@ -1,12 +1,4 @@
-﻿/*
-   ___ ___ _  _ ___ ___    _ _____ ___ ___     ___ ___  ___  ___
-  / __| __| \| | __| _ \  /_\_   _| __|   \   / __/ _ \|   \| __|
- | (_ | _|| .` | _||   / / _ \| | | _|| |) | | (_| (_) | |) | _|
-  \___|___|_|\_|___|_|_\/_/ \_\_| |___|___/   \___\___/|___/|___|
-
-*/
-
-using System;
+﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using Illuminator;
@@ -18,7 +10,7 @@ namespace ILLightenComparer.Extensions
         public static ILEmitterFunc CallMethod(MethodInfo methodInfo, Type[] parameterTypes, params ILEmitterFunc[] parameters) =>
             (in ILEmitter il) => il.CallMethod(methodInfo, parameterTypes, parameters);
 
-        public static ILEmitterFunc CallMethod(MethodInfo methodInfo, Type[] parameterTypes) =>
+        public static ILEmitterFunc CallMethod(MethodInfo methodInfo, params Type[] parameterTypes) =>
             (in ILEmitter il) => il.CallMethod(methodInfo, parameterTypes);
 
         public static ILEmitterFunc Cast<T>(ILEmitterFunc value) =>
@@ -32,6 +24,12 @@ namespace ILLightenComparer.Extensions
 
         public static ILEmitterFunc If(ILEmitterFunc action, ILEmitterFunc whenTrue) =>
             (in ILEmitter il) => il.If(action, whenTrue);
+
+        public static ILEmitterFunc Ldloca(LocalBuilder local) =>
+            (in ILEmitter il) => il.Ldloca(local);
+
+        public static ILEmitterFunc LoadArgument(int argumentIndex) =>
+            (in ILEmitter il) => il.LoadArgument(argumentIndex);
 
         public static ILEmitterFunc LoadCaller(LocalBuilder local) =>
             (in ILEmitter il) => il.LoadCaller(local);

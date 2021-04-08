@@ -5,6 +5,7 @@ using System.Reflection;
 using ILLightenComparer.Extensions;
 using Illuminator;
 using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Shared
 {
@@ -12,23 +13,31 @@ namespace ILLightenComparer.Shared
     {
         public static readonly ConstructorInfo DefaultConstructor = typeof(CycleDetectionSet).GetConstructor(Type.EmptyTypes);
 
-        public static ILEmitterFunc Remove(ushort set, ushort arg, Type argType) => CallMethod(
-            RemoveMethod,
-            Ldarg(set),
-            Ldarg(arg) + EmitIf(argType.IsValueType, Box(argType)));
+        public static ILEmitterFunc Remove(short set, short arg, Type argType) =>
+            CallMethod(
+                RemoveMethod,
+                new[] { typeof(object) },
+                Ldarg(set),
+                Ldarg(arg) + EmitIf(argType.IsValueType, Box((in ILEmitter il) => il, argType)));
 
-        public static ILEmitterFunc TryAdd(ushort set, ushort arg, Type argType) => CallMethod(
-            TryAddMethod,
-            Ldarg(set),
-            Ldarg(arg) + EmitIf(argType.IsValueType, Box(argType)),
-            Ldc_I4(0));
+        public static ILEmitterFunc TryAdd(short set, short arg, Type argType) =>
+            CallMethod(
+                TryAddMethod,
+                new[] { typeof(object), typeof(byte) },
+                Ldarg(set),
+                Ldarg(arg) + EmitIf(argType.IsValueType, Box((in ILEmitter il) => il, argType)),
+                Ldc_I4(0));
 
-        public static ILEmitterFunc GetCount(ushort arg) => CallMethod(GetCountProperty, Ldarg(arg));
+        public static ILEmitterFunc GetCount(short arg) => CallMethod(GetCountProperty, Type.EmptyTypes, Ldarg(arg));
 
-        internal static readonly MethodInfo GetCountProperty = typeof(CycleDetectionSet).GetProperty(nameof(Count)).GetGetMethod();
+        internal static readonly MethodInfo GetCountProperty = typeof(CycleDetectionSet).GetProperty(nameof(Count))!.GetGetMethod();
 
-        private static readonly MethodInfo RemoveMethod = typeof(IDictionary).FindMethod(nameof(IDictionary.Remove), new[] { typeof(object) });
+        private static readonly MethodInfo RemoveMethod = typeof(IDictionary).FindMethod(
+            nameof(IDictionary.Remove), 
+            new[] { typeof(object) });
 
-        private static readonly MethodInfo TryAddMethod = typeof(CycleDetectionSet).GetMethod(nameof(TryAdd), new[] { typeof(object), typeof(byte) });
+        private static readonly MethodInfo TryAddMethod = typeof(CycleDetectionSet).GetMethod(
+            nameof(ConcurrentDictionary<object, byte>.TryAdd), 
+            new[] { typeof(object), typeof(byte) });
     }
 }

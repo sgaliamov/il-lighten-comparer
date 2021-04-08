@@ -40,9 +40,9 @@ namespace ILLightenComparer.Equality.Hashers
                 .Stloc(variableType, out var nullable)
                 .Ldloca(nullable)
                 .Call(_hasValueMethod)
-                .IfTrue_S(out var next)
-                .LoadInteger(0)
-                .GoTo(out var exit)
+                .Brtrue_S(out var next)
+                .Ldc_I4(0)
+                .Br(out var exit)
                 .MarkLabel(next);
 
             var nullableVariable = new NullableVariables(

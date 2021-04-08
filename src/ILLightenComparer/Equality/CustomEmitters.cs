@@ -16,15 +16,15 @@ namespace ILLightenComparer.Equality
 
         public static ILEmitter EmitCheckIfLoopsAreDone(this ILEmitter il, LocalBuilder isDoneX, LocalBuilder isDoneY, Label gotoNext) => il
             .Ldloc(isDoneX)
-            .IfFalse_S(out var checkIsDoneY)
+            .Brfalse_S(out var checkIsDoneY)
             .Ldloc(isDoneY)
-            .IfFalse_S(out var returnFalse)
-            .GoTo(gotoNext)
+            .Brfalse_S(out var returnFalse)
+            .Br(gotoNext)
             .MarkLabel(returnFalse)
             .Ret(0)
             .MarkLabel(checkIsDoneY)
-            .LoadLocal(isDoneY)
-            .IfFalse_S(out var next)
+            .Ldloc(isDoneY)
+            .Brfalse_S(out var next)
             .Ret(0)
             .MarkLabel(next);
 
@@ -32,12 +32,12 @@ namespace ILLightenComparer.Equality
             .Bne_Un_S(loadX, loadY, out var checkX)
             .Emit(ifEqual)
             .MarkLabel(checkX)
-            .Execute(loadX)
-            .IfTrue_S(out var checkY)
+            .Emit(loadX)
+            .Brtrue_S(out var checkY)
             .Ret(0)
             .MarkLabel(checkY)
-            .Execute(loadY)
-            .IfTrue_S(out var next)
+            .Emit(loadY)
+            .Brtrue_S(out var next)
             .Ret(0)
             .MarkLabel(next);
 
@@ -50,13 +50,13 @@ namespace ILLightenComparer.Equality
                      .Stloc(typeof(bool), out var secondHasValue)
                      .Emit(nullableX)
                      .Call(hasValueMethod)
-                     .IfTrue_S(out var ifFirstHasValue)
-                     .LoadLocal(secondHasValue)
-                     .IfFalse(ifBothNull)
+                     .Brtrue_S(out var ifFirstHasValue)
+                     .Ldloc(secondHasValue)
+                     .Brfalse(ifBothNull)
                      .Ret(0)
                      .MarkLabel(ifFirstHasValue)
-                     .LoadLocal(secondHasValue)
-                     .IfTrue_S(out var next)
+                     .Ldloc(secondHasValue)
+                     .Brtrue_S(out var next)
                      .Ret(0)
                      .MarkLabel(next);
         }

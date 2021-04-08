@@ -9,8 +9,7 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
-using static ILLightenComparer.Extensions.Functions;
-using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Shared
 {
@@ -83,8 +82,8 @@ namespace ILLightenComparer.Shared
             using var il = methodBuilder.CreateILEmitter();
 
             Enumerable.Range(0, parametersCount)
-                .Aggregate(ILEmitterExtensions.Ldarg(il, Arg.This)
-                                              .Ldfld(contextField), (il, index) => ILEmitterExtensions.Ldarg(il, (ushort)(index + 1)));
+                      .Aggregate(il.Ldarg(Arg.This)
+                                   .Ldfld(contextField), (il, index) => il.Ldarg((short)(index + 1)));
 
             EmitStaticMethodCall(il, objectType, staticMethod, parametersCount);
         }
@@ -122,19 +121,19 @@ namespace ILLightenComparer.Shared
                 parameters);
 
             using (var il = constructorInfo.CreateILEmitter()) {
-                ILEmitterExtensions.Ldarg(il, Arg.This)
-                                   .Call(typeof(object).GetConstructor(Type.EmptyTypes))
-                                   .Stfld(Ldarg(Arg.This), Ldarg(1), contextField)
-                                   .Ret();
+                il.Ldarg(Arg.This)
+                  .Call(typeof(object).GetConstructor(Type.EmptyTypes))
+                  .Stfld(Ldarg(Arg.This), Ldarg(1), contextField)
+                  .Ret();
             }
 
             var methodBuilder = typeBuilder.DefineStaticMethod(
-                nameof(Extensions.TypeExtensions.CreateInstance),
+                nameof(TypeExtensions.CreateInstance),
                 typeBuilder,
                 parameters);
 
             using (var il = methodBuilder.CreateILEmitter()) {
-                il.Newobj(constructorInfo, Ldarg(Arg.This)).Ret();
+                il.Newobj(constructorInfo, parameters, Ldarg(Arg.This)).Ret();
             }
         }
     }

@@ -4,7 +4,8 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
+using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -40,11 +41,13 @@ namespace ILLightenComparer.Shared.Comparisons
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il, Label _) => il.CallMethod(
-            _compareMethod,
-            _variable.Load(Arg.X),
-            _variable.Load(Arg.Y),
-            Ldc_I4(_stringComparisonType));
+        public ILEmitter Emit(ILEmitter il, Label _) =>
+            il.CallMethod(
+                _compareMethod,
+                new[] { _variable.VariableType, _variable.VariableType, typeof(int) },
+                _variable.Load(Arg.X),
+                _variable.Load(Arg.Y),
+                Ldc_I4(_stringComparisonType));
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
     }

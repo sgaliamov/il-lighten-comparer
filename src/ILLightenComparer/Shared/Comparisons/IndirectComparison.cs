@@ -5,7 +5,7 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -55,13 +55,15 @@ namespace ILLightenComparer.Shared.Comparisons
             return new IndirectComparison(checkForIntermediateResultEmitter, compareMethod, variable);
         }
 
-        public ILEmitter Emit(ILEmitter il, Label _) => il.CallMethod(
-            _method,
-            Ldarg(Arg.Context),
-            _variable.Load(Arg.X),
-            _variable.Load(Arg.Y),
-            Ldarg(Arg.SetX),
-            Ldarg(Arg.SetY));
+        public ILEmitter Emit(ILEmitter il, Label _) =>
+            il.CallMethod(
+                _method,
+                new[] { _variable.VariableType, _variable.VariableType, typeof(CycleDetectionSet), typeof(CycleDetectionSet) },
+                Ldarg(Arg.Context),
+                _variable.Load(Arg.X),
+                _variable.Load(Arg.Y),
+                Ldarg(Arg.SetX),
+                Ldarg(Arg.SetY));
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
     }

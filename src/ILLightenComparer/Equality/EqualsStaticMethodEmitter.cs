@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
 using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Equality
 {
@@ -54,7 +56,7 @@ namespace ILLightenComparer.Equality
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
             .Ceq(Ldc_I4(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))
-            .IfFalse_S(out var next)
+            .Brfalse_S(out var next)
             .Ret(Ceq(GetCount(Arg.SetX), GetCount(Arg.SetY)))
             .MarkLabel(next);
     }

@@ -9,8 +9,8 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -74,7 +74,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             if (!_variable.VariableType.IsValueType) {
                 il.Brtrue_S(Ldloc(enumerable), out var begin)
-                  .LoadInteger(0)
+                  .Ldc_I4(0)
                   .Br(end)
                   .MarkLabel(begin);
             }
@@ -83,13 +83,13 @@ namespace ILLightenComparer.Equality.Hashers
                 return EmitHashAsSortedArray(il, enumerable, hash).MarkLabel(end);
             }
 
-            il.CallMethod(_getEnumeratorMethod, LoadCaller(enumerable))
+            il.CallMethod(_getEnumeratorMethod, Type.EmptyTypes, LoadCaller(enumerable))
               .Stloc(_enumeratorType, out var enumerator)
               .DefineLabel(out var loopStart);
 
             if (!_enumeratorType.IsValueType) {
                 il.Brtrue_S(Ldloc(enumerator), loopStart)
-                  .LoadInteger(0)
+                  .Ldc_I4(0)
                   .Br(end);
             }
 
@@ -124,8 +124,8 @@ namespace ILLightenComparer.Equality.Hashers
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
-                  .IfTrue_S(CallMethod(_moveNextMethod, LoadCaller(enumerator)), out var next)
-                  .GoTo(loopEnd)
+                  .Brtrue_S(CallMethod(_moveNextMethod, Type.EmptyTypes, LoadCaller(enumerator)), out var next)
+                  .Br(loopEnd)
                   .MarkLabel(next);
             }
 

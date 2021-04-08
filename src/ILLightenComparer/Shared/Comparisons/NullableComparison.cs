@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 using static ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
     internal sealed class NullableComparison : IComparisonEmitter
     {
-        private readonly IResolver _resolver;
         private readonly EmitterDelegate _checkForIntermediateResultEmitter;
         private readonly EmitCheckNullablesForValueDelegate _emitCheckNullablesForValue;
+        private readonly IResolver _resolver;
         private readonly IVariable _variable;
 
         private NullableComparison(
@@ -25,19 +25,6 @@ namespace ILLightenComparer.Shared.Comparisons
             _checkForIntermediateResultEmitter = checkForIntermediateResultEmitter;
             _emitCheckNullablesForValue = emitCheckNullablesForValue;
             _variable = variable;
-        }
-
-        public static NullableComparison Create(
-            IResolver resolver,
-            EmitterDelegate checkForIntermediateResultEmitter,
-            EmitCheckNullablesForValueDelegate emitCheckNullablesForValue,
-            IVariable variable)
-        {
-            if (variable.VariableType.IsNullable()) {
-                return new NullableComparison(resolver, checkForIntermediateResultEmitter, emitCheckNullablesForValue, variable);
-            }
-
-            return null;
         }
 
         public ILEmitter Emit(ILEmitter il, Label gotoNext)
@@ -58,10 +45,23 @@ namespace ILLightenComparer.Shared.Comparisons
             });
 
             return _resolver
-                .GetComparisonEmitter(nullableVariables)
-                .Emit(il, gotoNext);
+                   .GetComparisonEmitter(nullableVariables)
+                   .Emit(il, gotoNext);
         }
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => _checkForIntermediateResultEmitter(il, next);
+
+        public static NullableComparison Create(
+            IResolver resolver,
+            EmitterDelegate checkForIntermediateResultEmitter,
+            EmitCheckNullablesForValueDelegate emitCheckNullablesForValue,
+            IVariable variable)
+        {
+            if (variable.VariableType.IsNullable()) {
+                return new NullableComparison(resolver, checkForIntermediateResultEmitter, emitCheckNullablesForValue, variable);
+            }
+
+            return null;
+        }
     }
 }

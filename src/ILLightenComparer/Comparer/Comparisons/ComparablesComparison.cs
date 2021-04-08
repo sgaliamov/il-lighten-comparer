@@ -40,16 +40,16 @@ namespace ILLightenComparer.Comparer.Comparisons
                 _variable.Load(il, Arg.Y)
                          .Stloc(variableType, out var y)
                          .Ldloc(x)
-                         .IfTrue_S(out var call)
+                         .Brtrue_S(out var call)
                          .Ldloc(y)
-                         .IfFalse_S(gotoNext)
+                         .Brfalse_S(gotoNext)
                          .Ret(-1)
                          .MarkLabel(call)
-                         .LoadLocal(x)
-                         .LoadLocal(y);
+                         .Ldloc(x)
+                         .Ldloc(y);
             }
 
-            return il.CallMethod(_compareToMethod);
+            return il.CallMethod(_compareToMethod, variableType);
         }
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);
