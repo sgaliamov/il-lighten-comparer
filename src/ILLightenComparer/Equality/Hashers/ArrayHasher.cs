@@ -4,7 +4,7 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static ILLightenComparer.Extensions.Functional;
+using static ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Equality.Hashers
 {

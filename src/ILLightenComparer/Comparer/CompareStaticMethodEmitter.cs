@@ -7,8 +7,9 @@ using ILLightenComparer.Variables;
 using Illuminator;
 using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
-using static ILLightenComparer.Extensions.Functional;
+using static ILLightenComparer.Extensions.Functions;
 using static Illuminator.Functions;
+using Functions = ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Comparer
 {
@@ -30,9 +31,9 @@ namespace ILLightenComparer.Comparer
 
             if (needReferenceComparison) {
                 if (!objectType.IsValueType) {
-                    il.EmitReferenceComparison(Functional.Ldarg(Arg.X), Functional.Ldarg(Arg.Y), Ret(0));
+                    il.EmitReferenceComparison(Functions.Ldarg(Arg.X), Functions.Ldarg(Arg.Y), Ret(0));
                 } else if (objectType.IsNullable()) {
-                    il.EmitCheckNullablesForValue(Functional.Ldarga(Arg.X), Functional.Ldarga(Arg.Y), objectType, exit);
+                    il.EmitCheckNullablesForValue(Functions.Ldarga(Arg.X), Functions.Ldarga(Arg.Y), objectType, exit);
                 }
             }
 

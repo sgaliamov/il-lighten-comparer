@@ -13,7 +13,7 @@ using Illuminator;
 
 namespace ILLightenComparer.Extensions
 {
-    public static class Functional
+    public static class Functions
     {
         public static ILEmitterFunc CallMethod(MethodInfo methodInfo, Type[] parameterTypes, params ILEmitterFunc[] parameters) =>
             (in ILEmitter il) => il.CallMethod(methodInfo, parameterTypes, parameters);
@@ -36,8 +36,10 @@ namespace ILLightenComparer.Extensions
         public static ILEmitterFunc LoadCaller(LocalBuilder local) =>
             (in ILEmitter il) => il.LoadCaller(local);
 
-        public static ILEmitterFunc Ret(int value) => (in ILEmitter il) => il.Ret(value);
+        public static ILEmitterFunc Ret(int value) =>
+            (in ILEmitter il) => il.Ret(value);
 
-        public static ILEmitterFunc Ret(LocalBuilder local) => (in ILEmitter il) => il.Ret(local);
+        public static ILEmitterFunc Ret(LocalBuilder local) =>
+            (in ILEmitter il) => il.Ret(local);
     }
 }
