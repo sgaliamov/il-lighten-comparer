@@ -3,9 +3,9 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Illuminator.Extensions
+namespace ILLightenComparer.Extensions
 {
-    public static class MethodInfoExtensions
+    internal static class MethodInfoExtensions
     {
         public static TDelegate CreateDelegate<TDelegate>(this MethodInfo methodInfo)
             where TDelegate : Delegate =>

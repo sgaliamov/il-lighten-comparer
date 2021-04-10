@@ -1,8 +1,9 @@
 ﻿using System.Reflection.Emit;
+using Illuminator;
 
-namespace Illuminator.Extensions
+namespace ILLightenComparer.Extensions
 {
-    public static class MethodBuilderExtensions
+    internal static class MethodBuilderExtensions
     {
         public static ILEmitter CreateILEmitter(this MethodBuilder methodBuilder) =>
             methodBuilder.GetILGenerator().UseIlluminator();

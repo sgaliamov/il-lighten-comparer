@@ -9,7 +9,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {

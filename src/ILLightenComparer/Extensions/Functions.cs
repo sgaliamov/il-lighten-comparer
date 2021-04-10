@@ -5,7 +5,7 @@ using Illuminator;
 
 namespace ILLightenComparer.Extensions
 {
-    public static class Functions
+    internal static class Functions
     {
         public static ILEmitterFunc Id() =>
             (in ILEmitter il) => il;

@@ -2,7 +2,6 @@
 using System.Reflection;
 using ILLightenComparer.Extensions;
 using Illuminator;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Variables
 {

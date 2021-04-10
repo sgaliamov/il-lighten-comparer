@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using AutoFixture.Kernel;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Tests.Utilities
 {

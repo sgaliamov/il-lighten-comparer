@@ -8,7 +8,6 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 using static Illuminator.Functions;
 using TypeExtensions = ILLightenComparer.Extensions.TypeExtensions;
 

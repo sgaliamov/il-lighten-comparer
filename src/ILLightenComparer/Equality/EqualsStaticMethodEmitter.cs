@@ -5,7 +5,6 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
 using static ILLightenComparer.Extensions.Functions;
 using static Illuminator.Functions;

@@ -5,7 +5,6 @@ using System.Threading;
 using AutoFixture;
 using AutoFixture.Kernel;
 using Force.DeepCloner;
-using Illuminator.Extensions;
 using Xunit;
 
 namespace ILLightenComparer.Tests.Utilities

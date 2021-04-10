@@ -2,10 +2,10 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Illuminator.Extensions
+namespace ILLightenComparer.Extensions
 {
     // todo: 3. return wrapper with parameters instead of MethodBuilder
-    public static class TypeBuilderExtensions
+    internal static class TypeBuilderExtensions
     {
         public static MethodBuilder DefineInterfaceMethod(
             this TypeBuilder typeBuilder,

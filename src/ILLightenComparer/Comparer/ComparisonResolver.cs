@@ -5,10 +5,10 @@ using System.Reflection;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Comparer.Comparisons;
 using ILLightenComparer.Config;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer
 {

@@ -2,9 +2,9 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Illuminator.Extensions
+namespace ILLightenComparer.Extensions
 {
-    public static class ModuleBuilderExtensions
+    internal static class ModuleBuilderExtensions
     {
         public static TypeBuilder DefineType(
             this ModuleBuilder moduleBuilder,
