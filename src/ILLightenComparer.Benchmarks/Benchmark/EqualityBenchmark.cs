@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using Illuminator;
 using static Illuminator.Functions;
-using static ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Benchmarks.Benchmark
 {
@@ -35,9 +34,11 @@ namespace ILLightenComparer.Benchmarks.Benchmark
             var subCompare = new DynamicMethod("SubCompare", typeof(bool), new[] { typeof(int), typeof(int) });
             using (var il = subCompare.GetILGenerator().UseIlluminator()) {
                 il.Sub(Ldarg(0), Ldarg(1)).Brfalse_S(out var equals)
-                  .Ret(0)
+                  .Ldc_I4_0()
+                  .Ret()
                   .MarkLabel(equals)
-                  .Ret(1);
+                  .Ldc_I4_1()
+                  .Ret();
 
                 _subCompare = subCompare.CreateDelegate<Func<int, int, bool>>();
             }

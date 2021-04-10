@@ -4,7 +4,8 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
+using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
@@ -33,23 +34,29 @@ namespace ILLightenComparer.Comparer.Comparisons
             var variableType = _variable.VariableType;
 
             if (variableType.IsValueType) {
-                _variable.LoadAddress(il, Arg.X);
-                _variable.Load(il, Arg.Y);
-            } else {
-                _variable.Load(il, Arg.X).Stloc(variableType, out var x);
-                _variable.Load(il, Arg.Y)
-                         .Stloc(variableType, out var y)
-                         .Ldloc(x)
-                         .Brtrue_S(out var call)
-                         .Ldloc(y)
-                         .Brfalse_S(gotoNext)
-                         .Ret(-1)
-                         .MarkLabel(call)
-                         .Ldloc(x)
-                         .Ldloc(y);
+                return il.CallMethod(
+                    LoadLocalAddress(Arg.X),
+                    _compareToMethod,
+                    new[] { variableType },
+                    Ldloc(Arg.Y));
             }
 
-            return il.CallMethod(_compareToMethod, variableType);
+            _variable.Load(il, Arg.X).Stloc(variableType, out var x);
+            _variable.Load(il, Arg.Y)
+                     .Stloc(variableType, out var y)
+                     .Ldloc(x)
+                     .Brtrue_S(out var call)
+                     .Ldloc(y)
+                     .Brfalse_S(gotoNext)
+                     .Ret(-1)
+                     .MarkLabel(call);
+
+            return il.CallMethod(
+                Ldloc(x),
+                _compareToMethod,
+                new[] { variableType },
+                Ldloc(y));
+
         }
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);

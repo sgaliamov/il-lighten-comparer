@@ -5,16 +5,16 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
-using Illuminator.Extensions;
+using Functions = ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Variables
 {
     internal sealed class NullableVariables : IVariable
     {
         private readonly MethodInfo _getValueMethod;
-        private readonly IReadOnlyDictionary<ushort, LocalBuilder> _nullables;
+        private readonly IReadOnlyDictionary<int, LocalBuilder> _nullables;
 
-        public NullableVariables(Type variableType, Type ownerType, IReadOnlyDictionary<ushort, LocalBuilder> nullables)
+        public NullableVariables(Type variableType, Type ownerType, IReadOnlyDictionary<int, LocalBuilder> nullables)
         {
             Debug.Assert(variableType.IsNullable());
 
@@ -28,18 +28,22 @@ namespace ILLightenComparer.Variables
         public Type VariableType { get; }
         public Type OwnerType { get; }
 
-        public ILEmitter Load(ILEmitter il, ushort arg) => il
-            .Ldloca(_nullables[arg])
-            .Call(_getValueMethod);
+        public ILEmitter Load(ILEmitter il, ushort arg) =>
+            il.CallMethod(
+                Functions.LoadLocalAddress(_nullables[arg]),
+                _getValueMethod,
+                Type.EmptyTypes);
 
-        public ILEmitter LoadAddress(ILEmitter il, ushort arg)
+        public ILEmitter LoadLocalAddress(ILEmitter il, ushort arg)
         {
             var underlyingType = VariableType.GetUnderlyingType();
 
-            return il.Ldloca(_nullables[arg])
-                     .Call(_getValueMethod)
+            return il.CallMethod(
+                         Functions.LoadLocalAddress(_nullables[arg]),
+                         _getValueMethod,
+                         Type.EmptyTypes)
                      .Stloc(underlyingType, out var x)
-                     .Ldloca(x);
+                     .LoadLocalAddress(x);
         }
     }
 }

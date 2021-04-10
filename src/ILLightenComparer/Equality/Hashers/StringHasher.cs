@@ -35,11 +35,15 @@ namespace ILLightenComparer.Equality.Hashers
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il) => 
+        public ILEmitter Emit(ILEmitter il) =>
             _variable.Load(il, Arg.Input)
                      .Stloc(typeof(string), out var local)
                      .Brfalse_S(Ldloc(local), out var zero)
-                     .CallMethod(GetHashCodeMethod, Type.EmptyTypes, Ldloc(local), Ldc_I4(_stringComparison))
+                     .CallMethod(
+                         Ldloc(local), 
+                         GetHashCodeMethod, 
+                         new[] { typeof(int) }, 
+                         Ldc_I4(_stringComparison))
                      .Br_S(out var next)
                      .MarkLabel(zero)
                      .Ldc_I4(0)

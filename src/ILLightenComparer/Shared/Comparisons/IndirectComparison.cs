@@ -6,11 +6,12 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functions;
+using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
     /// <summary>
-    /// Delegates comparison to static method or delayed compare method in context.
+    ///     Delegates comparison to static method or delayed compare method in context.
     /// </summary>
     internal sealed class IndirectComparison : IComparisonEmitter
     {
@@ -57,9 +58,9 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public ILEmitter Emit(ILEmitter il, Label _) =>
             il.CallMethod(
+                Ldarg(Arg.Context),
                 _method,
                 new[] { _variable.VariableType, _variable.VariableType, typeof(CycleDetectionSet), typeof(CycleDetectionSet) },
-                Ldarg(Arg.Context),
                 _variable.Load(Arg.X),
                 _variable.Load(Arg.Y),
                 Ldarg(Arg.SetX),

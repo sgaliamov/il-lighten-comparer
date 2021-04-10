@@ -23,6 +23,27 @@ namespace ILLightenComparer.Extensions
             this ILEmitter il,
             MethodInfo methodInfo,
             Type[] parameterTypes,
+            params ILEmitterFunc[] parameters) =>
+            CallMethod(il, Functions.Id(), methodInfo, parameterTypes, parameters);
+
+        public static ILEmitter CallMethod(
+            this ILEmitter il,
+            MethodInfo methodInfo,
+            Type[] parameterTypes) =>
+            CallMethod(il, Functions.Id(), methodInfo, parameterTypes, Array.Empty<ILEmitterFunc>());
+
+        public static ILEmitter CallMethod(
+            this ILEmitter il,
+            ILEmitterFunc caller,
+            MethodInfo methodInfo,
+            Type[] parameterTypes) =>
+            CallMethod(il, caller, methodInfo, parameterTypes, Array.Empty<ILEmitterFunc>());
+
+        public static ILEmitter CallMethod(
+            this ILEmitter il,
+            ILEmitterFunc caller,
+            MethodInfo methodInfo,
+            Type[] parameterTypes,
             params ILEmitterFunc[] parameters)
         {
             if (!(methodInfo is MethodBuilder)) {
@@ -34,14 +55,10 @@ namespace ILLightenComparer.Extensions
                 }
             }
 
-            return il.Call(methodInfo, parameterTypes, parameters);
-        }
+            if (parameters.Length != 0 && parameters.Length != parameterTypes.Length) {
+                throw new ArgumentException("Amount of parameters does not match parameter types.");
+            }
 
-        public static ILEmitter CallMethod(
-            this ILEmitter il,
-            MethodInfo methodInfo,
-            params Type[] parameterTypes)
-        {
             var owner = methodInfo.DeclaringType;
             if (owner == typeof(ValueType)) {
                 owner = methodInfo.ReflectedType; // todo: 0. test
@@ -65,8 +82,8 @@ namespace ILLightenComparer.Extensions
             //}
 
             return methodInfo.IsStatic || owner.IsValueType || owner.IsSealed || !methodInfo.IsVirtual // todo: 0. test
-                ? il.Call(methodInfo, parameterTypes)
-                : il.Callvirt(methodInfo, parameterTypes);
+                ? caller(il).Call(methodInfo, parameterTypes, parameters)
+                : caller(il).Callvirt(methodInfo, parameterTypes, parameters);
         }
 
         public static ILEmitter Cast<T>(this ILEmitter self, ILEmitterFunc value) => value(self).Cast(typeof(T));
@@ -85,8 +102,7 @@ namespace ILLightenComparer.Extensions
               .Stloc(typeof(int), out local);
 
         public static ILEmitter EmitArrayLength(this ILEmitter il, Type arrayType, LocalBuilder array, out LocalBuilder count) =>
-            il.Ldloc(array)
-              .Call(arrayType.GetPropertyGetter(LengthMethodName))
+            il.CallMethod(Ldloc(array), arrayType.GetPropertyGetter(LengthMethodName), Type.EmptyTypes)
               .Stloc(typeof(int), out count);
 
         public static ILEmitter EmitArraySorting(this ILEmitter il, bool hasCustomComparer, Type elementType, params LocalBuilder[] arrays)
@@ -101,8 +117,7 @@ namespace ILLightenComparer.Extensions
             } else {
                 var getComparerMethod = GetComparerMethod.MakeGenericMethod(elementType);
 
-                il.Ldarg(Arg.Context)
-                  .CallMethod(getComparerMethod, Type.EmptyTypes)
+                il.CallMethod(Ldarg(Arg.Context), getComparerMethod, Type.EmptyTypes)
                   .Stloc(getComparerMethod.ReturnType, out var comparer);
 
                 foreach (var array in arrays) {
@@ -114,11 +129,12 @@ namespace ILLightenComparer.Extensions
         }
 
         public static ILEmitter EmitDispose(this ILEmitter il, LocalBuilder local) =>
-            il.LoadCaller(local)
-              .ExecuteIf(local.LocalType.IsValueType, Constrained(local.LocalType))
-              .Call(DisposeMethod);
+            il.CallMethod(
+                Functions.LoadCaller(local) + Functions.EmitIf(local.LocalType.IsValueType, Constrained(local.LocalType)),
+                DisposeMethod,
+                Type.EmptyTypes);
 
-        public static ILEmitter ExecuteIf(this ILEmitter il, bool condition, params ILEmitterFunc[] actions) =>
+        public static ILEmitter EmitIf(this ILEmitter il, bool condition, params ILEmitterFunc[] actions) =>
             condition ? il.Emit(actions) : il;
 
         public static ILEmitter If(this ILEmitter il, ILEmitterFunc action, ILEmitterFunc whenTrue, ILEmitterFunc elseAction) =>
@@ -136,13 +152,13 @@ namespace ILLightenComparer.Extensions
                 .Emit(whenTrue)
                 .MarkLabel(exit);
 
-        public static ILEmitter Ldloca(this ILEmitter self, LocalBuilder local)
-        {
-            var localIndex = local.LocalIndex;
-            return localIndex <= ShortFormLimit
+        public static ILEmitter LoadLocalAddress(this ILEmitter self, LocalBuilder local) => 
+            self.LoadLocalAddress(local.LocalIndex);
+
+        public static ILEmitter LoadLocalAddress(this ILEmitter self, int localIndex) =>
+            localIndex <= ShortFormLimit
                 ? self.Ldloca_S((byte)localIndex)
                 : self.Ldloca((short)localIndex);
-        }
 
         public static ILEmitter LoadArgument(this ILEmitter self, int argumentIndex) =>
             argumentIndex switch {
@@ -155,9 +171,16 @@ namespace ILLightenComparer.Extensions
                     : self.Ldarg((short)argumentIndex)
             };
 
+        public static ILEmitter LoadArgumentAddress(this ILEmitter self, ushort argumentIndex) =>
+            argumentIndex <= ShortFormLimit
+                ? self.Ldarga_S((byte)argumentIndex)
+                : self.Ldarga((short)argumentIndex);
+
         // todo: 3. make Constrained when method is virtual and caller is value type
         public static ILEmitter LoadCaller(this ILEmitter il, LocalBuilder local) =>
-            local.LocalType!.IsValueType ? il.Ldloca((short)local.LocalIndex) : il.Ldloc(local);
+            local.LocalType!.IsValueType
+                ? il.LoadLocalAddress(local.LocalIndex) 
+                : il.Ldloc(local);
 
         public static ILEmitter Ret(this ILEmitter il, int value) => il.Ldc_I4(value).Ret();
 
@@ -172,12 +195,9 @@ namespace ILLightenComparer.Extensions
             var copyMethod = ToArrayMethod.MakeGenericMethod(elementType);
             var sortMethod = GetArraySortWithComparer(elementType);
 
-            il.Ldloc(array)
-              .CallMethod(copyMethod, Type.EmptyTypes)
+            il.CallMethod(Ldloc(array), copyMethod, Type.EmptyTypes)
               .Stloc(array)
-              .Ldloc(array)
-              .Ldloc(comparer)
-              .Call(sortMethod);
+              .CallMethod(Ldloc(array), sortMethod, new[] { comparer.LocalType }, Ldloc(comparer));
         }
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array)
@@ -185,11 +205,9 @@ namespace ILLightenComparer.Extensions
             var copyMethod = ToArrayMethod.MakeGenericMethod(elementType);
             var sortMethod = GetArraySortMethod(elementType);
 
-            il.Ldloc(array)
-              .CallMethod(copyMethod, Type.EmptyTypes)
+            il.CallMethod(Ldloc(array), copyMethod, Type.EmptyTypes)
               .Stloc(array)
-              .Ldloc(array)
-              .CallMethod(sortMethod, Type.EmptyTypes);
+              .CallMethod(Ldloc(array), sortMethod, Type.EmptyTypes);
         }
 
         private static MethodInfo GetArraySortMethod(Type elementType) =>

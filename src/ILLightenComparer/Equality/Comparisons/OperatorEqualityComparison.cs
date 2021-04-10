@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality.Comparisons
 {
@@ -29,10 +29,12 @@ namespace ILLightenComparer.Equality.Comparisons
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il, Label _) => il.CallMethod(
-            _equalityMethod,
-            _variable.Load(Arg.X),
-            _variable.Load(Arg.Y));
+        public ILEmitter Emit(ILEmitter il, Label _) =>
+            il.CallMethod(
+                _variable.Load(Arg.X),
+                _equalityMethod,
+                new[] { _variable.VariableType },
+                _variable.Load(Arg.Y));
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfFalsy(next);
     }

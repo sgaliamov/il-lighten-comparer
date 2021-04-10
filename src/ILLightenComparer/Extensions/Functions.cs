@@ -7,17 +7,20 @@ namespace ILLightenComparer.Extensions
 {
     public static class Functions
     {
-        public static ILEmitterFunc CallMethod(MethodInfo methodInfo, Type[] parameterTypes, params ILEmitterFunc[] parameters) =>
-            (in ILEmitter il) => il.CallMethod(methodInfo, parameterTypes, parameters);
+        public static ILEmitterFunc Id() =>
+            (in ILEmitter il) => il;
 
-        public static ILEmitterFunc CallMethod(MethodInfo methodInfo, params Type[] parameterTypes) =>
-            (in ILEmitter il) => il.CallMethod(methodInfo, parameterTypes);
+        public static ILEmitterFunc Emit(params ILEmitterFunc[] funcs) =>
+            (in ILEmitter il) => il.Emit(funcs);
+
+        public static ILEmitterFunc CallMethod(ILEmitterFunc caller, MethodInfo methodInfo, Type[] parameterTypes, params ILEmitterFunc[] parameters) =>
+            (in ILEmitter il) => il.CallMethod(caller, methodInfo, parameterTypes, parameters);
 
         public static ILEmitterFunc Cast<T>(ILEmitterFunc value) =>
             (in ILEmitter il) => il.Cast<T>(value);
 
         public static ILEmitterFunc EmitIf(bool condition, params ILEmitterFunc[] actions) =>
-            (in ILEmitter il) => il.ExecuteIf(condition, actions);
+            (in ILEmitter il) => il.EmitIf(condition, actions);
 
         public static ILEmitterFunc If(ILEmitterFunc action, ILEmitterFunc whenTrue, ILEmitterFunc elseAction) =>
             (in ILEmitter il) => il.If(action, whenTrue, elseAction);
@@ -25,11 +28,17 @@ namespace ILLightenComparer.Extensions
         public static ILEmitterFunc If(ILEmitterFunc action, ILEmitterFunc whenTrue) =>
             (in ILEmitter il) => il.If(action, whenTrue);
 
-        public static ILEmitterFunc Ldloca(LocalBuilder local) =>
-            (in ILEmitter il) => il.Ldloca(local);
+        public static ILEmitterFunc LoadLocalAddress(int index) =>
+            (in ILEmitter il) => il.LoadLocalAddress(index);
+
+        public static ILEmitterFunc LoadLocalAddress(LocalBuilder local) =>
+            (in ILEmitter il) => il.LoadLocalAddress(local);
 
         public static ILEmitterFunc LoadArgument(int argumentIndex) =>
             (in ILEmitter il) => il.LoadArgument(argumentIndex);
+
+        public static ILEmitterFunc LoadArgumentAddress(ushort argumentIndex) =>
+            (in ILEmitter il) => il.LoadArgumentAddress(argumentIndex);
 
         public static ILEmitterFunc LoadCaller(LocalBuilder local) =>
             (in ILEmitter il) => il.LoadCaller(local);

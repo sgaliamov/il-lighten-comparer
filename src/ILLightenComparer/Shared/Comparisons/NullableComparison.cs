@@ -36,10 +36,10 @@ namespace ILLightenComparer.Shared.Comparisons
 
             var isMember = !(_variable is ArgumentVariable);
             if (isMember) {
-                _emitCheckNullablesForValue(il, Ldloca(nullableX), Ldloca(nullableY), variableType, gotoNext);
+                _emitCheckNullablesForValue(il, LoadLocalAddress(nullableX), LoadLocalAddress(nullableY), variableType, gotoNext);
             }
 
-            var nullableVariables = new NullableVariables(variableType, _variable.OwnerType, new Dictionary<ushort, LocalBuilder>(2) {
+            var nullableVariables = new NullableVariables(variableType, _variable.OwnerType, new Dictionary<int, LocalBuilder>(2) {
                 [Arg.X] = nullableX,
                 [Arg.Y] = nullableY
             });

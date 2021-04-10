@@ -151,8 +151,12 @@ namespace ILLightenComparer.Shared.Comparisons
         private (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
         {
             // todo: 3. it's possible to use "not done" flag. it will simplify emitted code in _emitCheckIfLoopsAreDone.
-            il.Ceq(CallMethod(_moveNextMethod, Type.EmptyTypes, LoadCaller(xEnumerator)), Ldc_I4(0), out var xDone)
-              .Ceq(CallMethod(_moveNextMethod, Type.EmptyTypes, LoadCaller(yEnumerator)), Ldc_I4(0), out var yDone);
+            il.Ceq(CallMethod(LoadCaller(xEnumerator), _moveNextMethod, Type.EmptyTypes),
+                  Ldc_I4(0),
+                  out var xDone)
+              .Ceq(CallMethod(LoadCaller(yEnumerator), _moveNextMethod, Type.EmptyTypes),
+                  Ldc_I4(0),
+                  out var yDone);
 
             return (xDone, yDone);
         }

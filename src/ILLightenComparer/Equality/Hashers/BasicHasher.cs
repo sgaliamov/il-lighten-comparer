@@ -1,10 +1,10 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -28,9 +28,11 @@ namespace ILLightenComparer.Equality.Hashers
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il) => il.CallMethod(
-            _getHashMethod,
-            _variable.VariableType.IsValueType ? _variable.LoadAddress(Arg.Input) : _variable.Load(Arg.Input));
+        public ILEmitter Emit(ILEmitter il) =>
+            il.CallMethod(
+                _variable.VariableType.IsValueType ? _variable.LoadLocalAddress(Arg.Input) : _variable.Load(Arg.Input),
+                _getHashMethod,
+                Type.EmptyTypes);
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }

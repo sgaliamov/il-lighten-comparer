@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
@@ -14,8 +15,10 @@ namespace ILLightenComparer.Equality
     internal sealed class GetHashCodeStaticMethodEmitter : IStaticMethodEmitter
     {
         private readonly HasherResolver _resolver;
+        private static readonly MethodInfo _getHashCodeMethod = typeof(int).GetMethod(nameof(GetHashCode));
 
         public GetHashCodeStaticMethodEmitter(HasherResolver resolver) => _resolver = resolver;
+        static GetHashCodeStaticMethodEmitter() { }
 
         public void Build(Type objectType, bool detecCycles, MethodBuilder staticMethodBuilder)
         {
@@ -46,11 +49,11 @@ namespace ILLightenComparer.Equality
 
         public bool NeedCreateCycleDetectionSets(Type _) => true;
 
-        private static void EmitCycleDetection(ILEmitter il, Type objectType) => 
+        private static void EmitCycleDetection(ILEmitter il, Type objectType) =>
             il.Brtrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
               .Emit(GetCount(Arg.CycleSet))
               .Stloc(typeof(int), out var count)
-              .Ret(CallMethod(typeof(int).GetMethod(nameof(GetHashCode)), Type.EmptyTypes, LoadCaller(count)))
+              .Ret(CallMethod(LoadCaller(count), _getHashCodeMethod, Type.EmptyTypes))
               .MarkLabel(next);
     }
 }

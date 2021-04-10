@@ -83,7 +83,7 @@ namespace ILLightenComparer.Equality.Hashers
                 return EmitHashAsSortedArray(il, enumerable, hash).MarkLabel(end);
             }
 
-            il.CallMethod(_getEnumeratorMethod, Type.EmptyTypes, LoadCaller(enumerable))
+            il.CallMethod(LoadCaller(enumerable), _getEnumeratorMethod, Type.EmptyTypes)
               .Stloc(_enumeratorType, out var enumerator)
               .DefineLabel(out var loopStart);
 
@@ -124,7 +124,7 @@ namespace ILLightenComparer.Equality.Hashers
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
-                  .Brtrue_S(CallMethod(_moveNextMethod, Type.EmptyTypes, LoadCaller(enumerator)), out var next)
+                  .Brtrue_S(CallMethod(LoadCaller(enumerator), _moveNextMethod, Type.EmptyTypes), out var next)
                   .Br(loopEnd)
                   .MarkLabel(next);
             }

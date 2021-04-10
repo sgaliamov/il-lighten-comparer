@@ -34,7 +34,7 @@ namespace ILLightenComparer.Tests.Utilities
         public static Type GetGenericInterface(this Type type, Type generic)
         {
             if (!generic.IsGenericType) {
-                throw new ArgumentException($"{generic.DisplayName()} should be generic type.", nameof(generic));
+                throw new ArgumentException($"{generic.FullName} should be generic type.", nameof(generic));
             }
 
             if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == generic) {

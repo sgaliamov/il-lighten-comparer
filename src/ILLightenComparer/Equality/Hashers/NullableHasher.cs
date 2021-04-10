@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
+using static ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -38,8 +39,7 @@ namespace ILLightenComparer.Equality.Hashers
             _variable
                 .Load(il, Arg.Input)
                 .Stloc(variableType, out var nullable)
-                .Ldloca(nullable)
-                .Call(_hasValueMethod)
+                .CallMethod(LoadLocalAddress(nullable), _hasValueMethod, Type.EmptyTypes)
                 .Brtrue_S(out var next)
                 .Ldc_I4(0)
                 .Br(out var exit)
@@ -48,7 +48,7 @@ namespace ILLightenComparer.Equality.Hashers
             var nullableVariable = new NullableVariables(
                 variableType,
                 _variable.OwnerType,
-                new Dictionary<ushort, LocalBuilder>(1) { [Arg.Input] = nullable });
+                new Dictionary<int, LocalBuilder>(1) { [Arg.Input] = nullable });
 
             return _resolver
                 .GetHasherEmitter(nullableVariable)

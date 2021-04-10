@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
+using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functions;
@@ -45,12 +46,12 @@ namespace ILLightenComparer.Equality.Hashers
         }
 
         public ILEmitter Emit(ILEmitter il) =>
-            il.CallMethod(
-                _hashMethod,
-                Type.EmptyTypes,
-                Ldarg(Arg.Context),
-                _variable.Load(Arg.Input),
-                Ldarg(Arg.CycleSet));
+            il.Ldarg(Arg.Context)
+              .CallMethod(
+                  _hashMethod,
+                  new[] { _variable.VariableType, typeof(CycleDetectionSet) },
+                  _variable.Load(Arg.Input),
+                  Ldarg(Arg.CycleSet));
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }

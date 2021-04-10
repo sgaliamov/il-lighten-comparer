@@ -2,6 +2,7 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
+using static ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Equality
 {
@@ -45,11 +46,9 @@ namespace ILLightenComparer.Equality
         {
             var hasValueMethod = nullableType.GetPropertyGetter("HasValue");
 
-            return il.Emit(nullableY)
-                     .Call(hasValueMethod)
+            return il.CallMethod(Emit(nullableY), hasValueMethod, Type.EmptyTypes)
                      .Stloc(typeof(bool), out var secondHasValue)
-                     .Emit(nullableX)
-                     .Call(hasValueMethod)
+                     .CallMethod(Emit(nullableX),  hasValueMethod, Type.EmptyTypes)
                      .Brtrue_S(out var ifFirstHasValue)
                      .Ldloc(secondHasValue)
                      .Brfalse(ifBothNull)

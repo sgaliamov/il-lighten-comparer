@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using ILLightenComparer.Extensions;
 using Illuminator;
 using Illuminator.Extensions;
 
@@ -22,12 +23,12 @@ namespace ILLightenComparer.Variables
                 il.LoadArgument(arg);
             }
 
-            return il.CallMethod(_propertyInfo.GetMethod);
+            return il.CallMethod(_propertyInfo.GetMethod, Type.EmptyTypes);
         }
 
-        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => Load(il, arg)
+        public ILEmitter LoadLocalAddress(ILEmitter il, ushort arg) => Load(il, arg)
             .Stloc(VariableType.GetUnderlyingType(), out var local)
-            .Ldloca(local);
+            .LoadLocalAddress(local);
 
         public static IVariable Create(MemberInfo memberInfo) =>
             memberInfo is PropertyInfo info

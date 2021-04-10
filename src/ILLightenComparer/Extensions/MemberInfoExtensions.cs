@@ -2,7 +2,7 @@
 
 namespace Illuminator.Extensions
 {
-    public static class MemberInfoExtensions
+    internal static class MemberInfoExtensions
     {
         public static string DisplayName(this MemberInfo memberInfo) =>
             $"{memberInfo.MemberType} {memberInfo.DeclaringType?.Name}::{memberInfo.Name}";

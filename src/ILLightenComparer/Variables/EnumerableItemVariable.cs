@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using ILLightenComparer.Extensions;
 using Illuminator;
 using static ILLightenComparer.Extensions.Functions;
 
@@ -31,11 +32,11 @@ namespace ILLightenComparer.Variables
         /// </summary>
         public Type OwnerType { get; }
 
-        public ILEmitter Load(ILEmitter il, ushort arg) => il.CallMethod(_getCurrentMethod, LoadCaller(_enumerators[arg]));
+        public ILEmitter Load(ILEmitter il, ushort arg) => il.CallMethod(LoadCaller(_enumerators[arg]), _getCurrentMethod, Type.EmptyTypes);
 
-        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => il
-            .CallMethod(_getCurrentMethod, LoadCaller(_enumerators[arg]))
+        public ILEmitter LoadLocalAddress(ILEmitter il, ushort arg) => il
+            .CallMethod(LoadCaller(_enumerators[arg]), _getCurrentMethod, Type.EmptyTypes)
             .Stloc(VariableType, out var local)
-            .Ldloca(local);
+            .LoadLocalAddress(local);
     }
 }
