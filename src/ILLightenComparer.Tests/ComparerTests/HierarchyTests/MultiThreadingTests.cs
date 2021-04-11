@@ -13,11 +13,11 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         private static IComparer<AbstractMembers> CreateComparer()
         {
             return new ComparerBuilder()
-                   .For<AnotherNestedObject>(c => c.DefineMembersOrder(
-                                                 order => order.Member(o => o.Value)
-                                                               .Member(o => o.Key)
-                                                               .Member(o => o.Text)
-                                             ))
+                   .For<AnotherNestedObject>(
+                       c => c.DefineMembersOrder(
+                           order => order.Member(o => o.Value)
+                                         .Member(o => o.Key)
+                                         .Member(o => o.Text)))
                    .For<AbstractMembers>()
                    .GetComparer();
         }

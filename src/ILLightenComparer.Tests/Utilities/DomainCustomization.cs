@@ -8,9 +8,8 @@ namespace ILLightenComparer.Tests.Utilities
     {
         private static void AddGenerators(IFixture fixture)
         {
-            fixture.Customizations.Add(new StringGenerator(() =>
-                                                               (fixture.Create<ushort>() % 4)
-                                                               .ToString(CultureInfo.InvariantCulture)));
+            fixture.Customizations.Add(
+                new StringGenerator(() => (fixture.Create<ushort>() % 4).ToString(CultureInfo.InvariantCulture)));
 
             fixture.Customizations.Insert(0, new CasualNullGenerator(Constants.NullProbability));
             fixture.Customizations.Insert(0, new CustomNumericGenerator(-1, 1, 0.1));

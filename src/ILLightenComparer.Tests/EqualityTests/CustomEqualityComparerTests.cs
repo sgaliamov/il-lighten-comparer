@@ -26,14 +26,12 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var expectedHashInt = HashCodeCombiner.Combine(x.Item1.GetHashCode(), 0);
                 var expectedHashString = HashCodeCombiner.Combine(0, x.Item2?.GetHashCode() ?? 0);
 
-                var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer(
-                                                      new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)));
+                var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer(new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)));
                 var comparerForIntOnly = builder.GetEqualityComparer<Tuple<int, string>>();
-                var comparerForStringOnly = builder
-                                            .Configure(c => c
-                                                            .SetCustomEqualityComparer<string>(null)
-                                                            .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
-                                            .GetEqualityComparer<Tuple<int, string>>();
+                var comparerForStringOnly =
+                    builder.Configure(c => c.SetCustomEqualityComparer<string>(null)
+                                            .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
+                           .GetEqualityComparer<Tuple<int, string>>();
 
                 using (new AssertionScope()) {
                     comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "comparison is based on int field");
@@ -57,9 +55,9 @@ namespace ILLightenComparer.Tests.EqualityTests
 
             var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomEqualityComparer>());
             var comparerCustom = builder.GetEqualityComparer<ComparableObject<ComparableStruct<string>>>();
-            var comparerDefault = builder.Configure(c => c
-                                                        .SetCustomEqualityComparer<ComparableStruct<string>>(null))
-                                         .GetEqualityComparer<ComparableObject<ComparableStruct<string>>>();
+            var comparerDefault =
+                builder.Configure(c => c.SetCustomEqualityComparer<ComparableStruct<string>>(null))
+                       .GetEqualityComparer<ComparableObject<ComparableStruct<string>>>();
 
             using (new AssertionScope()) {
                 comparerCustom.Equals(x, y).Should().BeTrue();

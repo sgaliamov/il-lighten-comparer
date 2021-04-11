@@ -15,16 +15,16 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
 
         public CycledStructTests()
         {
-            _builder = new ComparerBuilder(config => config
-                                               .DefineMembersOrder<CycledStruct>(order => order
-                                                                                          .Member(o => o.Property)
-                                                                                          .Member(o => o.FirstObject)
-                                                                                          .Member(o => o.SecondObject)))
-                       .For<CycledStructObject>(config => config
-                                                    .DefineMembersOrder(order => order
-                                                                                 .Member(o => o.TextField)
-                                                                                 .Member(o => o.FirstStruct)
-                                                                                 .Member(o => o.SecondStruct)))
+            _builder = new ComparerBuilder(
+                           config => config.DefineMembersOrder<CycledStruct>(
+                               order => order.Member(o => o.Property)
+                                             .Member(o => o.FirstObject)
+                                             .Member(o => o.SecondObject)))
+                       .For<CycledStructObject>(
+                           config => config.DefineMembersOrder(
+                               order => order.Member(o => o.TextField)
+                                             .Member(o => o.FirstStruct)
+                                             .Member(o => o.SecondStruct)))
                        .Builder;
         }
 
@@ -132,7 +132,7 @@ namespace ILLightenComparer.Tests.EqualityTests.CycleTests
         }
 
         [Fact]
-        public void Sefl_sealed_struct_should_handle_cycle()
+        public void Self_sealed_struct_should_handle_cycle()
         {
             var comparer = _builder.GetEqualityComparer<SelfStruct<Guid>>();
             var x = new SelfStruct<Guid> {

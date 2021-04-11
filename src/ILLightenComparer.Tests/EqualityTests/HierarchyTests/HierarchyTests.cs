@@ -18,21 +18,21 @@ namespace ILLightenComparer.Tests.EqualityTests.HierarchyTests
         public HierarchyTests()
         {
             _builder = new ComparerBuilder()
-                       .For<NestedStruct>(config => config.DefineMembersOrder(order => order
-                                                                                       .Member(o => o.Property)
-                                                                                       .Member(o => o.NullableProperty)
-                                          ))
-                       .For<HierarchicalObject>(config => config.DefineMembersOrder(order => order
-                                                                                             .Member(o => o.ComparableField)
-                                                                                             .Member(o => o.Value)
-                                                                                             .Member(o => o.FirstProperty)
-                                                                                             .Member(o => o.SecondProperty)
-                                                                                             .Member(o => o.NestedField)
-                                                                                             .Member(o => o.NestedStructField)
-                                                                                             .Member(o => o.NestedNullableStructField)
-                                                                                             .Member(o => o.NestedStructProperty)
-                                                                                             .Member(o => o.NestedNullableStructProperty)
-                                                ))
+                       .For<NestedStruct>(
+                           config => config.DefineMembersOrder(
+                               order => order.Member(o => o.Property)
+                                             .Member(o => o.NullableProperty)))
+                       .For<HierarchicalObject>(
+                           config => config.DefineMembersOrder(
+                               order => order.Member(o => o.ComparableField)
+                                             .Member(o => o.Value)
+                                             .Member(o => o.FirstProperty)
+                                             .Member(o => o.SecondProperty)
+                                             .Member(o => o.NestedField)
+                                             .Member(o => o.NestedStructField)
+                                             .Member(o => o.NestedNullableStructField)
+                                             .Member(o => o.NestedStructProperty)
+                                             .Member(o => o.NestedNullableStructProperty)))
                        .Builder;
 
             _comparer = _builder.GetEqualityComparer<HierarchicalObject>();

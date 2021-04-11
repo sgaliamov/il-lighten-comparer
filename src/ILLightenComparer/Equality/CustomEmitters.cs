@@ -10,7 +10,7 @@ namespace ILLightenComparer.Equality
         /// <summary>
         ///     Returns zero if stack has zero value, otherwise got to <paramref name="next" />.
         /// </summary>
-        public static ILEmitter EmitReturnIfFalsy(this ILEmitter il, Label next) => 
+        public static ILEmitter EmitReturnIfFalsy(this ILEmitter il, Label next) =>
             il.Brtrue(next)
               .Ret(0);
 

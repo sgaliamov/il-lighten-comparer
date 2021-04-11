@@ -123,8 +123,8 @@ namespace ILLightenComparer.Shared
 
             Enumerable.Range(0, parametersCount)
                       .Aggregate(il, (emitter, _) => createCycleDetectionSets
-                          ? emitter.Newobj(CycleDetectionSet.DefaultConstructor)
-                          : emitter.Ldnull())
+                                     ? emitter.Newobj(CycleDetectionSet.DefaultConstructor)
+                                     : emitter.Ldnull())
                       .CallMethod(staticMethod)
                       .Ret();
         }
