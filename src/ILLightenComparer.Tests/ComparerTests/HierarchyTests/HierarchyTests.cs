@@ -10,13 +10,16 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
 {
     public sealed class HierarchyTests
     {
+        private readonly IComparer<HierarchicalObject> _comparer;
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         public HierarchyTests()
         {
             _comparer = new ComparerBuilder()
                         .Configure(builder => builder
-                            .ConfigureFor<NestedStruct>(c => c
-                                .DefineMembersOrder(order => order.Member(o => o.Property)
-                                                                  .Member(o => o.NullableProperty))))
+                                       .ConfigureFor<NestedStruct>(c => c
+                                                                       .DefineMembersOrder(order => order.Member(o => o.Property)
+                                                                                                         .Member(o => o.NullableProperty))))
                         .For<HierarchicalObject>()
                         .Configure(c => c.IgnoreMember(o => o.ComparableField)
                                          .IgnoreMember(o => o.Value)
@@ -68,32 +71,29 @@ namespace ILLightenComparer.Tests.ComparerTests.HierarchyTests
         {
             var builder = new ComparerBuilder()
                           .For<SealedNestedObject>(config => config.DefineMembersOrder(order =>
-                              order.Member(o => o.DeepNestedField)
-                                   .Member(o => o.DeepNestedProperty)
-                                   .Member(o => o.Key)
-                                   .Member(o => o.Text)
-                          ))
+                                                                                           order.Member(o => o.DeepNestedField)
+                                                                                                .Member(o => o.DeepNestedProperty)
+                                                                                                .Member(o => o.Key)
+                                                                                                .Member(o => o.Text)
+                                                   ))
                           .For<NestedStruct>(config => config.DefineMembersOrder(order =>
-                              order.Member(o => o.Property)
-                                   .Member(o => o.NullableProperty)
-                          ))
+                                                                                     order.Member(o => o.Property)
+                                                                                          .Member(o => o.NullableProperty)
+                                             ))
                           .For<HierarchicalObject>(config => config.DefineMembersOrder(order =>
-                              order.Member(o => o.ComparableField)
-                                   .Member(o => o.Value)
-                                   .Member(o => o.FirstProperty)
-                                   .Member(o => o.SecondProperty)
-                                   .Member(o => o.NestedField)
-                                   .Member(o => o.NestedStructField)
-                                   .Member(o => o.NestedNullableStructField)
-                                   .Member(o => o.NestedStructProperty)
-                                   .Member(o => o.NestedNullableStructProperty)
-                          ))
+                                                                                           order.Member(o => o.ComparableField)
+                                                                                                .Member(o => o.Value)
+                                                                                                .Member(o => o.FirstProperty)
+                                                                                                .Member(o => o.SecondProperty)
+                                                                                                .Member(o => o.NestedField)
+                                                                                                .Member(o => o.NestedStructField)
+                                                                                                .Member(o => o.NestedNullableStructField)
+                                                                                                .Member(o => o.NestedStructProperty)
+                                                                                                .Member(o => o.NestedNullableStructProperty)
+                                                   ))
                           .Builder;
 
             new GenericTests(builder).GenericTest(typeof(HierarchicalObject), HierarchicalObject.Comparer, false, Constants.BigCount);
         }
-
-        private readonly IComparer<HierarchicalObject> _comparer;
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
     }
 }

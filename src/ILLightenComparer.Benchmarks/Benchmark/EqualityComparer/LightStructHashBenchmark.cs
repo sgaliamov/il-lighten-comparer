@@ -9,14 +9,14 @@ namespace ILLightenComparer.Benchmarks.Benchmark.EqualityComparer
         private static readonly IEqualityComparer<LightStruct> Native = LightStructEqualityComparer.Instance;
 
         private static readonly IEqualityComparer<LightStruct> ILLightenComparer = new ComparerBuilder(c => c
-            .SetDefaultCyclesDetection(false))
-            .For<LightStruct>()
-            .GetEqualityComparer();
+                                                                                                           .SetDefaultCyclesDetection(false))
+                                                                                   .For<LightStruct>()
+                                                                                   .GetEqualityComparer();
 
         private static readonly IEqualityComparer<LightStruct> NitoComparer = Nito.Comparers.ComparerBuilder
-            .For<LightStruct>()
-            .OrderBy(x => x.Key)
-            .ThenBy(x => x.Value);
+                                                                                  .For<LightStruct>()
+                                                                                  .OrderBy(x => x.Key)
+                                                                                  .ThenBy(x => x.Value);
 
         public LightStructHashBenchmark() : base(Native, ILLightenComparer, NitoComparer) { }
     }

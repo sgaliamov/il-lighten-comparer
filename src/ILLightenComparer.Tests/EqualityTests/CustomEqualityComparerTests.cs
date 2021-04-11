@@ -12,6 +12,9 @@ namespace ILLightenComparer.Tests.EqualityTests
 {
     public sealed class CustomEqualityComparerTests
     {
+        private static void Test(Action action) => Enumerable.Range(0, Constants.SmallCount).AsParallel().ForAll(_ => action());
+        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
+
         [Fact]
         public void After_change_custom_comparer_new_dynamic_comparer_should_be_created()
         {
@@ -24,13 +27,13 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var expectedHashString = HashCodeCombiner.Combine(0, x.Item2?.GetHashCode() ?? 0);
 
                 var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer(
-                    new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)));
+                                                      new CustomizableEqualityComparer<string>((__, _) => true, _ => 0)));
                 var comparerForIntOnly = builder.GetEqualityComparer<Tuple<int, string>>();
                 var comparerForStringOnly = builder
-                    .Configure(c => c
-                    .SetCustomEqualityComparer<string>(null)
-                    .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
-                    .GetEqualityComparer<Tuple<int, string>>();
+                                            .Configure(c => c
+                                                            .SetCustomEqualityComparer<string>(null)
+                                                            .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>((__, _) => true, _ => 0)))
+                                            .GetEqualityComparer<Tuple<int, string>>();
 
                 using (new AssertionScope()) {
                     comparerForIntOnly.Equals(x, y).Should().Be(expectedEqualsInt, "comparison is based on int field");
@@ -55,8 +58,8 @@ namespace ILLightenComparer.Tests.EqualityTests
             var builder = new ComparerBuilder(c => c.SetCustomEqualityComparer<SampleStructCustomEqualityComparer>());
             var comparerCustom = builder.GetEqualityComparer<ComparableObject<ComparableStruct<string>>>();
             var comparerDefault = builder.Configure(c => c
-                .SetCustomEqualityComparer<ComparableStruct<string>>(null))
-                .GetEqualityComparer<ComparableObject<ComparableStruct<string>>>();
+                                                        .SetCustomEqualityComparer<ComparableStruct<string>>(null))
+                                         .GetEqualityComparer<ComparableObject<ComparableStruct<string>>>();
 
             using (new AssertionScope()) {
                 comparerCustom.Equals(x, y).Should().BeTrue();
@@ -75,7 +78,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var expectedCustomHash = HashCodeCombiner.Combine(0, 0);
 
                 var comparer = new ComparerBuilder(c => c
-                    .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
+                                                       .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
                     .GetEqualityComparer<SampleObject<ComparableStruct<string>>>();
 
                 using (new AssertionScope()) {
@@ -93,22 +96,22 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var y = _fixture.Create<ComparableObject<int[]>>();
 
                 var referenceComparer = new ComparableObjectEqualityComparer<int[]>(new CustomizableEqualityComparer<int[]>(
-                    (a, b) => (a is null && b is null) || !(a is null || b is null), _ => 0));
+                                                                                        (a, b) => a is null && b is null || !(a is null || b is null), _ => 0));
                 var expected = referenceComparer.Equals(x, y);
 
                 var equalsIsUsed = false;
                 var hashIsUsed = false;
                 var comparer = new ComparerBuilder(c => c
-                    .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())
-                    .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>(
-                        (__, _) => {
-                            equalsIsUsed = true;
-                            return true;
-                        },
-                        _ => {
-                            hashIsUsed = true;
-                            return 0;
-                        })))
+                                                        .SetDefaultCollectionsOrderIgnoring(_fixture.Create<bool>())
+                                                        .SetCustomEqualityComparer(new CustomizableEqualityComparer<int>(
+                                                                                       (__, _) => {
+                                                                                           equalsIsUsed = true;
+                                                                                           return true;
+                                                                                       },
+                                                                                       _ => {
+                                                                                           hashIsUsed = true;
+                                                                                           return 0;
+                                                                                       })))
                     .GetEqualityComparer<ComparableObject<int[]>>();
 
                 var actualEquals = comparer.Equals(x, y);
@@ -123,7 +126,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                     var propertyIsNull = x.Property is null || y.Property is null;
                     var fieldsAreNulls = x.Field is null && y.Field is null;
                     var propertiesAreNulls = x.Property is null && y.Property is null;
-                    equalsIsUsed.Should().Be(!fieldIsNull || (fieldsAreNulls && !propertyIsNull), $"null checks are used.\n{x}\n{y}");
+                    equalsIsUsed.Should().Be(!fieldIsNull || fieldsAreNulls && !propertyIsNull, $"null checks are used.\n{x}\n{y}");
                     hashIsUsed.Should().Be(!fieldsAreNulls || !propertiesAreNulls, $"null checks are used.\n{x}\n{y}");
                 }
             });
@@ -137,7 +140,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var y = _fixture.Create<ComparableStruct<string>>();
 
                 var comparer = new ComparerBuilder(c => c
-                    .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
+                                                       .SetCustomEqualityComparer<SampleStructCustomEqualityComparer>())
                     .GetEqualityComparer<ComparableStruct<string>>();
 
                 using (new AssertionScope()) {
@@ -146,10 +149,6 @@ namespace ILLightenComparer.Tests.EqualityTests
                 }
             });
         }
-
-        private static void Test(Action action) => Enumerable.Range(0, Constants.SmallCount).AsParallel().ForAll(_ => action());
-
-        private readonly IFixture _fixture = FixtureBuilder.GetInstance();
 
         private sealed class SampleStructCustomEqualityComparer : CustomizableEqualityComparer<ComparableStruct<string>>
         {
