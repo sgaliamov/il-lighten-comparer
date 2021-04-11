@@ -108,14 +108,14 @@ namespace ILLightenComparer.Shared.Comparisons
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable)
         {
             il.CallMethod(
+                  LoadCaller(xEnumerable),
                   _getEnumeratorMethod,
-                  Type.EmptyTypes,
-                  LoadCaller(xEnumerable))
+                  Type.EmptyTypes)
               .Stloc(_enumeratorType, out var xEnumerator)
               .CallMethod(
+                  LoadCaller(yEnumerable),
                   _getEnumeratorMethod,
-                  Type.EmptyTypes,
-                  LoadCaller(yEnumerable))
+                  Type.EmptyTypes)
               .Stloc(_enumeratorType, out var yEnumerator);
 
             // todo: 3. check enumerators for null?

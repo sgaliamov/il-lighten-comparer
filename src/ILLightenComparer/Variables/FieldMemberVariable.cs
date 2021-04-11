@@ -16,7 +16,7 @@ namespace ILLightenComparer.Variables
 
         public ILEmitter Load(ILEmitter il, ushort arg) => il.LoadArgument(arg).Ldfld(_fieldInfo);
 
-        public ILEmitter LoadLocalAddress(ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg)
         {
             if (OwnerType.IsValueType) {
                 il.LoadArgumentAddress(arg);

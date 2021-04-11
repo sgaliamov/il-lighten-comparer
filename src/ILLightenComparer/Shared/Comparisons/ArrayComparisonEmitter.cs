@@ -72,7 +72,8 @@ namespace ILLightenComparer.Shared.Comparisons
                              itemComparison.Emit(continueLoop),
                              itemComparison.EmitCheckForResult(continueLoop))
                          .MarkLabel(continueLoop)
-                         .Add(Ldloc(index), Ldc_I4(1)).Stloc(index)
+                         .Add(Ldloc(index), Ldc_I4(1))
+                         .Stloc(index)
                          .Br(loopStart);
             }
         }

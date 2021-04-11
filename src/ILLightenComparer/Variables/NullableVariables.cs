@@ -34,7 +34,7 @@ namespace ILLightenComparer.Variables
                 _getValueMethod,
                 Type.EmptyTypes);
 
-        public ILEmitter LoadLocalAddress(ILEmitter il, ushort arg)
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg)
         {
             var underlyingType = VariableType.GetUnderlyingType();
 

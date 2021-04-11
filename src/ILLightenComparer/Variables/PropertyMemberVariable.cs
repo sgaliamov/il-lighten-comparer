@@ -25,7 +25,7 @@ namespace ILLightenComparer.Variables
             return il.CallMethod(_propertyInfo.GetMethod, Type.EmptyTypes);
         }
 
-        public ILEmitter LoadLocalAddress(ILEmitter il, ushort arg) => Load(il, arg)
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => Load(il, arg)
             .Stloc(VariableType.GetUnderlyingType(), out var local)
             .LoadLocalAddress(local);
 

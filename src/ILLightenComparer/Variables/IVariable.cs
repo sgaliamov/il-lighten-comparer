@@ -9,7 +9,7 @@ namespace ILLightenComparer.Variables
         Type VariableType { get; }
 
         ILEmitter Load(ILEmitter il, ushort arg);
-        ILEmitter LoadLocalAddress(ILEmitter il, ushort arg);
+        ILEmitter LoadAddress(ILEmitter il, ushort arg);
     }
 
     internal static class VariableExtensions
@@ -17,7 +17,7 @@ namespace ILLightenComparer.Variables
         public static ILEmitterFunc Load(this IVariable variable, ushort arg) =>
           (in ILEmitter il) => variable.Load(il, arg);
 
-        public static ILEmitterFunc LoadLocalAddress(this IVariable variable, ushort arg) =>
-            (in ILEmitter il) => variable.LoadLocalAddress(il, arg);
+        public static ILEmitterFunc LoadAddress(this IVariable variable, ushort arg) =>
+            (in ILEmitter il) => variable.LoadAddress(il, arg);
     }
 }
