@@ -34,29 +34,22 @@ namespace ILLightenComparer.Comparer.Comparisons
             var variableType = _variable.VariableType;
 
             if (variableType.IsValueType) {
-                return il.CallMethod(
-                    LoadLocalAddress(Arg.X),
-                    _compareToMethod,
-                    new[] { variableType },
-                    Ldloc(Arg.Y));
+                _variable.LoadAddress(il, Arg.X);
+                _variable.Load(il, Arg.Y);
+            } else {
+                _variable.Load(il, Arg.X).Stloc(variableType, out var x);
+                _variable.Load(il, Arg.Y).Stloc(variableType, out var y)
+                         .Ldloc(x)
+                         .Brtrue_S(out var call)
+                         .Ldloc(y)
+                         .Brfalse_S(gotoNext)
+                         .Ret(-1)
+                         .MarkLabel(call)
+                         .Ldloc(x)
+                         .Ldloc(y);
             }
 
-            _variable.Load(il, Arg.X).Stloc(variableType, out var x);
-            _variable.Load(il, Arg.Y)
-                     .Stloc(variableType, out var y)
-                     .Ldloc(x)
-                     .Brtrue_S(out var call)
-                     .Ldloc(y)
-                     .Brfalse_S(gotoNext)
-                     .Ret(-1)
-                     .MarkLabel(call);
-
-            return il.CallMethod(
-                Ldloc(x),
-                _compareToMethod,
-                new[] { variableType },
-                Ldloc(y));
-
+            return il.CallMethod(_compareToMethod, new[] { _variable.VariableType });
         }
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);

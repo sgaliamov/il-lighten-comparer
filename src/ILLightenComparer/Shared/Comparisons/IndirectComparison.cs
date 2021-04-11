@@ -6,7 +6,6 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static ILLightenComparer.Extensions.Functions;
-using ILEmitterExtensions = ILLightenComparer.Extensions.ILEmitterExtensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {

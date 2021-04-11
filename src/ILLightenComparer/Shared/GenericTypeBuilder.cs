@@ -8,7 +8,6 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functions;
 using static ILLightenComparer.Extensions.Functions;
 using TypeExtensions = ILLightenComparer.Extensions.TypeExtensions;
 
@@ -54,10 +53,10 @@ namespace ILLightenComparer.Shared
                         })
                         .ToArray();
 
-            var compiledComparerType = comparerTypeBuilder.CreateTypeInfo()!;
+            var compiledComparerType = comparerTypeBuilder.CreateTypeInfo();
 
             foreach (var name in names) {
-                var method = compiledComparerType.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
+                var method = compiledComparerType!.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
                 methodsInfo.SetCompiledMethod(method);
             }
 
@@ -77,8 +76,8 @@ namespace ILLightenComparer.Shared
             FieldInfo contextField,
             Type objectType)
         {
-            var interfaceMethod = typedComparerInterface.GetMethod(staticMethod.Name)!;
-            var parametersCount = interfaceMethod.GetParameters().Length;
+            var interfaceMethod = typedComparerInterface.GetMethod(staticMethod.Name);
+            var parametersCount = interfaceMethod!.GetParameters().Length;
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
             using var il = methodBuilder.CreateILEmitter();
