@@ -18,6 +18,7 @@ namespace ILLightenComparer.Tests
 
             var equality = comparer.Equals(x, y);
             var hashX = comparer.GetHashCode(x);
+
             var hashY = comparer.GetHashCode(y);
 
             using (new AssertionScope()) {

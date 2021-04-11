@@ -33,7 +33,8 @@ namespace ILLightenComparer.Benchmarks.Benchmark
 
             var subCompare = new DynamicMethod("SubCompare", typeof(bool), new[] { typeof(int), typeof(int) });
             using (var il = subCompare.GetILGenerator().UseIlluminator()) {
-                il.Sub(Ldarg(0), Ldarg(1)).Brfalse_S(out var equals)
+                il.Sub(Ldarg(0), Ldarg(1))
+                  .Brfalse_S(out var equals)
                   .Ldc_I4_0()
                   .Ret()
                   .MarkLabel(equals)

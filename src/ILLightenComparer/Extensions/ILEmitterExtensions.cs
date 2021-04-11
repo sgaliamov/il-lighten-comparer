@@ -120,7 +120,7 @@ namespace ILLightenComparer.Extensions
             } else {
                 var getComparerMethod = GetComparerMethod.MakeGenericMethod(elementType);
 
-                il.CallMethod(Ldarg(Arg.Context), getComparerMethod, Type.EmptyTypes)
+                il.CallMethod(Functions.LoadArgument(Arg.Context), getComparerMethod, Type.EmptyTypes)
                   .Stloc(getComparerMethod.ReturnType, out var comparer);
 
                 foreach (var array in arrays) {

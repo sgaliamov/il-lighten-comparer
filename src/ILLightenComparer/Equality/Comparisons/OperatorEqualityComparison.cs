@@ -22,6 +22,7 @@ namespace ILLightenComparer.Equality.Comparisons
         {
             var variableType = variable.VariableType.GetUnderlyingType();
             var equalityMethod = variableType.GetMethod("op_Equality", BindingFlags.Public | BindingFlags.Static);
+
             if (equalityMethod != null) {
                 return new OperatorEqualityComparison(variable, equalityMethod);
             }
@@ -31,9 +32,9 @@ namespace ILLightenComparer.Equality.Comparisons
 
         public ILEmitter Emit(ILEmitter il, Label _) =>
             il.CallMethod(
-                _variable.Load(Arg.X),
                 _equalityMethod,
-                new[] { _variable.VariableType },
+                new[] { _variable.VariableType, _variable.VariableType },
+                _variable.Load(Arg.X),
                 _variable.Load(Arg.Y));
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfFalsy(next);

@@ -9,6 +9,7 @@ using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
 using static Illuminator.Functions;
+using static ILLightenComparer.Extensions.Functions;
 using TypeExtensions = ILLightenComparer.Extensions.TypeExtensions;
 
 namespace ILLightenComparer.Shared
@@ -84,8 +85,8 @@ namespace ILLightenComparer.Shared
 
             Enumerable.Range(0, parametersCount)
                       .Aggregate(
-                          il.Ldarg(Arg.This).Ldfld(contextField),
-                          (emitter, index) => emitter.Ldarg((short)(index + 1)));
+                          il.LoadArgument(Arg.This).Ldfld(contextField),
+                          (emitter, index) => emitter.LoadArgument(index + 1));
 
             EmitStaticMethodCall(il, objectType, staticMethod, parametersCount);
         }
@@ -135,9 +136,9 @@ namespace ILLightenComparer.Shared
                 parameters);
 
             using (var il = constructorInfo.CreateILEmitter()) {
-                il.Ldarg(Arg.This)
+                il.LoadArgument(Arg.This)
                   .Call(typeof(object).GetConstructor(Type.EmptyTypes), Type.EmptyTypes)
-                  .Stfld(Ldarg(Arg.This), Ldarg(1), contextField)
+                  .Stfld(LoadArgument(Arg.This), LoadArgument(1), contextField)
                   .Ret();
             }
 
@@ -147,7 +148,7 @@ namespace ILLightenComparer.Shared
                 parameters);
 
             using (var il = methodBuilder.CreateILEmitter()) {
-                il.Newobj(constructorInfo, parameters, Ldarg(Arg.This)).Ret();
+                il.Newobj(constructorInfo, parameters, LoadArgument(Arg.This)).Ret();
             }
         }
     }

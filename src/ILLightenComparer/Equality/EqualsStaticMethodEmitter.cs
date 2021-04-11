@@ -27,9 +27,9 @@ namespace ILLightenComparer.Equality
 
             if (needReferenceComparison) {
                 if (!objectType.IsValueType) {
-                    il.EmitReferenceComparison(Ldarg(Arg.X), Ldarg(Arg.Y), Ret(1));
+                    il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Ret(1));
                 } else if (objectType.IsNullable()) {
-                    il.EmitCheckNullablesForValue(Ldarga(Arg.X), Ldarga(Arg.Y), objectType, exit);
+                    il.EmitCheckNullablesForValue(LoadArgumentAddress(Arg.X), LoadArgumentAddress(Arg.Y), objectType, exit);
                 }
             }
 
