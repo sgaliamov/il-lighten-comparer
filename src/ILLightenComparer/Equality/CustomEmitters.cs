@@ -2,7 +2,7 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
-using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Equality
 {

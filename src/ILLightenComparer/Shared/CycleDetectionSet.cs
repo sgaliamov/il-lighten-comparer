@@ -25,7 +25,8 @@ namespace ILLightenComparer.Shared
                 Ldarg(set),
                 TryAddMethod,
                 new[] { typeof(object), typeof(byte) },
-                Ldarg(arg) + EmitIf(argType.IsValueType, Box((in ILEmitter il) => il, argType)),
+                Ldarg(arg),
+                EmitIf(argType.IsValueType, Box((in ILEmitter il) => il, argType)),
                 Ldc_I4(0));
 
         public static ILEmitterFunc GetCount(short arg) =>
@@ -38,7 +39,7 @@ namespace ILLightenComparer.Shared
             new[] { typeof(object) });
 
         private static readonly MethodInfo TryAddMethod = typeof(CycleDetectionSet).GetMethod(
-            nameof(ConcurrentDictionary<object, byte>.TryAdd), 
+            nameof(ConcurrentDictionary<object, byte>.TryAdd),
             new[] { typeof(object), typeof(byte) });
     }
 }

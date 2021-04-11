@@ -10,9 +10,6 @@ namespace ILLightenComparer.Extensions
         public static ILEmitterFunc Id() =>
             (in ILEmitter il) => il;
 
-        public static ILEmitterFunc Emit(params ILEmitterFunc[] funcs) =>
-            (in ILEmitter il) => il.Emit(funcs);
-
         public static ILEmitterFunc CallMethod(ILEmitterFunc caller, MethodInfo methodInfo, Type[] parameterTypes, params ILEmitterFunc[] parameters) =>
             (in ILEmitter il) => il.CallMethod(caller, methodInfo, parameterTypes, parameters);
 

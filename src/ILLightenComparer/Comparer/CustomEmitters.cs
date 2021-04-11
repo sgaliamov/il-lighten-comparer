@@ -3,7 +3,6 @@ using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
 using static Illuminator.Functions;
-using static ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Comparer
 {
