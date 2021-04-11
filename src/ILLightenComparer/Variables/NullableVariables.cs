@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Extensions;
 using Illuminator;
-using Functions = ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Variables
 {
@@ -29,19 +28,15 @@ namespace ILLightenComparer.Variables
         public Type OwnerType { get; }
 
         public ILEmitter Load(ILEmitter il, ushort arg) =>
-            il.CallMethod(
-                Functions.LoadLocalAddress(_nullables[arg]),
-                _getValueMethod,
-                Type.EmptyTypes);
+            il.LoadLocalAddress(_nullables[arg])
+              .CallMethod(_getValueMethod);
 
         public ILEmitter LoadAddress(ILEmitter il, ushort arg)
         {
             var underlyingType = VariableType.GetUnderlyingType();
 
-            return il.CallMethod(
-                         Functions.LoadLocalAddress(_nullables[arg]),
-                         _getValueMethod,
-                         Type.EmptyTypes)
+            return il.LoadLocalAddress(_nullables[arg])
+                     .CallMethod(_getValueMethod)
                      .Stloc(underlyingType, out var x)
                      .LoadLocalAddress(x);
         }

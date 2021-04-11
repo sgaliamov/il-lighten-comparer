@@ -15,22 +15,20 @@ namespace ILLightenComparer.Shared
 
         public static ILEmitterFunc Remove(short set, short arg, Type argType) =>
             CallMethod(
-                LoadArgument(set),
                 RemoveMethod,
-                new[] { typeof(object) },
+                LoadArgument(set),
                 LoadArgument(arg) + EmitIf(argType.IsValueType, Box((in ILEmitter il) => il, argType)));
 
         public static ILEmitterFunc TryAdd(short set, short arg, Type argType) =>
             CallMethod(
-                LoadArgument(set),
                 TryAddMethod,
-                new[] { typeof(object), typeof(byte) },
+                LoadArgument(set),
                 LoadArgument(arg),
                 EmitIf(argType.IsValueType, Box((in ILEmitter il) => il, argType)),
                 Ldc_I4(0));
 
         public static ILEmitterFunc GetCount(short arg) =>
-            CallMethod(LoadArgument(arg), GetCountProperty, Type.EmptyTypes);
+            CallMethod(GetCountProperty, LoadArgument(arg));
 
         internal static readonly MethodInfo GetCountProperty = typeof(CycleDetectionSet).GetProperty(nameof(Count))!.GetGetMethod();
 

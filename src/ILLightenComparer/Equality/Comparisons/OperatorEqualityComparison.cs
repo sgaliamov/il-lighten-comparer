@@ -33,7 +33,6 @@ namespace ILLightenComparer.Equality.Comparisons
         public ILEmitter Emit(ILEmitter il, Label _) =>
             il.CallMethod(
                 _equalityMethod,
-                new[] { _variable.VariableType, _variable.VariableType },
                 _variable.Load(Arg.X),
                 _variable.Load(Arg.Y));
 

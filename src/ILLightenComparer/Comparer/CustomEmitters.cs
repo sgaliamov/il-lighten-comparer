@@ -48,9 +48,9 @@ namespace ILLightenComparer.Comparer
         {
             var hasValueMethod = nullableType.GetPropertyGetter("HasValue");
 
-            return il.CallMethod(nullableY, hasValueMethod, Type.EmptyTypes)
+            return il.CallMethod(hasValueMethod, nullableY)
                      .Stloc(typeof(bool), out var secondHasValue)
-                     .CallMethod(nullableX, hasValueMethod, Type.EmptyTypes)
+                     .CallMethod(hasValueMethod, nullableX)
                      .Brtrue_S(out var ifFirstHasValue)
                      .Ldloc(secondHasValue)
                      .Brfalse(ifBothNull)

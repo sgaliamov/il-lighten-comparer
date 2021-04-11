@@ -57,9 +57,8 @@ namespace ILLightenComparer.Shared.Comparisons
 
         public ILEmitter Emit(ILEmitter il, Label _) =>
             il.CallMethod(
-                LoadArgument(Arg.Context),
                 _method,
-                new[] { _variable.VariableType, _variable.VariableType, typeof(CycleDetectionSet), typeof(CycleDetectionSet) },
+                LoadArgument(Arg.Context),
                 _variable.Load(Arg.X),
                 _variable.Load(Arg.Y),
                 LoadArgument(Arg.SetX),

@@ -37,9 +37,8 @@ namespace ILLightenComparer.Variables
 
         public ILEmitter Load(ILEmitter il, ushort arg) =>
             il.CallMethod(
-                Ldloc(_arrays[arg]),
                 _getItemMethod,
-                new[] { _indexVariable.LocalType },
+                Ldloc(_arrays[arg]),
                 Ldloc(_indexVariable));
 
         public ILEmitter LoadAddress(ILEmitter il, ushort arg) =>

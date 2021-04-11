@@ -40,9 +40,8 @@ namespace ILLightenComparer.Equality.Hashers
                      .Stloc(typeof(string), out var local)
                      .Brfalse_S(Ldloc(local), out var zero)
                      .CallMethod(
-                         Ldloc(local), 
                          GetHashCodeMethod, 
-                         new[] { typeof(int) }, 
+                         Ldloc(local), 
                          Ldc_I4(_stringComparison))
                      .Br_S(out var next)
                      .MarkLabel(zero)

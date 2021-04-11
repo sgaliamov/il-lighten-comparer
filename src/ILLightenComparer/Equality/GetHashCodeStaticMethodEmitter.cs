@@ -52,7 +52,7 @@ namespace ILLightenComparer.Equality
             il.Brtrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
               .Emit(GetCount(Arg.CycleSet))
               .Stloc(typeof(int), out var count)
-              .Ret(CallMethod(LoadCaller(count), _getHashCodeMethod, Type.EmptyTypes))
+              .Ret(CallMethod(_getHashCodeMethod, LoadCaller(count)))
               .MarkLabel(next);
     }
 }

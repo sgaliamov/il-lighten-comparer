@@ -48,7 +48,6 @@ namespace ILLightenComparer.Equality.Hashers
             il.LoadArgument(Arg.Context)
               .CallMethod(
                   _hashMethod,
-                  new[] { _variable.VariableType, typeof(CycleDetectionSet) },
                   _variable.Load(Arg.Input),
                   LoadArgument(Arg.CycleSet));
 

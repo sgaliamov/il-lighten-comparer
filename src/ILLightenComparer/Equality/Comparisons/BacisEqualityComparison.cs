@@ -31,11 +31,10 @@ namespace ILLightenComparer.Equality.Comparisons
 
         public ILEmitter Emit(ILEmitter il, Label _) =>
             il.CallMethod(
+                _equalityMethod,
                 _variable.VariableType.IsValueType
                     ? _variable.LoadAddress(Arg.X)
                     : _variable.Load(Arg.X),
-                _equalityMethod,
-                new[] { _variable.VariableType },
                 _variable.Load(Arg.Y));
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfFalsy(next);

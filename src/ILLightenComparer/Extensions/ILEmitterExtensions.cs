@@ -18,50 +18,18 @@ namespace ILLightenComparer.Extensions
         private static readonly MethodInfo GetComparerMethod = typeof(IComparerProvider).GetMethod(nameof(IComparerProvider.GetComparer));
         private static readonly MethodInfo DisposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose), Type.EmptyTypes);
 
-        public static ILEmitter CallMethod(
-            this ILEmitter il,
-            MethodInfo methodInfo,
-            Type[] parameterTypes,
-            params ILEmitterFunc[] parameters) =>
-            CallMethod(il, Functions.Id(), methodInfo, parameterTypes, parameters);
-
-        public static ILEmitter CallMethod(
-            this ILEmitter il,
-            MethodInfo methodInfo,
-            Type[] parameterTypes) =>
-            CallMethod(il, Functions.Id(), methodInfo, parameterTypes, Array.Empty<ILEmitterFunc>());
-
-        public static ILEmitter CallMethod(
-            this ILEmitter il,
-            ILEmitterFunc caller,
-            MethodInfo methodInfo,
-            Type[] parameterTypes) =>
-            CallMethod(il, caller, methodInfo, parameterTypes, Array.Empty<ILEmitterFunc>());
-
         /// <summary>
         ///     Smart emission for Call methods.
         /// </summary>
         /// <param name="il">Self.</param>
-        /// <param name="caller">Pusher of "this".</param>
         /// <param name="methodInfo">Static, virtual, instance method.</param>
-        /// <param name="parameterTypes">Type of the method parameters without this.</param>
-        /// <param name="parameters">List of methods to prepare parameters in stack.</param>
+        /// <param name="funcs">List of methods to prepare parameters in stack.</param>
         /// <returns>Self.</returns>
         public static ILEmitter CallMethod(
             this ILEmitter il,
-            ILEmitterFunc caller,
             MethodInfo methodInfo,
-            Type[] parameterTypes,
-            params ILEmitterFunc[] parameters)
+            params ILEmitterFunc[] funcs)
         {
-            if (!(methodInfo is MethodBuilder)) {
-                var methodParametersLength = methodInfo.GetParameters().Length;
-
-                if (methodParametersLength != parameterTypes.Length) {
-                    throw new ArgumentException($"Amount of parameters does not match method {methodInfo} signature.");
-                }
-            }
-
             var owner = methodInfo.DeclaringType;
             if (owner == typeof(ValueType)) {
                 owner = methodInfo.ReflectedType; // todo: 0. test
@@ -85,8 +53,8 @@ namespace ILLightenComparer.Extensions
             //}
 
             return methodInfo.IsStatic || owner.IsValueType || owner.IsSealed || !methodInfo.IsVirtual // todo: 0. test
-                ? caller(il).Call(methodInfo, parameterTypes, parameters)
-                : caller(il).Callvirt(methodInfo, parameterTypes, parameters);
+                ? il.Call(methodInfo, funcs)
+                : il.Callvirt(methodInfo, funcs);
         }
 
         public static ILEmitter Cast<T>(this ILEmitter self, ILEmitterFunc value) => value(self).Cast(typeof(T));
@@ -105,7 +73,7 @@ namespace ILLightenComparer.Extensions
               .Stloc(typeof(int), out local);
 
         public static ILEmitter EmitArrayLength(this ILEmitter il, Type arrayType, LocalBuilder array, out LocalBuilder count) =>
-            il.CallMethod(Ldloc(array), arrayType.GetPropertyGetter(LengthMethodName), Type.EmptyTypes)
+            il.CallMethod(arrayType.GetPropertyGetter(LengthMethodName), Ldloc(array))
               .Stloc(typeof(int), out count);
 
         public static ILEmitter EmitArraySorting(this ILEmitter il, bool hasCustomComparer, Type elementType, params LocalBuilder[] arrays)
@@ -120,7 +88,7 @@ namespace ILLightenComparer.Extensions
             } else {
                 var getComparerMethod = GetComparerMethod.MakeGenericMethod(elementType);
 
-                il.CallMethod(Functions.LoadArgument(Arg.Context), getComparerMethod, Type.EmptyTypes)
+                il.CallMethod(getComparerMethod, Functions.LoadArgument(Arg.Context))
                   .Stloc(getComparerMethod.ReturnType, out var comparer);
 
                 foreach (var array in arrays) {
@@ -132,10 +100,9 @@ namespace ILLightenComparer.Extensions
         }
 
         public static ILEmitter EmitDispose(this ILEmitter il, LocalBuilder local) =>
-            il.CallMethod(
-                Functions.LoadCaller(local) + Functions.EmitIf(local.LocalType.IsValueType, Constrained(local.LocalType)),
-                DisposeMethod,
-                Type.EmptyTypes);
+            il.LoadCaller(local)
+              .EmitIf(local.LocalType.IsValueType, Constrained(local.LocalType))
+              .CallMethod(DisposeMethod);
 
         public static ILEmitter EmitIf(this ILEmitter il, bool condition, params ILEmitterFunc[] actions) =>
             condition ? il.Emit(actions) : il;
@@ -198,9 +165,9 @@ namespace ILLightenComparer.Extensions
             var copyMethod = ToArrayMethod.MakeGenericMethod(elementType);
             var sortMethod = GetArraySortWithComparer(elementType);
 
-            il.CallMethod(copyMethod, new[] { array.LocalType }, Ldloc(array))
+            il.CallMethod(copyMethod, Ldloc(array))
               .Stloc(array)
-              .CallMethod(sortMethod, new[] { array.LocalType, comparer.LocalType }, Ldloc(array), Ldloc(comparer));
+              .CallMethod(sortMethod, Ldloc(array), Ldloc(comparer));
         }
 
         private static void EmitSortArray(ILEmitter il, Type elementType, LocalBuilder array)
@@ -208,9 +175,9 @@ namespace ILLightenComparer.Extensions
             var copyMethod = ToArrayMethod.MakeGenericMethod(elementType);
             var sortMethod = GetArraySortMethod(elementType);
 
-            il.CallMethod(copyMethod, new[] { array.LocalType }, Ldloc(array))
+            il.CallMethod(copyMethod, Ldloc(array))
               .Stloc(array)
-              .CallMethod(sortMethod, new[] { array.LocalType }, Ldloc(array));
+              .CallMethod(sortMethod, Ldloc(array));
         }
 
         private static MethodInfo GetArraySortMethod(Type elementType) =>

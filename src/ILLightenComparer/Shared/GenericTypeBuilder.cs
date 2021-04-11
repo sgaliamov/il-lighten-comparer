@@ -94,23 +94,11 @@ namespace ILLightenComparer.Shared
         {
             var createCycleDetectionSets = NeedCreateCycleDetectionSets(objectType, staticMethod.Name);
 
-            var objectTypes =
-                Enumerable.Range(0, parametersCount)
-                          .Select(_ => objectType)
-                          .ToArray();
-
-            var cycleDetectionSetTypes =
-                Enumerable.Range(0, parametersCount)
-                          .Select(_ => typeof(CycleDetectionSet))
-                          .ToArray();
-
-            var parameterTypes = new[] { ContextType }.Concat(objectTypes.Concat(cycleDetectionSetTypes)).ToArray();
-
             Enumerable.Range(0, parametersCount)
                       .Aggregate(il, (emitter, _) => createCycleDetectionSets
                           ? emitter.Newobj(CycleDetectionSet.DefaultConstructor)
                           : emitter.Ldnull())
-                      .CallMethod(staticMethod, parameterTypes)
+                      .CallMethod(staticMethod)
                       .Ret();
         }
 
@@ -136,7 +124,7 @@ namespace ILLightenComparer.Shared
 
             using (var il = constructorInfo.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
-                  .Call(typeof(object).GetConstructor(Type.EmptyTypes), Type.EmptyTypes)
+                  .Call(typeof(object).GetConstructor(Type.EmptyTypes))
                   .Stfld(LoadArgument(Arg.This), LoadArgument(1), contextField)
                   .Ret();
             }
@@ -147,7 +135,7 @@ namespace ILLightenComparer.Shared
                 parameters);
 
             using (var il = methodBuilder.CreateILEmitter()) {
-                il.Newobj(constructorInfo, parameters, LoadArgument(Arg.This)).Ret();
+                il.Newobj(constructorInfo, LoadArgument(Arg.This)).Ret();
             }
         }
     }

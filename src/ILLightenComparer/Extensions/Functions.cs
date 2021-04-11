@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Emit;
 using Illuminator;
 
@@ -10,8 +9,8 @@ namespace ILLightenComparer.Extensions
         public static ILEmitterFunc Id() =>
             (in ILEmitter il) => il;
 
-        public static ILEmitterFunc CallMethod(ILEmitterFunc caller, MethodInfo methodInfo, Type[] parameterTypes, params ILEmitterFunc[] parameters) =>
-            (in ILEmitter il) => il.CallMethod(caller, methodInfo, parameterTypes, parameters);
+        public static ILEmitterFunc CallMethod(MethodInfo methodInfo, params ILEmitterFunc[] funcs) =>
+            (in ILEmitter il) => il.CallMethod(methodInfo, funcs);
 
         public static ILEmitterFunc Cast<T>(ILEmitterFunc value) =>
             (in ILEmitter il) => il.Cast<T>(value);
@@ -24,9 +23,6 @@ namespace ILLightenComparer.Extensions
 
         public static ILEmitterFunc If(ILEmitterFunc action, ILEmitterFunc whenTrue) =>
             (in ILEmitter il) => il.If(action, whenTrue);
-
-        public static ILEmitterFunc LoadLocalAddress(int index) =>
-            (in ILEmitter il) => il.LoadLocalAddress(index);
 
         public static ILEmitterFunc LoadLocalAddress(LocalBuilder local) =>
             (in ILEmitter il) => il.LoadLocalAddress(local);

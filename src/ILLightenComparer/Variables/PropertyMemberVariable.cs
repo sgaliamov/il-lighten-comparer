@@ -22,7 +22,7 @@ namespace ILLightenComparer.Variables
                 il.LoadArgument(arg);
             }
 
-            return il.CallMethod(_propertyInfo.GetMethod, Type.EmptyTypes);
+            return il.CallMethod(_propertyInfo.GetMethod);
         }
 
         public ILEmitter LoadAddress(ILEmitter il, ushort arg) => Load(il, arg)

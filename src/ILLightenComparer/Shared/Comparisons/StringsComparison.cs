@@ -44,7 +44,6 @@ namespace ILLightenComparer.Shared.Comparisons
         public ILEmitter Emit(ILEmitter il, Label _) =>
             il.CallMethod(
                 _compareMethod,
-                new[] { _variable.VariableType, _variable.VariableType, typeof(int) },
                 _variable.Load(Arg.X),
                 _variable.Load(Arg.Y),
                 Ldc_I4(_stringComparisonType));

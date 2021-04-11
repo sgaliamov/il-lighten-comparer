@@ -107,19 +107,12 @@ namespace ILLightenComparer.Shared.Comparisons
 
         private (LocalBuilder xEnumerator, LocalBuilder yEnumerator) EmitLoadEnumerators(ILEmitter il, LocalBuilder xEnumerable, LocalBuilder yEnumerable)
         {
-            il.CallMethod(
-                  LoadCaller(xEnumerable),
-                  _getEnumeratorMethod,
-                  Type.EmptyTypes)
+            il.CallMethod(_getEnumeratorMethod, LoadCaller(xEnumerable))
               .Stloc(_enumeratorType, out var xEnumerator)
-              .CallMethod(
-                  LoadCaller(yEnumerable),
-                  _getEnumeratorMethod,
-                  Type.EmptyTypes)
+              .CallMethod(_getEnumeratorMethod, LoadCaller(yEnumerable))
               .Stloc(_enumeratorType, out var yEnumerator);
 
             // todo: 3. check enumerators for null?
-
             return (xEnumerator, yEnumerator);
         }
 
@@ -151,10 +144,10 @@ namespace ILLightenComparer.Shared.Comparisons
         private (LocalBuilder xDone, LocalBuilder yDone) EmitMoveNext(LocalBuilder xEnumerator, LocalBuilder yEnumerator, ILEmitter il)
         {
             // todo: 3. it's possible to use "not done" flag. it will simplify emitted code in _emitCheckIfLoopsAreDone.
-            il.Ceq(CallMethod(LoadCaller(xEnumerator), _moveNextMethod, Type.EmptyTypes),
+            il.Ceq(CallMethod(_moveNextMethod, LoadCaller(xEnumerator)),
                   Ldc_I4(0),
                   out var xDone)
-              .Ceq(CallMethod(LoadCaller(yEnumerator), _moveNextMethod, Type.EmptyTypes),
+              .Ceq(CallMethod(_moveNextMethod, LoadCaller(yEnumerator)),
                   Ldc_I4(0),
                   out var yDone);
 

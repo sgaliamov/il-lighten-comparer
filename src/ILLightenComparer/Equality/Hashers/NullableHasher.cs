@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
@@ -39,7 +38,7 @@ namespace ILLightenComparer.Equality.Hashers
             _variable
                 .Load(il, Arg.Input)
                 .Stloc(variableType, out var nullable)
-                .CallMethod(LoadLocalAddress(nullable), _hasValueMethod, Type.EmptyTypes)
+                .CallMethod(_hasValueMethod, LoadLocalAddress(nullable))
                 .Brtrue_S(out var next)
                 .Ldc_I4(0)
                 .Br(out var exit)
