@@ -30,7 +30,7 @@ namespace ILLightenComparer.Equality.Hashers
 
         public ILEmitter Emit(ILEmitter il) =>
             il.CallMethod(
-                _variable.VariableType.IsValueType ? _variable.LoadLocalAddress(Arg.Input) : _variable.Load(Arg.Input),
+                _variable.VariableType.IsValueType ? _variable.LoadAddress(Arg.Input) : _variable.Load(Arg.Input),
                 _getHashMethod,
                 Type.EmptyTypes);
 

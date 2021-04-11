@@ -16,6 +16,6 @@ namespace ILLightenComparer.Variables
         public Type VariableType { get; }
 
         public ILEmitter Load(ILEmitter il, ushort arg) => il.LoadArgument(arg);
-        public ILEmitter LoadLocalAddress(ILEmitter il, ushort arg) => il.LoadArgumentAddress(arg);
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) => il.LoadArgumentAddress(arg);
     }
 }

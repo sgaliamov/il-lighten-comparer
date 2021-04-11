@@ -42,7 +42,7 @@ namespace ILLightenComparer.Variables
                 new[] { _indexVariable.LocalType },
                 Ldloc(_indexVariable));
 
-        public ILEmitter LoadLocalAddress(ILEmitter il, ushort arg) =>
+        public ILEmitter LoadAddress(ILEmitter il, ushort arg) =>
             Load(il, arg)
                 .Stloc(VariableType, out var local)
                 .LoadLocalAddress(local);
