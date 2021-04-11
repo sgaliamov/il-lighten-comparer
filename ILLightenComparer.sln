@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Illuminator", "external\illuminator\src\Illuminator\Illuminator.csproj", "{BA1BD1BA-215E-483D-BD64-63DAA30FF778}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{15FA73AD-EF43-4228-A4F6-44E186E5C06B}"
 	ProjectSection(SolutionItems) = preProject
 		scripts\benchmarks.ps1 = scripts\benchmarks.ps1
@@ -34,13 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{EBC9FF7F-B
 		docs\roadmap.md = docs\roadmap.md
 	EndProjectSection
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Illuminator.Shared", "external\illuminator\src\Illuminator\Illuminator.Shared.shproj", "{4497D5CE-4813-46BA-868D-58D696AE81D4}"
-EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		external\illuminator\src\Illuminator\Illuminator.Shared.projitems*{020c78a5-4642-42c5-900c-dd3658051481}*SharedItemsImports = 5
-		external\illuminator\src\Illuminator\Illuminator.Shared.projitems*{4497d5ce-4813-46ba-868d-58d696ae81d4}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -58,10 +50,6 @@ Global
 		{52C5C857-3A08-4D74-B954-1B99FEB403D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52C5C857-3A08-4D74-B954-1B99FEB403D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52C5C857-3A08-4D74-B954-1B99FEB403D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA1BD1BA-215E-483D-BD64-63DAA30FF778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA1BD1BA-215E-483D-BD64-63DAA30FF778}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA1BD1BA-215E-483D-BD64-63DAA30FF778}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA1BD1BA-215E-483D-BD64-63DAA30FF778}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,9 +2,10 @@
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
+using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
+using static ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -43,11 +44,12 @@ namespace ILLightenComparer.Equality.Hashers
             return new IndirectHasher(hashMethod, variable);
         }
 
-        public ILEmitter Emit(ILEmitter il) => il.Call(
-            _hashMethod,
-            LoadArgument(Arg.Context),
-            _variable.Load(Arg.Input),
-            LoadArgument(Arg.CycleSet));
+        public ILEmitter Emit(ILEmitter il) =>
+            il.LoadArgument(Arg.Context)
+              .CallMethod(
+                  _hashMethod,
+                  _variable.Load(Arg.Input),
+                  LoadArgument(Arg.CycleSet));
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }

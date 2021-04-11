@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
-using static Illuminator.Functional;
+using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Equality
 {
@@ -26,7 +27,7 @@ namespace ILLightenComparer.Equality
 
             if (needReferenceComparison) {
                 if (!objectType.IsValueType) {
-                    il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(1));
+                    il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Ret(1));
                 } else if (objectType.IsNullable()) {
                     il.EmitCheckNullablesForValue(LoadArgumentAddress(Arg.X), LoadArgumentAddress(Arg.Y), objectType, exit);
                 }
@@ -41,21 +42,21 @@ namespace ILLightenComparer.Equality
             emitter.Emit(il, exit);
 
             if (detecCycles) {
-                il.Execute(Remove(Arg.SetX, Arg.X, objectType))
-                  .Execute(Remove(Arg.SetY, Arg.Y, objectType));
+                il.Emit(Remove(Arg.SetX, Arg.X, objectType))
+                  .Emit(Remove(Arg.SetY, Arg.Y, objectType));
             }
 
-            il.Execute(emitter.EmitCheckForResult(exit))
+            il.Emit(emitter.EmitCheckForResult(exit))
               .MarkLabel(exit)
-              .Return(1);
+              .Ret(1);
         }
 
         public bool NeedCreateCycleDetectionSets(Type objectType) => true;
 
         private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))
-            .IfFalse_S(out var next)
-            .Return(AreSame(GetCount(Arg.SetX), GetCount(Arg.SetY)))
+            .Ceq(Ldc_I4(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))
+            .Brfalse_S(out var next)
+            .Ret(Ceq(GetCount(Arg.SetX), GetCount(Arg.SetY)))
             .MarkLabel(next);
     }
 }

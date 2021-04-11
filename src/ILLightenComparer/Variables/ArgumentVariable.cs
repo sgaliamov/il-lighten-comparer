@@ -1,4 +1,5 @@
 ﻿using System;
+using ILLightenComparer.Extensions;
 using Illuminator;
 
 namespace ILLightenComparer.Variables

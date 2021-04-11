@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Shared
 {

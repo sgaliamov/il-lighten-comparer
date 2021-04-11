@@ -36,13 +36,11 @@ namespace ILLightenComparer.Tests.EqualityTests
         }
 
         [Fact]
-        public void Compare_types_directly()
-        {
+        public void Compare_types_directly() =>
             Parallel.ForEach(TestTypes.Types, item => {
                 var (type, referenceComparer) = item;
                 new GenericTests(false).GenericTest(type, referenceComparer, Constants.SmallCount);
             });
-        }
 
         [Fact]
         public void Should_use_delayed_comparison()
@@ -69,14 +67,12 @@ namespace ILLightenComparer.Tests.EqualityTests
             }
         }
 
-        private static void TestCollection(Type genericCollectionType = null)
-        {
+        private static void TestCollection(Type genericCollectionType = null) =>
             Parallel.ForEach(TestTypes.Types, item => {
                 var (type, referenceComparer) = item;
                 TestCollection(type, referenceComparer, genericCollectionType, false);
                 TestCollection(type, referenceComparer, genericCollectionType, true);
             });
-        }
 
         private static void TestNullableCollection(Type genericCollectionType = null)
         {

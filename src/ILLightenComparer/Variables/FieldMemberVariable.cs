@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using ILLightenComparer.Extensions;
 using Illuminator;
 
 namespace ILLightenComparer.Variables
@@ -13,7 +14,7 @@ namespace ILLightenComparer.Variables
         public Type OwnerType => _fieldInfo.DeclaringType;
         public Type VariableType => _fieldInfo.FieldType;
 
-        public ILEmitter Load(ILEmitter il, ushort arg) => il.LoadArgument(arg).LoadField(_fieldInfo);
+        public ILEmitter Load(ILEmitter il, ushort arg) => il.LoadArgument(arg).Ldfld(_fieldInfo);
 
         public ILEmitter LoadAddress(ILEmitter il, ushort arg)
         {
@@ -23,7 +24,7 @@ namespace ILLightenComparer.Variables
                 il.LoadArgument(arg);
             }
 
-            return il.LoadFieldAddress(_fieldInfo);
+            return il.Ldflda(_fieldInfo);
         }
 
         public static IVariable Create(MemberInfo memberInfo) =>

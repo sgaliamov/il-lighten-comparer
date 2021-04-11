@@ -4,7 +4,6 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -28,9 +27,12 @@ namespace ILLightenComparer.Equality.Hashers
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il) => il.Call(
-            _getHashMethod,
-            _variable.VariableType.IsValueType ? _variable.LoadAddress(Arg.Input) : _variable.Load(Arg.Input));
+        public ILEmitter Emit(ILEmitter il) =>
+            il.CallMethod(
+                _getHashMethod,
+                _variable.VariableType.IsValueType 
+                    ? _variable.LoadAddress(Arg.Input) 
+                    : _variable.Load(Arg.Input));
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }

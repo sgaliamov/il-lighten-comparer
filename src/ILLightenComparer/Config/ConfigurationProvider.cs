@@ -5,7 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Config
 {

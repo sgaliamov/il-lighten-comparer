@@ -5,7 +5,6 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -50,8 +49,8 @@ namespace ILLightenComparer.Shared.Comparisons
             for (var i = 0; i < comparisons.Length; i++) {
                 using (il.LocalsScope()) {
                     il.DefineLabel(out var gotoNext)
-                      .Execute(comparisons[i].Emit(gotoNext))
-                      .Execute(comparisons[i].EmitCheckForResult(gotoNext))
+                      .Emit(comparisons[i].Emit(gotoNext))
+                      .Emit(comparisons[i].EmitCheckForResult(gotoNext))
                       .MarkLabel(gotoNext);
                 }
             }

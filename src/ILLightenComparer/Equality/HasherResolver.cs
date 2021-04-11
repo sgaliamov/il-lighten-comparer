@@ -4,9 +4,9 @@ using System.Linq;
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Equality.Hashers;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Shared;
 using ILLightenComparer.Variables;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality
 {

@@ -46,9 +46,9 @@ namespace ILLightenComparer.Equality.Hashers
             var config = _configuration.Get(_variable.OwnerType);
 
             return il
-                .LoadLong(config.HashSeed)
-                .Store(typeof(long), out var hash)
-                .Execute(this.Emit(hash));
+                .Ldc_I8(config.HashSeed)
+                .Stloc(typeof(long), out var hash)
+                .Emit(this.Emit(hash));
         }
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder hash)
@@ -64,7 +64,7 @@ namespace ILLightenComparer.Equality.Hashers
             }
 
             // todo: 1. why cast only for members hasher?
-            return il.LoadLocal(hash).Cast(typeof(int)); // todo: 1. test overflow
+            return il.Ldloc(hash).Cast(typeof(int)); // todo: 1. test overflow
         }
     }
 }

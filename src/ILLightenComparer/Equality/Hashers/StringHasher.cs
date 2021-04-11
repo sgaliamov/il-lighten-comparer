@@ -5,7 +5,8 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Config;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.Functions;
+using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
@@ -34,15 +35,18 @@ namespace ILLightenComparer.Equality.Hashers
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il) => _variable
-            .Load(il, Arg.Input)
-            .Store(typeof(string), out var local)
-            .IfFalse_S(LoadLocal(local), out var zero)
-            .Call(GetHashCodeMethod, LoadLocal(local), LoadInteger(_stringComparison))
-            .GoTo_S(out var next)
-            .MarkLabel(zero)
-            .LoadInteger(0)
-            .MarkLabel(next);
+        public ILEmitter Emit(ILEmitter il) =>
+            _variable.Load(il, Arg.Input)
+                     .Stloc(typeof(string), out var local)
+                     .Brfalse_S(Ldloc(local), out var zero)
+                     .CallMethod(
+                         GetHashCodeMethod, 
+                         Ldloc(local), 
+                         Ldc_I4(_stringComparison))
+                     .Br_S(out var next)
+                     .MarkLabel(zero)
+                     .Ldc_I4(0)
+                     .MarkLabel(next);
 
         public ILEmitter Emit(ILEmitter il, LocalBuilder _) => Emit(il);
     }

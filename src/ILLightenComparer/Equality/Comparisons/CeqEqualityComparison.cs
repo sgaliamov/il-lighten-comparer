@@ -3,7 +3,6 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Equality.Comparisons
 {
@@ -22,7 +21,7 @@ namespace ILLightenComparer.Equality.Comparisons
             return null;
         }
 
-        public ILEmitter Emit(ILEmitter il, Label _) => il.AreSame(_variable.Load(Arg.X), _variable.Load(Arg.Y));
+        public ILEmitter Emit(ILEmitter il, Label _) => il.Ceq(_variable.Load(Arg.X), _variable.Load(Arg.Y));
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfFalsy(next);
     }

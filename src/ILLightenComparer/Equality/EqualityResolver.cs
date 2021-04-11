@@ -10,7 +10,7 @@ using ILLightenComparer.Shared;
 using ILLightenComparer.Shared.Comparisons;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
+using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Equality
 {
@@ -52,7 +52,7 @@ namespace ILLightenComparer.Equality
             };
         }
 
-        public void EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.IfTrue(next).Return(0);
+        public void EmitCheckForIntermediateResult(ILEmitter il, Label next) => il.Brtrue(next).Ret(0);
 
         public IComparisonEmitter GetComparisonEmitter(IVariable variable)
         {

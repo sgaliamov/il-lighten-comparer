@@ -2,6 +2,7 @@
 using ILLightenComparer.Abstractions;
 using ILLightenComparer.Variables;
 using Illuminator;
+using ILLightenComparer.Extensions;
 
 namespace ILLightenComparer.Shared.Comparisons
 {
@@ -16,14 +17,14 @@ namespace ILLightenComparer.Shared.Comparisons
             ? new ObjectComparison(variable)
             : null;
 
-        public ILEmitter Emit(ILEmitter il, Label next) => il
-            .Execute(_variable.Load(Arg.Y))
-            .IfTrue_S(_variable.Load(Arg.X), out var xIsNotNull)
-            .IfFalse_S(next)
-            .Return(-1)
-            .MarkLabel(xIsNotNull)
-            .IfTrue_S(next)
-            .Return(1);
+        public ILEmitter Emit(ILEmitter il, Label next) =>
+            il.Emit(_variable.Load(Arg.Y))
+              .Brtrue_S(_variable.Load(Arg.X), out var xIsNotNull)
+              .Brfalse_S(next)
+              .Ret(-1)
+              .MarkLabel(xIsNotNull)
+              .Brtrue_S(next)
+              .Ret(1);
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il;
     }

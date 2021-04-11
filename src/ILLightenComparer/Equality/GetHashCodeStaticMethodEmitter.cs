@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using ILLightenComparer.Abstractions;
+using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
-using static Illuminator.Functional;
+using static ILLightenComparer.Extensions.Functions;
 
 namespace ILLightenComparer.Equality
 {
     internal sealed class GetHashCodeStaticMethodEmitter : IStaticMethodEmitter
     {
         private readonly HasherResolver _resolver;
+        private static readonly MethodInfo _getHashCodeMethod = typeof(int).GetMethod(nameof(GetHashCode));
 
         public GetHashCodeStaticMethodEmitter(HasherResolver resolver) => _resolver = resolver;
+        static GetHashCodeStaticMethodEmitter() { }
 
         public void Build(Type objectType, bool detecCycles, MethodBuilder staticMethodBuilder)
         {
@@ -25,8 +28,8 @@ namespace ILLightenComparer.Equality
 
             if (needNullCheck) {
                 il.LoadArgument(Arg.Input)
-                  .IfTrue_S(out var next)
-                  .Return(0)
+                  .Brtrue_S(out var next)
+                  .Ret(0)
                   .MarkLabel(next);
             }
 
@@ -37,19 +40,19 @@ namespace ILLightenComparer.Equality
             _resolver.GetHasherEmitter(new ArgumentVariable(objectType)).Emit(il);
 
             if (detecCycles) {
-                il.Execute(Remove(Arg.CycleSet, Arg.Input, objectType));
+                il.Emit(Remove(Arg.CycleSet, Arg.Input, objectType));
             }
 
-            il.Return();
+            il.Ret();
         }
 
         public bool NeedCreateCycleDetectionSets(Type _) => true;
 
-        private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .IfTrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
-            .Execute(GetCount(Arg.CycleSet))
-            .Store(typeof(int), out var count)
-            .Return(Call(typeof(int).GetMethod(nameof(GetHashCode)), LoadCaller(count)))
-            .MarkLabel(next);
+        private static void EmitCycleDetection(ILEmitter il, Type objectType) =>
+            il.Brtrue_S(TryAdd(Arg.CycleSet, Arg.Input, objectType), out var next)
+              .Emit(GetCount(Arg.CycleSet))
+              .Stloc(typeof(int), out var count)
+              .Ret(CallMethod(_getHashCodeMethod, LoadCaller(count)))
+              .MarkLabel(next);
     }
 }

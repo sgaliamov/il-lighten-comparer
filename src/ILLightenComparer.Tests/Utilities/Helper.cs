@@ -8,7 +8,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using ILLightenComparer.Tests.Comparers;
 using ILLightenComparer.Tests.EqualityComparers;
-using Illuminator.Extensions;
 using Xunit;
 
 namespace ILLightenComparer.Tests.Utilities

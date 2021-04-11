@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using ILLightenComparer.Shared;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Extensions
 {

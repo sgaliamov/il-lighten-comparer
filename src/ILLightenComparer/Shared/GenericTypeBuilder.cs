@@ -8,15 +8,16 @@ using ILLightenComparer.Config;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
-using static Illuminator.Functional;
+using static ILLightenComparer.Extensions.Functions;
+using TypeExtensions = ILLightenComparer.Extensions.TypeExtensions;
 
 namespace ILLightenComparer.Shared
 {
     internal sealed class GenericTypeBuilder
     {
-        private readonly IReadOnlyDictionary<string, IStaticMethodEmitter> _methodEmitter;
+        private static readonly Type ContextType = typeof(IContext);
         private readonly IConfigurationProvider _configuration;
+        private readonly IReadOnlyDictionary<string, IStaticMethodEmitter> _methodEmitter;
 
         public GenericTypeBuilder(
             IReadOnlyDictionary<string, IStaticMethodEmitter> methodEmitters,
@@ -32,30 +33,30 @@ namespace ILLightenComparer.Shared
             var objectType = methodsInfo.ObjectType;
             var contextField = comparerTypeBuilder.DefineField(
                 "_context",
-                typeof(IContext),
+                ContextType,
                 FieldAttributes.InitOnly | FieldAttributes.Private);
 
             BuildConstructorAndFactoryMethod(comparerTypeBuilder, contextField);
 
             var names = methodsInfo
-                .GetAllMethodBuilders()
-                .Select(staticMethodBuilder => {
-                    BuildStaticMethod(objectType, staticMethodBuilder);
-                    BuildInstanceMethod(
-                        methodsInfo.TypedComparerInterface,
-                        comparerTypeBuilder,
-                        staticMethodBuilder,
-                        contextField,
-                        objectType);
+                        .GetAllMethodBuilders()
+                        .Select(staticMethodBuilder => {
+                            BuildStaticMethod(objectType, staticMethodBuilder);
+                            BuildInstanceMethod(
+                                methodsInfo.TypedComparerInterface,
+                                comparerTypeBuilder,
+                                staticMethodBuilder,
+                                contextField,
+                                objectType);
 
-                    return staticMethodBuilder.Name;
-                })
-                .ToArray();
+                            return staticMethodBuilder.Name;
+                        })
+                        .ToArray();
 
             var compiledComparerType = comparerTypeBuilder.CreateTypeInfo();
 
             foreach (var name in names) {
-                var method = compiledComparerType.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
+                var method = compiledComparerType!.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
                 methodsInfo.SetCompiledMethod(method);
             }
 
@@ -76,15 +77,15 @@ namespace ILLightenComparer.Shared
             Type objectType)
         {
             var interfaceMethod = typedComparerInterface.GetMethod(staticMethod.Name);
-            var parametersCount = interfaceMethod.GetParameters().Length;
+            var parametersCount = interfaceMethod!.GetParameters().Length;
             var methodBuilder = typeBuilder.DefineInterfaceMethod(interfaceMethod);
 
             using var il = methodBuilder.CreateILEmitter();
 
             Enumerable.Range(0, parametersCount)
-                .Aggregate(il
-                .LoadArgument(Arg.This)
-                .LoadField(contextField), (il, index) => il.LoadArgument((ushort)(index + 1)));
+                      .Aggregate(
+                          il.LoadArgument(Arg.This).Ldfld(contextField),
+                          (emitter, index) => emitter.LoadArgument(index + 1));
 
             EmitStaticMethodCall(il, objectType, staticMethod, parametersCount);
         }
@@ -94,11 +95,11 @@ namespace ILLightenComparer.Shared
             var createCycleDetectionSets = NeedCreateCycleDetectionSets(objectType, staticMethod.Name);
 
             Enumerable.Range(0, parametersCount)
-                .Aggregate(il, (il, _) => createCycleDetectionSets
-                    ? il.New(CycleDetectionSet.DefaultConstructor)
-                    : il.LoadNull())
-                .Call(staticMethod)
-                .Return();
+                      .Aggregate(il, (emitter, _) => createCycleDetectionSets
+                          ? emitter.Newobj(CycleDetectionSet.DefaultConstructor)
+                          : emitter.Ldnull())
+                      .CallMethod(staticMethod)
+                      .Ret();
         }
 
         private bool NeedCreateCycleDetectionSets(Type objectType, string methodName) =>
@@ -124,17 +125,17 @@ namespace ILLightenComparer.Shared
             using (var il = constructorInfo.CreateILEmitter()) {
                 il.LoadArgument(Arg.This)
                   .Call(typeof(object).GetConstructor(Type.EmptyTypes))
-                  .SetField(LoadArgument(Arg.This), LoadArgument(1), contextField)
-                  .Return();
+                  .Stfld(LoadArgument(Arg.This), LoadArgument(1), contextField)
+                  .Ret();
             }
 
             var methodBuilder = typeBuilder.DefineStaticMethod(
-                nameof(Extensions.TypeExtensions.CreateInstance),
+                nameof(TypeExtensions.CreateInstance),
                 typeBuilder,
                 parameters);
 
             using (var il = methodBuilder.CreateILEmitter()) {
-                il.New(constructorInfo, LoadArgument(Arg.This)).Return();
+                il.Newobj(constructorInfo, LoadArgument(Arg.This)).Ret();
             }
         }
     }

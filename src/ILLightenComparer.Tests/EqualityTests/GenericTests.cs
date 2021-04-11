@@ -9,7 +9,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Tests.EqualityTests
 {
@@ -166,7 +165,7 @@ namespace ILLightenComparer.Tests.EqualityTests
                 var expectedEquals = referenceComparer.Equals(x, y);
                 var actualEquals = typedComparer.Equals(x, y);
 
-                var message = $"{type.DisplayName()} should be supported.";
+                var message = $"{type.FullName} should be supported.";
                 actualEquals.Should().Be(expectedEquals, message);
 
                 if (_compareHashes) {

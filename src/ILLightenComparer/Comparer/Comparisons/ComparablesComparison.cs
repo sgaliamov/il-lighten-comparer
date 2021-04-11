@@ -4,7 +4,6 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Comparer.Comparisons
 {
@@ -36,20 +35,19 @@ namespace ILLightenComparer.Comparer.Comparisons
                 _variable.LoadAddress(il, Arg.X);
                 _variable.Load(il, Arg.Y);
             } else {
-                _variable.Load(il, Arg.X).Store(variableType, out var x);
-                _variable.Load(il, Arg.Y)
-                         .Store(variableType, out var y)
-                         .LoadLocal(x)
-                         .IfTrue_S(out var call)
-                         .LoadLocal(y)
-                         .IfFalse_S(gotoNext)
-                         .Return(-1)
+                _variable.Load(il, Arg.X).Stloc(variableType, out var x);
+                _variable.Load(il, Arg.Y).Stloc(variableType, out var y)
+                         .Ldloc(x)
+                         .Brtrue_S(out var call)
+                         .Ldloc(y)
+                         .Brfalse_S(gotoNext)
+                         .Ret(-1)
                          .MarkLabel(call)
-                         .LoadLocal(x)
-                         .LoadLocal(y);
+                         .Ldloc(x)
+                         .Ldloc(y);
             }
 
-            return il.Call(_compareToMethod);
+            return il.CallMethod(_compareToMethod);
         }
 
         public ILEmitter EmitCheckForResult(ILEmitter il, Label next) => il.EmitReturnIfTruthy(next);

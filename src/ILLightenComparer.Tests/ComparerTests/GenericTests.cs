@@ -9,7 +9,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Force.DeepCloner;
 using ILLightenComparer.Tests.Utilities;
-using Illuminator.Extensions;
 
 namespace ILLightenComparer.Tests.ComparerTests
 {
@@ -152,7 +151,7 @@ namespace ILLightenComparer.Tests.ComparerTests
                 var expected = referenceComparer.Compare(x, y).Normalize();
                 var actual = typedComparer.Compare(x, y).Normalize();
 
-                var message = $"{type.DisplayName()} should be supported.\n"
+                var message = $"{type.FullName} should be supported.\n"
                               + $"x: {x.ToJson()},\n"
                               + $"y: {y.ToJson()}";
 

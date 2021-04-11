@@ -5,14 +5,14 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using static Illuminator.Functional;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Equality.Hashers
 {
     internal sealed class ArrayHashEmitter
     {
-        private readonly IVariable _variable;
         private readonly HasherResolver _resolver;
+        private readonly IVariable _variable;
 
         public ArrayHashEmitter(HasherResolver resolver, IVariable variable)
         {
@@ -22,16 +22,16 @@ namespace ILLightenComparer.Equality.Hashers
 
         public ILEmitter Emit(ILEmitter il, Type arrayType, LocalBuilder array, LocalBuilder hash)
         {
-            il.LoadInteger(0) // start loop
-              .Store(typeof(int), out var index)
+            il.Ldc_I4(0) // start loop
+              .Stloc(typeof(int), out var index)
               .EmitArrayLength(arrayType, array, out var count)
               .DefineLabel(out var loopStart)
               .DefineLabel(out var loopEnd);
 
             using (il.LocalsScope()) {
                 il.MarkLabel(loopStart)
-                  .IfNotEqual_Un_S(LoadLocal(index), LoadLocal(count), out var next)
-                  .GoTo(loopEnd)
+                  .Bne_Un_S(Ldloc(index), Ldloc(count), out var next)
+                  .Br(loopEnd)
                   .MarkLabel(next);
             }
 
@@ -42,12 +42,12 @@ namespace ILLightenComparer.Equality.Hashers
                 _resolver
                     .GetHasherEmitter(itemVariable)
                     .EmitHashing(il, hash)
-                    .Add(LoadLocal(index), LoadInteger(1))
-                    .Store(index)
-                    .GoTo(loopStart);
+                    .Add(Ldloc(index), Ldc_I4(1))
+                    .Stloc(index)
+                    .Br(loopStart);
             }
 
-            return il.MarkLabel(loopEnd).LoadLocal(hash);
+            return il.MarkLabel(loopEnd).Ldloc(hash);
         }
     }
 }

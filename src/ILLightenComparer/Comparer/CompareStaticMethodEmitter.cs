@@ -5,9 +5,9 @@ using ILLightenComparer.Abstractions;
 using ILLightenComparer.Extensions;
 using ILLightenComparer.Variables;
 using Illuminator;
-using Illuminator.Extensions;
 using static ILLightenComparer.Shared.CycleDetectionSet;
-using static Illuminator.Functional;
+using static ILLightenComparer.Extensions.Functions;
+using static Illuminator.Functions;
 
 namespace ILLightenComparer.Comparer
 {
@@ -29,7 +29,7 @@ namespace ILLightenComparer.Comparer
 
             if (needReferenceComparison) {
                 if (!objectType.IsValueType) {
-                    il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Return(0));
+                    il.EmitReferenceComparison(LoadArgument(Arg.X), LoadArgument(Arg.Y), Ret(0));
                 } else if (objectType.IsNullable()) {
                     il.EmitCheckNullablesForValue(LoadArgumentAddress(Arg.X), LoadArgumentAddress(Arg.Y), objectType, exit);
                 }
@@ -44,22 +44,24 @@ namespace ILLightenComparer.Comparer
             emitter.Emit(il, exit);
 
             if (detecCycles) {
-                il.Execute(Remove(Arg.SetX, Arg.X, objectType))
-                  .Execute(Remove(Arg.SetY, Arg.Y, objectType));
+                il.Emit(Remove(Arg.SetX, Arg.X, objectType))
+                  .Emit(Remove(Arg.SetY, Arg.Y, objectType));
             }
 
-            il.Execute(emitter.EmitCheckForResult(exit))
+            il.Emit(emitter.EmitCheckForResult(exit))
               .MarkLabel(exit)
-              .Return(0);
+              .Ret(0);
         }
 
         // no need detect cycle as flow goes outside context
         public bool NeedCreateCycleDetectionSets(Type objectType) => !objectType.IsComparable();
 
-        private static void EmitCycleDetection(ILEmitter il, Type objectType) => il
-            .AreSame(LoadInteger(0), Or(TryAdd(Arg.SetX, Arg.X, objectType), TryAdd(Arg.SetY, Arg.Y, objectType)))
-            .IfFalse_S(out var next)
-            .Return(Sub(GetCount(Arg.SetX), GetCount(Arg.SetY)))
-            .MarkLabel(next);
+        private static void EmitCycleDetection(ILEmitter il, Type objectType) =>
+            il.Ceq(Ldc_I4(0), 
+                  Or(TryAdd(Arg.SetX, Arg.X, objectType), 
+                     TryAdd(Arg.SetY, Arg.Y, objectType)))
+              .Brfalse_S(out var next)
+              .Ret(Sub(GetCount(Arg.SetX), GetCount(Arg.SetY)))
+              .MarkLabel(next);
     }
 }
