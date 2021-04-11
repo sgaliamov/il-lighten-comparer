@@ -27,20 +27,9 @@
 		<DebugType>full</DebugType>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(Configuration)'!='Debug'">
-		<Compile Remove="Shared\ILEmitter.debug.cs" />
-	</ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="Illuminator" Version="0.3.2" />
 		<PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Update="Extensions\Functions.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	  </Compile>
 	</ItemGroup>
 
 </Project>
