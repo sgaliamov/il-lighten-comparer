@@ -13,7 +13,7 @@
 * Fluent intuitive API.
 * Cycle detection.
 * Collections comparison (`IEnumerable<T>`, `T[]`, `T[][]`).
-* .NET Standard 2.0
+* .NET Standard 2.0, .NET 5.
 * High performance.
 * No 3<sup>rd</sup> party dependencies.
 
